@@ -63,10 +63,13 @@ init()
 fordev()
 {
     level endon( "end_game" );
+
+    flag_wait( "initial_blackscreen_passed" );
+
     level.player_out_of_playable_area_monitor = false;
     setdvar( "sv_cheats", 1 );
-    flag_wait( "initial_blackscreen_passed" );
     setdvar( "g_ai", false );
+
     for( i = 0; i < level.players.size; i++ )
     {
         level.players[ i ] enableInvulnerability();
@@ -117,7 +120,7 @@ firegrenades_step1()
     locations[ 4 ] = ( 2898.9, -462.642, -63.1327 ); //back town
 
     
-    wait 0.05;
+    wait 1;
 
     for( x = 0; x < locations.size; x++ )
     {
@@ -133,7 +136,7 @@ firegrenades_step1()
         //if nade hits trigger, we need to pass the x value to notifier, otherwise all triggers will activate
         level.trigger_to_hit_with_nade[ x ] thread firegrenade_monitor_someone_hit_trigger( x ); 
 
-        //spawn a grenade model to indicate something for player...
+        //spawn a grenade model to each trig loc indicate something for players...
         grenade_mod = spawn( "script_model", level.trigger_to_hit_with_nade[ x ].origin /*offset*/  );
         grenade_mod setmodel( "t6_wpn_grenade_frag_world" );
         grenade_mod thread mover_z( 50, -50, 3, 0.1, 0.1 ); //elevator loop
@@ -223,7 +226,7 @@ firegrenades_step2()
     }
     wait 0.05;
 
-    if( level.dev_time ){ iprintlnbold( "NADES GOT NOTIFIED TO FINISH UP THE WRAPPER\nPlease see grenade_btn");}
+    if( level.dev_time ){ iprintlnbold( "NADES GOT NOTIFIED TO FINISH UP THE WRAPPER\nPlease see {[+grenade]}");}
     wait 0.4;
     //notify the nade entity & thread caller
     if( self.nade_used >= to_use ){ nade notify( "please_notify" ); self notify( "reward_me" ); }
@@ -272,7 +275,7 @@ watching_explo( id_ ) //implement repick nade failsafe
         {
             zz = zombies_to_pass[ s ];
             self_nade = self;
-            level thread zz_fx( zz, self_nade );
+            level thread zz_fx( zz, self_nade, id_ );
             zz_head = zz gettagorigin( "j_head" );
             playfx( level.myFx[ 9 ], zz_head );
             playfxontag( level.myFx[ 1 ], zz, "j_head" );
@@ -282,12 +285,12 @@ watching_explo( id_ ) //implement repick nade failsafe
         //need time if nade has been targeted so that the fxs wont spawn all at same time
         if( soft_spot_active )
         {
-            wait( randomfloatrange( 0.05, 0.1 ) );
+            wait( randomfloatrange( 0.05, 0.08 ) );
         }
     }
 }
 //zombie fx mover to firenade summoning
-zz_fx( my_zombie, nade_loc )
+zz_fx( my_zombie, nade_loc, me_player )
 {
     level endon( "end_game" );
     head = my_zombie gettagorigin( "j_head" );
@@ -302,17 +305,28 @@ zz_fx( my_zombie, nade_loc )
     playfxontag( level.myFx[ 1 ], newspawn, "tag_origin" );
     //assign the variable for new target
     new_target = nade_loc.origin;
+    wait 0.09;
     //failsafe for stuck fxs
     if( new_target == undefined )
     {
-        new_target = my_zombie.origin + ( randomintrange( 120, 250 ) randomintrange( -50, 50 ), 2 );
+        if( isAlive( my_zombie ) )
+        {
+            new_target = my_zombie.origin + ( randomintrange( 120, 250 ) randomintrange( -50, 50 ), 2 );
+        }
+        else { new_target = me_player.origin +(  ( randomintrange( 20, 100 ), 0, randomintrange( 15, 45 ) ) );}
+        
     }
+
     newspawn moveTo( new_target, 0.6, 0.05, 0 );
     newspawn waittill( "movedone" );
     //add a temp waiter, we might have a bugged fx otherwise
     //we might need to implement a force kill func for this func
     wait 0.05;
-    playfx( level.myFx[ 9 ], newspawn.origin );
+    if( isDefined( newspawn ) )
+    {
+        playfx( level.myFx[ 9 ], newspawn.origin );
+    }
+    
     wait 0.1;
     newspawn delete();
     
@@ -596,12 +610,15 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
     //}
     
 	level thread flyby( subtitle_upper );
+    subtitle_upper fadeovertime( fadeTimer );
 	//subtitle Destroy();
 	
 	if ( IsDefined( subtitle_lower ) )
 	{
 		level thread flyby( subtitle_lower );
+        subtitle_lower fadeovertime( fadeTimer );
 	}
+    
 }
 
 //this a gay ass hud flyer, still choppy af
