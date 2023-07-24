@@ -202,37 +202,58 @@ spawnsfx()
     self endon( "disconnect" );
     level endon( "end_game" );
 
+	/*
     s1 = actionslotonebuttonpressed();
     s2 = actionsslottwobuttonpressed();
     s3 = actionslotthreebuttonpressed();
     s4 = actionslotfourbuttonpressed();
-    
+    */
 
     
     while( true )
     {
-        if ( self s1 )
-            if( !index > level.myfx.size - 1 )
-            index++;
+        if ( self actionslotonebuttonpressed() )
+        {
+            
+            if( index < level.myfx.size  )
+            {
+                index++;
+            }
+            wait 0.08;
+                
+        }
+            
 
-        if( self s2 )
-            if( !index < 1 )
-            index--;
+        if( self actionslottwobuttonpressed() )
+        {
+            if( index > 1 )
+            {
+                index--;
+            }
+            wait 0.08;
+        }
+            
 
-        if( self s3 )
+        if( self actionslotthreebuttonpressed() )
+        {
             playfx( level.myfx[ index ], self.origin );
+            
+        }
 
-        if( self s4 )
-        mover = spawn( "script_model", self.origin + ( 0,0,90 ) );
-        mover setmodel( "tag_origin" );
-        mover.angles = ( 0, 0, 0 );
-        ( wait 0.05 ); 
-        mover moveto( self getPlayerAngles( anglesToForward( self ) / 4 ), 2, 0.1, 0.1 );
-        ( wait 1 );
-        mover delete();
-    
-                                
-    
-        wait 0.15;                    
+        if( self actionslotfourbuttonpressed() )
+        {
+            mover = spawn( "script_model", self.origin + 0, 0,90 );
+            mover setmodel( "tag_origin" );
+            mover.angles = ( 0, 0, 0 );
+            wait 0.05; 
+            playfxontag( level.myFx[ index ], mover, "tag_origin" );
+			mover moveTo( anglesToForward( self getplayerangles() ), 2, 1, 0 );
+            //mover moveto( self getPlayerAngles( anglesToForward( self ) / 4 ), 2, 0.1, 0.1 );
+            wait 2;
+            mover delete();
+            wait 0.08;
+        }
+
+        else{ wait 0.15; }
     }
 }

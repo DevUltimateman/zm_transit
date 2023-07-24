@@ -44,6 +44,9 @@ init()
 {
     //fx list
     level.nigth_fight_fx_list = [];
+
+
+    
 }
 
 warm_up_the_fxs()

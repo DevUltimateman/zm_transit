@@ -51,6 +51,7 @@ init()
 
     //disable annoying monkeys
     level.is_player_in_screecher_zone = false; 
+    level.player_out_of_playable_area_monitor = false;
 
     //foce non client dvars to be applied
     setdvar( "player_backspeedscale", 1 );

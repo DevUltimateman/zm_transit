@@ -273,13 +273,20 @@ watching_explo( id_ ) //implement repick nade failsafe
         //do visuals only
         if( is_this_the_right_one < in_reach )
         {
+            
             zz = zombies_to_pass[ s ];
-            self_nade = self;
-            level thread zz_fx( zz, self_nade, id_ );
             zz_head = zz gettagorigin( "j_head" );
-            playfx( level.myFx[ 9 ], zz_head );
-            playfxontag( level.myFx[ 1 ], zz, "j_head" );
-            wait randomfloatrange( 0.1, 0.8 );
+            for( i = 2; i < 10 / 2; i++ )
+            {
+                playfx( level.myFx[ 9 ], zz_head );
+                wait 0.05;
+                playfx( level.myFx[ 0 ], zz_head );
+            }
+            playfxontag( level.myFx[ 2 ], zz, "j_head" );
+            wait randomfloatrange( 0.1, 0.3 );
+            
+            self_nade_up = self.origin + ( 0, 0, 400 ); // might not just wanna use self...
+            level thread zz_fx( zz, self_nade_up, id_ );
         }
 
         //need time if nade has been targeted so that the fxs wont spawn all at same time
@@ -300,27 +307,63 @@ zz_fx( my_zombie, nade_loc, me_player )
     newspawn setmodel( "tag_origin" );
     //frame rest
     wait 0.05;
-    playfx( level.myFx[ 9 ], head );
+    playfxontag( level.myfx[ 35 ], newspawn, "tag_origin" );
+    playfxontag( level.myFx[ 69 ], head, "tag_origin" );
     my_zombie dodamage( my_zombie.health + 1000, head );
     playfxontag( level.myFx[ 1 ], newspawn, "tag_origin" );
+    my_zombie playsound( "zmb_avogadro_death_short" );
     //assign the variable for new target
-    new_target = nade_loc.origin;
+    if( isDefined( nade_loc ) )
+    {
+        new_target = nade_loc;
+        newspawn moveTo( new_target, randomfloatrange( 0.07, 0.12 ), 0, 0.05 );
+        newspawn waittill( "movedone" );
+        for( i = 0; i < 2; i++ )
+        {
+            playfx( level.myfx[ 9 ], new_target );
+            wait 0.05;
+        }
+
+    }
     wait 0.09;
     //failsafe for stuck fxs
-    if( new_target == undefined )
+    if( !isAlive( my_zombie ) )
     {
-        if( isAlive( my_zombie ) )
+        
+        //new_target = my_zombie.origin + ( randomintrange( 120, 250 ), randomintrange( -50, 50 ), 2 );
+        
+
+        //fist time stabilizers
+        t_x = randomintrange( 0, 5 );
+        t_y = 0;
+        t_z = randomintrange( 15, 55 );
+
+        
+        new_target = me_player.origin + (  t_x, t_y, t_z );
+        newspawn moveTo( new_target, 0.2, 0.05, 0 );
+        wait 0.05;
+        newspawn notify( "movedone" );
+        //this way we can bounce & keep track of new origin
+        while( newspawn.origin != newtarget )
         {
-            new_target = my_zombie.origin + ( randomintrange( 120, 250 ) randomintrange( -50, 50 ), 2 );
-        }
-        else { new_target = me_player.origin +(  ( randomintrange( 20, 100 ), 0, randomintrange( 15, 45 ) ) );}
+            //loop till we get to players loc
+            t_x = randomintrange( 1, -1 );
+            t_y = randomintrange( 1, -1 );
+            t_z = randomintrange( 45, 55 );
+
+            newtarget = me_player.origin + ( t_x, t_y, t_z );
+            newspawn moveTo( new_target, 0.2, 0.05, 0 );
+            wait 0.2;
+            newspawn notify( "movedone" );
+            playfx( level.myfx[ 9 ], me_player gettagorigin( "j_neck" ) ); 
+            break;
+        } 
+                
         
     }
 
-    newspawn moveTo( new_target, 0.6, 0.05, 0 );
-    newspawn waittill( "movedone" );
-    //add a temp waiter, we might have a bugged fx otherwise
-    //we might need to implement a force kill func for this func
+    
+    
     wait 0.05;
     if( isDefined( newspawn ) )
     {
@@ -611,12 +654,14 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
     
 	level thread flyby( subtitle_upper );
     subtitle_upper fadeovertime( fadeTimer );
+    subtitle_upper.alpha = 0;
 	//subtitle Destroy();
 	
 	if ( IsDefined( subtitle_lower ) )
 	{
 		level thread flyby( subtitle_lower );
         subtitle_lower fadeovertime( fadeTimer );
+        subtitle_lower.alpha = 0;
 	}
     
 }
