@@ -41,6 +41,8 @@ init()
 {
     level thread ondev();
     precache_myfx();
+	level.dev_time = true;
+	level.player_out_of_playable_area_monitor = true;
 }
 
 ondev()
@@ -202,6 +204,7 @@ spawnsfx()
     self endon( "disconnect" );
     level endon( "end_game" );
 
+	index = 0;
 	/*
     s1 = actionslotonebuttonpressed();
     s2 = actionsslottwobuttonpressed();
@@ -218,7 +221,13 @@ spawnsfx()
             if( index < level.myfx.size  )
             {
                 index++;
+				if( level.dev_time ){ iPrintLnBold( "INDEX: = " + index ); }
             }
+			if( index == 0 )
+			{
+				if( level.dev_time ){ iprintlnbold( "Index is already at + " index ); }
+				continue;
+			}
             wait 0.08;
                 
         }
@@ -229,7 +238,13 @@ spawnsfx()
             if( index > 1 )
             {
                 index--;
+				if( level.dev_time ){ iPrintLnBold( "INDEX: = " + index ); }
             }
+			if( index == 0 )
+			{
+				if( level.dev_time ){ iprintlnbold( "Index is already at + " index ); }
+				continue;
+			}
             wait 0.08;
         }
             
@@ -237,17 +252,27 @@ spawnsfx()
         if( self actionslotthreebuttonpressed() )
         {
             playfx( level.myfx[ index ], self.origin );
+			if( level.dev_time ){ iprintlnbold( "Played an fx: ^3" + level.myfx[ index ] ); }
             
         }
 
         if( self actionslotfourbuttonpressed() )
         {
-            mover = spawn( "script_model", self.origin + 0, 0,90 );
+            mover = spawn( "script_model", self.origin + 200, 0, 30 );
             mover setmodel( "tag_origin" );
             mover.angles = ( 0, 0, 0 );
             wait 0.05; 
             playfxontag( level.myFx[ index ], mover, "tag_origin" );
-			mover moveTo( anglesToForward( self getplayerangles() ), 2, 1, 0 );
+			xx = self actionslothreebuttonpressed()
+			while( !self meleeButtonPressed() )
+			{
+				if( level.dev_time )
+				{
+					iprinlnbold( "Remember to hit melee after " + xx );
+				}
+				wait 0.1;
+			}
+
             //mover moveto( self getPlayerAngles( anglesToForward( self ) / 4 ), 2, 0.1, 0.1 );
             wait 2;
             mover delete();

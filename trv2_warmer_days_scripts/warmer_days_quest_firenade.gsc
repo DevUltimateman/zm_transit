@@ -57,6 +57,10 @@ init()
 
     //build check for printlines
     level.dev_time = true;
+
+    //for summoning
+    //ignore_find_flesh
+    level.ignore_find_flesh = ::stop_zomb;
 }
 
 //remove
@@ -190,7 +194,7 @@ firegrenades_step2()
     //the least amount of uses we can have / start with
     self.nades_used = 0;
     //this many times math zombie - nade origin < 870 / randomint( 0, 6 ) has to happen before goal == reached
-    to_use = 12;
+    to_use = 2; //12 = release value or 6 in total...
     
     //idx will be the player entity eventually
     idx = undefined;
@@ -280,9 +284,11 @@ watching_explo( id_ ) //implement repick nade failsafe
             {
                 playfx( level.myFx[ 9 ], zz_head );
                 wait 0.05;
-                playfx( level.myFx[ 0 ], zz_head );
+                playfxontag( level.myfx[ 0 ], zz, zz_head );
             }
             playfxontag( level.myFx[ 2 ], zz, "j_head" );
+            wait 0.05;
+            playfxontag( level.myfx[ 30 ], zz, zz_head );
             wait randomfloatrange( 0.1, 0.3 );
             
             self_nade_up = self.origin + ( 0, 0, 400 ); // might not just wanna use self...
@@ -338,7 +344,7 @@ zz_fx( my_zombie, nade_loc, me_player )
         t_y = 0;
         t_z = randomintrange( 15, 55 );
 
-        
+        //THIS PART IS FOR PLAYERS GET CHARGED WITH PLASMA
         new_target = me_player.origin + (  t_x, t_y, t_z );
         newspawn moveTo( new_target, 0.2, 0.05, 0 );
         wait 0.05;
@@ -449,12 +455,12 @@ firegrenades_throw_logic()
         self waittill( "grenade_fire", g, weapname );
         wait 0.05;
         //l
-        self thread firegrenade_funny_time( xpl, orb, g );
+        self thread firegrenade_funny_time( xpl, orb, g, self ); //self on the parameter for "thrower"
     }
 }
 
 //do the firegrenade explosion
-firegrenade_funny_time( explo, trail, linkto_object )
+firegrenade_funny_time( explo, trail, linkto_object, thrower )
 {
     self endon( "disconnect" );
     level endon( "end_game" );
@@ -488,6 +494,8 @@ firegrenade_funny_time( explo, trail, linkto_object )
     //halfway number
     hw = temp_array.size / 2;
     
+    level thread firegrenade_go_poke( linkto_object, thrower );
+
     //combine all under 1 variable
     comboer = undefined;
 
@@ -500,6 +508,7 @@ firegrenade_funny_time( explo, trail, linkto_object )
         if( first_time && i >= hw )
         {
             i = 0;
+            level notify( "death_by" + thrower );
             //can't jump into this if anymore
             first_time = false;
         }
@@ -522,6 +531,138 @@ firegrenade_funny_time( explo, trail, linkto_object )
     temp_array delete(); //temp random locations []
     mspawn delete(); //model
     
+}
+
+firegrenade_go_poke( ent, who_id )
+{
+    //self endon( "disconnect" );
+    level endon( "end_game" );
+
+    level waittill( "death_by" + who_id );
+    location_ = ent.origin;
+    loc_spawn = spawn( "script_model", location_ );
+    loc_spawn setmodel( "tag_origin" );
+    loc_spawn.angles = loc_spawn.angles;
+
+    zombies = getAIArray( level.zombie_team );
+    distance_ = 500;
+
+    playfxontag( level.myfx[ 35 ], loc_spawn, "tag_origin" );
+
+    hold_temp = [];
+    for( i = 0; i < zombies.size; i++ )
+    {
+        if( i == 0 )
+        {
+            x = 0;
+            if( level.dev_time ) { iprintlnbold( "NADE ^3first time check i = 0, init X" );}
+        }
+        
+
+        if( distance( loc_spawn, zombies[ i ] ) < distance_ )
+        {
+            
+            hold_temp[ x ] = zombies[ i ];
+            x++;
+            //use this mark for level ignore find flesh global
+            zombies[ i ].marked_to_summon = true;
+            if( isAlive( zombies[ i ] ) )
+            {
+                self.a.nodeath = true;
+                self notify( "killanimscript" );
+                mm = spawn( "script_model", self.origin );
+                mm setmodel( "tag_origin" );
+                self enableLinkTo();
+                self linkto( mm );
+                mm movez( 200, 0.05, 0, 0 );
+                mm hoverme( self );
+                
+
+            }
+            
+        }
+    }
+
+    
+    wait randomfloatrange( 0.2, 0.5 );
+    //let's delete the entity ( grenade )
+    ent delete();
+    playfxontag( level.myfx[ 2 ], loc_spawn, "tag_origin" );
+    earthquake( 2500, 1.2, 500 (0, 0, 0)  );
+    //earthquake(<scale>, <duration>, <source>, <radius>)
+    loc_spawn movez( randomintrange( 400, 750), randomfloatrange( 0.6, 1.4 ), 0.1, 0 );
+    loc_spawn waittill( "movedone" );
+
+    for( s = 0; s < hold_temp.size; s++ )
+    {
+        temper = spawn( "script_model", loc_spawn.origin );
+        temper setmodel( "tag_origin" );
+        temper.angles = temper.angles;
+        wait 0.05;
+        playfxontag( level.myfx[ 1 ], temper, "tag_origin" );
+        temper thread find_destroy( hold_temp[ s ], temper );
+    }
+
+    wait 0.3;
+    loc_spawn delete();
+    mm delete();
+
+}
+
+find_destroy( zombie_to_kill, dispose_model )
+{
+    self endon( "death" );
+    level endon( "end_game" );
+
+    self moveto( zombie_to_kill.origin, randomfloatrange( 0.1, 0.28 ), 0, 0 );
+    self waittill( "movedone" );
+    for( i = 0; i < 4; i++ )
+    {
+        playfxontag( level.myfx[ 43 ], self, "tag_origin" );
+        wait .05;
+        
+    }
+    playfxontag( level.myf[ 68 ], zombie_to_kill, zombie_to_kill getTagOrigin( "j_head" ) );
+    get = zombie_to_kill.origin;
+    zombie_to_kill doDamage( zombie_to_kill.health + 1000, self.origin );
+    self StartRagdoll();
+
+    wait( 0.05 );
+
+    zombie_to_kill LaunchRagdoll( ( 0, 0, -1000 ) );
+
+    playfx( level.myfx[ 9 ], get );
+
+    //dev
+    xxx = dispose_model delete();
+    iprintlnbold( "DISPOSE MODE = " + xxx );
+    //prod
+    dispose_model delete();
+}
+
+hoverme( linked )
+{
+    level endon("end_game");
+    self endon( "death" );
+    while( isAlive( linked ) )
+    {
+        self movez( 40, 0.5, 0.11, 0 );
+        self waittill( "movedone" );
+        self movez( -40, 0.34, 0.1, 0 );
+        self waittill( "movedone" );
+        
+        
+    }
+}
+
+stop_zomb()
+{
+	if ( is_true( self.marked_to_summon ) )
+	{
+		return true;
+	}
+
+	return false;
 }
 
 //player's own list of hit triggers
