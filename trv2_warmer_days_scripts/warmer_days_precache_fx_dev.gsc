@@ -66,8 +66,8 @@ precache_myfx()
 	level.myFx[ 1 ] = loadfx( "maps/zombie/fx_zmb_race_trail_grief" );  //ee bolt
 	level.myFx[ 2 ] = loadfx( "maps/zombie/fx_zmb_race_trail_neutral" ); //ee bolt
 	level.myFx[ 3 ] = loadfx( "maps/zombie/fx_zmb_tranzit_sq_lightning_orb" ); //works
-	level.myFx[ 4 ] = loadfx( "maps/zombie/fx_zombie_zapper_light_green" ); //no
-	level.myFx[ 5 ] = loadfx( "maps/zombie/fx_zombie_zapper_light_red" ); //no
+	level.myFx[ 4]  = loadfx ("");//("maps/zombie/fx_zombie_exit_glow");//loadfx("misc/fx_ui_flagbase_orange");
+	level.myFx[ 5 ] = loadfx ("");//("maps/zombie/zombie_fx_exit_marker");
 	level.myFx[ 6 ] = loadfx( "maps/zombie/fx_zmb_tranzit_marker" ); //yes pandora
 	level.myFx[ 7 ] = loadfx( "maps/zombie/fx_zmb_tranzit_marker_fl" ); //yes pandora
 	level.myFx[ 8 ] = loadfx( "misc/fx_zombie_couch_effect" ); //lighting beam buyable 
@@ -225,8 +225,8 @@ spawnsfx()
             }
 			if( index == 0 )
 			{
-				if( level.dev_time ){ iprintlnbold( "Index is already at + " index ); }
-				continue;
+				if( level.dev_time ){ iprintlnbold( "Index is already at " +  index ); }
+				wait 0.1;
 			}
             wait 0.08;
                 
@@ -242,7 +242,7 @@ spawnsfx()
             }
 			if( index == 0 )
 			{
-				if( level.dev_time ){ iprintlnbold( "Index is already at + " index ); }
+				if( level.dev_time ){ iprintlnbold( "Index is already at " +  index ); }
 				continue;
 			}
             wait 0.08;
@@ -263,12 +263,12 @@ spawnsfx()
             mover.angles = ( 0, 0, 0 );
             wait 0.05; 
             playfxontag( level.myFx[ index ], mover, "tag_origin" );
-			xx = self actionslothreebuttonpressed()
-			while( !self meleeButtonPressed() )
+			xx = self actionslotthreebuttonpressed();
+			while( self meleeButtonPressed() )
 			{
 				if( level.dev_time )
 				{
-					iprinlnbold( "Remember to hit melee after " + xx );
+					iprintlnbold( "Remember to hit melee after " + xx );
 				}
 				wait 0.1;
 			}

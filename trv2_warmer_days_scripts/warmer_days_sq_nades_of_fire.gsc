@@ -418,7 +418,7 @@ firegrenade_player_wait_for_upgrade()
     
     //the real on screen subtitles for this step
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
-    level thread _someone_unlocked_something( "What!? How did you find all the nades so quickly?", "Silly you, you still have things to do.. ^3Zombie ^7go boom! ", 8, 0.1 );
+    _someone_unlocked_something( "What!? How did you find all the nades so quickly?", "Silly you, you still have things to do.. ^3Zombie ^7go boom! ", 8, 0.1 );
 
     //notify the waittill("its_time") to progress into firenade step 2
     level notify( "its_time" ); //custom noti / waittill
@@ -438,7 +438,7 @@ firegrenade_reward_player( to_who )
     to_who thread firegrenades_throw_logic(); //to_who == self player, firegrenade think logic thread()
 
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
-    level thread _someone_unlocked_something( "Haha! How do you like your new nades?", "I hope they'll come to good use.. ^3Wunderbar!", 8, 0.1 );
+    _someone_unlocked_something( "Haha! How do you like your new nades?", "I hope they'll come to good use.. ^3Wunderbar!", 8, 0.1 );
 }
 
 //monitor firegrenade usage
@@ -586,9 +586,13 @@ firegrenade_go_poke( ent, who_id )
     
     wait randomfloatrange( 0.2, 0.5 );
     //let's delete the entity ( grenade )
-    ent delete();
+    if( isDefined( ent ) )
+    {
+        ent delete();
+    }
+    
     playfxontag( level.myfx[ 2 ], loc_spawn, "tag_origin" );
-    earthquake( 2500, 1.2, 500 (0, 0, 0)  );
+    earthquake( 2500, 1.2, 500, (0, 0, 0)  );
     //earthquake(<scale>, <duration>, <source>, <radius>)
     loc_spawn movez( randomintrange( 400, 750), randomfloatrange( 0.6, 1.4 ), 0.1, 0 );
     loc_spawn waittill( "movedone" );
@@ -748,7 +752,7 @@ firegrenade_assign_hitlist_to_connecting_midgame()
 _someone_unlocked_something( subtitle_upper, subtitle_lower, duration, fadetimer )
 {
     level endon( "end_game" );
-	SchruderSays( "^3Dr. Schrude: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+	level thread SchruderSays( "^3Dr. Schrude: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
 }
 
 SchruderSays( sub_up, sub_low, duration, fadeTimer )
