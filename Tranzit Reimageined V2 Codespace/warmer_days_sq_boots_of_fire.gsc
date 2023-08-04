@@ -62,8 +62,19 @@ fireboots_playerconnect()
     while( true )
     {
         level waittill( "connected", obeyer );
+        obeyer thread setBootStat( false );
         //obeyer thread 
     }
+}
+
+setBootStat( firstTime )
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+
+    self waittill( "spawned_player" );
+    wait 1;
+    self.has_picked_up_boots = firstTime;
 }
 
 
@@ -72,7 +83,8 @@ fireboot_quest_init()
     level endon( "end_game" );
 
     flag_wait( "initial_blackscreen_passed" );
-    wait 2;
+    wait 5;
+    level thread step3_fireboots_pickup();
     //debug with player host
     //level thread weapon_camo_tester( level.players[ 0 ] );
     //debug
@@ -90,7 +102,9 @@ fireboot_quest_init()
     level waittill( "fireboots_step2_completed" );
 
     //step3
-    level thread f_boots3_pickup(); //player has to pick up the shoes from underground lab area;
+    /* 
+    Make the new pick location underneath the labs. 
+    rn the debug location is set to level.initial_spawnpoint[ 0 ].origin  */
 
 
 }
@@ -167,8 +181,9 @@ step1_boot_hopping() //fireboot quest step1. Find 8 different fireboots around t
     then spawns a model + fx on the location index,
     once all boots are spawned, hop into a while loop,
     which then waits till are_boots_found to return true.
-    
-    if all boots are found -> play a message + notify level logic to move onto a next step */
+
+    if all boots are found -> play a message + notify level logic to move onto a next step 
+    */
     for( s = 0; s < level.fireboot_locations.size; s++ )
     {
         level.boot_triggers[ s ] = spawn( "trigger_radius", level.fireboot_locations[ s ], 48, 48, 48 );
@@ -191,7 +206,7 @@ step1_boot_hopping() //fireboot quest step1. Find 8 different fireboots around t
     level notify( "fireboots_step1_completed" );
 }
 
-f_boots3_pickup()
+step3_fireboots_pickup()
 {
     level endon( "end_game" );
 
@@ -207,16 +222,17 @@ f_boots3_pickup()
     //trigger origin
     loc = level.initial_spawn_point[0] + ( 0, 0, 20 );
 
-    model = spawn( "script_model", loc );
-    model setmodel( "c_zom_zombie3_g_rlegspawn" );
-    model.angles = ( randomintrange( 0, 360 ), randomintrange( 0, 360 ), randomintrange( 0, 180 ) );
-
-    wait 0.05; // need a pause before fxing script_model
-    playfxontag( level.myFx[ 24 ], model, "tag_origin" );
+    pickup_model = spawn( "script_model", loc );
+    pickup_model setmodel( "c_zom_zombie3_g_rlegspawn" );
+    pickup_model.angles = ( randomintrange( 0, 360 ), randomintrange( 0, 360 ), randomintrange( 0, 180 ) );
+    
+    // need a pause before fxing script_model
+    wait 0.05; 
+    playfxontag( level.myFx[ 24 ], pickup_model, "tag_origin" );
     wait 0.05;
-    playfxontag( level.myFx[ 35 ], model, "tag_origin" );
+    playfxontag( level.myFx[ 35 ], pickup_model, "tag_origin" );
     wait 0.05;
-    playfx( level.myFx[ 61 ], model.origin );
+    playfx( level.myFx[ 61 ], pickup_model.origin );
 
     trigg = spawn( "trigger_radius_use", loc, 80, 80, 80 );
     trigg setHintString( "Hold ^3{[+activate]}^7 to pick up ^3Lava Shoes^7" );
@@ -256,6 +272,9 @@ f_boots3_pickup()
             playfx( level.myFx[ 9 ], user.origin );
             /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
             level thread _someone_unlocked_something( text_upper, text_d, 4, 0.1 );
+
+            wait_network_frame();
+            text_d = undefined;
         }
         wait 0.05;
     }
@@ -296,43 +315,70 @@ leg_trigger_logic( model_origin )
     level endon( "end_game" );
     //what_step_text = undefined;
     wait 0.05;
-    mod = spawn( "script_model", model_origin );
-    mod setmodel( level.myModels[ 76 ] ); //needs a better leg model, currently a broken torso c_zom_zombie1_body01_g_legsoff c_zom_zombie3_g_rlegspawn
-    mod.angles = ( 0, 0, 0 );
+    leg_model = spawn( "script_model", model_origin );
+    leg_model setmodel( level.myModels[ 76 ] ); //needs a better leg model, currently a broken torso c_zom_zombie1_body01_g_legsoff c_zom_zombie3_g_rlegspawn
+    leg_model.angles = ( 0, 0, 0 );
     wait 0.05;
-    
-
-    playfxontag( level.myFx[ 1 ], mod, "tag_origin" ); //playfxontag on model, not on model's origin
+    playfxontag( level.myFx[ 1 ], leg_model, "tag_origin" ); //playfxontag on model, not on model's origin
+    //need this to stop drawing multiple instances at once for pick up boots part's hud elem
+    cooldownTimer = 10;
     //playfx( level.myFx[ 1 ], model.origin );
     //mod thread spinner_yaw( 360, -360, 1, 0, 0 );
     //playfx( level.myFx[ 9 ], model_origin );
+
+    
+    
     while( true )
     {
         self waittill( "trigger", guy );
+
+        //need a check to not draw multiple pick ups at once.
+        if( level.boots_are_being_picked_up )
+        {
+            continue;
+        }
+
+        //this check needs to be added below since we need to check after the initial hit if someone is already picking up boots
+        level thread picking_up_boots_cooldown_others_timer( cooldownTimer );
         
-        true_indicator = level.boots_found + 1; // to display the numbers found text correctly
+        // to display the number of boots found currently
+        true_indicator = level.boots_found + 1; 
+
         upper_text = "Fireboots found ^3" + true_indicator + "^7 / ^3" + level.fireboot_locations.size + "";
-        lower_text = _returnFireBootStepText(); //might need a passing argument
+
+        //might need a passing argument in future
+        lower_text = _returnFireBootStepText(); 
         playsoundatposition( "zmb_box_poof", self.origin );
-        //play_sound_at_pos( "zmb_vocals_zombie_attack", self.origin );
-        
         level.boots_found += 1;
         wait 0.1;
         guy.score += 750;
-        playsoundatposition( "evt_fridge_locker_close", self.origin ); //might need a better sound
+        guy playsoundtoplayer( "zmb_vault_bank_deposit", guy );
         level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
         wait 0.1;
-    
-        mod delete(); //delete linked model
 
+        leg_model delete(); //delete linked model
+
+        //self == trigger
         if( isdefined( self ) )
         {
             self delete();
         }
-        //self delete();  //delete trigger ( level.trigger_nade + i ( self ) )
         break;
 
     }
+}
+
+picking_up_boots_cooldown_others_timer( time )
+{
+    level endon( "end_game" );
+
+    if( level.dev_time ){ iPrintLnBold( "BOOTS PICK UP COOLDOWN ACTIVE "); }
+    level.boots_are_being_picked_up = true;
+    
+    wait( time );
+
+    if( level.dev_time ){ iPrintLnBold( "BOOTS PICK UP COOLDOWN ACTIVE "); }
+    level.boots_are_being_picked_up = false;
 }
 
 f_boots2() // fireboots, step 2
@@ -533,26 +579,6 @@ flyby( element )
     element destroy();
 }
 
-h_players_claimed_nodes()
-{
-    //defines an array with 5 values
-    //each value defaults to false
-    //if player hits one of the level.trigger_nades, assign that trigger index to self.list[ index ] and change it's value to true
-    //if all list items == true
-    //another function checks, nade step 1 completed
-    self endon( "disconnect" );
-    level endon( "end_game" );
-    self.hit_list = [];
-    self.hit_list[ 0 ] = false;
-    self.hit_list[ 1 ] = false;
-    self.hit_list[ 2 ] = false;
-    self.hit_list[ 3 ] = false;
-    self.hit_list[ 4 ] = false;
-
-    self setclientdvar( "developer_script", 1 );
-    //if player has picked up the shoes
-    self.has_picked_up_boots = false;
-}
 summoning_in_progress( models, bounce_upwards )
 {
     level endon( "end_game" );
