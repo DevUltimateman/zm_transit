@@ -48,15 +48,14 @@ init()
 
     level.boots_found = 0; //how many fireboots have players found?
     level.summoning_kills_combined = 0; //check for if true
-    level.summoning_kills_combined_total = 75; //check for if true
+    level.summoning_kills_combined_total = 45; //check for if true
     level.summoning_active = false; //defaults to false so that all summoning locations can be visible before initiating
     level.summoning_kills = 0; //init summoning_kills;
-    level.summoning_kills_required = 25; //how many kills per summoing 
+    level.summoning_kills_required = 15; //how many kills per summoing 
     
     //player specific logic
     level thread fireboots_playerconnect();
 }
-
 fireboots_playerconnect()
 {
     level endon( "end_game" );
@@ -142,7 +141,7 @@ are_boots_found()
     return false;
 }
 
-f_boots1() //fireboot quest step1. Find 8 different fireboots around the map ( jump into found boots, run into them to pick up )
+step1_boot_hopping() //fireboot quest step1. Find 8 different fireboots around the map ( jump into found boots, run into them to pick up )
 {
     level endon( "end_game" );
 
@@ -163,6 +162,13 @@ f_boots1() //fireboot quest step1. Find 8 different fireboots around the map ( j
     //mod2 = "c_zom_zombie1_body01_g_legsoff";
     wait 0.05;
 
+    /* 
+    for loop checks fireboot locations size,
+    then spawns a model + fx on the location index,
+    once all boots are spawned, hop into a while loop,
+    which then waits till are_boots_found to return true.
+    
+    if all boots are found -> play a message + notify level logic to move onto a next step */
     for( s = 0; s < level.fireboot_locations.size; s++ )
     {
         level.boot_triggers[ s ] = spawn( "trigger_radius", level.fireboot_locations[ s ], 48, 48, 48 );
