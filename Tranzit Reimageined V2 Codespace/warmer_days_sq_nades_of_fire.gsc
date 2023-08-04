@@ -1,5 +1,5 @@
-//codename: wamer_days_quest_firenade
-//purpose: handles fire nade quest logic
+//codename: wamer_days_quest_firenade.gsc
+//purpose: handles fire nade sidequest logic
 //release: 2023 as part of tranzit 2.0 v2 update
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\gametypes\_hud_message;

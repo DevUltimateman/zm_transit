@@ -1,5 +1,5 @@
-//codename: wamer_days_fx_precache
-//purpose: precache level.myFx variables
+//codename: warmer_days_precache_fx.gsc
+//purpose: handles precaching for global 'level.myFx' fx array
 //release: 2023 as part of tranzit 2.0 v2 update
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\gametypes\_hud_message;

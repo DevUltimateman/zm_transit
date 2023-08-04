@@ -1,3 +1,6 @@
+//codename: warmer_days_precache_fx_dev.gsc
+//purpose: handles development env for desiging fx locations & spawning
+//release: 2023 as part of tranzit 2.0 v2 update
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\gametypes\_hud_message;
 #include maps\mp\ombies\_zm_stats;

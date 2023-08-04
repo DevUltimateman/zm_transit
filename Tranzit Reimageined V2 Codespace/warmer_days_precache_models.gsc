@@ -1,5 +1,5 @@
-//codename: wamer_days_precache_models
-//purpose: precache level.myModels
+//codename: warmer_days_mq_02_meet_mr_s.gsc
+//purpose: handles precaching of all the level.myModels models, global models across files
 //release: 2023 as part of tranzit 2.0 v2 update
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\gametypes\_hud_message;

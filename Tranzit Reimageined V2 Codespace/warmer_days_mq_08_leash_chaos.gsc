@@ -1,3 +1,6 @@
+//codename: warmer_days_mq_08_leash_chaos.gsc
+//purpose: handles the round 115 change & zombie logic
+//release: 2023 as part of tranzit 2.0 v2 update
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\gametypes\_hud_message;
 #include maps\mp\ombies\_zm_stats;

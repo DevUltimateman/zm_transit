@@ -1,5 +1,5 @@
-//codename: wamer_days_quest_fireboots
-//purpose: handles fire boot quest logic
+//codename: wamer_days_quest_fireboots.gsc
+//purpose: handles fire boot sidequest logic
 //release: 2023 as part of tranzit 2.0 v2 update
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\gametypes\_hud_message;

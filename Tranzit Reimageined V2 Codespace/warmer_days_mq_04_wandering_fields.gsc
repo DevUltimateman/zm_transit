@@ -1,4 +1,4 @@
-//codename: wamer_days_quest_fight_night_cornfield
+//codename: wamer_days_mq_04_wondering_fields.gsc
 //purpose: handles the cornfield fight at night
 //release: 2023 as part of tranzit 2.0 v2 update
 #include maps\mp\gametypes\_hud_util;
