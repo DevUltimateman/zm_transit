@@ -220,7 +220,7 @@ step3_fireboots_pickup()
     //text down
     text_d = undefined;
     //trigger origin
-    loc = level.initial_spawn_point[0] + ( 0, 0, 20 );
+    loc = level.initial_spawn_point[ 0 ] + ( 0, 0, 20 );
 
     pickup_model = spawn( "script_model", loc );
     pickup_model setmodel( "c_zom_zombie3_g_rlegspawn" );
@@ -268,6 +268,7 @@ step3_fireboots_pickup()
             trigg setinvisibletoplayer( user );
             
             //needs an fire trail for boots when moving around
+            playFXOnTag( level.myFx[ 2 ], user, "J_SpineLower" );
             user thread watch_for_death_disconnect();
             playfx( level.myFx[ 9 ], user.origin );
             /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
