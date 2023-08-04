@@ -43,6 +43,13 @@
 
 init()
 {
+
+    //disable zombies, enable godm, 50k pts
+    level thread fordev();
+
+    //build check for printlines
+    level.dev_time = true;
+    /*
     //fire nade quest, step1 triggers
     level.trigger_to_hit_with_nade = []; 
 
@@ -52,15 +59,10 @@ init()
     //setup firenade quest
     level thread quest_firenades_init();
 
-    //disable zombies, enable godm, 50k pts
-    level thread fordev();
-
-    //build check for printlines
-    level.dev_time = true;
-
     //for summoning
     //ignore_find_flesh
     level.ignore_find_flesh = ::stop_zomb;
+    */
 }
 
 //remove

@@ -47,8 +47,8 @@ init()
 {
     flag_wait("initial_blackscreen_passed" );
     wait 15;
-    iprintlnbold( "set_round_and_chaos" );
-    level thread set_round_and_chaos();
+    //iprintlnbold( "set_round_and_chaos" );
+    //level thread set_round_and_chaos();
 
 	/*
     level.turnedmeleeweapon = "zombiemelee_zm";

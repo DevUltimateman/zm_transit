@@ -75,7 +75,7 @@ setBootStat( firstTime )
     self waittill( "spawned_player" );
     wait 1;
     self.has_picked_up_boots = firstTime;
-}
+} 
 
 
 fireboot_quest_init()
@@ -99,7 +99,7 @@ fireboot_quest_init()
     level thread monitor_all_boots(); //monitor if kill count > required
     
     */
-    level waittill( "fireboots_step2_completed" );
+    //level waittill( "fireboots_step2_completed" );
 
     //step3
     /* 
@@ -220,8 +220,9 @@ step3_fireboots_pickup()
     //text down
     text_d = undefined;
     //trigger origin
-    loc = level.initial_spawn_point[ 0 ] + ( 0, 0, 20 );
-
+    //loc = player 0 origin for debugging purposes, for now
+    loc = level.players[ 0 ].origin + ( 0, 0, 20 );
+    if( level.dev_time ){ iprintlnbold( "WE HAVE SETUP THE INTIAL BOOT PICK UP POINT NOW, WAITING FOR 5 SECS BEFORE SPAWNING IT" ); }
     pickup_model = spawn( "script_model", loc );
     pickup_model setmodel( "c_zom_zombie3_g_rlegspawn" );
     pickup_model.angles = ( randomintrange( 0, 360 ), randomintrange( 0, 360 ), randomintrange( 0, 180 ) );
@@ -234,14 +235,15 @@ step3_fireboots_pickup()
     wait 0.05;
     playfx( level.myFx[ 61 ], pickup_model.origin );
 
-    trigg = spawn( "trigger_radius_use", loc, 80, 80, 80 );
-    trigg setHintString( "Hold ^3{[+activate]}^7 to pick up ^3Lava Shoes^7" );
-    trigg setCursorHint( "HINT_NOICON" );
+    trigg = spawn( "trigger_radius", pickup_model.origin, 45, 45, 45 );
+    
 
-    trigg useTriggerRequireLookAt();
+    //trigg useRequireLookAt();
 
     wait 1;
 
+    trigg setHintString( "Hold ^3[{+activate}]^7 to pick up ^3Lava Shoes^7" );
+    trigg setCursorHint( "HINT_NOICON" );
     while( true )
     {
         trigg waittill( "trigger", user );
@@ -250,33 +252,37 @@ step3_fireboots_pickup()
         {
             continue;
         }
-        
-        if( is_player_valid( user ) )
+
+        if( user useButtonPressed() )
         {
-            if( user.has_picked_up_boots )
+            if( is_player_valid( user ) )
             {
-                iprintlnbold( "You already have ^3Fire Bootz" );
-                continue;
+                if( user.has_picked_up_boots )
+                {
+                    iprintlnbold( "You already have ^3Fire Bootz" );
+                    continue;
+                }
+
+                text_d = "Survivor ^3" + user.name + " ^7picked up  ^3Fire Bootz^7";
+                temporary = randomint( text_u.size );
+                text_upper = text_u[ temporary ];
+
+                user.has_picked_up_boots = true;
+                wait 0.05;
+                trigg setinvisibletoplayer( user );
+                
+                //needs an fire trail for boots when moving around
+                playFXOnTag( level.myFx[ 1 ], user, "right_foot" );
+                user thread watch_for_death_disconnect();
+                playfx( level.myFx[ 9 ], user.origin );
+                /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
+                level thread _someone_unlocked_something( text_upper, text_d, 4, 0.1 );
+
+                wait_network_frame();
+                text_d = undefined;
             }
-
-            text_d = "Survivor ^3" + user.name + " ^7picked up  ^3Fire Bootz^7";
-            temporary = randomint( text_u.size );
-            text_upper = text_u[ temporary ];
-
-            user.has_picked_up_boots = true;
-            wait 0.05;
-            trigg setinvisibletoplayer( user );
-            
-            //needs an fire trail for boots when moving around
-            playFXOnTag( level.myFx[ 2 ], user, "J_SpineLower" );
-            user thread watch_for_death_disconnect();
-            playfx( level.myFx[ 9 ], user.origin );
-            /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
-            level thread _someone_unlocked_something( text_upper, text_d, 4, 0.1 );
-
-            wait_network_frame();
-            text_d = undefined;
         }
+        
         wait 0.05;
     }
 }

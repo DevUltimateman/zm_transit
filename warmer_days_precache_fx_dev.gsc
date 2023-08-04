@@ -45,7 +45,7 @@ init()
     level thread ondev();
     precache_myfx();
 	level.dev_time = true;
-	level.player_out_of_playable_area_monitor = true;
+	
 }
 
 ondev()

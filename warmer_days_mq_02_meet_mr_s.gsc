@@ -46,15 +46,15 @@ init()
     level.player_out_of_playable_area_monitor = false;
     
     //spawn schruder
-    level thread schruder_model();
+    //level thread schruder_model();
     //first time meeting
-    level thread meeting_schruder();
+    //level thread meeting_schruder();
 
     //see all powers
     //level thread test_powerups();
 
     //bus hud?
-    level thread level_bus_hud();
+    //level thread level_bus_hud();
 
     //registerclientfield( "allplayers", "player_has_eyes", 3000, 1, "int" );
     //egisterclientfield( "allplayers", "player_eyes_special", 5000, 1, "int" );
