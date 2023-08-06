@@ -73,6 +73,7 @@ setBootStat( firstTime )
     level endon( "end_game" );
 
     self waittill( "spawned_player" );
+    self.has_picked_up_boots = undefined;
     wait 1;
     self.has_picked_up_boots = firstTime;
 } 
@@ -129,9 +130,7 @@ monitor_all_boots()
         if( all_boots_summoned() )
         {
             
-            iprintlnbold( "ALL SHOES SUMMONED. GO PICK THEM UP FROM LABS" );
-            
-
+            if( level.dev_time ) { iprintlnbold( "ALL SHOES SUMMONED. GO PICK THEM UP FROM LABS" ); }
             level notify( "boot_count_stop" );
             break;
         }
@@ -148,8 +147,7 @@ are_boots_found()
     if(  level.boots_found >= level.fireboot_locations.size -1 )
     {
         
-            iprintlnbold( "#### DEV CHECK ##### ^3 ALL BOOTS FOUND" );
-         
+        if( level.dev_time ) { iprintlnbold( "#### DEV CHECK ##### ^3 ALL BOOTS FOUND" ); }
         return true;
     }
     return false;
@@ -201,7 +199,8 @@ step1_boot_hopping() //fireboot quest step1. Find 8 different fireboots around t
     }
     wait 8;
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
-    level thread _someone_unlocked_something( "You've located all the ^3fireboot^7 pieces, conqratulations!", "Quick, catch and summon them before they run away!", 8, 0.1 );
+    //activate this back when the crashing issue is figured out.
+    //level thread _someone_unlocked_something( "You've located all the ^3fireboot^7 pieces, conqratulations!", "Quick, catch and summon them before they run away!", 8, 0.1 );
     wait 8;
     level notify( "fireboots_step1_completed" );
 }
@@ -258,13 +257,15 @@ step3_fireboots_pickup()
 
         if( user useButtonPressed() )
         {
+            if( user.has_picked_up_boots )
+            {
+                iprintlnbold( "You already have ^3Fire Bootz" );
+                continue;
+            }
+            
             if( is_player_valid( user ) )
             {
-                if( user.has_picked_up_boots )
-                {
-                    iprintlnbold( "You already have ^3Fire Bootz" );
-                    continue;
-                }
+                
 
                 text_d = "Survivor ^3" + user.name + " ^7picked up  ^3Fire Bootz^7";
                 temporary = randomint( text_u.size );
@@ -278,17 +279,18 @@ step3_fireboots_pickup()
                 //needs an fire trail for boots when moving around
                 //the tags need to be retrieved, cod2 tags wont work.
                 playFXOnTag( level.myFx[ 1 ], user, "j_ankle_le" );
-                //"j_ankle_le", "j_ankle_ri"
                 wait 0.05;
                 playFXOnTag( level.myFx[ 1 ], user, "j_ankle_ri" );
                 user thread watch_for_death_disconnect();
                 
                 /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
-                level thread _someone_unlocked_something( text_upper, text_d, 4, 0.1 );
+                //this commented out till we can fix the text freeze issue that crashes the game after ~1 minute of calling it
+                //level thread _someone_unlocked_something( text_upper, text_d, 4, 0.1 );
 
                 wait_network_frame();
                 text_d = undefined;
             }
+            continue;
         }
         
         wait 0.05;

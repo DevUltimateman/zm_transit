@@ -50,7 +50,7 @@ init()
     setCullDist( level.how_far_can_i_see );
 
     //disable annoying monkeys
-    level.is_player_in_screecher_zone = false; 
+    //level.is_player_in_screecher_zone = ::screecher_hooker;
     level.player_out_of_playable_area_monitor = false;
 
     //foce non client dvars to be applied
@@ -63,6 +63,11 @@ init()
 
     //upon connecting
     level thread player_waiter();
+
+    //oih
+    level thread waittill_initial_flag();
+
+    
 }
 
 player_waiter()
@@ -75,12 +80,38 @@ player_waiter()
     }
 }
 
+waittill_initial_flag()
+{
+    level endon( "end_game" );
+
+    flag_wait( "initial_blackscreen_passed" );
+    //dbg angles + org
+    level thread print_origin_angles( level.players[ 0 ], 2 );
+}
 screecher_hooker()
 {
     level endon( "end_game" );
-    return 0;
+    while( level.players.size < 4 )
+    {
+        return 0;
+        wait 0.1;
+    }
+    
 }
 
+print_origin_angles( who, loop_time )
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        iprintln( "Origin of: ^3" + who + " ^7is: " + who.origin );
+        //if( getdvar( "developer_script" ) == 1 || true )
+        //{
+         //   iprintln( "Angles of: ^2" + who + " ^7is: " + who.angles );
+        //}
+        wait loop_time;
+    }
+}
 dev_visuals()
 {
     self endon( "disconnect" );
