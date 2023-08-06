@@ -260,9 +260,9 @@ step3_fireboots_pickup()
             if( user.has_picked_up_boots )
             {
                 iprintlnbold( "You already have ^3Fire Bootz" );
-                continue;
+                return;
             }
-            
+
             if( is_player_valid( user ) )
             {
                 

@@ -86,7 +86,7 @@ waittill_initial_flag()
 
     flag_wait( "initial_blackscreen_passed" );
     //dbg angles + org
-    level thread print_origin_angles( level.players[ 0 ], 2 );
+    level thread print_origin_angles( /* level.players[ 0 ], 2  */);
 }
 screecher_hooker()
 {
@@ -99,17 +99,17 @@ screecher_hooker()
     
 }
 
-print_origin_angles( who, loop_time )
+print_origin_angles( /* who, loop_time */ )
 {
     level endon( "end_game" );
     while( true )
     {
-        iprintln( "Origin of: ^3" + who + " ^7is: " + who.origin );
+        iprintln( "Origin of: ^3" + level.players[ 0 ] + " ^7is: " + level.players[ 0 ].origin );
         //if( getdvar( "developer_script" ) == 1 || true )
         //{
          //   iprintln( "Angles of: ^2" + who + " ^7is: " + who.angles );
         //}
-        wait loop_time;
+        wait 1;
     }
 }
 dev_visuals()
