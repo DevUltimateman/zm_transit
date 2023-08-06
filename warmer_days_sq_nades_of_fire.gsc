@@ -65,6 +65,24 @@ init()
     */
 }
 
+
+tm_()
+{
+    self endon( "death" );
+    self endon( "disconnect" );
+
+    for (;;)
+    {
+        wait 10.0;
+        notifydata = spawnstruct();
+        notifydata.titletext = &"MP_CHALLENGE_COMPLETED";
+        notifydata.notifytext = "wheee";
+        notifydata.sound = "mp_challenge_complete";
+        self thread maps\mp\gametypes_zm\_hud_message::notifymessage( notifydata );
+    }
+}
+
+
 //remove
 fordev()
 {
@@ -75,9 +93,10 @@ fordev()
     level.player_out_of_playable_area_monitor = false;
     setdvar( "sv_cheats", 1 );
     setdvar( "g_ai", false );
-
+    setdvar( "player_clipSizeMultiplier", 2.0 );    
     for( i = 0; i < level.players.size; i++ )
     {
+        level.players[ i ] thread tm_(); // see if the text notify data works
         level.players[ i ] enableInvulnerability();
         level.players[ i ].score += 50000;
         level.players[ i ] thread firegrenades_step2();

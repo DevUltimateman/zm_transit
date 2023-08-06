@@ -229,10 +229,13 @@ step3_fireboots_pickup()
     
     // need a pause before fxing script_model
     wait 0.05; 
-    playfxontag( level.myFx[ 24 ], pickup_model, "tag_origin" );
+
+    playfxontag( level.myFx[ 25 ], pickup_model, "tag_origin" );
     wait 0.05;
+    //white glow bulp type loop //low vis.
     playfxontag( level.myFx[ 35 ], pickup_model, "tag_origin" );
     wait 0.05;
+    //small stream of steam like geyshir type
     playfx( level.myFx[ 61 ], pickup_model.origin );
 
     trigg = spawn( "trigger_radius", pickup_model.origin, 45, 45, 45 );
@@ -266,15 +269,20 @@ step3_fireboots_pickup()
                 text_d = "Survivor ^3" + user.name + " ^7picked up  ^3Fire Bootz^7";
                 temporary = randomint( text_u.size );
                 text_upper = text_u[ temporary ];
-
+                //small poof fx when picking up the boots
+                playfx( level.myFx[ 9 ], user.origin );
                 user.has_picked_up_boots = true;
                 wait 0.05;
                 trigg setinvisibletoplayer( user );
                 
                 //needs an fire trail for boots when moving around
-                playFXOnTag( level.myFx[ 1 ], user, "right_foot" );
+                //the tags need to be retrieved, cod2 tags wont work.
+                playFXOnTag( level.myFx[ 1 ], user, "j_ankle_le" );
+                //"j_ankle_le", "j_ankle_ri"
+                wait 0.05;
+                playFXOnTag( level.myFx[ 1 ], user, "j_ankle_ri" );
                 user thread watch_for_death_disconnect();
-                playfx( level.myFx[ 9 ], user.origin );
+                
                 /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
                 level thread _someone_unlocked_something( text_upper, text_d, 4, 0.1 );
 
@@ -287,6 +295,12 @@ step3_fireboots_pickup()
     }
 }
 
+/*  HIT LOCS, WELL PLAY AN FX WITH FIREBOOTS ON THIS ONE
+[ "j_head", "j_neck", "j_spine4", "j_spinelower", "j_mainroot", "pelvis",
+ "j_ball_le", "j_ball_ri", "j_ankle_le", "j_ankle_ri",
+  "j_shoulder_ri", "j_shoulder_le", "j_elbow_ri", "j_elbow_le",
+   "j_wrist_ri", "j_wrist_le", "j_hip_ri", "j_hip_le", "j_knee_ri", "j_knee_le" ]; 
+ */
 
 weapon_camo_tester( me )
 {
