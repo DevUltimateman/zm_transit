@@ -65,9 +65,12 @@ after_initial_flag()
     wait 5;
     //spawns all stops with required elems
     level thread spawn_all_stops();
+    //level.the_bus debug_near_buses();
+    //call bus logic
+    level thread bus_stop_trigger_logic();
     
     //display gas amount
-    level thread print_gas_amount();
+    //level thread print_gas_amount();
 
     //global check
     level.bus_is_waiting_at_global_stop = false;
@@ -168,12 +171,13 @@ bus_stop_trigger_logic()
 
     //waittill notify event
     level waittill( "all_stations_spawned" );
+    wait 0.05;
     size_of = level.bus_stops_trigs.size;
     
 
     for( i = 0; i < size_of; i++ )
     {
-        level.bus_stops_trigs thread user_call_bus_logic( i );
+        level.bus_stops_trigs[ i ] thread user_call_bus_logic( i );
         wait 0.1;
     }
 }
@@ -192,26 +196,79 @@ user_call_bus_logic( which_stop )
 
         if( hero useButtonPressed() )
         {
-            if( level.is_bus_instance_running ){ continue; }
+            //if( level.is_bus_instance_running ){ continue; }
             if( hero.score < station_cost ){ continue; }
             if( hero in_revive_trigger() ){ continue; }
 
             //ok all checks passed
-            if( is_player_valid( hero ) )
-            {
-                hero.score -= station_cost;
-                //others cant call it now
-                level.is_bus_instance_running = true;
-                hero playsoundtoplayer( "zmb_vault_bank_deposit", hero );
-                //needs a nicer textprint for release
-                iprintlnbold( "Bus was called to ^3" + local_stop_nm + " by ^3" + hero.name );
-                level thread move_bus_to_required_location( level.bus_stops_models[ local_stop_nm ] );
+            
+            hero.score -= station_cost;
+            //others cant call it now
+            level.is_bus_instance_running = true;
+            hero playsoundtoplayer( "zmb_vault_bank_deposit", hero );
+            //needs a nicer textprint for release
+            iprintlnbold( "Bus was called to " + returnLocationName( local_stop_nm ) + "^7 by ^3" + hero.name );
+            //level thread move_bus_to_required_location( level.bus_stops_models[ local_stop_nm ] );
 
-            }
+            //just testing lol/ self == trigger
+            //level.the_bus.origin = self.origin;
+            level thread changing_speed();
+
+            
         }
     }
 }
 
+
+changing_speed()
+{
+    level endon( "end_game" );
+    
+    targetspeed = 45;
+    //so far this works
+    //need to make it better tho
+    while( true )
+    {
+        if( isdefined( level.the_bus ) )
+        {
+            level.the_bus setvehmaxspeed(45);
+            level.the_bus setspeed( 45, 15, 100 );
+            level.the_bus.targetspeed = 45;
+            wait 1;
+        }
+
+        level.the_bus notify("depart_early");
+        level.the_bus waittill("departing");
+        level.the_bus notify( "skipping_destination" );
+        level.the_bus busstartmoving( targetspeed );
+    }
+}
+
+//debug
+debug_near_buses()
+{
+    wait 5;
+    iprintlnbold( "LOL LOL LOL WHERES THE LINES " );
+    zombie_front_dist = 1200.0;
+    zombie_side_dist = self.radius + 50.0;
+    zombie_inside_dist = 240.0;
+    zombie_plow_dist = 340.0;
+    forward_dir = anglestoforward( self.angles );
+    forward_proj = vectorscale( forward_dir, zombie_front_dist );
+    forward_pos = self.origin + forward_proj;
+    backward_proj = vectorscale( forward_dir, zombie_inside_dist * -1.0 );
+    backward_pos = self.origin + backward_proj;
+    bus_front_dist = 225.0;
+    bus_back_dist = 235.0;
+    bus_width = 120.0;
+    side_dir = anglestoforward( self.angles + vectorscale( ( 0, 1, 0 ), 90.0 ) );
+    side_proj = vectorscale( side_dir, zombie_side_dist );
+    inside_pos = self.origin + vectorscale( forward_dir, zombie_inside_dist );
+    plow_pos = self.origin + vectorscale( forward_dir, zombie_plow_dist );
+    line( backward_pos, forward_pos, ( 1, 1, 1 ), 1, 0, 2 );
+    line( inside_pos - side_proj, inside_pos + side_proj, ( 1, 1, 1 ), 1, 0, 2 );
+    line( plow_pos - side_proj, plow_pos + side_proj, ( 1, 1, 1 ), 1, 0, 2 );
+}
 move_bus_to_required_location( to_where )
 {
     level endon( "end_game" );
@@ -223,7 +280,7 @@ move_bus_to_required_location( to_where )
     max_speed = 45;
 
     bus setvehmaxspeed( max_speed );
-    bus busstartmoving( to_where );
+    bus busstartmoving( 45 );
     bus.skip_next_destination = true;
     bus notify( "depart_early" );
     while( true )
