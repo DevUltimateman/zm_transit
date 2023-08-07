@@ -39,6 +39,7 @@
 
 #include maps\mp\createart\zm_transit_art;
 #include maps\mp\createfx\zm_transit_fx;
+#include maps\mp\zm_transit_bus;
 
 init()
 {
@@ -64,6 +65,12 @@ after_initial_flag()
     wait 5;
     //spawns all stops with required elems
     level thread spawn_all_stops();
+    
+    //display gas amount
+    level thread print_gas_amount();
+
+    //global check
+    level.bus_is_waiting_at_global_stop = false;
 
 }
 
@@ -72,7 +79,7 @@ spawn_all_stops()
     level endon( "end_game" );
 
     //tunnel, left side of the tunnel after entering into "safe zone"
-    level.bus_stops_locs[ 0 ] = ( -10666.2, 666.771, 196.125 );
+    level.bus_stops_locs[ 0 ] = ( -10666.2, -666.771, 196.125 );
     //diner roof
     level.bus_stops_locs[ 1 ] = ( -5597.33, -7911.34, 225.398 );
     //next to "T - cross" at church, between diner & farm
@@ -98,7 +105,7 @@ spawn_all_stops()
 
     needs_spawning = level.bus_stops_locs.size;
     //level.myModels 19 = american telephone pole
-
+    //myModels 15 = bright light lamp rounded
     for( i = 0; i < needs_spawning; i++ )
     {
         level.bus_stops_models[ i ] = spawn( "script_model", level.bus_stops_locs[ i ] );
@@ -106,6 +113,15 @@ spawn_all_stops()
         wait 0.1;
         //don't make all the stops to look same way
         level.bus_stops_models[ i ] rotateyaw( randomInt( 360 ), 0.1, 0, 0 );
+        level.bus_stops_models[ i ] rotatePitch( 180, 0.1, 0, 0 );
+    }
+
+    foreach( model in level.bus_stops_models )
+    {
+        wait 0.1;
+        aut = spawn( "script_model", model.origin );
+        aut setmodel( level.automaton.model );
+        aut.angles = ( 0, randomint( 360 ), 0 );
     }
 
     if( level.dev_time ){ iPrintLnBold( "BUS STOPS HAVE BEEN INIT! AMOUNT: " + level.bus_stops_models.size ); }
@@ -124,30 +140,188 @@ spawn_all_stops()
         col = spawn( "script_model", level.bus_stops_models[ a ] );
         col setModel( level.myModels[ 65 ] );
         wait 0.05;
-        col enableLinkTo();
-        col linkto( level.bus_stops_models[ a ] );
+        //col enableLinkTo();
+        //col linkto( level.bus_stops_models[ a ] );
         wait 0.05;
     }
 
     //let's bring in the triggers for now
-    for( s = 0; s < level.bus_stops_models.size; s++ )
+    for( s = 0; s < needs_spawning; s++ )
     {
-        level.bus_stops_trigs[ s ] = spawn( "trigger_radius", level.bus_stops_models[ s ], 48, 48, 48 );
-        level.bus_stops_trigs[ s ].hintstring = "Station ^3" + returnLocationName();
+        level.bus_stops_trigs[ s ] = spawn( "trigger_radius", level.bus_stops_locs[ s ], 48, 48, 48 );
+        //Try seeing if the value gets displayed correctly with a hintstring hook.
+        location_value = returnLocationName( s );
+        level.bus_stops_trigs[ s ] setHintString( location_value );
         level.bus_stops_trigs[ s ] setCursorHint( "HINT_NOICON" );
         wait 0.05;
 
     }
-    
 
+    //notify logic to take place with triggers
+    level notify( "all_stations_spawned" );
 }
 
-returnLocationName()
+
+bus_stop_trigger_logic()
 {
     level endon( "end_game" );
 
-    index = level.bus_stops_trigs.size;
+    //waittill notify event
+    level waittill( "all_stations_spawned" );
+    size_of = level.bus_stops_trigs.size;
+    
 
+    for( i = 0; i < size_of; i++ )
+    {
+        level.bus_stops_trigs thread user_call_bus_logic( i );
+        wait 0.1;
+    }
+}
+
+user_call_bus_logic( which_stop )
+{
+    level endon( "end_game" );
+
+    local_stop_nm = which_stop;
+    station_cost = 250;
+    while( true )
+    {
+        //self == trigger
+    
+        self waittill( "trigger", hero );
+
+        if( hero useButtonPressed() )
+        {
+            if( level.is_bus_instance_running ){ continue; }
+            if( hero.score < station_cost ){ continue; }
+            if( hero in_revive_trigger() ){ continue; }
+
+            //ok all checks passed
+            if( is_player_valid( hero ) )
+            {
+                hero.score -= station_cost;
+                //others cant call it now
+                level.is_bus_instance_running = true;
+                hero playsoundtoplayer( "zmb_vault_bank_deposit", hero );
+                //needs a nicer textprint for release
+                iprintlnbold( "Bus was called to ^3" + local_stop_nm + " by ^3" + hero.name );
+                level thread move_bus_to_required_location( level.bus_stops_models[ local_stop_nm ] );
+
+            }
+        }
+    }
+}
+
+move_bus_to_required_location( to_where )
+{
+    level endon( "end_game" );
+
+    bus = level.the_bus;
+
+    reach_distance = 900;
+
+    max_speed = 45;
+
+    bus setvehmaxspeed( max_speed );
+    bus busstartmoving( to_where );
+    bus.skip_next_destination = true;
+    bus notify( "depart_early" );
+    while( true )
+    {
+        if( isdefined( bus.skip_next_destination ) && bus.skip_next_destination )
+        {
+            bus notify( "skipping_destination" );
+            bus busstartmoving( 45 );
+            continue;
+        }
+        if ( distance( bus, to_where ) < 900 )
+        {
+            if( level.dev_time ){ iprintlnbold( bus + " is " + distance( bus, to_where ) ); }
+            
+            //slow stopper
+            bus thread start_stopping_bus();
+            
+
+            player = get_players()[0];
+            player thread maps\mp\zombies\_zm_weap_emp_bomb::emp_detonate( player magicgrenadetype( "emp_grenade_zm", bus.origin + vectorscale( ( 0, 0, 1 ), 10.0 ), ( 0, 0, 0 ), 0.05 ) );
+            if( level.dev_time ) { iPrintLnBold( "WE TRIED TO STOP THE BUS FOR " + to_where ); 
+
+
+        }
+
+        if( distance ( bus, to_where ) < 400 )
+        {
+            bus busstopmoving( 1 );
+            bus.immediatespeed = 0;
+            bus.currentspeed = 0;
+            bus.targetspeed = 0;
+
+            level.bus_is_waiting_at_global_stop = true;
+            level thread restoreBus( bus, max_speed, 12 );
+        }
+
+
+        }
+
+
+    }
+}
+
+
+restoreBus( bus, target_speed, when_to_move )
+{
+    level endon( "end_game" );
+
+    wait( when_to_move );
+    if( level.dev_time ){ iprintlnbold("Bus is preparing to move") ;}
+    bus busstartmoving( 1 );
+    bus.targetspeed = target_speed;
+    bus.skip_next_destination = false;
+    wait 5;
+    //release other call out spots in game
+    level.bus_is_waiting_at_global_stop = false;
+    level.is_bus_instance_running = false;
+    
+
+
+}
+
+print_gas_amount()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        newgaslevel = level.the_bus.gas;
+        iprintlnbold( "BUS GAS LEVEL IS AT: ^2" + newgaslevel );
+        wait 2;
+    }
+    
+}
+
+busexceedchasespeed()
+{
+    self notify( "exceed_chase_speed" );
+    self endon( "exceed_chase_speed" );
+
+    while ( isdefined( self.ismoving ) && self.ismoving )
+    {
+        if ( self getspeedmph() > 12 )
+        {
+            self.exceed_chase_speed = 1;
+            return;
+        }
+
+        wait 0.1;
+    }
+}
+
+returnLocationName( index )
+{
+    level endon( "end_game" );
+
+    //index = level.bus_stops_trigs.size;
+    loc = undefined;
+    st = "Station ^3";
     switch( index )
     {
         case 0:
@@ -160,30 +334,27 @@ returnLocationName()
             loc = "Old Church";
             break;
         case 4:
-            loc = "Rusty's Barn";
-            break;
-        case 5:
             loc = "Death Fields";
             break;
-        case 6:
+        case 5:
             loc = "Stuhlinger's Power Station";
             break;
-        case 7:
+        case 6:
             loc = "Cabin In The Woods Camp";
             break;
-        case 8:
+        case 7:
             loc = "Old City Hall";
             break;
-        case 9:
+        case 8:
             loc = "Rundown Bridge";
             break;
-        
+        // DEFAULT SEEMS TO POINT TO A BARN STOP FOR SOME REASON!
         default:
+            loc = "Rusty's Barn";
             break;
-
     }
     
-    return loc;
+    return st + loc;
 }
 
 /* /tunnel, left side of the tunnel after entering into "safe zone"
