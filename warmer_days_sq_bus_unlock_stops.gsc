@@ -72,42 +72,43 @@ spawn_all_stops()
     level endon( "end_game" );
 
     //tunnel, left side of the tunnel after entering into "safe zone"
-    level.cust_stops[ 0 ] = ( -10666.2, 666.771, 196.125 );
+    level.bus_stops_locs[ 0 ] = ( -10666.2, 666.771, 196.125 );
     //diner roof
-    level.cust_stops[ 1 ] = ( -5597.33, -7911.34, 225.398 );
+    level.bus_stops_locs[ 1 ] = ( -5597.33, -7911.34, 225.398 );
     //next to "T - cross" at church, between diner & farm
-    level.cust_stops[ 2 ] = ( 1098.35, -4712.42, -70.6859 );
+    level.bus_stops_locs[ 2 ] = ( 1098.35, -4712.42, -70.6859 );
     //farm, barn 2nd floor, opposite side of DT window
-    level.cust_stops[ 3 ] = (  8325.56, -5397.71, 264.125 );
+    level.bus_stops_locs[ 3 ] = (  8325.56, -5397.71, 264.125 );
     //cornfield, mid section next to first path leading to main tower
-    level.cust_stops[ 4 ] = ( 9962.99, -998.987, -213.534 );
+    level.bus_stops_locs[ 4 ] = ( 9962.99, -998.987, -213.534 );
     //power station, 2nd floor next to tombstone
-    level.cust_stops[ 5 ] = ( 10876.3, 8175.69, -407.875 );
+    level.bus_stops_locs[ 5 ] = ( 10876.3, 8175.69, -407.875 );
     //the cottage between power & town, next to the axe & wooden log
-    level.cust_stops[ 6 ] = ( 5400.66, 5702.92, -63.875 );
+    level.bus_stops_locs[ 6 ] = ( 5400.66, 5702.92, -63.875 );
     //the small corner power door at town ( semtex room )
-    level.cust_stops[ 7 ] = ( 902.263, -1557.41, -47.875 );
+    level.bus_stops_locs[ 7 ] = ( 902.263, -1557.41, -47.875 );
     //after bridge on the right
-    level.cust_stops[ 8 ] = ( -4504.96, 250.004, 105.254 );
+    level.bus_stops_locs[ 8 ] = ( -4504.96, 250.004, 105.254 );
     //
-    //level.cust_stops[ 9 ] = (  );
+    //level.bus_stops_locs[ 9 ] = (  );
     //
-    //level.cust_stops[ 10 ] = (  );
+    //level.bus_stops_locs[ 10 ] = (  );
 
     wait 1;
 
-    needs_spawning = level.cust_stops.size;
+    needs_spawning = level.bus_stops_locs.size;
     //level.myModels 19 = american telephone pole
 
     for( i = 0; i < needs_spawning; i++ )
     {
-        level.bus_stops_models[ i ] = spawn( "script_model", level.cust_stops[ i ] );
-        level.bus_stops_models[ i ] setModel( level.myModels[ 19 ] );
+        level.bus_stops_models[ i ] = spawn( "script_model", level.bus_stops_locs[ i ] );
+        level.bus_stops_models[ i ] setModel( level.myModels[ 15 ] );
         wait 0.1;
+        //don't make all the stops to look same way
         level.bus_stops_models[ i ] rotateyaw( randomInt( 360 ), 0.1, 0, 0 );
     }
 
-    if( level.dev_time ){ iPrintLnBold( "BUS STOPS HAVE BEEN INIT. AMOUNT: " + level.bus_stops_models.size ); }
+    if( level.dev_time ){ iPrintLnBold( "BUS STOPS HAVE BEEN INIT! AMOUNT: " + level.bus_stops_models.size ); }
     wait 1;
 
     //playing a sparking large bulp loop
@@ -132,8 +133,8 @@ spawn_all_stops()
     for( s = 0; s < level.bus_stops_models.size; s++ )
     {
         level.bus_stops_trigs[ s ] = spawn( "trigger_radius", level.bus_stops_models[ s ], 48, 48, 48 );
-        level.bus_stops_trigs.hintstring = "Station ^3" + returnLocationName();
-        level.bus_stops_trigs setCursorHint( "HINT_NOICON" );
+        level.bus_stops_trigs[ s ].hintstring = "Station ^3" + returnLocationName();
+        level.bus_stops_trigs[ s ] setCursorHint( "HINT_NOICON" );
         wait 0.05;
 
     }
@@ -186,20 +187,20 @@ returnLocationName()
 }
 
 /* /tunnel, left side of the tunnel after entering into "safe zone"
-    level.cust_stops[ 0 ] = ( -10666.2, 666.771, 196.125 );
+    level.bus_stops_locs[ 0 ] = ( -10666.2, 666.771, 196.125 );
     //diner roof
-    level.cust_stops[ 1 ] = ( -5597.33, -7911.34, 225.398 );
+    level.bus_stops_locs[ 1 ] = ( -5597.33, -7911.34, 225.398 );
     //next to "T - cross" at church, between diner & farm
-    level.cust_stops[ 2 ] = ( 1098.35, -4712.42, -70.6859 );
+    level.bus_stops_locs[ 2 ] = ( 1098.35, -4712.42, -70.6859 );
     //farm, barn 2nd floor, opposite side of DT window
-    level.cust_stops[ 3 ] = (  8325.56, -5397.71, 264.125 );
+    level.bus_stops_locs[ 3 ] = (  8325.56, -5397.71, 264.125 );
     //cornfield, mid section next to first path leading to main tower
-    level.cust_stops[ 4 ] = ( 9962.99, -998.987, -213.534 );
+    level.bus_stops_locs[ 4 ] = ( 9962.99, -998.987, -213.534 );
     //power station, 2nd floor next to tombstone
-    level.cust_stops[ 5 ] = ( 10876.3, 8175.69, -407.875 );
+    level.bus_stops_locs[ 5 ] = ( 10876.3, 8175.69, -407.875 );
     //the cottage between power & town, next to the axe & wooden log
-    level.cust_stops[ 6 ] = ( 5400.66, 5702.92, -63.875 );
+    level.bus_stops_locs[ 6 ] = ( 5400.66, 5702.92, -63.875 );
     //the small corner power door at town ( semtex room )
-    level.cust_stops[ 7 ] = ( 902.263, -1557.41, -47.875 );
+    level.bus_stops_locs[ 7 ] = ( 902.263, -1557.41, -47.875 );
     //after bridge on the right
-    level.cust_stops[ 8 ] = ( -4504.96, 250.004, 105.254 ); */
+    level.bus_stops_locs[ 8 ] = ( -4504.96, 250.004, 105.254 ); */
