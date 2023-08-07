@@ -63,6 +63,7 @@ fireboots_playerconnect()
     {
         level waittill( "connected", obeyer );
         obeyer thread setBootStat( false );
+        obeyer thread printer();
         //obeyer thread 
     }
 }
@@ -255,13 +256,15 @@ step3_fireboots_pickup()
             continue;
         }
 
+        if( user.has_picked_up_boots )
+        {
+            iprintlnbold( "You already have ^3Fire Bootz" );
+            continue;
+        }
+
         if( user useButtonPressed() )
         {
-            if( user.has_picked_up_boots )
-            {
-                iprintlnbold( "You already have ^3Fire Bootz" );
-                return;
-            }
+            
 
             if( is_player_valid( user ) )
             {
@@ -278,16 +281,16 @@ step3_fireboots_pickup()
                 
                 //needs an fire trail for boots when moving around
                 //the tags need to be retrieved, cod2 tags wont work.
-                playFXOnTag( level.myFx[ 1 ], user, "j_ankle_le" );
-                wait 0.05;
-                playFXOnTag( level.myFx[ 1 ], user, "j_ankle_ri" );
+                playFXOnTag( level.myFx[ 25 ], user, "j_ankle_le" );
+                wait 0.05;  
+                playFXOnTag( level.myFx[ 25 ], user, "j_ankle_ri" );
                 user thread watch_for_death_disconnect();
                 
                 /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
                 //this commented out till we can fix the text freeze issue that crashes the game after ~1 minute of calling it
                 //level thread _someone_unlocked_something( text_upper, text_d, 4, 0.1 );
 
-                wait_network_frame();
+                //wait_network_frame();
                 text_d = undefined;
             }
             continue;
@@ -304,6 +307,17 @@ step3_fireboots_pickup()
    "j_wrist_ri", "j_wrist_le", "j_hip_ri", "j_hip_le", "j_knee_ri", "j_knee_le" ]; 
  */
 
+printer()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    flag_wait( "initial_blackscreen_passed" );
+    while( true )
+    {
+        iprintln( "ORIGIN: ^3" + self.origin );
+        wait 1;
+    }
+}
 weapon_camo_tester( me )
 {
     level endon( "end_game" );
