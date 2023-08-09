@@ -75,6 +75,9 @@ after_initial_flag()
     //global check
     level.bus_is_waiting_at_global_stop = false;
 
+    //testing node points
+    level thread debug_bus_pathing();
+
 }
 
 spawn_all_stops()
@@ -124,7 +127,9 @@ spawn_all_stops()
         wait 0.1;
         aut = spawn( "script_model", model.origin );
         aut setmodel( level.automaton.model );
-        aut.angles = ( 0, randomint( 360 ), 0 );
+        aut.angles = ( 0, 0, 0 );
+        wait 0.05;
+        aut rotateYaw( randomInt( 360 ), 1, 0, 0 );
     }
 
     if( level.dev_time ){ iPrintLnBold( "BUS STOPS HAVE BEEN INIT! AMOUNT: " + level.bus_stops_models.size ); }
@@ -143,9 +148,6 @@ spawn_all_stops()
         col = spawn( "script_model", level.bus_stops_models[ a ] );
         col setModel( level.myModels[ 65 ] );
         wait 0.05;
-        //col enableLinkTo();
-        //col linkto( level.bus_stops_models[ a ] );
-        wait 0.05;
     }
 
     //let's bring in the triggers for now
@@ -153,8 +155,8 @@ spawn_all_stops()
     {
         level.bus_stops_trigs[ s ] = spawn( "trigger_radius", level.bus_stops_locs[ s ], 48, 48, 48 );
         //Try seeing if the value gets displayed correctly with a hintstring hook.
-        location_value = returnLocationName( s );
-        level.bus_stops_trigs[ s ] setHintString( location_value );
+        //location_value = returnLocationName( s );
+        level.bus_stops_trigs[ s ] setHintString( returnlocationName( s ) );
         level.bus_stops_trigs[ s ] setCursorHint( "HINT_NOICON" );
         wait 0.05;
 
@@ -191,7 +193,6 @@ user_call_bus_logic( which_stop )
     while( true )
     {
         //self == trigger
-    
         self waittill( "trigger", hero );
 
         if( hero useButtonPressed() )
@@ -208,11 +209,16 @@ user_call_bus_logic( which_stop )
             hero playsoundtoplayer( "zmb_vault_bank_deposit", hero );
             //needs a nicer textprint for release
             iprintlnbold( "Bus was called to " + returnLocationName( local_stop_nm ) + "^7 by ^3" + hero.name );
+            
+            level thread bus_moves_to_the_caller( local_stop_nm );
             //level thread move_bus_to_required_location( level.bus_stops_models[ local_stop_nm ] );
 
             //just testing lol/ self == trigger
             //level.the_bus.origin = self.origin;
-            level thread changing_speed();
+
+
+            //level thread changing_speed();
+            wait 2;
 
             
         }
@@ -244,7 +250,85 @@ changing_speed()
     }
 }
 
+//needs testing, haven't tested this function out yet, just wrote it
+bus_moves_to_the_caller( stop_spot )
+{
+    level endon( "end_game" );
+    
+    go_to_location = undefined;
+    has_arrived_to_location = false;
+    bus_waits = 10;
+
+    bus_speed_normal = 15;
+    bus_speed_go_to_location = 45;
+
+    new_target = getVehicleNode( returnlocationNames( stop_spot, true ) );
+
+    if( level.dev_time ){ iprintlnbold( "BUS HAS BEEN CALLED" ); }
+    wait 1;
+    while( !level.the_bus isTouching( new_target ) && !has_arrived_to_location ) 
+    {
+        level.the_bus setVehMaxSpeed( bus_speed_go_to_location );
+        level.the_bus setSpeed( 45, 15, 100 );
+        level.the_bus.targetspeed = bus_speed_go_to_location;
+        wait 1;
+        level.the_bus notify( "depart_early" );
+        level.the_bus waittill( "departing" );
+        level.the_bus.skipping_next_destination = true;
+        level.the_bus_notify( "skipping_destination" );
+        level.the_bus busStartMoving( bus_speed_go_to_location );
+        
+    }
+    level.the_bus setSpeed( 0, 15, 100 );
+    level.the_bus.targetspeed = 0;
+    
+    if( level.dev_time ){ iprintlnbold( "BUS DID A HARD STOP AT NODE: ^2" + new_target ); }
+
+    //add here the fx stop
+    //add here the sound stop
+    //add here the voxs stop
+
+    wait( bus_waits );
+    level.the_bus setVehMaxSpeed( bus_speed_normal );
+    level.the_bus setSpeed( 15, 15, 100 );
+    level.the_bus.targetspeed = bus_speed_normal;
+
+    level.the_bus notify( "depart_early" );
+    level.the_bus waittill( "departing" );
+    level.the_bus notify( "skipping_destination" );
+    level.the_bus busstartMoving( bus_speed_normal );
+    level.the_bus.skipping_next_destination = false;
+    level.is_bus_instance_running = false;
+
+}
+
 //debug
+debug_bus_pathing()
+{
+    level endon( "end_game" );
+
+    if( isDefined( level.the_bus ) && level.the_bus )
+    {
+        while( true )
+        {
+            level.the_bus waittill( "reached_node", next );
+
+            if( isDefined( next.target ) )
+            {
+                future_point = getVehicleNode( next.target, "targetname" );
+
+                if( isDefined( future_point.script_noteworthy ) )
+                {
+                    iprintlnbold( "CURRENT BUS NODE: ^1" + next.target );
+                    wait 0.1;
+                    iprintlnbold( "FUTURE BUS NODE: ^3" + future_point );
+                }
+            }
+            
+        }
+    }
+    
+}
 debug_near_buses()
 {
     wait 5;
@@ -372,7 +456,7 @@ busexceedchasespeed()
     }
 }
 
-returnLocationName( index )
+returnLocationName( index, give_node )
 {
     level endon( "end_game" );
 
@@ -383,35 +467,45 @@ returnLocationName( index )
     {
         case 0:
             loc = "Schruder's Tunel";
+            node_point = "pf1796_auto2191";
             break;
         case 1:
             loc = "Misty's Diner";
+            node_point = "pf1796_auto7";
             break;
         case 2:
             loc = "Old Church";
+            node_point = "pf1796_auto2326";
             break;
         case 4:
             loc = "Death Fields";
+            node_point = "pf1796_auto2545";
             break;
         case 5:
             loc = "Stuhlinger's Power Station";
+            node_point = "pf1796_auto2366";
             break;
         case 6:
             loc = "Cabin In The Woods Camp";
+            node_point = "pf1796_auto2274";
             break;
         case 7:
             loc = "Old City Hall";
+            node_point = "pf1796_auto2187";
             break;
         case 8:
             loc = "Rundown Bridge";
+            node_point = "pf1796_auto2518";
             break;
         // DEFAULT SEEMS TO POINT TO A BARN STOP FOR SOME REASON!
         default:
             loc = "Rusty's Barn";
+            node_point = "pf1796_auto2330";
             break;
     }
     
-    return st + loc;
+    if( give_node ){ return node_point; }
+    else { return st + loc;}
 }
 
 /* /tunnel, left side of the tunnel after entering into "safe zone"
