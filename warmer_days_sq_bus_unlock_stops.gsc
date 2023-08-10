@@ -281,7 +281,6 @@ bus_moves_to_the_caller( stop_spot )
     }
     level.the_bus setSpeed( 0, 15, 100 );
     level.the_bus.targetspeed = 0;
-    
     if( level.dev_time ){ iprintlnbold( "BUS DID A HARD STOP AT NODE: ^2" + new_target ); }
 
     //add here the fx stop
@@ -299,6 +298,7 @@ bus_moves_to_the_caller( stop_spot )
     level.the_bus busstartMoving( bus_speed_normal );
     level.the_bus.skipping_next_destination = false;
     level.is_bus_instance_running = false;
+    has_arrived_to_location = false;
 
 }
 
