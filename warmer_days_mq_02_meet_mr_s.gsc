@@ -66,6 +66,7 @@ init()
 
 }
 
+
 level_bus_hud()
 {
     level endon( "end_game" );
@@ -128,7 +129,9 @@ schruder_model()
     tulo setmodel( "tag_origin" );
     wait 0.05;
     playfxontag( level.myfx[ 1 ], tulo, "tag_origin" );
-    tulo movemeup();
+    tulo enableLinkTo();
+    tulo linkTo( level.mr_s, "tag_origin" );
+    //tulo movemeup();
     
     
     wait 1;
