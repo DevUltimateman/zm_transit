@@ -43,9 +43,14 @@
 
 init()
 {
+    level thread notiff();
     level thread waittill_rewards();
 }
 
+notiff()
+{
+    iprintlnbold( "TEST" );
+}
 waittill_rewards()
 {
     level endon( "end_game" );
