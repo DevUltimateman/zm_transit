@@ -137,7 +137,7 @@ waittill_player_touch()
     {
         wait 1;
     }
-    level notify( )
+    level notify( "player_toucher_the_trigger" );
 }
 
 player_is_away()
@@ -147,6 +147,7 @@ player_is_away()
         if( distance( level.players[ i ].origin, level.o_spirit ) < 100 )
         {
             return false;
+            wait 1;
             break;
         }
         else 
