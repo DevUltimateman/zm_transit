@@ -44,7 +44,8 @@
 init()
 {
     //level specific, global logic
-    level thread fireboot_quest_init();
+    //enable back later
+   // level thread fireboot_quest_init();
 
     level.boots_found = 0; //how many fireboots have players found?
     level.summoning_kills_combined = 0; //check for if true
@@ -367,8 +368,8 @@ leg_trigger_logic( model_origin )
         wait 0.1;
         guy.score += 750;
         guy playsoundtoplayer( "zmb_vault_bank_deposit", guy );
-        //level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
-        level thread print_text_middle( lower_text, 5, .2 );
+        level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
+        //level thread print_text_middle( lower_text, 5, .2 );
         wait 0.1;
 
         leg_model delete(); //delete linked model
@@ -390,11 +391,11 @@ print_text_middle( text1, duration, fadefloat )
 	middle_t.y = 0;
 	middle_t SetText( text1 );
 	middle_t.fontScale = 2;
-	//subtitle.alignX = "center";
-	//subtitle.alignY = "middle";
+	middle_t.alignX = "center";
+	middle_t.alignY = "middle";
 	middle_t.horzAlign = "center";
 	middle_t.vertAlign = "center";
-	//subtitle.sort = 1;
+	middle_t.sort = 1;
     
 	//subtitle2 = undefined;
 	middle_t.alpha = 0;
@@ -545,11 +546,11 @@ Subtitle( text, text2, duration, fadeTimer )
 	subtitle.y = -42;
 	subtitle SetText( text );
 	subtitle.fontScale = 1.46;
-	//subtitle.alignX = "center";
-	//subtitle.alignY = "middle";
+	subtitle.alignX = "center";
+	subtitle.alignY = "middle";
 	subtitle.horzAlign = "center";
 	subtitle.vertAlign = "bottom";
-	//subtitle.sort = 1;
+	subtitle.sort = 1;
     
 	//subtitle2 = undefined;
 	subtitle.alpha = 0;
@@ -563,11 +564,11 @@ Subtitle( text, text2, duration, fadeTimer )
 		subtitle2.y = -24;
 		subtitle2 SetText( text2 );
 		subtitle2.fontScale = 1.46;
-		//subtitle2.alignX = "center";
-		//subtitle2.alignY = "middle";
+		subtitle2.alignX = "center";
+		subtitle2.alignY = "middle";
 		subtitle2.horzAlign = "center";
 		subtitle2.vertAlign = "bottom";
-		//subtitle2.sort = 1;
+		subtitle2.sort = 1;
         subtitle2.alpha = 0;
         subtitle2 fadeovertime( fadeTimer );
         subtitle2.alpha = 1;
@@ -588,6 +589,10 @@ Subtitle( text, text2, duration, fadeTimer )
 		level thread flyby( subtitle2 );
 	}
     */
+    subtitle fadeovertime( fadetimer );
+    subtitle2 fadeovertime( fadetimer );
+    subtitle.alpha = 0;
+    subtitle2.alpha = 0;
     subtitle destroy();
     subtitle2 destroy();
 }

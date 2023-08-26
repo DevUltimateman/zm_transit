@@ -50,6 +50,11 @@ init()
 
     //for players who connect during the spirit moment
     level.bypass_visual_check = false;
+
+    //locations for thunderfx during spirit
+    level.thunder_s_loc = [];
+    //entities during thunder spirit
+    level.thunderplayer = [];
     //wait till initial blackscreen, then execute thread
     level thread waitflag();
     //all .level origin for this file
@@ -78,6 +83,9 @@ waitflag()
     //spawn orbs from the tower and move them to ground location
     //also play dialog from schruder, spawns a spirit that players must follow
     level thread shoot_orbs();
+    //thunder fx
+    level thread spirit_thunder_locations();
+    
     level waittill( "orbs_on_ground" );
     level thread spawn_spirit();
     level waittill( "spirit_ready" );
@@ -97,63 +105,99 @@ waitflag()
 
 }
 
-//tempoerary subtitles to see how long each segment should take place
+spirit_thunder_locations()
+{
+    
+    level.thunder_s_loc[ 0 ] = ( 7945.49, -419.728, 468.53 );
+    level.thunder_s_loc[ 1 ] = ( 11078.3, 593.423, 624.101 );
+    level.thunder_s_loc[ 2 ] = ( 14997.7, -1694.19, 369.485 );
+
+    wait 0.05;
+    for( i = 0; i < level.thunder_s_loc.size; i++ )
+    {
+        level.thunderplayer[ i ] = spawn( "script_model", level.thunder_s_loc[ i ] );
+        level.thunderplayer[ i ] setmodel( "tag_origin" );
+        wait 0.05;
+    }
+
+    for( s = 0; s < level.thunderplayer.size; s++ )
+    {
+        playfxontag( level.myFx[ 83 ], level.thunderplayer[ s ], "tag_origin" );
+        level.thunderplayer[ s ] thread spin_me();
+        wait 0.05;
+    }
+
+    level waittill( "destroy_clouds" );
+    wait 0.1;
+    foreach( isser in level.thunderplayer )
+    {
+        isser delete();
+    }
+
+
+}
+
+//thunder spinner
+spin_me()
+{
+    level endon( "destroy_clouds" );
+    while( true )
+    {
+        self rotateyaw( 360, 3, 0, 0 );
+        self waittill( "movedone" );
+    }
+}
+//tempoerary subtitles -to see how long each segment should take place
 return_spirit_textline( switcher )
 {
     index = switcher;
     switch( index )
     {
-        case 0:
-            u_ = "What kinda hillybillies are wondering around here on my fields?";
-            d_ = "Aha, I'm just joking guys, I'm just joking!";
-            level thread spirit_says( u_, d_, 8, 1 );
-            break;
-        
         case 1:
-        case 2:
-        case 3:
+            u_ = "Well hello! What are you doing on my father's fields?";
+            d_ = "Aha, I'm just joking guys, I'm just joking!"; 
+            level thread spirit_says( u_, d_, 8, 1 );
+            
+            break;
+
+        
+            
         case 4:
-            u_ = "Try and catch me.";
+            u_ = "Fancy catching me?";
             d_ = "That is if you can, ha!";
             level thread spirit_says( u_, d_, 3, 0.2 );
             break;
 
         case 5:
-            u_ = "Are you following my lead?";
-            d_ = "I know it's dark.";
+            u_ = "Are you following me?";
+            d_ = "You know it's dark.";
             level thread spirit_says( u_, d_, 5, 1 );
             break;
-        
-        case 6:
-        case 7:
-        case 8:
+
         case 9:
-            u_ = "We should start refurnishing this town back to it's original state";
-            d_ = "It used to be a look to admire";
+            u_ = "A bit slow, aren't we?";
+            d_ = "Keep it up tho, I admire the hussle, ha!";
             level thread spirit_says( u_, d_, 8, 1 );
             break;
 
-        case 10:
-        case 11:
-        case 12:
-        case 13:
         case 14:
-            u_ = "It's funny";
-            d_ = "People used to come for holdidays over here";
+            u_ = "You guys are funny.";
+            d_ = "Don't you have other things to do too?";
             level thread spirit_says( u_, d_, 5, 1 );
             break;
         
-        case 15:
-        case 16:
-        case 17:
         case 18:
-            u_ = "Let's start sending some signals to bus stops";
-            d_ = "We need to get the bus rolling when we want it to roll";
-            level thread spirit_says( u_, d_, 10, 1 );
+            u_ = "Ah I'm just messing around with you guys.";
+            d_ = "I should be able to help yall out a bit!";
+            level thread spirit_says( u_, d_, 7, 1 );
             break;
 
-        case 19:
-        case 20:
+        case 22:
+            u_ = "See what I can do!";
+            d_ = "Aaaaaarggghh..!";
+            level thread spirit_says( u_, d_, 5, 0.3 );
+            break;
+
         default:
             break;
 
@@ -170,7 +214,7 @@ follow_spirit()
     {
         //play a woosh fx for launch movement
         //playsound
-        level.o_spirit moveto( level.spirit_locations[ i ], randomFloatRange( 1, 1.4 ), 0.1, 0.1 );
+        level.o_spirit moveto( level.spirit_locations[ i ], randomFloatRange( 3, 3.4 ), 0.4, 0.1 );
         level thread return_spirit_textline( i );
         level.o_spirit waittill( "movedone" );
     }
@@ -188,7 +232,7 @@ follow_spirit()
     // to know when to break from for loop
     final_dest = level.spirit_locations.size;
     //return back to mover array
-    for( s = 3; s < level.spirit_locations.size; s++ )
+    for( s = 4; s < level.spirit_locations.size; s++ )
     {
         //play a woosh sound for launch sound
         //playsound
@@ -214,6 +258,7 @@ follow_spirit()
     }
 
     level notify( "orb_at_nacht" );
+    level notify( "stop_looking" );
 }
 
 waittill_player_touch()
@@ -247,6 +292,11 @@ follow_the_spirit_visuals()
     }
     wait 3;
     level.bypass_visual_check = false;
+
+    for( i = 0; i < level.players.size; i ++ )
+    {
+        level.players[ i ] thread fog_cheater();
+    }
     //while the spirit even is happening
     /*
     while( level.follow_the_spirit )
@@ -257,6 +307,22 @@ follow_the_spirit_visuals()
     */
 }
 
+fog_cheater()
+{
+    level endon( "stop_looking" );
+    while( true )
+    {
+        if( self getdvar( "r_fog" != 1 ) )
+        {
+            self setclientdvar( "r_fog", 1 );
+
+        }
+        else 
+        {
+            wait 1;
+        }
+    }
+}
 set_spirit_follow_visuals()
 {
     self endon( "disconnect" );
@@ -366,9 +432,9 @@ hover_orb()
     self endon( "s_hover" );
     while( true )
     {
-        self movez( 50, 0.3, 0, 0 );
+        self movez( 50, 0.8, 0, 0 );
         self waittill( "movedone" );
-        self movez( -50, 0.3, 0, 0 );
+        self movez( -50, 0.8, 0, 0 );
         self waittill( "movedone" );
     }
 }
@@ -383,31 +449,40 @@ shoot_orbs()
         temp_mover[ i ] setmodel( "tag_origin" );
         temp_mover[ i ].angles = ( 0, 0, 0 );
     }
-    wait 0.05;
+    wait 0.1;
+    //play spawn sound here
+    //playsound
     for( s = 0; s < temp_mover.size; s++ )
     {
         playfxontag( level.myFx[ 1 ], temp_mover[ s ], "tag_origin" );
         //playsoundatposition( "", temp_mover[ s ])
     }
 
-    foreach( orb in temp_mover )
+    for( i = 0; i < temp_mover.size; i++ )
     {
-        orb moveto( level.schruder_po[ 0 ], randomFloatRange( 0.3, 0.5 ), 0, 0.05 );
+        temp_mover[ i ] thread orb_moveto(level.spirit_locations[ 0 ], randomFloatRange( 1, 2.2 ), 0, 0.3 );
     }
-    wait 0.5;
+    wait 2.3;
+    
     foreach( s in temp_mover )
     {
         s delete();
     }
-    
+    //play box poof sound here
+    //playsound
     level notify( "orbs_on_ground" );
 }
 
+orb_moveto( location, duration, acc, dec )
+{
+    self moveto( location, duration, acc, dec );
+}
 monitor_players()
 {
     level endon( "end_game" );
 
     wait 1;
+    
     players_touching = 0;
     //goal = level.players.size;
     //spawn the trigger
@@ -722,7 +797,7 @@ Subtitle( text, text2, duration, fadeTimer )
 	subtitle = NewHudElem();
 	subtitle.x = 0;
 	subtitle.y = -42;
-	subtitle SetText( "^5Spirit of Sorrow: ^7" + text );
+	subtitle SetText( "^6Spirit of Sorrow: ^7" + text );
 	subtitle.fontScale = 1.46;
 	subtitle.alignX = "center";
 	subtitle.alignY = "middle";//middle
@@ -754,6 +829,8 @@ Subtitle( text, text2, duration, fadeTimer )
 	}
 	
 	wait ( duration );
+    subtitle fadeovertime( fadeTimer );
+    subtitle2 fadeovertime( fadeTimer );
     //level thread a_glowby( subtitle );
     //if( isdefined( subtitle2 ) )
     //{
