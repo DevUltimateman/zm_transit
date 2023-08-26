@@ -132,6 +132,7 @@ dev_visuals()
     self setclientdvar( "r_lodbiasskinned", -1000 );
     self setclientdvar( "cg_fov_default", 90 );
     self setclientdvar( "cg_fov", 90 );
+    self setclientdvar( "vc_fsm", "1 1 1 1" );
     //self setclientdvar( "",  );
 
 }

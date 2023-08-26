@@ -49,7 +49,7 @@ init()
 
     //build check for printlines
     level.dev_time = true;
-    /*
+    
     //fire nade quest, step1 triggers
     level.trigger_to_hit_with_nade = []; 
 
@@ -62,7 +62,7 @@ init()
     //for summoning
     //ignore_find_flesh
     level.ignore_find_flesh = ::stop_zomb;
-    */
+    
 }
 
 

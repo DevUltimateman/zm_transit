@@ -129,7 +129,7 @@ perk_give_normal()
         for( i = 0; i < 6; i++ )
         {
             self playLocalSound( snd );
-            0.1;
+            wait 0.1;
         }
         wait 1;
         //waittill loop again

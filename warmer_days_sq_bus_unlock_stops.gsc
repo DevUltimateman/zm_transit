@@ -262,7 +262,7 @@ bus_moves_to_the_caller( stop_spot )
     bus_speed_normal = 15;
     bus_speed_go_to_location = 45;
 
-    new_target = getVehicleNode( returnlocationNames( stop_spot, true ) );
+    new_target = getVehicleNode( returnlocationName( stop_spot, true ), "targetname" );
 
     if( level.dev_time ){ iprintlnbold( "BUS HAS BEEN CALLED" ); }
     wait 1;
@@ -275,7 +275,7 @@ bus_moves_to_the_caller( stop_spot )
         level.the_bus notify( "depart_early" );
         level.the_bus waittill( "departing" );
         level.the_bus.skipping_next_destination = true;
-        level.the_bus_notify( "skipping_destination" );
+        level.the_bus notify( "skipping_destination" );
         level.the_bus busStartMoving( bus_speed_go_to_location );
         
     }

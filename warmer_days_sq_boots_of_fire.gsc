@@ -87,21 +87,20 @@ fireboot_quest_init()
 
     flag_wait( "initial_blackscreen_passed" );
     wait 5;
-    level thread step3_fireboots_pickup();
-    //debug with player host
-    //level thread weapon_camo_tester( level.players[ 0 ] );
+    //level thread step3_fireboots_pickup();
+    
     //debug
     //level thread f_boots2(); //find the boots that are running away from the players
-    /*
+    
     //step1
-    level thread f_boots1(); //initiate, spawn and link to 
+    level thread step1_boot_hopping(); //initiate, spawn and link to 
     level waittill( "fireboots_step1_completed" );
 
     //step2
-    level thread f_boots2(); //find the boots that are running away from the players
-    level thread monitor_all_boots(); //monitor if kill count > required
+    //level thread f_boots2(); //find the boots that are running away from the players
+    //level thread monitor_all_boots(); //monitor if kill count > required
     
-    */
+    
     //level waittill( "fireboots_step2_completed" );
 
     //step3
@@ -319,33 +318,8 @@ printer()
         wait 1;
     }
 }
-weapon_camo_tester( me )
-{
-    level endon( "end_game" );
-    
-    idx = 0;
-    current = undefined;
-    to_old = undefined;
-    while ( true )
-    {
-        me waittill( "weapon_fired" );
-        if( isdefined( me ) )
-        {
-            current = me getcurrentweapon();
-            to_old = current;
-            me takeweapon( current );
-            iprintlnbold( "Giving the player another variant" );
-            wait 1;
-            me giveweapon( to_old, 0, idx );
-            me giveMaxAmmo( to_old, 0, idx );
-            iprintlnbold( "New Weapon: " + to_old);
-        }
-        
-        idx++;
-        wait 1;
-        
-    }
-}
+
+
 
 
 leg_trigger_logic( model_origin )
@@ -371,10 +345,12 @@ leg_trigger_logic( model_origin )
         self waittill( "trigger", guy );
 
         //need a check to not draw multiple pick ups at once.
+        /*
         if( level.boots_are_being_picked_up )
         {
             continue;
         }
+        */
 
         //this check needs to be added below since we need to check after the initial hit if someone is already picking up boots
         level thread picking_up_boots_cooldown_others_timer( cooldownTimer );
@@ -382,7 +358,7 @@ leg_trigger_logic( model_origin )
         // to display the number of boots found currently
         true_indicator = level.boots_found + 1; 
 
-        upper_text = "Fireboots found ^3" + true_indicator + "^7 / ^3" + level.fireboot_locations.size + "";
+        upper_text = "Fireboots found ^3" + true_indicator + "^7 / ^3" + level.fireboot_locations.size;
 
         //might need a passing argument in future
         lower_text = _returnFireBootStepText(); 
@@ -391,7 +367,8 @@ leg_trigger_logic( model_origin )
         wait 0.1;
         guy.score += 750;
         guy playsoundtoplayer( "zmb_vault_bank_deposit", guy );
-        level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
+        //level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
+        level thread print_text_middle( lower_text, 5, .2 );
         wait 0.1;
 
         leg_model delete(); //delete linked model
@@ -406,6 +383,27 @@ leg_trigger_logic( model_origin )
     }
 }
 
+print_text_middle( text1, duration, fadefloat )
+{
+    middle_t = NewHudElem();
+	middle_t.x = 0;
+	middle_t.y = 0;
+	middle_t SetText( text1 );
+	middle_t.fontScale = 2;
+	//subtitle.alignX = "center";
+	//subtitle.alignY = "middle";
+	middle_t.horzAlign = "center";
+	middle_t.vertAlign = "center";
+	//subtitle.sort = 1;
+    
+	//subtitle2 = undefined;
+	middle_t.alpha = 0;
+    middle_t fadeovertime( fadefloat );
+    middle_t.alpha = 1;
+    wait ( duration );
+    middle_t.alpha = 0;
+    middle_t destroy();
+}
 picking_up_boots_cooldown_others_timer( time )
 {
     level endon( "end_game" );
@@ -537,7 +535,7 @@ fireboots_sound_before_locating()
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	Subtitle( "^3Dr. Schrude: ^7" + text, text2, duration, fadetimer );
+	level thread Subtitle( "^3Dr. Schrude: ^7" + text, text2, duration, fadetimer );
 }
 
 Subtitle( text, text2, duration, fadeTimer )
@@ -547,13 +545,13 @@ Subtitle( text, text2, duration, fadeTimer )
 	subtitle.y = -42;
 	subtitle SetText( text );
 	subtitle.fontScale = 1.46;
-	subtitle.alignX = "center";
-	subtitle.alignY = "middle";
+	//subtitle.alignX = "center";
+	//subtitle.alignY = "middle";
 	subtitle.horzAlign = "center";
 	subtitle.vertAlign = "bottom";
-	subtitle.sort = 1;
+	//subtitle.sort = 1;
     
-	subtitle2 = undefined;
+	//subtitle2 = undefined;
 	subtitle.alpha = 0;
     subtitle fadeovertime( fadeTimer );
     subtitle.alpha = 1;
@@ -565,11 +563,11 @@ Subtitle( text, text2, duration, fadeTimer )
 		subtitle2.y = -24;
 		subtitle2 SetText( text2 );
 		subtitle2.fontScale = 1.46;
-		subtitle2.alignX = "center";
-		subtitle2.alignY = "middle";
+		//subtitle2.alignX = "center";
+		//subtitle2.alignY = "middle";
 		subtitle2.horzAlign = "center";
 		subtitle2.vertAlign = "bottom";
-		subtitle2.sort = 1;
+		//subtitle2.sort = 1;
         subtitle2.alpha = 0;
         subtitle2 fadeovertime( fadeTimer );
         subtitle2.alpha = 1;
@@ -581,7 +579,7 @@ Subtitle( text, text2, duration, fadeTimer )
     //{
     //    level thread a_glowby( subtitle2 );
     //}
-    
+    /*
 	level thread flyby( subtitle );
 	//subtitle Destroy();
 	
@@ -589,6 +587,9 @@ Subtitle( text, text2, duration, fadeTimer )
 	{
 		level thread flyby( subtitle2 );
 	}
+    */
+    subtitle destroy();
+    subtitle2 destroy();
 }
 
 flyby( element )

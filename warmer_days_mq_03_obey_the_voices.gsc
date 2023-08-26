@@ -39,8 +39,24 @@
 
 init()
 {
+     //can we do a new hover?
+    level.schruder_hovers = false;
+    //can we move him again?
+    level.schruder_moves = false;
+    //mr_schruder points of interests
+    level.spirit_locations = [];
+    //tower to mr_schruder ground poi [0]
+    level.fxtower = [];
+
+    //for players who connect during the spirit moment
+    level.bypass_visual_check = false;
     //wait till initial blackscreen, then execute thread
     level thread waitflag();
+    //all .level origin for this file
+    global_locations();
+    //all .level array & bools
+    global_bools_arrays();
+    
 }
 
 waitflag()
@@ -48,16 +64,16 @@ waitflag()
     level endon( "end_game" );
     flag_wait( "initial_blackscreen_passed" );
     
-    //all .level origin for this file
-    global_locations();
-    //all .level array & bools
-    global_bools_arrays();
+    
 
     //step 1
     //see if all players are underneath the pylon & spawn the trigger
+    level thread debug_spirit_locations();
     level thread monitor_players();
     level waittill( "players_obey" );
 
+    //visual effect for step2
+    level thread follow_the_spirit_visuals();
     //step 2
     //spawn orbs from the tower and move them to ground location
     //also play dialog from schruder, spawns a spirit that players must follow
@@ -81,14 +97,81 @@ waitflag()
 
 }
 
+//tempoerary subtitles to see how long each segment should take place
+return_spirit_textline( switcher )
+{
+    index = switcher;
+    switch( index )
+    {
+        case 0:
+            u_ = "What kinda hillybillies are wondering around here on my fields?";
+            d_ = "Aha, I'm just joking guys, I'm just joking!";
+            level thread spirit_says( u_, d_, 8, 1 );
+            break;
+        
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            u_ = "Try and catch me.";
+            d_ = "That is if you can, ha!";
+            level thread spirit_says( u_, d_, 3, 0.2 );
+            break;
+
+        case 5:
+            u_ = "Are you following my lead?";
+            d_ = "I know it's dark.";
+            level thread spirit_says( u_, d_, 5, 1 );
+            break;
+        
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+            u_ = "We should start refurnishing this town back to it's original state";
+            d_ = "It used to be a look to admire";
+            level thread spirit_says( u_, d_, 8, 1 );
+            break;
+
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+            u_ = "It's funny";
+            d_ = "People used to come for holdidays over here";
+            level thread spirit_says( u_, d_, 5, 1 );
+            break;
+        
+        case 15:
+        case 16:
+        case 17:
+        case 18:
+            u_ = "Let's start sending some signals to bus stops";
+            d_ = "We need to get the bus rolling when we want it to roll";
+            level thread spirit_says( u_, d_, 10, 1 );
+            break;
+
+        case 19:
+        case 20:
+        default:
+            break;
+
+        
+    }
+}
+
 follow_spirit()
 {
     level endon( "end_game" );
 
     //first 3 moves are non monitored
-    for( i = 1; i < 3; i++ )
+    for( i = 1; i < 4; i++ )
     {
-        level.o_spirit moveto( level.schruder_poi[ i ], randomFloatRange( 1, 1.4 ), 0.1, 0.1 );
+        //play a woosh fx for launch movement
+        //playsound
+        level.o_spirit moveto( level.spirit_locations[ i ], randomFloatRange( 1, 1.4 ), 0.1, 0.1 );
+        level thread return_spirit_textline( i );
         level.o_spirit waittill( "movedone" );
     }
     //hover till player is near the orb
@@ -103,15 +186,18 @@ follow_spirit()
     //points to skip touch check
     to_skip = false;
     // to know when to break from for loop
-    final_dest = level.schruder_poi.size;
+    final_dest = level.spirit_locations.size;
     //return back to mover array
-    for( s = 3; s < level.schruder.poi.size; s++ )
+    for( s = 3; s < level.spirit_locations.size; s++ )
     {
-        if( s == 8 || s == 15 || s == final_dest )
+        //play a woosh sound for launch sound
+        //playsound
+        level thread return_spirit_textline( s );
+        if( s == 8 || s == 15 || s == final_dest || s == 24 || s == 23 || s == 22 || s == 21 || s == 20 || s == 19  )
         {
             to_skip = true;
         }
-        level.o_spirit moveto( level.schruder_poi[ s ], randomfloatrange( 1, 1.4 ), 0.1, 0.1 );
+        level.o_spirit moveto( level.spirit_locations[ s ], randomfloatrange( 1, 1.4 ), 0.1, 0.1 );
         level.o_spirit waittill( "movedone" );
         //if we need to skip the touch section for couple locations
         if( !to_skip )
@@ -140,15 +226,104 @@ waittill_player_touch()
     level notify( "player_toucher_the_trigger" );
 }
 
+follow_the_spirit_visuals()
+{
+    level endon( "end_game" );
+    //level endon( "stop_tracking_spirit_visuals" );
+    level.bypass_visual_check = true;
+    for( i = 0; i < level.players.size; i++ )
+    {
+        level.players[ i ] thread initial_spirit_visual();
+        level.players[ i ] setclientdvar( "r_lighttweaksuncolor", "0.2 0 0.4" );
+        level.players[ i ] setclientdvar( "vc_fsm", "1 1 1 1" );
+        level.players[ i ] setclientdvar( "r_filmusetweaks", 1 );
+        level.players[ i ] setclientdvar( "r_sky_intensity_factor0", 4 );
+
+        level.players[ i ] setclientdvar( "r_skyTransition", 0.5 );
+        level.players[ i ] setclientdvar( "r_skyColorTemp", 12500 );
+        level.players[ i ] setclientdvar( "cg_colorscale", "0.2 0.1 0.9" );
+        level.players[ i ] setclientdvar( "r_fog", 1 );
+        
+    }
+    wait 3;
+    level.bypass_visual_check = false;
+    //while the spirit even is happening
+    /*
+    while( level.follow_the_spirit )
+    {
+        level waittill( "connected", player );
+        player thread set_spirit_follow_visuals();
+    }
+    */
+}
+
+set_spirit_follow_visuals()
+{
+    self endon( "disconnect" );
+    level endon("end_game" );
+    
+    //if player is already in game when this event happens
+    if( level.bypass_visual_check )
+    {
+        //self thread initial_spirit_visual();
+        
+        //self setclientdvar( "")
+        /* self setclientdvar
+
+        self setclientdvar
+        self setclientdvar
+        self setclientdvar
+        self setclientdvar
+        self setclientdvar
+        self setclientdvar
+        self setclientdvar */
+    }
+    //make sure that all game specific visuals gets applied before we apply ours and not afterwards when this thread is run at
+    //when new player onnects in and the event is happening / ongoing
+    else
+    {
+        self waittill( "spawned_player" );
+        self setclientdvar( "r_lighttweaksuncolor", "0.2 0 0.4" );
+        self setclientdvar( "vc_fsm", "1 1 1 1 " );
+        self setclientdvar( "r_filmusetweaks", 1 );
+        self setclientdvar( "r_sky_intensity_factor0", 4 );
+
+        self setclientdvar( "r_skyTransition", 0.5 );
+        self setclientdvar( "r_skyColorTemp", 12500 );
+        self setclientdvar( "cg_colorscale", ( 1, 1, 1 ) );
+    }
+}
+
+initial_spirit_visual()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    for( i = 0; i < 32; i++ )
+    {
+        self setclientdvar( "cg_colorsaturation", 0 );
+        wait 0.1;
+        self setclientdvar( "cg_colorsaturation", 1 );
+        if( i % 2 == 0 )
+        {
+            x = 0.05;
+        }
+        else if ( i % 2 != 0 )
+        {
+            x = 0.1;
+        }
+
+        wait x;
+    }
+    self setclientdvar( "cg_colorsaturation", 1 );
+}
+
 player_is_away()
 {
     for( i = 0; i < level.players.size; i++ )
     {
-        if( distance( level.players[ i ].origin, level.o_spirit ) < 100 )
+        if( distance( level.players[ i ].origin, level.o_spirit.origin ) < 200 )
         {
             return false;
-            wait 1;
-            break;
         }
         else 
         {
@@ -161,12 +336,27 @@ spawn_spirit()
 {
     level endon( "end_game" );
     
-    level.o_spirit = spawn( "script_model", level.schruder_po[ 0 ] );
+    level.o_spirit = spawn( "script_model", level.spirit_locations[ 0 ] );
     level.o_spirit setmodel( "tag_origin" );
     level.o_spirit.angles = level.o_spirit.angles;
     wait 0.05;
-    playFXOnTag( level.myFx[ 1 ], level.o_spirit, "tag_origin" );
+    playFXOnTag( level.myFx[ 2 ], level.o_spirit, "tag_origin" );
     level notify( "spirit_ready" );
+}
+
+debug_spirit_locations()
+{
+    level endon( "end_game" );
+    wait 6;
+    iprintlnbold( "LOCATIONS" + level.spirit_locations.size );
+    wait 2;
+    iprintlnbold( "GOING TO PRINT ALL LOCATIONS FROM LEVEL LIST" );
+    wait 2;
+    for( i = 0; i < level.spirit_locations.size; i++ )
+    {
+        iprintlnbold( "LOCATION " + i + " / " + level.spirit.locations.size + " ^3location ^7" + level.spirit_locations[ i ] );
+        wait 0.5;
+    }
 }
 
 hover_orb()
@@ -217,35 +407,68 @@ monitor_players()
 {
     level endon( "end_game" );
 
-    
+    wait 1;
     players_touching = 0;
-    goal = level.players.size;
+    //goal = level.players.size;
     //spawn the trigger
-    trigger = spawn( "trigger_radius", level.schruder_poi[ 0 ], 48, 48, 48 );
-    trigger setCursorHint( "HINT_NOICON" );
-    trigger setHintString( "Requires more ^3survivors ^7to be present" );
+    loc = level.spirit_locations[ 0 ];
+    /*
 
+    trig = spawn( "trigger_radius", loc, 40, 40, 40 );
+    wait 0.1;
+    trig setHintString( "Requires more ^3survivors ^7to be present" );
+    trig setCursorHint( "HINT_NOICON" );
+    wait 0.1;
+    */
+    test = ( -6923.5, 4194.83, -63.8666 );
+    mods = spawn( "script_model", loc);
+    mods setmodel( "tag_origin" );
+    mods.angles = ( -270, 0, 0 );
+    wait 0.1;
+    playfxontag( level._effect[ "lght_marker" ], mods, "tag_origin" );
+    
+    playfx( level._effect[ "lght_marker" ], mods.origin );
+    cust_trig = spawn( "trigger_radius", loc, 48, 48, 48 );
+    cust_trig setHintString( "" );
+    cust_trig setCursorHint( "HINT_NOICON" );
+    
     while( true )
     {
-        goal = level.players.size;
-
-        for( i = 0; i < goal; i++ )
+        cust_trig waittill( "trigger", player );
+        if( level.dev_time ){ iprintlnbold( "PLAYER TOUCHED THE TRIGGER, CONTINUE IN QUEST" ); }
+        mods delete();
+        level notify( "players_obey" );
+        break;
+    }
+    /* 
+    while( true )
+    {
+        trig waittill( "trigger", player );
+        
+        if( player in_revive_trigger() )
         {
-            if( distance( trigger.origin, level.players[ i ].origin ) < 150 )
+            continue;
+        }
+
+        if( is_player_valid( player ) )
+        {
+            if( player isTouching( trig ) )
             {
                 players_touching++;
+                if( players_touching >= level.players.size )
+                {
+                    if( level.dev_time ){ iPrintLnBold( player.name + " touched the trigger" ); }
+                    level notify( "players_obey" );
+                    trig delete();
+                    //mod delete();
+                    break;
+                }
             }
+            
         }
-        if( players_touching >= goal )
-        {
-            level notify( "players_obey" );
-            trigger delete();
-            break;
-        }
-        wait 0.1;
         players_touching = 0;
-    }
-
+        wait 0.1;
+    } */
 }
 schruder_path_move01()
 {
@@ -258,20 +481,20 @@ schruder_path_move01()
     level waittill( "allowed_to_continue" );
 
     //move to spot 1 
-    schruder_fly_vox02( "" );
+   // schruder_fly_vox02( "" );
     wait( 1 );
     level thread schruder_moves_to( level.schuder_poi[ 0 ], 5, 1, 1.3 );
     level waittill( "allowed_to_continue" );
 
-    wait( /* WHAT TIME ? */)
+    //wait( /* WHAT TIME ? */);
 
     //move to spot 2
-    schruder_fly_vox03( "" );
+   // schruder_fly_vox03( "" );
     wait 0.5;
     //level thread schruder_desc( -120, 2.2, 0.3, 0 );
     level waittill( "allowed_to_continue" );
 
-    wait( /* WHAT */)
+    //wait( /* WHAT */);
 
     //move to spot 3
     
@@ -282,7 +505,7 @@ schruder_path_move01()
 schruder_fly_vox01( background_music )
 {
     level endon( "end_game" );
-
+    /* 
     if( background_music == "" )
     {
         play_sound_at_pos( background_music, level.players[0].origin );
@@ -292,7 +515,7 @@ schruder_fly_vox01( background_music )
         fadetimer = 1;
         level thread scripts\maps\zm\zm_transit\warmer_days_mq_02_meet_mr_s::machine_says( "^3Dr. Schrude: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        
-    }
+    } */
     
 
 }
@@ -381,14 +604,7 @@ schruder_moves_to( location, duration, smooth_factor, smooth_factor_out )
 
 global_bools_arrays()
 {
-    //can we do a new hover?
-    level.schruder_hovers = false;
-    //can we move him again?
-    level.schruder_moves = false;
-    //mr_schruder points of interests
-    level.schuder_poi = [];
-    //tower to mr_schruder ground poi [0]
-    level.fxtower = [];
+   
 }
 global_locations()
 {
@@ -402,57 +618,57 @@ global_locations()
     //nach side beacons
     level.fxtower[2] = (7964.11, -465.178, 677.731);
     level.fxtower[3] = (8034.62, -462.836, 1065.17);
-
+    
     //ground pos at tower
-    level.schruder_poi[ 0 ] = ( 7621.98, -466.573, -176.101 );
+    level.spirit_locations[ 0 ] = ( 7621.98, -466.573, -176.101 );
     //first elevation point middle tower
-    level.schruder_poi[ 1 ] = ( 7621.98, -466.573, 11.0782 );
+    level.spirit_locations[ 1 ] = ( 7621.98, -466.573, 11.0782 );
     //to the left from tower elevetated on small road
-    level.schruder_poi[ 2 ] = ( 7646.55, -310.812, 91.5919 );
+    level.spirit_locations[ 2 ] = ( 7646.55, -310.812, 91.5919 );
     //first t cross section head height
-    level.schruder_poi[ 3 ] = ( 7796.12, 19.0566, -136.185 );
+    level.spirit_locations[ 3 ] = ( 7796.12, 19.0566, -136.185 );
     //from the t cross to the other t cross
-    level.schruder_poi[ 4 ] = ( 7366.78, 335.744, -115.185 );
+    level.spirit_locations[ 4 ] = ( 7366.78, 335.744, -115.185 );
     //continuing the new road path towards main road
-    level.schruder_poi[ 5 ] = ( 7718.12, 575.061, -145.289 );
+    level.spirit_locations[ 5 ] = ( 7718.12, 575.061, -145.289 );
     //continuing towards same goal
-    level.schruder_poi[ 6 ] = ( 8017.15, 645.111, -97.2837 );
+    level.spirit_locations[ 6 ] = ( 8017.15, 645.111, -97.2837 );
     //same goal
-    level.schruder_poi[ 7 ] = ( 8907.62, 567.834, -122.93 );
+    level.spirit_locations[ 7 ] = ( 8907.62, 567.834, -122.93 );
     //from the t cross to right, above the field
-    level.schruder_poi[ 8 ] = ( 8875.65, 347.757, 235.32 );
+    level.spirit_locations[ 8 ] = ( 8875.65, 347.757, 235.32 );
     //descend from above back to the new "road"
-    level.schruder_poi[ 9 ] = ( 8943.18, -152.234, -158.23 );
+    level.spirit_locations[ 9 ] = ( 8943.18, -152.234, -158.23 );
     //continue inner road
-    level.schruder_poi[ 10 ] = ( 8969.18, -591.123, -56.2354 );
+    level.spirit_locations[ 10 ] = ( 8969.18, -591.123, -56.2354 );
     //at t cross to the left
-    level.schruder_poi[ 11 ] = ( 8754.45, -1000.42, -177.348 );
+    level.spirit_locations[ 11 ] = ( 8754.45, -1000.42, -177.348 );
     //continue new road
-    level.schruder_poi[ 12 ] = ( 9022.97, -1354.42, -17.4592 );
+    level.spirit_locations[ 12 ] = ( 9022.97, -1354.42, -17.4592 );
     //to the left at t cross
-    level.schruder_poi[ 13 ] = ( 9236.54, -1149.23, -173.359 );
+    level.spirit_locations[ 13 ] = ( 9236.54, -1149.23, -173.359 );
     //continue
-    level.schruder_poi[ 14 ] = ( 9470.45, -1082.35, -122.498 );
+    level.spirit_locations[ 14 ] = ( 9470.45, -1082.35, -122.498 );
     //middle of big roadd
-    level.schruder_poi[ 15 ] = ( 10228.3, -1140.91, 96.2382 );
+    level.spirit_locations[ 15 ] = ( 10228.3, -1140.91, 96.2382 );
     //to the right, next to lamp
-    level.schruder_poi[ 16 ] = ( 10192.6, -1686.52, -174.289 );
+    level.spirit_locations[ 16 ] = ( 10192.6, -1686.52, -174.289 );
     //at the end of long hay road
-    level.schruder_poi[ 17 ] = ( 12010.1, -1825.51, -136.329 );
+    level.spirit_locations[ 17 ] = ( 12010.1, -1825.51, -136.329 );
     //at the next t cross
-    level.schruder_poi[ 18 ] = ( 12204.4, -596.384, -103.349 );
+    level.spirit_locations[ 18 ] = ( 12204.4, -596.384, -103.349 );
     //continue a bit on the road
-    level.schruder_poi[ 19 ] = ( 12475.5, -625.863, -71.3289 );
+    level.spirit_locations[ 19 ] = ( 12475.5, -625.863, -71.3289 );
     //first electric pole
-    level.schruder_poi[ 20 ] = ( 13097.7, -841.474, 166.237 );
+    level.spirit_locations[ 20 ] = ( 13097.7, -841.474, 166.237 );
     //second pole
-    level.schruder_poi[ 21 ] = ( 13070.9, -1444.03, 118.348  );
+    level.spirit_locations[ 21 ] = ( 13070.9, -1444.03, 118.348  );
     //third pole
-    level.schruder_poi[ 22 ] = ( 13088.9, -1741.28, 135.123 );
+    level.spirit_locations[ 22 ] = ( 13088.9, -1741.28, 135.123 );
     //on top of nacht
-    level.schruder_poi[ 23 ] = ( 13685.3, -1042.41, 280.342 );
+    level.spirit_locations[ 23 ] = ( 13685.3, -1042.41, 280.342 );
     //inside of nacht ( explo height )
-    level.schruder_poi[ 24 ] = ( 13660.2, -951.123, 16.5059 );
+    level.spirit_locations[ 24 ] = ( 13660.2, -951.123, 16.5059 );
 
 
     //NACHT NACHT NACHT // NACHT NACHT NACHT // NACHT NACHT NACHT //
@@ -474,11 +690,112 @@ global_locations()
     //next to big turbines left
     level.nacht_power_fx_event[ 5 ] = ( 13597.5, 1190.08, 120.235 );
     /*
-    level.schruder_poi[ 25 ] = (  );
-    level.schruder_poi[ 26 ] = (  );
-    level.schruder_poi[ 27 ] = (  );
-    level.schruder_poi[ 28 ] = (  );
-    level.schruder_poi[ 29 ] = (  );
-    level.schruder_poi[ 30 ] = (  );
+    level.spirit_locations[ 25 ] = (  );
+    level.spirit_locations[ 26 ] = (  );
+    level.spirit_locations[ 27 ] = (  );
+    level.spirit_locations[ 28 ] = (  );
+    level.spirit_locations[ 29 ] = (  );
+    level.spirit_locations[ 30 ] = (  );
+    
     */
+    
 }
+
+//spirit
+
+spirit_says( text, text2, duration, fadetimer )
+{
+    level endon( "end_game" );
+	Subtitle( text, text2, duration, fadetimer );
+}
+
+Subtitle( text, text2, duration, fadeTimer )
+{
+    if( isdefined( subtitle ) )
+    {
+        subtitle destroy();
+    }
+    if( isdefined( subtitle2 ) )
+    {
+        subtitle2 destroy();
+    }
+	subtitle = NewHudElem();
+	subtitle.x = 0;
+	subtitle.y = -42;
+	subtitle SetText( "^5Spirit of Sorrow: ^7" + text );
+	subtitle.fontScale = 1.46;
+	subtitle.alignX = "center";
+	subtitle.alignY = "middle";//middle
+	subtitle.horzAlign = "center";
+	subtitle.vertAlign = "bottom";
+	subtitle.sort = 1;
+    
+	//subtitle2 = undefined;
+	subtitle.alpha = 0;
+    subtitle fadeovertime( fadeTimer );
+    
+    subtitle.alpha = 1;
+
+	if ( IsDefined( text2 ) )
+	{
+		subtitle2 = NewHudelem();
+		subtitle2.x = 0;
+		subtitle2.y = -24;
+		subtitle2 SetText( text2 );
+		subtitle2.fontScale = 1.46;
+		subtitle2.alignX = "center";
+		subtitle2.alignY = "middle";
+		subtitle2.horzAlign = "center";
+		subtitle2.vertAlign = "bottom";
+		subtitle2.sort = 1;
+        subtitle2.alpha = 0;
+        subtitle2 fadeovertime( fadeTimer );
+        subtitle2.alpha = 1;
+	}
+	
+	wait ( duration );
+    //level thread a_glowby( subtitle );
+    //if( isdefined( subtitle2 ) )
+    //{
+    //    level thread a_glowby( subtitle2 );
+    //}
+    /*
+	level thread flyby( subtitle );
+	//subtitle Destroy();
+	
+	if ( IsDefined( subtitle2 ) )
+	{
+		level thread flyby( subtitle2 );
+	}
+    */
+    subtitle.alpha = 0;
+    subtitle2.alpha = 0;
+}
+
+flyby( element )
+{
+    level endon( "end_game" );
+    x = 0;
+    on_right = 640;
+
+    while( element.x < on_right )
+    {
+        element.x += 100;
+        /*
+        //if( element.x < on_right )
+        //{
+            
+            //waitnetworkframe();
+        //    wait 0.01;
+        //}
+        //if( element.x >= on_right )
+        //{
+        //    element destroy();
+        //}
+        */
+        wait 0.05;
+    }
+    element destroy();
+}
+
+
