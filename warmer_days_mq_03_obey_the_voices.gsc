@@ -506,6 +506,10 @@ orb_moveto( location, duration, acc, dec )
     self moveto( location, duration, acc, dec );
 }
 
+/* 
+purpose: 
+shoot fxs to random directions when the spirit reaches nacht
+ */
 nacht_shooter()
 {
     for( i = 0; i < 25; i++ )
