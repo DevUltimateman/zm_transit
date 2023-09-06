@@ -72,11 +72,15 @@ waitflag()
     flag_wait( "initial_blackscreen_passed" );
     
     
-
+    //dbg
+    level thread debug_nacht_shooter();
     //step 1
     //see if all players are underneath the pylon & spawn the trigger
     level thread debug_spirit_locations();
     level thread monitor_players();
+    wait 3;
+    if(level.dev_time){iprintlnbold("DOING A NACHT SPAWN" );}
+    level.players[ 0 ] setOrigin( debug_tower_spawn() );
     level waittill( "players_obey" );
 
     //visual effect for step2
@@ -110,7 +114,7 @@ waitflag()
 spirit_thunder_locations()
 {
     
-    level.thunder_s_loc[ 0 ] = ( 7945.49, -419.728, 468.53 );
+    level.thunder_s_loc[ 0 ] = ( 7945.49, -419.728, 7468.53 );
     //level.thunder_s_loc[ 1 ] = ( 11078.3, 593.423, 624.101 );
     //level.thunder_s_loc[ 2 ] = ( 14997.7, -1694.19, 369.485 );
 
@@ -261,8 +265,15 @@ follow_spirit()
 
     level notify( "orb_at_nacht" );
     level notify( "stop_looking" );
+    //let's delete the orb
+    level.o_spirit delete();
 }
 
+debug_tower_spawn()
+{
+    location = ( 7919.64, -975.906, -89.834 );
+    return location;
+}
 waittill_player_touch()
 {
     level endon( "end_game" );
@@ -506,28 +517,87 @@ orb_moveto( location, duration, acc, dec )
     self moveto( location, duration, acc, dec );
 }
 
+debug_nacht_shooter()
+{
+    level.players[ 0 ] endon( "disconnect" );
+    level endon( "end_game" );
+
+    while( true )
+    {
+        if ( level.players[ 0 ] adsButtonPressed() )
+        {
+            wait 1;
+            iprintlnbold( "SHOOTING ORBS NOW" );
+            level thread nacht_shooter();
+        }
+        wait 0.1;
+    }
+}
+/* 
+purpose:
+return vector scale
+ */
+vector_scale( vectors, multiplier )
+{
+    x = vectors[ 0 ] * multiplier;
+    y = vectors[ 1 ] * multiplier;
+    z = vectors[ 2 ] * multiplier;
+    return ( x, y, z );
+}
+
+
 /* 
 purpose: 
 shoot fxs to random directions when the spirit reaches nacht
  */
 nacht_shooter()
 {
+    
+
     for( i = 0; i < 25; i++ )
     {
-        temper = spawn( "script_model", level.nacht_power_fx_event[ 0 ] );
-        temper.angles = ( randomint( 360 ),  randomint( 360 ), randomint( 360 ) ); 
+        temper = spawn( "script_model", level.nacht_power_fx_event[ randomint( level.nacht_power_fx_event.size -3 ) ] );
+        //angles mindset
+        //first offset = how tilted up / downwards
+        //second offset = which direction ( in yaw? )
+        //third offset = roll? we can leave it to zero since no roll effect required
+        temper.angles = ( /* randomint( 360 ),  randomint( 270 ) */randomIntRange(270, 350 ), randomInt(360), 0 ); 
         temper setmodel( "tag_origin" );
 
-        wait randomfloatrange( 0.05, 0.1 );
-        playFXOnTag( level.myfx[ 1 ], temper, "tag_origin" );
+        wait randomfloatrange( 0.05, 0.07 );
+        rnd = choose_random_redblue();
+        playFXOnTag( level.myfx[ rnd ], temper, "tag_origin" );
         wait 0.05;
-        level thread orb_moveto( anglesToForward( temper.angles * 10000 ), 6, 1, 0 );
+
+        //define a random location to shoot the orb to from fx_event[ 0 ]
+        start_loc = temper.origin;
+        to_forward = anglesToForward( temper.angles );
+        shoot_somewhere = start_loc + vector_scale( to_forward, 18000 );
+
+        //let's shoot the orb now
+        temper thread orb_moveto( shoot_somewhere, 6, 1, 0 );
+        //make sure we failsafe delete the entity upon reaaching it's goal
+        temper thread delete_upon_goal();
     }
 
-    foreach( tu in temper )
+    //spirit follow step done
+    level notify( "obey_spirit_complete" );
+}
+
+choose_random_redblue()
+{
+    x = randomInt( 2 );
+    if( x >= 1 )
     {
-        tu delete();
+        return x;
     }
+    return x;
+}
+delete_upon_goal()
+{
+    level endon( "end_game" );
+    self waittill( "movedone" );
+    self delete();
 }
 monitor_players()
 {
