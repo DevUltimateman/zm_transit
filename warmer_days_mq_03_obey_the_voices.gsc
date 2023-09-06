@@ -307,20 +307,20 @@ follow_the_spirit_visuals()
     */
 }
 
+/* 
+ purpose: fog has to stay on, even when disabled during the follow spirit step
+ */
 fog_cheater()
 {
     level endon( "stop_looking" );
     while( true )
     {
-        if( self getdvar( "r_fog" != 1 ) )
+        while( self getdvar( "r_fog" ) != true )
         {
-            self setclientdvar( "r_fog", 1 );
-
+            self setClientDvar( "r_fog", true );
+            wait 0.05;
         }
-        else 
-        {
-            wait 1;
-        }
+        wait 0.05;
     }
 }
 set_spirit_follow_visuals()
