@@ -55,6 +55,8 @@ init()
     level.thunder_s_loc = [];
     //entities during thunder spirit
     level.thunderplayer = [];
+    //nacht fx locs
+    level.nacht_power_fx_event = [];
     //wait till initial blackscreen, then execute thread
     level thread waitflag();
     //all .level origin for this file
@@ -96,7 +98,7 @@ waitflag()
     //orb is now at nacht, play huge fx at nacht tags
     //add a schruder dialog here where he tells about the next step while
     //survivors are at nacht
-
+    level thread nacht_shooter();
     //step4
     //the fxs from nacht will power up all the bus stop locations
     //not fully tho, players must activate them with zombie souls in order to use them in the future
@@ -109,8 +111,8 @@ spirit_thunder_locations()
 {
     
     level.thunder_s_loc[ 0 ] = ( 7945.49, -419.728, 468.53 );
-    level.thunder_s_loc[ 1 ] = ( 11078.3, 593.423, 624.101 );
-    level.thunder_s_loc[ 2 ] = ( 14997.7, -1694.19, 369.485 );
+    //level.thunder_s_loc[ 1 ] = ( 11078.3, 593.423, 624.101 );
+    //level.thunder_s_loc[ 2 ] = ( 14997.7, -1694.19, 369.485 );
 
     wait 0.05;
     for( i = 0; i < level.thunder_s_loc.size; i++ )
@@ -295,7 +297,8 @@ follow_the_spirit_visuals()
 
     for( i = 0; i < level.players.size; i ++ )
     {
-        level.players[ i ] thread fog_cheater();
+        //enable back later
+        //level.players[ i ] thread fog_cheater();
     }
     //while the spirit even is happening
     /*
@@ -313,13 +316,10 @@ follow_the_spirit_visuals()
 fog_cheater()
 {
     level endon( "stop_looking" );
+    is_fog = getdvarint( "r_fog" );
     while( true )
     {
-        while( self getdvar( "r_fog" ) != true )
-        {
-            self setClientDvar( "r_fog", true );
-            wait 0.05;
-        }
+        self setClientDvar( "r_fog", true );
         wait 0.05;
     }
 }
@@ -397,6 +397,34 @@ player_is_away()
         }
     }
     
+}
+
+players_are_here()
+{
+    //if all players touch
+    real_deal = level.players.size;
+    reaching = 0;
+    zone_to_touch = getent( "sq_common_area", "targetname" );
+    for( i = 0; i < level.players.size; i++ )
+    {
+        if( distance ( level.players[ i ].origin, zone_to_touch.origin ) < 300 ) 
+        {
+            reaching++;
+        }
+    }
+    wait 2.5;
+
+    //if all players are touching the zone
+    if( reaching >= real_deal )
+    {
+        return true;
+    }
+    //all players didnt touch the shit simultaneously
+    else
+    {
+        reaching = 0;
+        return false;
+    }
 }
 spawn_spirit()
 {
@@ -477,6 +505,26 @@ orb_moveto( location, duration, acc, dec )
 {
     self moveto( location, duration, acc, dec );
 }
+
+nacht_shooter()
+{
+    for( i = 0; i < 25; i++ )
+    {
+        temper = spawn( "script_model", level.nacht_power_fx_event[ 0 ] );
+        temper.angles = ( randomint( 360 ),  randomint( 360 ), randomint( 360 ) ); 
+        temper setmodel( "tag_origin" );
+
+        wait randomfloatrange( 0.05, 0.1 );
+        playFXOnTag( level.myfx[ 1 ], temper, "tag_origin" );
+        wait 0.05;
+        level thread orb_moveto( temper anglesToForward( 10000 ), 6, 1, 0 );
+    }
+
+    foreach( tu in temper )
+    {
+        tu delete();
+    }
+}
 monitor_players()
 {
     level endon( "end_game" );
@@ -507,14 +555,21 @@ monitor_players()
     cust_trig setHintString( "" );
     cust_trig setCursorHint( "HINT_NOICON" );
     
-    while( true )
+    //all players must stand in the sq common area before we proceed.
+    while( !players_are_here() )
     {
-        cust_trig waittill( "trigger", player );
-        if( level.dev_time ){ iprintlnbold( "PLAYER TOUCHED THE TRIGGER, CONTINUE IN QUEST" ); }
+        wait 1;
+        //level thread players_are_here();
+        //cust_trig waittill( "trigger", player );
+        //if( level.dev_time ){ iprintlnbold( "PLAYER TOUCHED THE TRIGGER, CONTINUE IN QUEST" ); }
+        //mods delete();
+        //level notify( "players_obey" );
+        //break;
+    }
+
+    if( level.dev_time ){ iprintlnbold( "PLAYER TOUCHED THE TRIGGER, CONTINUE IN QUEST" ); }
         mods delete();
         level notify( "players_obey" );
-        break;
-    }
     /* 
     while( true )
     {
@@ -545,55 +600,7 @@ monitor_players()
         wait 0.1;
     } */
 }
-schruder_path_move01()
-{
-    level endon( "end_game" );
 
-    //levitate & do speak #1
-    schruder_fly_vox01( "" );
-    wait( 3.5 );
-    level thread schruder_rise( 225, 3, 1, 0.3 );
-    level waittill( "allowed_to_continue" );
-
-    //move to spot 1 
-   // schruder_fly_vox02( "" );
-    wait( 1 );
-    level thread schruder_moves_to( level.schuder_poi[ 0 ], 5, 1, 1.3 );
-    level waittill( "allowed_to_continue" );
-
-    //wait( /* WHAT TIME ? */);
-
-    //move to spot 2
-   // schruder_fly_vox03( "" );
-    wait 0.5;
-    //level thread schruder_desc( -120, 2.2, 0.3, 0 );
-    level waittill( "allowed_to_continue" );
-
-    //wait( /* WHAT */);
-
-    //move to spot 3
-    
-
-
-}
-
-schruder_fly_vox01( background_music )
-{
-    level endon( "end_game" );
-    /* 
-    if( background_music == "" )
-    {
-        play_sound_at_pos( background_music, level.players[0].origin );
-        subtitle_upper =  "So what made you guys want to come here?";
-        subtitle_lower = "Things have really changed since the glory days of WarmVille";
-        duration = 8;
-        fadetimer = 1;
-        level thread scripts\maps\zm\zm_transit\warmer_days_mq_02_meet_mr_s::machine_says( "^3Dr. Schrude: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
-       
-    } */
-    
-
-}
 
 schruder_rise( latitude, duration, smooth_factor, smooth_factor_out )
 {
