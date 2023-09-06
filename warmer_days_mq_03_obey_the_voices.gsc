@@ -517,7 +517,7 @@ nacht_shooter()
         wait randomfloatrange( 0.05, 0.1 );
         playFXOnTag( level.myfx[ 1 ], temper, "tag_origin" );
         wait 0.05;
-        level thread orb_moveto( temper anglesToForward( 10000 ), 6, 1, 0 );
+        level thread orb_moveto( anglesToForward( temper.angles * 10000 ), 6, 1, 0 );
     }
 
     foreach( tu in temper )
