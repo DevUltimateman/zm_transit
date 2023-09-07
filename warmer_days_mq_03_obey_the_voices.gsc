@@ -243,11 +243,13 @@ follow_spirit()
         //play a woosh sound for launch sound
         //playsound
         level thread return_spirit_textline( s );
+
+        //these are "non touchable" level.spirit_locations spots where the orb will move without players touching it
         if( s == 8 || s == 15 || s == final_dest || s == 24 || s == 23 || s == 22 || s == 21 || s == 20 || s == 19  )
         {
             to_skip = true;
         }
-        level.o_spirit moveto( level.spirit_locations[ s ], randomfloatrange( 1, 1.4 ), 0.1, 0.1 );
+        level.o_spirit moveto( level.spirit_locations[ s ], randomfloatrange( 1, 1.4 ), 0.2, 0.2 );
         level.o_spirit waittill( "movedone" );
         //if we need to skip the touch section for couple locations
         if( !to_skip )
@@ -255,7 +257,8 @@ follow_spirit()
             level.o_spirit thread hover_orb();
             while( player_is_away() )
             {
-                wait 1;
+                //lower wait time for higher obstacles
+                wait 0.1;
             }
             level.o_spirit notify( "s_hover" );
         }
@@ -263,6 +266,7 @@ follow_spirit()
         wait 0.05;
     }
 
+    //let the fireworks fly & move to the next step
     level notify( "orb_at_nacht" );
     level notify( "stop_looking" );
     //let's delete the orb
@@ -274,15 +278,7 @@ debug_tower_spawn()
     location = ( 7919.64, -975.906, -89.834 );
     return location;
 }
-waittill_player_touch()
-{
-    level endon( "end_game" );
-    while( player_is_away() )
-    {
-        wait 1;
-    }
-    level notify( "player_toucher_the_trigger" );
-}
+
 
 follow_the_spirit_visuals()
 {
@@ -371,6 +367,7 @@ set_spirit_follow_visuals()
     }
 }
 
+//let's bounce this before we set other clientdvars that control the visuals during this ee step.
 initial_spirit_visual()
 {
     level endon( "end_game" );
@@ -437,6 +434,7 @@ players_are_here()
         return false;
     }
 }
+
 spawn_spirit()
 {
     level endon( "end_game" );
@@ -477,6 +475,11 @@ hover_orb()
         self waittill( "movedone" );
     }
 }
+
+/* 
+purpose:
+orbs form a spirit underneath the pylon for the spirit_of_sorrow step
+ */
 shoot_orbs()
 {
     level endon( "end_game" );
@@ -535,9 +538,9 @@ debug_nacht_shooter()
 }
 /* 
 purpose:
-return vector scale
+returns vector
  */
-vector_scale( vectors, multiplier )
+world_dir( vectors, multiplier )
 {
     x = vectors[ 0 ] * multiplier;
     y = vectors[ 1 ] * multiplier;
@@ -553,14 +556,14 @@ shoot fxs to random directions when the spirit reaches nacht
 nacht_shooter()
 {
     
+    //angles mindset
+    //first offset = how tilted up / downwards
+    //second offset = which direction ( in yaw? )
+    //third offset = roll? we can leave it to zero since no roll effect required
 
     for( i = 0; i < 25; i++ )
     {
         temper = spawn( "script_model", level.nacht_power_fx_event[ randomint( level.nacht_power_fx_event.size -3 ) ] );
-        //angles mindset
-        //first offset = how tilted up / downwards
-        //second offset = which direction ( in yaw? )
-        //third offset = roll? we can leave it to zero since no roll effect required
         temper.angles = ( /* randomint( 360 ),  randomint( 270 ) */randomIntRange(270, 350 ), randomInt(360), 0 ); 
         temper setmodel( "tag_origin" );
 
@@ -569,10 +572,10 @@ nacht_shooter()
         playFXOnTag( level.myfx[ rnd ], temper, "tag_origin" );
         wait 0.05;
 
-        //define a random location to shoot the orb to from fx_event[ 0 ]
+        //define a random location to shoot the orb to from fx_event.size -3
         start_loc = temper.origin;
         to_forward = anglesToForward( temper.angles );
-        shoot_somewhere = start_loc + vector_scale( to_forward, 18000 );
+        shoot_somewhere = start_loc + world_dir( to_forward, 18000 );
 
         //let's shoot the orb now
         temper thread orb_moveto( shoot_somewhere, 6, 1, 0 );
@@ -593,12 +596,18 @@ choose_random_redblue()
     }
     return x;
 }
+
+/* 
+purpose:
+use this to delete movable entities once they've reached their target goal
+ */
 delete_upon_goal()
 {
     level endon( "end_game" );
     self waittill( "movedone" );
     self delete();
 }
+
 monitor_players()
 {
     level endon( "end_game" );
@@ -624,55 +633,22 @@ monitor_players()
     wait 0.1;
     playfxontag( level._effect[ "lght_marker" ], mods, "tag_origin" );
     
-    playfx( level._effect[ "lght_marker" ], mods.origin );
+    //playfx( level._effect[ "lght_marker" ], mods.origin );
     cust_trig = spawn( "trigger_radius", loc, 48, 48, 48 );
-    cust_trig setHintString( "" );
+    cust_trig setHintString( "Requires more ^3survivors ^3to be present!" );
     cust_trig setCursorHint( "HINT_NOICON" );
     
     //all players must stand in the sq common area before we proceed.
+    //players_are_here() checks if all players in the game are touching level.sq_volume entity
     while( !players_are_here() )
     {
         wait 1;
-        //level thread players_are_here();
-        //cust_trig waittill( "trigger", player );
-        //if( level.dev_time ){ iprintlnbold( "PLAYER TOUCHED THE TRIGGER, CONTINUE IN QUEST" ); }
-        //mods delete();
-        //level notify( "players_obey" );
-        //break;
     }
 
     if( level.dev_time ){ iprintlnbold( "PLAYER TOUCHED THE TRIGGER, CONTINUE IN QUEST" ); }
-        mods delete();
-        level notify( "players_obey" );
-    /* 
-    while( true )
-    {
-        trig waittill( "trigger", player );
-        
-        if( player in_revive_trigger() )
-        {
-            continue;
-        }
-
-        if( is_player_valid( player ) )
-        {
-            if( player isTouching( trig ) )
-            {
-                players_touching++;
-                if( players_touching >= level.players.size )
-                {
-                    if( level.dev_time ){ iPrintLnBold( player.name + " touched the trigger" ); }
-                    level notify( "players_obey" );
-                    trig delete();
-                    //mod delete();
-                    break;
-                }
-            }
-            
-        }
-        players_touching = 0;
-        wait 0.1;
-    } */
+    mods delete();
+    cust_trig delete();
+    level notify( "players_obey" );
 }
 
 
@@ -869,10 +845,16 @@ Subtitle( text, text2, duration, fadeTimer )
 {
     if( isdefined( subtitle ) )
     {
+        subtitle fadeOverTime( 0.1 );
+        subtitle.alpha = 0;
+        wait 0.1;
         subtitle destroy();
     }
     if( isdefined( subtitle2 ) )
     {
+        subtitle2 fadeovertime( 0.1 );
+        subtitle.alpha = 0;
+        wait 0.1;
         subtitle2 destroy();
     }
 	subtitle = NewHudElem();
@@ -912,20 +894,6 @@ Subtitle( text, text2, duration, fadeTimer )
 	wait ( duration );
     subtitle fadeovertime( fadeTimer );
     subtitle2 fadeovertime( fadeTimer );
-    //level thread a_glowby( subtitle );
-    //if( isdefined( subtitle2 ) )
-    //{
-    //    level thread a_glowby( subtitle2 );
-    //}
-    /*
-	level thread flyby( subtitle );
-	//subtitle Destroy();
-	
-	if ( IsDefined( subtitle2 ) )
-	{
-		level thread flyby( subtitle2 );
-	}
-    */
     subtitle.alpha = 0;
     subtitle2.alpha = 0;
 }
