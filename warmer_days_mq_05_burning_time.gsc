@@ -144,10 +144,21 @@ prepare_cabin()
     wait 0.1;
     helmet_of_fire hide();
 
-     
-    playfxontag( level.myfx[ 6 ], helmet_of_fire, "tag_origin" );
-    
+    while( true )
+    {
+        if( isdefined( level.helmet_picker ) && isAlive( level.helmet_picker ) )
+        {
+            if( distance( level.helmet_picker.origin, helmet_of_fire.origin ) < 50 )
+            {
+                if( level.helmet_picker useButtonPressed() )
+                {
+                    helmet_of_fire show();
+                    playfxontag( level.myfx[ 6 ], helmet_of_fire, "tag_origin" );
 
+                }
+            }
+        }
+    }
 }
 hover_helmet()
 {
