@@ -1,8 +1,8 @@
-//codename: wamer_days_mq_05_burning_time
-//purpose: handles the spawn logic for roasting,
-//players must take the object from nacht after a lockdown to the cabin in the woods
-//and then place the head inside of the furnace
-//release: 2023 as part of tranzit 2.0 v2 update
+//  codename: wamer_days_mq_05_burning_time
+//  purpose: handles the spawn logic for roasting,
+//  players must take the object from nacht after a lockdown to the cabin in the woods
+//  and then place the head inside of the furnace
+//  release: 2023 as part of tranzit 2.0 v2 update
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\gametypes\_hud_message;
 #include maps\mp\ombies\_zm_stats;
@@ -56,7 +56,7 @@ after_initial_blackscreen()
     level endon( "end_game" );
 
     flag_wait( "initial_blackscreen_passed" );
-    level thread head_needs_spawning();
+    //level thread head_needs_spawning();
 }
 
 head_needs_spawning()
@@ -65,7 +65,7 @@ head_needs_spawning()
 
     level waittill( "lockdown1_ready" );
 
-    protection_spawn = ( );
+    protection_spawn = ( 0,0,0 );
     helmet_model = "";
 
     level.protection_helmet_spawn = spawn( "script_model", protection_spawn );
@@ -76,7 +76,7 @@ head_needs_spawning()
     trig = spawn( "trigger_radius", protection_spawn, 40,40,40 );
     trig setCursorHint( "HINT_NOICON" );
     trig setHintString( "^3 {[+reload]} ^7to pick up the protection helmet" );
-
+    trig useTriggerRequireLookAt(true);
     wait 0.1;
 
     //schruder text for the protection helmet pick up
@@ -144,8 +144,14 @@ prepare_cabin()
     helmet_of_fire setmodel( helmet );
     helmet_of_fire.angles = ( 0, 180, 0 );
 
+    sound_ent = spawn( "script_model", helmet_placement );
+    sound_ent setmodel( "tag_origin" );
+    sound_ent.angles = ( 0, 0, 0 );
+    
+    sound_ent playLoopSound( "zmb_powerup_loop", 2 );
     wait 0.1;
     helmet_of_fire hide();
+    
 
     while( true )
     {

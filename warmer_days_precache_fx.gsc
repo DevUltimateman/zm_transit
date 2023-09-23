@@ -166,6 +166,15 @@ precache_myfx()
 	level.myFx[ 85 ] = loadfx( "maps/zombie/fx_zmb_tranzit_window_dest_lg" ); //puff and window breaks
 	level.myFx[ 86 ] = loadfx( "maps/zombie/fx_zmb_tranzit_spark_blue_lg_os" ); //cool blue explo
 	level.myFx[ 87 ] = loadfx( "maps/zombie/fx_zmb_race_zombie_spawn_cloud" ); //no
+	level.myFx[ 88 ] = level._effect[ "jetgun_smoke_cloud" ];
+	level.myFx[ 89 ] = level._effect[ "jetgun_knockdown_ground" ];
+	level.myFx[ 90 ] = level._effect[ "zombie_guts_explosion" ];
+	level.myFx[ 91 ] = level._effect["avogadro_phasing"];
+	level.myFx[ 92 ] = level._effect[ "avogadro_bolt" ];
+	level.myFx[ 93 ] = level._effect["avogadro_phasing"];
+	level.myFx[ 94 ] = level._effect["avogadro_health_full"];
+	level.myFx[ 95 ] = level._effect["avogadro_health_half"];
+	level.myFx[ 96 ] = level._effect["avogadro_health_low"];
 
 	//Test stuff from BO2 Beta dumb
 
