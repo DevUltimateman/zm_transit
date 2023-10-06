@@ -103,6 +103,12 @@ waitflag()
     //add a schruder dialog here where he tells about the next step while
     //survivors are at nacht
     level thread nacht_shooter();
+    //temp to just test
+    level waittill( "obey_spirit_complete" );
+    foreach( player in level.players )
+    {
+        player thread scripts\zm\zm_transit\warmer_days_main::dev_visuals();
+    }
     //step4
     //the fxs from nacht will power up all the bus stop locations
     //not fully tho, players must activate them with zombie souls in order to use them in the future
@@ -244,7 +250,7 @@ follow_spirit()
         //playsound
         level thread return_spirit_textline( s );
 
-        //these are "non touchable" level.spirit_locations spots where the orb will move without players touching it
+        //these are "non touchable" level.spirit_locations[ key ] spots where we need to move the orb without player initiating the "push / fly in"
         if( s == 8 || s == 15 || s == final_dest || s == 24 || s == 23 || s == 22 || s == 21 || s == 20 || s == 19  )
         {
             to_skip = true;
@@ -415,7 +421,7 @@ players_are_here()
     zone_to_touch = getent( "sq_common_area", "targetname" );
     for( i = 0; i < level.players.size; i++ )
     {
-        if( distance ( level.players[ i ].origin, zone_to_touch.origin ) < 300 ) 
+        if( distance ( level.players[ i ].origin, zone_to_touch.origin ) < 200 ) 
         {
             reaching++;
         }
@@ -540,11 +546,11 @@ debug_nacht_shooter()
 purpose:
 returns vector
  */
-world_dir( vectors, multiplier )
+world_dir( angles, multiplier )
 {
-    x = vectors[ 0 ] * multiplier;
-    y = vectors[ 1 ] * multiplier;
-    z = vectors[ 2 ] * multiplier;
+    x = angles[ 0 ] * multiplier;
+    y = angles[ 1 ] * multiplier;
+    z = angles[ 2 ] * multiplier;
     return ( x, y, z );
 }
 

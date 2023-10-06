@@ -56,17 +56,17 @@ after_initial_blackscreen()
     level endon( "end_game" );
 
     flag_wait( "initial_blackscreen_passed" );
-    //level thread head_needs_spawning();
+    level thread head_needs_spawning();
 }
-
+randomin
 head_needs_spawning()
 {
     level endon( "end_game" );
+    //not working for some reason
+    level waittill( "obey_spirit_complete" );
 
-    level waittill( "lockdown1_ready" );
-
-    protection_spawn = ( 0,0,0 );
-    helmet_model = "";
+    protection_spawn = ( 14080.9, -571.94, -149.073 );
+    helmet_model = "tag_origin"; //needs a model eventually
 
     level.protection_helmet_spawn = spawn( "script_model", protection_spawn );
     level.protection_helmet_spawn setModel( helmet_model );
@@ -76,7 +76,7 @@ head_needs_spawning()
     trig = spawn( "trigger_radius", protection_spawn, 40,40,40 );
     trig setCursorHint( "HINT_NOICON" );
     trig setHintString( "^3 {[+reload]} ^7to pick up the protection helmet" );
-    trig useTriggerRequireLookAt(true);
+    trig useTriggerRequireLookAt();
     wait 0.1;
 
     //schruder text for the protection helmet pick up
@@ -85,6 +85,8 @@ head_needs_spawning()
     time = 6;
     fade_off = 0.2;
     level.protection_helmet_spawn thread hover_helmet();
+    //sub_player( t1, t2, time, fade_off );
+    level thread scripts\zm\zm_transit\warmer_days_sq_boots_of_fire::Subtitle( "^3Dr. Scruder: ^7" + t1,t2,time,fade_off);
 
     playFXOnTag( level.myfx[ 1 ], level.protection_helmet_spawn, "tag_origin" );
     //playsound
@@ -92,24 +94,28 @@ head_needs_spawning()
 
     while( true )
     {
-        trig waittill( "trigger", level.helmet_picker );
-        if( level.helmet_picker is_in_revive_trigger())
+        trig waittill( "trigger", player );
+        if( player in_revive_trigger() )
         {
             continue;
         }
 
-        if( is_player_valid( level.helmet_picker ) )
+        if( is_player_valid( player ) )
         {
-            if( level.helmet_picker useButtonPressed() )
+            if( player useButtonPressed() )
             {
                 wait 0.1;
+                //assign the player to be the one who picked up the head
+                level.helmet_picker = player;
+
                 //reward the picker by a few points
                 level.helmet_picker.score = level.helmet_picker.score * 0.1;
                 level.protection_helmet_spawn delete();
                 trig delete();
+
                 //failsafe check for upcoming disconnect
                 level.someone_picked = true;
-                level thread cripts\zm\zm_transit\warmer_days_sq_boots_of_fire::SchruderSays( "^3Dr. Schruder: ^7" + t1, t2, time, fade_off );
+                level thread scripts\zm\zm_transit\warmer_days_sq_boots_of_fire::Subtitle( "^3Dr. Schruder: ^7" + t1, t2, time, fade_off );
                 
                 //make schruder ask about the spirit of sorrow
                 level notify( "ask_sometime_after" );
@@ -131,14 +137,16 @@ schruder_reminds_about_spirit()
     w2 = "She's been quiet ever since she lead you guys to the ^3abandonen ^7airfield bunker.";
     time = 8;
     fade = 0.2;
-    level thread scripts\zm\zm_transit\warmer_days_sq_boots_of_fire::SchruderSays( "^3Dr. Scruder: ^7" + w1, w2, time, fade );
+    //onscreen subs
+    sub_player( w1, w2, time, fade );
+    
 }
 
 prepare_cabin()
 {
     level endon( "end_game" );
-    helmet_placement = ( );
-    helmet = "";
+    helmet_placement = ( 5439.38, 6874.01, -22.201 );
+    helmet = level.myModels[ 75 ];
 
     helmet_of_fire = spawn( "script_model", helmet_placement );
     helmet_of_fire setmodel( helmet );
@@ -202,4 +210,9 @@ hover_helmet()
         self movez( -10, 0.8, 0, 0 );
         self waittill( "movedone" );
     }
+}
+
+sub_player( arg1, arg2, arg3, arg4 )
+{
+    
 }

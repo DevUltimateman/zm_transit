@@ -536,7 +536,7 @@ fireboots_sound_before_locating()
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^3Dr. Schrude: ^7" + text, text2, duration, fadetimer );
+	level thread Subtitle( "^3Dr. Schruder: ^7" + text, text2, duration, fadetimer );
 }
 
 Subtitle( text, text2, duration, fadeTimer )
