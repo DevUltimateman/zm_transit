@@ -540,6 +540,7 @@ debug_nacht_shooter()
             level thread nacht_shooter();
         }
         wait 0.1;
+        //YOURE GAY FUCK
     }
 }
 /* 
