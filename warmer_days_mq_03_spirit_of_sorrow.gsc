@@ -370,6 +370,7 @@ set_spirit_follow_visuals()
         self setclientdvar( "r_skyTransition", 0.5 );
         self setclientdvar( "r_skyColorTemp", 12500 );
         self setclientdvar( "cg_colorscale", ( 1, 1, 1 ) );
+        //self setclientdvar( "", 0 );
     }
 }
 
