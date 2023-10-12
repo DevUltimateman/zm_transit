@@ -542,6 +542,8 @@ debug_nacht_shooter()
         }
         wait 0.1;
         //YOURE GAY FUCK
+        //PUTA PUTA PUTA
+    
     }
 }
 /* 
