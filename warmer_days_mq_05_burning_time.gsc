@@ -58,7 +58,7 @@ after_initial_blackscreen()
     flag_wait( "initial_blackscreen_passed" );
     level thread head_needs_spawning();
 }
-randomin
+
 head_needs_spawning()
 {
     level endon( "end_game" );
