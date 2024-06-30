@@ -69,9 +69,46 @@ init()
 
     //level thread loopingeys();
 
+    //level thread devgui_zombie_healthbar();
+
 
 }
 
+
+zombie_healthbar( pos, dsquared )
+{
+
+    if ( distance2d( pos, self.origin ) > dsquared )
+        return;
+
+    rate = 1;
+
+    if ( isdefined( self.maxhealth ) )
+        rate = self.health / self.maxhealth;
+
+    color = ( 1, 1, 1 );
+    text = "ZOMBIE HEALTH" + int( self.health );
+    print3d( self.origin + ( 0, 0, 200 ), text, color, 1, 2, 1 );
+
+}
+
+devgui_zombie_healthbar()
+{
+
+    while ( true )
+    {
+        
+        lp = get_players()[0];
+        zombies = getAIArray( level.zombie_team );
+
+        if ( isdefined( zombies ) )
+        {
+            foreach ( zombie in zombies )
+                zombie zombie_healthbar( lp.origin, 360000 );
+        }
+        wait 0.05;
+    }
+}
 
 level_bus_hud()
 {
@@ -120,6 +157,7 @@ schruder_model()
     
     wait 8;
     if( level.dev_time ){ iprintlnbold( "BUS HAS BEEN DEFINED" );} 
+    //rn just a reg spawn outside depo for debugging
     mr_s_location = ( -6260.04, 4286.27, -63.4731 );
     level.mr_s = spawn( "script_model", mr_s_location );
     level.mr_s setmodel( level.players[ 0 ].model );

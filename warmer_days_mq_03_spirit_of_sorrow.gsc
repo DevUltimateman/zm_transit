@@ -72,12 +72,12 @@ waitflag()
     flag_wait( "initial_blackscreen_passed" );
     
     
-    //dbg
-    level thread debug_nacht_shooter();
+    //dbg press ads to shoot orbs above nach fx
+    //level thread debug_nacht_shooter();
     //step 1
     //see if all players are underneath the pylon & spawn the trigger
     level thread debug_spirit_locations();
-    level thread monitor_players();
+    //level thread monitor_players(); disabled for now. dont want to go underneath pylon and start follow spirit step while testing other stuff.
     wait 3;
     if(level.dev_time){iprintlnbold("DOING A NACHT SPAWN" );}
     //level.players[ 0 ] setOrigin( debug_tower_spawn() );
