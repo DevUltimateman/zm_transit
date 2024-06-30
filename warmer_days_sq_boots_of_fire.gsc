@@ -1,11 +1,10 @@
-//codename: wamer_days_quest_fireboots.gsc
-//purpose: handles fire boot sidequest logic
-//release: 2023 as part of tranzit 2.0 v2 update
+//this script is responsible for the tranzit 2.0 v2 "Fire Bootz" sidequest logic
+//small sidequest for players to complete in the map
+//upon completing the quest, players can pick up fireboots and avoid lava damage in the map while standing in lava
 
 #include common_scripts\utility;
 #include maps\_utility;
 #include maps\_anim;
-
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\_utility;
 #include maps\mp\zombies\_zm_utility;
@@ -31,9 +30,6 @@
 #include maps\mp\gametypes_zm\_hud;
 #include maps\mp\zombies\_zm_powerups;
 #include maps\mp\zombies\_zm_magicbox;
-
-
-
 #include maps\mp\zm_alcatraz_grief_cellblock;
 #include maps\mp\zm_alcatraz_weap_quest;
 #include maps\mp\zombies\_zm_weap_tomahawk;
@@ -42,7 +38,6 @@
 #include maps\mp\zm_prison_ffotd;
 #include maps\mp\zm_prison_fx;
 #include maps\mp\zm_alcatraz_gamemodes;
-
 #include maps\mp\gametypes\_hud_message;
 #include maps\mp\ombies\_zm_stats;
 #include maps\mp\zombies\_zm_buildables;
@@ -51,8 +46,6 @@
 #include maps\mp\zm_alcatraz_utility;
 #include maps\mp\zombies\_zm_afterlife;
 #include maps\mp\zm_prison;
-
-
 #include maps\mp\zombies\_zm_stats;
 #include maps\mp\gametypes_zm\_spawnlogic;
 #include maps\mp\animscripts\traverse\shared;
@@ -84,17 +77,11 @@
 #include maps\p\animscripts\zm_shared;
 #include maps\mp\animscripts\zm_utility;
 #include maps\mp\zombies\_zm_power;
-
 #include maps\mp\zombies\_zm_server_throttle;
 #include maps\mp\zombies\_zm_melee_weapon;
 #include maps\mp\zombies\_zm_audio_announcer;
-
-
-
 #include maps\mp\zombies\_zm_perk_electric_cherry;
-
 #include maps\mp\zm_transit;
-
 #include maps\mp\createart\zm_transit_art;
 #include maps\mp\createfx\zm_transit_fx;
 #include maps\mp\zombies\_zm_ai_dogs;
@@ -103,71 +90,70 @@
 #include maps\mp\zm_transit_buildables;
 #include maps\mp\zombies\_zm_magicbox_lock;
 #include maps\mp\zombies\_zm_ffotd;
+#include maps\mp\zm_transit_lava;
 
 
 init()
 {
-    //level specific, global logic
-    //enable back later
-   // level thread fireboot_quest_init();
+
+    //re build function to support lava shoes with player_lava_damage(trig) func check
+    replacefunc( ::player_lava_damage, ::player_lava_damage_think_if_fireboots );
 
     level.boots_found = 0; //how many fireboots have players found?
-    level.summoning_kills_combined = 0; //check for if true
     level.summoning_kills_combined_total = 45; //check for if true
-    level.summoninglevel_active = false; //defaults to false so that all summoning locations can be visible before initiating
+    level.summoninglevel_active = false; //defaults to false so that all summoning locations can be accessed before initiating
 
-
+    //keep track of which summoning is active
     level.summoning_active = [];
     level.summoning_active[ 0 ] = false;
     level.summoning_active[ 1 ] = false; 
     level.summoning_active[ 2 ] = false;
 
-
+    //array to spawn the 3 different summoning models to
     level.summoning_linkedModel = [];
 
-
-
+    //each trigger notify for a pool of kills required
     level.summoningkills = [];
+    level.summoningkills[ "s0_kills++" ] = 0;
+    level.summoningkills[ "s1_kills++" ] = 0;
+    level.summoningkills[ "s2_kills++" ] = 0;
 
-    level.summoningkills[ 0 ] = 0;
-    level.summoningkills[ 1 ] = 0;
-    level.summoningkills[ 2 ] = 0;
-
+    //which summonings have players finished
     level.summoningFinished = [];
-    level.summoningFinished[ 0 ] = false;
-    level.summoningFinished[ 1 ] = false;
-    level.summoningFinished[ 2 ] = false;
-     
-    level.summoning_kills_required = 15; //how many kills per summoing 
+    level.summoningFinished[ "s0_kills++" ] = false;
+    level.summoningFinished[ "s1_kills++" ] = false;
+    level.summoningFinished[ "s2_kills++" ] = false;
+    
+    //how many souls required per summoning
+    level.summoning_kills_required = 15;
 
-    //for step 2
-    level.summoning_leg_model = [];
+    //array where we assign each fireboot summoning location
     level.fireboots_step2_origins = [];
 
     //initializes the starting logic for quest
-    level thread fireboot_quest_init();
+    level thread fireboots_quest_init();
     
-    //player specific logic
+    //player specific logic for fireboots upon connecting
     level thread fireboots_playerconnect();
 
-    //for callbacks
+    //for zombie death callbacks while level.summoninglevel true
     register_zombie_death_event_callback( ::actor_killed_override );
 }
 
 actor_killed_override( einflictor, eattacker, idamage, idflags, smeansofdeath, sweapon, vpoint, vdir, shitloc, psoffsettime, boneindex)
 {
     lava = getentarray( "lava_damage", "targetname" );
-
-    if( isdefined( level.summoning_active[ 0 ] ) && isdefined( level.summoning_trigger ) ||
-        isdefined( level.summoning_active[ 1 ] ) && isdefined( level.summoning_trigger ) ||
-        isdefined( level.summoning_active[ 2 ] ) && isdefined( level.summoning_trigger )  )
-
+    //might wanna do fire check instead of checking if zombie is touching lava.
+    //lava areas seem to be quite inconsistent
+    if( level.summoninglevel_active ) // have this check, otherwise they will drop the fxs and dont know where to go once all steps done
+    {
+        if( isdefined( level.summoning_active[ 0 ] && level.summoning_active[ 0 ] && isdefined( level.summoning_trigger ) ) )
         {
-            if( isdefined( level.summoning_trigger && self istouching( level.summoning_trigger ) ) )
+            if( isdefined( level.summoningFinished[ "s0_kills++" ] && !level.summoningFinished[ "s0_kills++" ] ) )
             {
-                if( distance2d( level.summoning_trigger, self.origin ) <= 250 )
+                if( isdefined( self ) & self istouching( level.summoning_trigger ) ) 
                 {
-                    if( self isTouching( lava ) )
+                    if( self.is_on_fire && self isTouching( lava ) )
                     {
                         if( self.is_on_fire )
                         {
@@ -177,12 +163,16 @@ actor_killed_override( einflictor, eattacker, idamage, idflags, smeansofdeath, s
                     }
                 }
             }
+        }
+                
 
-            if( isdefined( level.summoning_trigger && self istouching( level.summoning_trigger ) ) )
+        if( isdefined( level.summoning_active[ 1 ] && level.summoning_active[ 1 ] && isdefined( level.summoning_trigger ) ) )
+        {
+            if( isdefined( level.summoningFinished[ "s1_kills++" ] && !level.summoningFinished[ "s1_kills++" ] ) )
             {
-                if( distance2d( level.summoning_trigger, self.origin ) <= 250 )
+                if( isdefined( self ) & self istouching( level.summoning_trigger ) ) 
                 {
-                    if( self isTouching( lava ) )
+                    if( self.is_on_fire && self isTouching( lava ) )
                     {
                         if( self.is_on_fire )
                         {
@@ -192,12 +182,15 @@ actor_killed_override( einflictor, eattacker, idamage, idflags, smeansofdeath, s
                     }
                 }
             }
+        }
 
-            if( isdefined( level.summoning_trigger && self istouching( level.summoning_trigger ) ) )
+        if( isdefined( level.summoning_active[ 2 ] && level.summoning_active[ 2 ] && isdefined( level.summoning_trigger ) ) )
+        {
+            if( isdefined( level.summoningFinished[ "s2_kills++" ] && !level.summoningFinished[ "s2_kills++" ] ) )
             {
-                if( distance2d( level.summoning_trigger, self.origin ) <= 250 )
+                if( isdefined( self ) & self istouching( level.summoning_trigger ) ) 
                 {
-                    if( self isTouching( lava ) )
+                    if( self.is_on_fire && self isTouching( lava ) )
                     {
                         if( self.is_on_fire )
                         {
@@ -207,8 +200,9 @@ actor_killed_override( einflictor, eattacker, idamage, idflags, smeansofdeath, s
                     }
                 }
             }
-
         }
+    }
+   
 }
 
 
@@ -216,83 +210,87 @@ fireboots_souls( which_summoning, idx )
 {
     level endon( "end_game" );
 
-
+    
     zm_head = self gettagorigin( "j_head" );
-    where_to_move = level.summoning_trigger.origin;
+    where_to_move = level.summoning_trigger.origin + ( 0, 0, 200 );
 
     inv_mover = spawn( "script_model", zm_head );
     inv_mover setmodel( "tag_origin" );
     wait .05;
     inv_mover playLoopSound( "zmb_spawn_powerup_loop" );
-    playFXOnTag( level.myfx[ 2 ], inv_mover, "tag_origin" );
-    playfxontag( level._effect[ "fx_fire_fireplace_md" ], inv_mover, "tag_origin" );
-    inv_mover moveto ( where_to_move, randomFloatRange( 1, 1.3 ) );
+    playFXOnTag( level.myfx[ 1 ], inv_mover, "tag_origin" );
+    //playfxontag( level._effect[ "fx_fire_fireplace_md" ], inv_mover, "tag_origin" );
+    inv_mover moveto ( where_to_move, randomFloatRange( 0.2, 0.4 ), 0, 0 );
     inv_mover waittill( "movedone" );
     inv_mover delete();
-    //playFXontag( level._effect[ "fx_zombie_powerup_wave" ], targetlocationq, "tag_origin" );
+    playFX( level._effect[ "fx_zombie_powerup_wave" ], where_to_move );
     playsoundatposition( "zmb_meteor_activate", where_to_move );
     //level.summoningkills + idx +=1;                     
 }
 
 spawn_global_summoning_trigger( origin, index )
 {
-    level.summoning_trigger = spawn( "trigger_radius", ( origin ), 1, 200, 200 );
+    level.summoning_trigger = spawn( "trigger_radius", origin , 1, 250, 250 );
     level.summoning_trigger setteamfortrigger( level.zombie_team );
     //update it to move to the visible model origin
-    wait 3;
-    level.summoning_trigger moveTo( level.summoning_linkedModel[ index ].origin, 0.1, 0, 0 );
+    wait 1;
+    //level.summoning_trigger moveTo( level.summoning_linkedModel[ index ].origin, 0.1, 0, 0 );
 
-    safer = "s" + index + "_kills";
-          //summoning loop
+    //safer is a notify
+    // original notify comes from death call backs
+    //like level notify( "s_0_kills++" );
+    //since we cant do a global variable for this one we make a string and parse index between the string lines to match
+    //the defined notifies in custom_Death_callback.
+    safer = "s" + index + "_kills++";
+    //summoning loop
     while( true )
     {
-
         level waittill( safer );
-        level.summoningkills[ index ] +=1;
-        iPrintLnBold( " SOULS COLLECTED " + level.summoningkills[ index ] );
-       // wait 0.05;
-        if( level.summoningkills[ index ] >= level.summoning_kills_required )
+        level.summoningkills[ safer ] += 1;
+        if( level.dev_time ){ iprintln( "SOULS COLLECTED " + level.summoningkills[ safer ] + " / 15 " ); }  
+        if( level.summoningkills[ safer ] >= level.summoning_kills_required )
         {
             //release other summoning to be discoverable
             level.summoning_active[ index ] = false;
             level.summoninglevel_active = false;
-            //delete id trigger
-            level.summoning_trigger delete();
+            
             //let player know that boos have finished soul collecting
             level thread playVictoryFxAndDeleteEverything( level.summoning_linkedModel[ index ].origin, index );
-            level.summoningFinished[ index ] = true; 
+            level.summoningFinished[ safer ] = true; 
             level notify( "summoning_done" );
+
+            wait 1.5;
+            //delete id trigger
+            level.summoning_trigger delete();
+            if( all_boots_summoned() )
+            {
+                level notify( "fireboots_step2_completed" );
+            }
+            //why havent we broke out of loop before?
+            //this most likely is the reason why global spawn logic fails coz it has 2 while loops running fuck sakes
+            if( level.dev_time ) { iprintln( "WE SUMMONED THIS BOOT! BREAKING OUT OF LOOP FROM OLD THREAD" ); }
+            break;
         }
-        wait 3;
+        wait 0.05;
     }   
 }
 
-FlagWaitsAllSummoningDone()
-{
-    level endon( "end_game" );
-    while(  !level.summoningFinished[ 0 ] &&  !level.summoningFinished[ 1 ] &&  !level.summoningFinished[ 2 ] )
-    {
-        wait 1;
-    }
-    level notify( "fireboots_step2_completed" );
-}
+
 playVictoryFxAndDeleteEverything( here, idx )
 {
     level endon( "end_game" );
     for( i = 0; i < 12; i++ )
     {
         
-        playfx( level.myFx[ 9 ], here.origin );
+        playfxontag( level.myFx[ 9 ], here, "tag_origin" ); 
         wait randomFloatRange( 0.05, 0.09 );
     }
-    playfx( level.myfx[ 78 ], here );
+    playfxontag( level.myfx[ 78 ], here, "tag_origin" );
     PlaySoundAtPosition("zmb_avogadro_death_short", here );
     
     wait 0.1;
     level.summoning_linkedModel[ idx ]delete();
 }
-
-
 fireboots_playerconnect()
 {
     level endon( "end_game" );
@@ -301,10 +299,8 @@ fireboots_playerconnect()
         level waittill( "connected", obeyer );
         obeyer thread setBootStat( false );
         obeyer thread printer();
-        //obeyer thread 
     }
 }
-
 setBootStat( firstTime )
 {
     self endon( "disconnect" );
@@ -315,55 +311,37 @@ setBootStat( firstTime )
     wait 1;
     self setClientDvar( "cg_ufo_scaler", 0.5 );
     self.has_picked_up_boots = firstTime;
+    self giveweapon( "mp5k_zm" );
+    self giveMaxAmmo( "mp5k_zm" );
+    self switchToWeapon( "mp5k_zm" );
 } 
 
 
-fireboot_quest_init()
+fireboots_quest_init()
 {
     level endon( "end_game" );
 
     flag_wait( "initial_blackscreen_passed" );
-    wait 5;
-    
-    
+
     //step1
-    //level thread step1_boot_hopping(); //initiate, spawn and link to 
-    //level waittill( "fireboots_step1_completed" );
+    level thread f_boots1(); //players collect 6 different fire boot pieces by jumping into found boot
+    level waittill( "fireboots_step1_completed" );
 
     //step2
-    // 3 different pair of boots have been spawned around the map.
-    //once players stumble upon one, the pair raises from ground to 150+ units z, then players must kill 15 zombies while standing in lava and those zombies
-    //collect souls to said boots
-    level thread f_boots2(); 
+    level thread f_boots2(); //players must find 3 different booots and collect souls to them ( while zombies are on fire )
     level waittill( "fireboots_step2_completed" );
-    //level thread step3_fireboots_pickup();
-    
-    //debug
-    //level thread f_boots2(); //find the boots that are running away from the players
-    //step2
-    //level thread f_boots2(); //find the boots that are running away from the players
-    //level thread monitor_all_boots(); //monitor if kill count > required
-    
-    
-    //level waittill( "fireboots_step2_completed" );
 
     //step3
-    /* 
-    Make the new pick location underneath the labs. 
-    rn the debug location is set to level.initial_spawnpoint[ 0 ].origin  */
-
-
+    level thread f_boots3(); //fire boots have been spawned, players can now pick them up and avoid lava damage
 }
 
 
 all_boots_summoned()
 {
     level endon( "end_game" );
-    if( level.summoning_kills_combined >= level.summoning_kills_combined_total )
-    {
-        return true;
-    }
-    return false;
+    if( level.summoningkills[ 0 ] +
+        level.summoningkills[ 1 ] +
+        level.summoningkills[ 2 ] >= level.summoning_kills_combined_total  ) { return true; } return false;
 }
 
 monitor_all_boots()
@@ -398,7 +376,7 @@ are_boots_found()
     return false;
 }
 
-step1_boot_hopping() //fireboot quest step1. Find 8 different fireboots around the map ( jump into found boots, run into them to pick up )
+f_boots1() //fireboot quest step1. Find 8 different fireboots around the map ( jump into found boots, run into them to pick up )
 {
     level endon( "end_game" );
 
@@ -412,21 +390,8 @@ step1_boot_hopping() //fireboot quest step1. Find 8 different fireboots around t
     level.fireboot_locations[ 5 ] = ( 1221.56, -658.023, 68.6946 );
     level.fireboot_locations[ 6 ] = ( -11742.6, -827.903, 249.517 );
     level.fireboot_locations[ 7 ] = ( -6211.82, -5684.03, -0.988062 );
-
-
-
-    //mod1 = "c_zom_zombie2_body01_g_legsoff";
-    //mod2 = "c_zom_zombie1_body01_g_legsoff";
     wait 0.05;
 
-    /* 
-    for loop checks fireboot locations size,
-    then spawns a model + fx on the location index,
-    once all boots are spawned, hop into a while loop,
-    which then waits till are_boots_found to return true.
-
-    if all boots are found -> play a message + notify level logic to move onto a next step 
-    */
     for( s = 0; s < level.fireboot_locations.size; s++ )
     {
         level.boot_triggers[ s ] = spawn( "trigger_radius", level.fireboot_locations[ s ], 48, 48, 48 );
@@ -445,27 +410,29 @@ step1_boot_hopping() //fireboot quest step1. Find 8 different fireboots around t
     wait 8;
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
     //activate this back when the crashing issue is figured out.
-    //level thread _someone_unlocked_something( "You've located all the ^3fireboot^7 pieces, conqratulations!", "Quick, catch and summon them before they run away!", 8, 0.1 );
+    level thread _someone_unlocked_something( "You've located all the ^3fireboot^7 pieces, conqratulations!", "Quick, catch and summon them before they run away!", 8, 0.5 );
     wait 8;
     level notify( "fireboots_step1_completed" );
 }
 
-step3_fireboots_pickup()
+f_boots3()
 {
     level endon( "end_game" );
 
+
+    level thread _someone_unlocked_something( "Excellent! You've summoned all Fire Bootz!", "They're now yours to keep. Pick them up from ^3labs.", 8, 0.5 );
     //text up
     text_u = [];
     text_u[ 0 ] = "Excellent stuff!";
     text_u[ 1 ] = "Lucky you, I guess.";
-    text_u[ 2 ] = "Did you really have to get them?";
-    text_u[ 3 ] = "aaa... AAAWESOOOOME!";
+    text_u[ 2 ] = "aaa... AAAWESOOOOME!";
     
     //text down
     text_d = undefined;
+
     //trigger origin
-    //loc = player 0 origin for debugging purposes, for now
-    loc = level.players[ 0 ].origin + ( 0, 0, 20 );
+    //rn outside bus station for debugging.
+    loc = ( -6188.75, 4594.24, -15.4793 );
     if( level.dev_time ){ iprintlnbold( "WE HAVE SETUP THE INTIAL BOOT PICK UP POINT NOW, WAITING FOR 5 SECS BEFORE SPAWNING IT" ); }
     pickup_model = spawn( "script_model", loc );
     pickup_model setmodel( "c_zom_zombie3_g_rlegspawn" );
@@ -521,7 +488,7 @@ step3_fireboots_pickup()
                 playfx( level.myFx[ 9 ], user.origin );
                 user.has_picked_up_boots = true;
                 wait 0.05;
-                trigg setinvisibletoplayer( user );
+                //trigg setinvisibletoplayer( user );
                 
                 //needs an fire trail for boots when moving around
                 //the tags need to be retrieved, cod2 tags wont work.
@@ -532,7 +499,7 @@ step3_fireboots_pickup()
                 
                 /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
                 //this commented out till we can fix the text freeze issue that crashes the game after ~1 minute of calling it
-                //level thread _someone_unlocked_something( text_upper, text_d, 4, 0.1 );
+                level thread _someone_unlocked_something( text_d, text_upper, 7, 0.5 );
 
                 //wait_network_frame();
                 text_d = undefined;
@@ -674,9 +641,9 @@ f_boots2() // fireboots, step 2
     level endon( "end_game" );
 
     
-    level.fireboots_step2_origins[ 0 ] = ( -5883.79, 5204.24, -53.3409 ); //next to bus station, big lava crater on the left behind depo
-    level.fireboots_step2_origins[ 1 ] = ( 5302.77, 6228.75, -61.5905 ); //in the ambush woods, next to wood log & axe at front of cabin
-    level.fireboots_step2_origins[ 2 ] = ( 1448.24, -444.592, -70.8376 ); //middle of lava pit in town
+    level.fireboots_step2_origins[ 0 ] = ( -5909.55, -7742.08, 185.431 ); //diner roof
+    level.fireboots_step2_origins[ 1 ] = ( 13382.2, -726.357, -263.877 ); //when u enter nach bunker, outside
+    level.fireboots_step2_origins[ 2 ] = ( 1448.24, -444.592, -85.8376 ); //middle of lava pit in town
 
     
     wait 1;
@@ -690,11 +657,12 @@ f_boots2() // fireboots, step 2
 
     for( i = 0; i < level.summoning_linkedModel.size; i++ )
     {
-        assigned_alias = "level.summoning_linkedModel" + i;
-        level.summoning_linkedModel[ i ] thread fireboots_sound_before_locating( assigned_alias, i );
+        //assigned_alias = "level.summoning_linkedModel" + i;
+        //change first arg to level.summoning_linkedModel[ i ], array broke the previous thread linking
+        level thread fireboots_sound_before_locating( level.summoning_linkedModel[ i ], i );
     }
 
-    if( level.devtime )
+    if( level.dev_time )
     {
         iprintlnbold( "ALL BOOT SPAWNS INITIALIZED!" );
     }
@@ -719,13 +687,24 @@ lol()
 */
 
 
-
+rise_boots_from_initial_ground_origin( rising_model, amount, trig_org, active_idx, summoning_bounce )
+{
+    level endon( "end_game" );
+    rising_model movez( amount, 1.5, 0.3, 0.1 );
+    playfx( level._effect[ "avogadro_ascend_aerial" ], rising_model.origin + ( 0, 0, 30 ) );
+    rising_model waittill( "movedone" );
+    level thread spawn_global_summoning_trigger( trig_org, active_idx );
+    wait 0.05;
+    rising_model thread summoning_in_progress( rising_model, summoning_bounce );
+}
 
 fireboots_sound_before_locating( alias, which_active )
 {
     level endon( "end_game" );
     self endon( "stop_summon_sound" );
 
+    //kill the loop on said model
+    break_thread = false;
     sound_to_play = "zmb_spawn_powerup_loop";
     self playloopsound( sound_to_play );
     //how high in z  do we launch the model and fxs
@@ -734,49 +713,68 @@ fireboots_sound_before_locating( alias, which_active )
     //we have not found this summoning yet
     someone_located = false;
     //distance to be within for the leg to spawn
-    close_enough = 280;
+    close_enough = 350;
     wait 0.05;
+    //what the fuck is this fx?
     playfxontag( level.myFx[ 6 ], self, "tag_origin" );
 
     while( true )
     {
-       
-        
-        for( i = 0; i < level.players.size; i++ )
+
+        if( isdefined( level.summoning_active[ 0 ] ) && level.summoning_active[ 0 ] == false ||
+        isdefined( level.summoning_active[ 1 ] ) && level.summoning_active[ 1 ] == false ||
+        isdefined( level.summoning_active[ 2 ] ) && level.summoning_active[ 2 ] == false &&
+        level.summoninglevel_active == false )
         {
-            if( isdefined( level.summoning1_active ) && !level.summoning1_active ||
-                isdefined( level.summoning2_active ) && !level.summoning2_active ||
-                isdefined( level.summoning3_active ) && !level.summoning3_active )
+            if( level.dev_time ) { iprintlnbold( "WE ARE DOING THE LOCATE CHECK NOW" ); }
+            if( someone_located || level.summoninglevel_active )
             {
-                // == SELF == One of three boot models that this check is being done on
-                if( distance2d( level.players[ i ].origin, self.origin ) <= close_enough )
+                if( level.dev_time ){ iprintlnbold( "Someone is already doing another summoning elsewhere." ); }
+                wait 1; 
+            }
+            for( players = 0; players < level.players.size; players++ )
+            {
+                p = level.players[ players ];
+                distance_p_object = distance2d( p.origin, alias.origin );
+                if( distance_p_object <= close_enough && level.summoninglevel_active == false )
                 {
+                    wait 0.1;
+                    break_thread = true;
+                    if( level.dev_time ) { iprintln( "Distance between boot & " + p.name + " was ^2" + distance_p_object ); }
+                    someone_located = true;
+                    level.summoninglevel_active = true;
+                    level.summoning_active[ which_active ] = true;
+                    // small indicator for something
+                    alias playsound( "ignite" );
+                    Earthquake( 0.35, 5, alias.origin, 1000 );
+                    while( distance2d( p.origin, alias.origin ) < 350 &&
+                            distance2d( p.origin, alias.origin ) > 250 )
+                    {
+                        wait 0.5;
+                    }
+                    // let it rip harder
+                    earthquake( 0.65, 3, alias.origin, 1000 );
+                    alias playsound( "zmb_avogadro_death_short" );
+                    //rising model, how much to rise, where to spawn trig(model origin), model index, how much to bounce from ground
+                    level thread rise_boots_from_initial_ground_origin( alias, 50, alias.origin, which_active, 200 );
+                    playfx( level._effect[ "avogadro_ascend_aerial" /*"avogadro_ascend"*/ ], alias.origin + ( 0, 0, 300 ) ); //needs a better fx
                     
-                        wait 0.1;
-                        someone_located = true;
-                        how_far = distance2d( level.players[ i ].origin, self.origin );
-                        iPrintLn( "Fireboots were found by: ^3" + level.players[ i ].name + " from " + how_far + " meters away from them!" );
-
-                        //lets spawn the summoning trrigger on model's origin
-                        level thread spawn_global_summoning_trigger( self.origin, which_active );
-                        //let's set the global summoning flag active so other locations cant be accessed at that time
-                        level.summoning_active[ which_active ] = true;
-                        level.summoninglevel_active = true;
-
-                        //bounce model
-                        level thread summoning_in_progress( self, 200 );
-                        wait 5;
-                        //SHITS FUCKED FOR SOME REASON THE TEST SPHERE DOESNT BOUNCE UP AND START THE LOGIC ANYMORE!!!
-                        //LOOK INTO
-                        self notify( "stop_summmon_sound" );
-                        
-                        break;
-                    
-                    
+                    break;
                 }
             }
+
+            if( break_thread )
+            {
+                if( level.dev_time )
+                {
+                    iprintln( "Exiting out of while loop for linked model" );
+                    
+                }
+                break;
+            }
         }
-        wait 1;
+        else { wait 1; }
+        wait 0.1;
     }
 }
 
@@ -887,13 +885,13 @@ summoning_in_progress( model, bounce_upwards )
     playfxontag( level.myFx[ 19 ], self, "tag_origin" );
     wait 0.05;
     playfxontag( level.myFx[ 1 ], self, "tag_origin" );
-    model moveZ( bounce_upwards, 0.3, 0.2, 0 );
+    model moveZ( bounce_upwards, 0.5, 0.2, 0.1 );
     model waittill( "movedone" );
     
     //threads
     model thread mover_z( 30, -30, 2, .3, .3 );
-    wait 0.05;
-    level notify( "summerover" );
+   // wait 0.05;
+   // level notify( "summerover" );
     //models thread are_zombies_close_to_legs( models );
     //model thread keep_track_of_progress();
 }
@@ -1073,4 +1071,64 @@ watch_for_death_disconnect()
         break;
         
     }   
+}
+
+
+
+
+player_lava_damage_think_if_fireboots( trig )
+{
+    self endon( "zombified" );
+    self endon( "death" );
+    self endon( "disconnect" );
+    max_dmg = 15;
+    min_dmg = 5;
+    burn_time = 1;
+
+    if ( isdefined( self.is_zombie ) && self.is_zombie )
+        return;
+
+    self thread player_stop_burning();
+
+    if( isdefined( self.has_picked_up_boots ) && self.has_picked_up_boots )
+    {
+        return;
+    }
+
+    if ( isdefined( trig.script_float ) )
+    {
+        max_dmg = max_dmg * trig.script_float;
+        min_dmg = min_dmg * trig.script_float;
+        burn_time = burn_time * trig.script_float;
+
+        if ( burn_time >= 1.5 )
+            burn_time = 1.5;
+    }
+
+    if ( !isdefined( self.is_burning ) && is_player_valid( self ) )
+    {
+        self.is_burning = 1;
+        maps\mp\_visionset_mgr::vsmgr_activate( "overlay", "zm_transit_burn", self, burn_time, level.zm_transit_burn_max_duration );
+        self notify( "burned" );
+
+        if ( isdefined( trig.script_float ) && trig.script_float >= 0.1 )
+            self thread player_burning_fx();
+
+        if ( !self hasperk( "specialty_armorvest" ) || self.health - 100 < 1 )
+        {
+            radiusdamage( self.origin, 10, max_dmg, min_dmg );
+            wait 0.5;
+            self.is_burning = undefined;
+        }
+        else
+        {
+            if ( self hasperk( "specialty_armorvest" ) )
+                self dodamage( 15, self.origin );
+            else
+                self dodamage( 1, self.origin );
+
+            wait 0.5;
+            self.is_burning = undefined;
+        }
+    }
 }

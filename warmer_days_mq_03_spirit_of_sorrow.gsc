@@ -80,7 +80,7 @@ waitflag()
     level thread monitor_players();
     wait 3;
     if(level.dev_time){iprintlnbold("DOING A NACHT SPAWN" );}
-    level.players[ 0 ] setOrigin( debug_tower_spawn() );
+    //level.players[ 0 ] setOrigin( debug_tower_spawn() );
     level waittill( "players_obey" );
 
     //visual effect for step2

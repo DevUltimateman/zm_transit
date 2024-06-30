@@ -40,13 +40,19 @@
 #include maps\mp\createart\zm_transit_art;
 #include maps\mp\createfx\zm_transit_fx;
 
+#include maps\mp\zombies\_zm_craftables;
+
 init()
 {
-
+    replacefunc( ::manage_multiple_pieces, ::manage_multiple_pieces_new );
     level.player_out_of_playable_area_monitor = false;
     
     //spawn schruder
-    //level thread schruder_model();
+    //this also handles the initial talking with players
+    level thread schruder_model();
+    
+    //wait till power on and player has returned to schruder
+    level thread step2_talk();
     //first time meeting
     //level thread meeting_schruder();
 
@@ -114,8 +120,8 @@ schruder_model()
     
     wait 8;
     if( level.dev_time ){ iprintlnbold( "BUS HAS BEEN DEFINED" );} 
-    mr_s_nacht = level.the_bus.origin;
-    level.mr_s = spawn( "script_model", mr_s_nacht );
+    mr_s_location = ( -6260.04, 4286.27, -63.4731 );
+    level.mr_s = spawn( "script_model", mr_s_location );
     level.mr_s setmodel( level.players[ 0 ].model );
     level.mr_s.angles = level.mr_s.angles;
 
@@ -124,7 +130,7 @@ schruder_model()
     level.mr_s_blocker setmodel( "collision_player_32x32x128" );
     level.mr_s_blocker.angles = (0,0,0);
 
-    tulo = spawn( "script_model", mr_s_nacht );
+    tulo = spawn( "script_model", mr_s_location );
     wait 0.05;
     tulo setmodel( "tag_origin" );
     wait 0.05;
@@ -144,11 +150,13 @@ schruder_model()
     {
         for( s = 0; s < level.players.size; s++ )
         {
-            if( distance( level.mr_s, level.players[ s ] ) < 150 )
+            if( distance2d( level.mr_s.origin, level.players[ s ].origin ) < 150 )
             {
                 level notify( "firsttime_meet" );
+                if( level.dev_time ) { iprintln( "SCRUDER WAS MET" ); }
                 i = 1;
                 wait 0.05;
+                level thread step1_talk();
                 break;
             }
         }
@@ -157,6 +165,23 @@ schruder_model()
 
 }
 
+step1_talk()
+{
+    level endon( "end_game" );
+    meeting_vox01("");
+    wait 6;
+    meeting_vox02("");
+    wait 9;
+    meeting_vox03("");
+    wait 6;
+    meeting_vox04("");
+    wait 8;
+    meeting_vox05("");
+    wait 6;
+    meeting_vox06("");
+    wait 8;
+    if( level.dev_time ){ iprintln( "STEP 1 TALKS COMPLETED" ); }
+}
 test_powerups()
 {
     level endon( "end_game" );
@@ -229,17 +254,7 @@ movemeup()
 
     }
 }
-meeting_schruder()
-{
-    level endon( "end_game" );
-    flag_wait( "initial_blackscreen_passed" );
-    wait 2;
-    //level waittill( "firsttime_meet" );
 
-    //level thread meeting_vox01( "" );
-    
-    
-}
 
 meeting_vox01( background_music )
 {
@@ -247,17 +262,260 @@ meeting_vox01( background_music )
 
     if( background_music == "" )
     {
-        play_sound_at_pos( background_music, level.players[0].origin );
-        subtitle_upper =  "What kinda hillybillies are wondering around my fields?";
-        subtitle_lower = "Aha, I'm joking, I'm joking guuuyyys.";
-        duration = 8;
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "Hey you guys!";
+        subtitle_lower = "Stop! Come over here!";
+        duration = 5;
         fadetimer = 1;
-        level thread machine_says( "^3Dr. Schrude: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
     
 
 }
+
+meeting_vox02( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "What are you guys doing over here?";
+        subtitle_lower = "There haven't been much movement since the cold days...";
+        duration = 8;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox03( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "Yeah! Those were not that nice times ha.";
+        subtitle_lower = "You're the first ones that have stumbled into me since then!";
+        duration = 6;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox04( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "Anyways let's cut off the chit chat, I believe you guys can help me with something.";
+        subtitle_lower = "You're not that shabby lookin, I'm sure we can figure something out...";
+        duration = 7;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox05( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "What do you think? Ha, it doesn't matter.";
+        subtitle_lower = "Feel free to come by at me once you've turned on the power.";
+        duration = 5;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox06( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "Oh, you could also look around the area to see if any other survivors have left something to lay around.";
+        subtitle_lower = "I'm sure you can figure something out if you come across any.";
+        duration = 7;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+
+manage_multiple_pieces_new( max_instances )
+{
+    self.max_instances = max_instances;
+    self.managing_pieces = 1;
+    self.piece_allocated = [];
+}
+step2_talk()
+{
+    level endon( "end_game" );
+
+    flag_wait( "power_on" );
+
+    while( i == 0 )
+    {
+        for( s = 0; s < level.players.size; s++ )
+        {
+            if( distance2d( level.mr_s.origin, level.players[ s ].origin ) < 200 )
+            {
+                level notify( "firsttime_meet" );
+                if( level.dev_time ) { iprintln( "SCRUDER WAS MET 2" ); }
+                i = 1;
+                wait 0.05;
+                break;
+            }
+        }
+        wait 0.05;
+    }
+
+    meeting_vox07("");
+    wait 6;
+    meeting_vox08("");
+    wait 6;
+    meeting_vox09("");
+    wait 6;
+    meeting_vox10("");
+    wait 8;
+    meeting_vox11("");
+    wait 8;
+    meeting_vox12("");
+    wait 8;
+    if( level.dev_time ){ iprintln( "STEP 2 TALKS COMPLETED" ); }
+}
+
+
+meeting_vox07( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "Ahh.. Hello again.";
+        subtitle_lower = "I see you got the power turned on, fantastic!";
+        duration = 6;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox08( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "I suppose you wouldn't be back here if you didn't want to help me a bit...";
+        subtitle_lower = "Or am I in wrong?!";
+        duration = 6;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox09( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "It took you quite some time to get back here...";
+        subtitle_lower = "We could start off by repairing rift portals.";
+        duration = 6;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox10( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "Those previous survivors scattered some of the rift transmitters around the map...";
+        subtitle_lower = "You could try bringing those pieces underneath the pylon if you find any tranmitter ( navcard ) pieces.";
+        duration = 7;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox11( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "You could try re-building the transmitter once all the pieces are underneath the pylon.";
+        subtitle_lower = "Once the transmitter emits power, the rift portals should open.";
+        duration = 7;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox12( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "I'm also able to contact you via navcard, once the transmitter is working.";
+        subtitle_lower = "What do you think? Should we get to work?";
+        duration = 7;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 machine_says( sub_up, sub_low, duration, fadeTimer )

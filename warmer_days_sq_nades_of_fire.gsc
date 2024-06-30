@@ -1,6 +1,7 @@
-//codename: wamer_days_quest_firenade.gsc
-//purpose: handles fire nade sidequest logic
-//release: 2023 as part of tranzit 2.0 v2 update
+//this script is responsible for the tranzit 2.0 v2 "Ray Nades" sidequest logic
+//small sidequest for players to complete in the map
+//upon completing the quest, players receive upgraded nades that when thrown, launch up in the air shooting a burst of rays towards zombies in the close vicinity
+
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\gametypes\_hud_message;
 #include maps\mp\ombies\_zm_stats;
