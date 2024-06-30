@@ -40,9 +40,9 @@
 init()
 {
      //can we do a new hover?
-    level.schruder_hovers = false;
+    level.spirit_hovers = false;
     //can we move him again?
-    level.schruder_moves = false;
+    level.spirit_moves = false;
     //mr_schruder points of interests
     level.spirit_locations = [];
     //tower to mr_schruder ground poi [0]
@@ -66,45 +66,33 @@ init()
     
 }
 
+//dbg press ads to shoot orbs above nach fx
+    //level thread debug_nacht_shooter();
+        //level.players[ 0 ] setOrigin( debug_tower_spawn() );
 waitflag()
 {
     level endon( "end_game" );
     flag_wait( "initial_blackscreen_passed" );
     
-    
-    //dbg press ads to shoot orbs above nach fx
-    //level thread debug_nacht_shooter();
     //step 1
-    //see if all players are underneath the pylon & spawn the trigger
-    level thread debug_spirit_locations();
     //level thread monitor_players(); disabled for now. dont want to go underneath pylon and start follow spirit step while testing other stuff.
-    wait 3;
-    if(level.dev_time){iprintlnbold("DOING A NACHT SPAWN" );}
-    //level.players[ 0 ] setOrigin( debug_tower_spawn() );
-    level waittill( "players_obey" );
-
-    //visual effect for step2
-    level thread follow_the_spirit_visuals();
-    //step 2
-    //spawn orbs from the tower and move them to ground location
-    //also play dialog from schruder, spawns a spirit that players must follow
-    level thread shoot_orbs();
-    //thunder fx
-    level thread spirit_thunder_locations();
+    level waittill( "players_obey" ); //all players gathered together underneath the pylon
     
-    level waittill( "orbs_on_ground" );
-    level thread spawn_spirit();
-    level waittill( "spirit_ready" );
-    level thread follow_spirit();
-    level waittill( "orb_at_nacht" );
+    //step 2
+    level thread follow_the_spirit_visuals(); //visual effect for step2
+    level thread shoot_orbs(); // shoots orbs from the top of pylon towards the center of it
+    level thread spirit_thunder_locations(); //thunder fx while doing this step
+    
+    level waittill( "orbs_on_ground" ); //waiting for orbs to "touch" ground
+    level thread spawn_spirit(); //spawn the spirit that players should follow
+    level waittill( "spirit_ready" ); //waiting for all spirit stuff to be initialized
+    level thread follow_spirit(); //handles the interaction logic with spirit & players and plays the proper text dialog
+    level waittill( "orb_at_nacht" ); //notify once spirit reaches it's end goal
 
     //step3
-    //orb is now at nacht, play huge fx at nacht tags
-    //add a schruder dialog here where he tells about the next step while
-    //survivors are at nacht
-    level thread nacht_shooter();
-    //temp to just test
-    level waittill( "obey_spirit_complete" );
+    level thread nacht_shooter(); //shoot array of spirits from nacht roof
+    
+    //level waittill( "obey_spirit_complete" ); //debug to not let this go past
     foreach( player in level.players )
     {
         player thread scripts\zm\zm_transit\warmer_days_main::dev_visuals();
@@ -121,9 +109,6 @@ spirit_thunder_locations()
 {
     
     level.thunder_s_loc[ 0 ] = ( 7945.49, -419.728, 7468.53 );
-    //level.thunder_s_loc[ 1 ] = ( 11078.3, 593.423, 624.101 );
-    //level.thunder_s_loc[ 2 ] = ( 14997.7, -1694.19, 369.485 );
-
     wait 0.05;
     for( i = 0; i < level.thunder_s_loc.size; i++ )
     {
@@ -138,15 +123,12 @@ spirit_thunder_locations()
         level.thunderplayer[ s ] thread spin_me();
         wait 0.05;
     }
-
     level waittill( "destroy_clouds" );
     wait 0.1;
     foreach( isser in level.thunderplayer )
     {
         isser delete();
     }
-
-
 }
 
 //thunder spinner
@@ -159,6 +141,7 @@ spin_me()
         self waittill( "movedone" );
     }
 }
+
 //tempoerary subtitles -to see how long each segment should take place
 return_spirit_textline( switcher )
 {
@@ -168,12 +151,9 @@ return_spirit_textline( switcher )
         case 1:
             u_ = "Well hello! What are you doing on my father's fields?";
             d_ = "Aha, I'm just joking guys, I'm just joking!"; 
-            level thread spirit_says( u_, d_, 8, 1 );
-            
+            level thread spirit_says( u_, d_, 8, 1 );  
             break;
 
-        
-            
         case 4:
             u_ = "Fancy catching me?";
             d_ = "That is if you can, ha!";
@@ -212,8 +192,6 @@ return_spirit_textline( switcher )
 
         default:
             break;
-
-        
     }
 }
 
@@ -257,13 +235,11 @@ follow_spirit()
         }
         level.o_spirit moveto( level.spirit_locations[ s ], randomfloatrange( 1, 1.4 ), 0.2, 0.2 );
         level.o_spirit waittill( "movedone" );
-        //if we need to skip the touch section for couple locations
         if( !to_skip )
         {
             level.o_spirit thread hover_orb();
             while( player_is_away() )
             {
-                //lower wait time for higher obstacles
                 wait 0.1;
             }
             level.o_spirit notify( "s_hover" );
@@ -289,7 +265,6 @@ debug_tower_spawn()
 follow_the_spirit_visuals()
 {
     level endon( "end_game" );
-    //level endon( "stop_tracking_spirit_visuals" );
     level.bypass_visual_check = true;
     for( i = 0; i < level.players.size; i++ )
     {
@@ -541,9 +516,6 @@ debug_nacht_shooter()
             level thread nacht_shooter();
         }
         wait 0.1;
-        //YOURE GAY FUCK
-        //PUTA PUTA PUTA
-    
     }
 }
 /* 
@@ -607,10 +579,6 @@ choose_random_redblue()
     return x;
 }
 
-/* 
-purpose:
-use this to delete movable entities once they've reached their target goal
- */
 delete_upon_goal()
 {
     level endon( "end_game" );
@@ -667,24 +635,24 @@ schruder_rise( latitude, duration, smooth_factor, smooth_factor_out )
     level endon( "end_game" );
     
     //keep track if we are hovering
-    if( level.schruder_hovers )
+    if( level.spirit_hovers )
     {
         if( level.dev_time ){ iPrintLnBold( "SCHRUDER IS STILL HOVERING, PAUSING THE CALL TILL ITS SAFE AGAIN" ); }
         wait 1;
         self waittill( "im_allowed_to_levitate" );
     }
 
-    else if( !level.schruder_hovers )
+    else if( !level.spirit_hovers )
     {
         if( isdefined( smooth_factor_out ) )
         {
             if( smooth_factor_out < 1.3 ){ smooth_factor_out = 0; }
         }
         if( level.dev_time ){ iPrintLnBold( "MOVING SCHRUDER ON THE Z AXIS" ); }
-        level.schruder_hovers = true;
+        level.spirit_hovers = true;
         self movez( latitude, duration, smooth_factor, smooth_factor_out );
         wait( duration );
-        level.schruder_hovers = false;
+        level.spirit_hovers = false;
         self notify( "im_allowed_to_levitate" );
         level notify( "allowed_to_continue" );
     }
@@ -696,24 +664,24 @@ schruder_desc( latitude, duration, smooth_factor )
     level endon( "end_game" );
     
     //keep track if we are hovering
-    if( level.schruder_hovers )
+    if( level.spirit_hovers )
     {
         if( level.dev_time ){ iPrintLnBold( "SCHRUDER IS STILL HOVERING, PAUSING THE CALL TILL ITS SAFE AGAIN" ); }
         wait 1;
         self waittill( "im_allowed_to_levitate" );
     }
 
-    else if( !level.schruder_hovers )
+    else if( !level.spirit_hovers )
     {
         if( isdefined( smooth_factor_out ) )
         {
             if( smooth_factor_out < 1.3 ){ smooth_factor_out = 0; }
         }
         if( level.dev_time ){ iPrintLnBold( "MOVING SCHRUDER ON THE Z AXIS" ); }
-        level.schruder_hovers = true;
+        level.spirit_hovers = true;
         self movez( latitude, duration, smooth_factor, smooth_factor_out );
         wait( duration );
-        level.schruder_hovers = false;
+        level.spirit_hovers = false;
         self notify( "im_allowed_to_levitate" );
     }
 }
@@ -723,14 +691,14 @@ schruder_moves_to( location, duration, smooth_factor, smooth_factor_out )
     level endon( "end_game" );
     
     //keep track if we are already moving
-    if( level.schruder_moves )
+    if( level.spirit_moves )
     {
         if( level.dev_time ){ iprintlnbold( "SCHRUDER IS ON THE MOVE, PAUSING THE CALL TILL ITS SAFE TO MOVE AGAIN" ); }
         self waittill( "im_allowed_to_move" );
         
     }
 
-    if( !level.schruder_moves )
+    if( !level.spirit_moves )
     {
         level.schuder_moves = true;
         if( isDefined( smooth_factor_out ) )
