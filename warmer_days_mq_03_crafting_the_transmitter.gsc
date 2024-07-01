@@ -40,14 +40,32 @@
 
 #include maps\mp\zombies\_zm_craftables;
 
+#include maps\mp\zm_transit_utility;
 
+main()
+{
+    replacefunc( ::init_navcomputer, ::init_navcomputer_dont_rebuild_if_done );
+    replacefunc( ::sidequest_logic, ::sidequest_logic_skip );
+    replacefunc( ::navcomputer_waitfor_navcard, ::navcomputer_waitfor_navcard_clean );
+}
 init()
 {
-    replacefunc( ::sidequest_logic, ::sidequest_logic_skip );
+    //replacefunc( ::sq_easy_cleanup, ::sidequest_prevent_cleaning );
+    level.buildable_built_custom_func = undefined;
+    level.sq_clip = undefined;
     flag_wait( "initial_blackscreen_passed" );
     level thread track_transmitter_progress();
 }
 
+sidequest_prevent_cleaning()
+{
+    level endon( "end_game" );
+    flag_wait( "initial_blackscreen_passed" );
+    if( level.dev_time )
+    iprintln( "Game tried to ^1clean sidquest logic." );
+    wait 1;
+    iprintln( "This func prevented game from removing sq items." );
+}
 sidequest_logic_skip()
 {
     level endon( "end_game" );
@@ -59,22 +77,27 @@ track_transmitter_progress()
     level endon( "end_game" );
     level endon( "transmitter_ready" );
 
-
-    wait_for_buildable( "sq_common" );
-
-    
+    //flag_wait( "schruder_talk_done" );
+    //wait_for_buildable( "sq_common" );
+    if( level.dev_time ){ iprintlnbold( "WE SHOULD TRACK TRANSMITTER NOW" ); }
+    //spawn the transmitter trigger
+    level thread transmitter_wait_for_navcard();
 
 
 }
 
-
-navcomputer_waitfor_navcard()
+navcomputer_waitfor_navcard_clean()
 {
-    comp = getent( "sq_common_buildable_trigger", "targetname" );
-    trig_pos = getstruct( "sq_common_key", "targetname" );
-    navtrig = spawn( "trigger_radius_use", trig_pos.origin, 0, 48, 48 );
+    level endon( "end_game" );
+    flag_wait( "initial_blackscreen_passed" );
+    if( level.dev_time ){ iprintlnbold( "Skipping default navcard triggers and strings." ); }
+}
+transmitter_wait_for_navcard()
+{
+    location = ( 7457.21, -431.969, -195.816 );
+    navtrig = spawn( "trigger_radius_use", location, 0, 48, 48 );
     navtrig setcursorhint( "HINT_NOICON" );
-    navtrig sethintstring( &"ZOMBIE_NAVCARD_USE" );
+    navtrig sethintstring( "Hold ^3[{+activate}] ^7 to apply Navcard to transmitter." );
     navtrig triggerignoreteam();
 
     while ( true )
@@ -86,12 +109,43 @@ navcomputer_waitfor_navcard()
             navtrig sethintstring( "Success! ^3Navcard^7 applied to the transmitter." );
             who playsound( "zmb_sq_navcard_success" );
             navtrig playsound( "zmb_sq_navcard_success" );
+            level thread play_nav1_success( navtrig.origin );
             //update_sidequest_stats( "navcard_applied_zm_transit" );
             wait 3;
-            navtrig sethintstring( "Transmitter is emitting power...");
+
+            //to make schruder talk with player
+            //this notify triggers a thread from: warmer_days_meet_mr_s.gsc
+            level notify( "s_talks_navcard" );
+            navtrig sethintstring( "Transmitter is emitting ^3power...");
             break;
         }
     }
+}
+
+play_nav1_success( this_position )
+{
+    level endon( "end_game" );
+    for( i = 0; i < 5; i++ )
+    {
+        wait 0.1;
+        PlaySoundAtPosition( "zmb_sq_navcard_success", this_position );
+    }
+}
+init_navcomputer_dont_rebuild_if_done()
+{
+    flag_wait( "start_zombie_round_logic" );
+    spawn_navcomputer = 0; //always set to false
+    players = get_players();
+    foreach ( player in players )
+    {
+        built_comptuer = player maps\mp\zombies\_zm_stats::get_global_stat( "sq_transit_started" );
+        if ( !built_comptuer )
+        {
+            spawn_navcomputer = 0;
+            break;
+        }
+    }
+    if ( !spawn_navcomputer ){ return; }
 }
 
 

@@ -69,8 +69,8 @@ precache_myfx()
 	level.myFx[ 1 ] = loadfx( "maps/zombie/fx_zmb_race_trail_grief" );  //ee bolt
 	level.myFx[ 2 ] = loadfx( "maps/zombie/fx_zmb_race_trail_neutral" ); //ee bolt
 	level.myFx[ 3 ] = loadfx( "maps/zombie/fx_zmb_tranzit_sq_lightning_orb" ); //works
-	level.myFx[ 4]  = loadfx ("");//("maps/zombie/fx_zombie_exit_glow");//loadfx("misc/fx_ui_flagbase_orange");
-	level.myFx[ 5 ] = loadfx ("");//("maps/zombie/zombie_fx_exit_marker");
+	level.myFx[ 4]  = loadfx ("misc/fx_ui_flagbase_orange");//("maps/zombie/fx_zombie_exit_glow");//loadfx("misc/fx_ui_flagbase_orange");
+	level.myFx[ 5 ] = loadfx ("maps/zombie/zombie_fx_exit_marker");//("maps/zombie/zombie_fx_exit_marker");
 	level.myFx[ 6 ] = loadfx( "maps/zombie/fx_zmb_tranzit_marker" ); //yes pandora
 	level.myFx[ 7 ] = loadfx( "maps/zombie/fx_zmb_tranzit_marker_fl" ); //yes pandora
 	level.myFx[ 8 ] = loadfx( "misc/fx_zombie_couch_effect" ); //lighting beam buyable 
@@ -178,15 +178,18 @@ precache_myfx()
 	level.myFx[ 85 ] = loadfx( "maps/zombie/fx_zmb_tranzit_window_dest_lg" ); //puff and window breaks
 	level.myFx[ 86 ] = loadfx( "maps/zombie/fx_zmb_tranzit_spark_blue_lg_os" ); //cool blue explo
 	level.myFx[ 87 ] = loadfx( "maps/zombie/fx_zmb_race_zombie_spawn_cloud" ); //no
-	level.myFx[ 88 ] = level._effect[ "jetgun_smoke_cloud" ];
+	level.myFx[ 88 ] = level._effect[ "jetgun_smoke_cloud" ]; // spawn front of player and below to and loop it to make it look like player is in the mist ;)
 	level.myFx[ 89 ] = level._effect[ "jetgun_knockdown_ground" ];
-	level.myFx[ 90 ] = level._effect[ "zombie_guts_explosion" ];
-	level.myFx[ 91 ] = level._effect["avogadro_phasing"];
-	level.myFx[ 92 ] = level._effect[ "avogadro_bolt" ];
+	level.myFx[ 90 ] = level._effect[ "zombie_guts_explosion" ]; // good splatter
+	level.myFx[ 91 ] = level._effect["avogadro_phasing"]; //good for i.e when player flashes looks like somthing went into body
+	level.myFx[ 92 ] = level._effect[ "avogadro_bolt" ]; //looks good for player upgrade
 	level.myFx[ 93 ] = level._effect["avogadro_phasing"];
-	level.myFx[ 94 ] = level._effect["avogadro_health_full"];
+	level.myFx[ 94 ] = level._effect["avogadro_health_full"]; //good electric ball that burst towards somewhere ground
 	level.myFx[ 95 ] = level._effect["avogadro_health_half"];
-	level.myFx[ 96 ] = level._effect["avogadro_health_low"];
+	level.myFx[ 96 ] = level._effect["avogadro_health_low"]; //loop this for i.e navcard step on the device for like 15 times. really nice, about half a sec
+	level.myFx[97] = loadfx( "misc/fx_zombie_powerup_on_red" );
+	level.myFx[98] = loadfx( "misc/fx_zombie_powerup_red_grab" );
+	level.myFx[99] = loadfx( "misc/fx_zombie_powerup_red_wave" );
 	//Test stuff from BO2 Beta dumb
 
 	//FOG
@@ -214,7 +217,7 @@ spawnsfx()
 {
     self endon( "disconnect" );
     level endon( "end_game" );
-
+	self waittill( "spawned_player" );
 	index = 0;
 	/*
     s1 = actionslotonebuttonpressed();
@@ -239,11 +242,11 @@ spawnsfx()
 				if( level.dev_time ){ iprintlnbold( "Index is already at " +  index ); }
 				wait 0.1;
 			}
-            wait 0.08;
+            wait 0.5;
                 
         }
             
-
+		/*
         if( self actionslottwobuttonpressed() )
         {
             if( index > 1 )
@@ -258,6 +261,7 @@ spawnsfx()
 			}
             wait 0.08;
         }
+		*/
             
 
         if( self actionslotthreebuttonpressed() )
@@ -266,7 +270,7 @@ spawnsfx()
 			if( level.dev_time ){ iprintlnbold( "Played an fx: ^3" + level.myfx[ index ] ); }
             
         }
-
+		/*
         if( self actionslotfourbuttonpressed() )
         {
             mover = spawn( "script_model", self.origin + 200, 0, 30 );
@@ -289,7 +293,7 @@ spawnsfx()
             mover delete();
             wait 0.08;
         }
-
-        else{ wait 0.15; }
+*/
+        wait 0.1;
     }
 }

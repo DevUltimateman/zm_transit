@@ -85,7 +85,7 @@ set_round_and_chaos()
 	wait( 1 );
 	
 	// kill all active zombies
-	zombies = GetAiSpeciesArray( "axis", "all" );
+	zombies = getAIArray( level.zombie_team );
 
 	if ( IsDefined( zombies ) )
 	{

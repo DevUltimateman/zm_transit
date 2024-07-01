@@ -46,34 +46,91 @@ init()
 {
     replacefunc( ::manage_multiple_pieces, ::manage_multiple_pieces_new );
     level.player_out_of_playable_area_monitor = false;
+    level.wait_time_left_after_someone_shot = 7; //dont allow schruder to talk even if someone_shot flag is set. wait at least this amount of time before continuing
     
+    level.play_schruder_background_sound = false;
     //spawn schruder
     //this also handles the initial talking with players
     level thread schruder_model();
     
+    //wait till players discover schruder. 
+    level thread step1_talk();
+
     //wait till power on and player has returned to schruder
     level thread step2_talk();
-    //first time meeting
-    //level thread meeting_schruder();
 
-    //see all powers
-    //level thread test_powerups();
+    //schruder talks when navcard table has been built and navcard has been applied
+    level thread step3_talk();
 
-    //bus hud?
-    //level thread level_bus_hud();
 
-    //registerclientfield( "allplayers", "player_has_eyes", 3000, 1, "int" );
-    //egisterclientfield( "allplayers", "player_eyes_special", 5000, 1, "int" );
-    //level._effect["player_eye_glow"] = loadfx( "maps/zombie/fx_zombie_eye_returned_blue" );
-    //level._effect["player_eye_glow_orng"] = loadfx( "maps/zombie/fx_zombie_eye_returned_orng" );
+    //debugging
+    level thread print_level_vars();
 
-    //level thread loopingeys();
+    //TEMP
+    //LOCATIONS FOR VERY HEAVY THUNDER STORMS
+    level.thunderstorm_chaos_locations = [];
+    level.thunderstorm_chaos_locations[ 0 ]  = ( -10098.5, 4198.79, 4464.55 );
+    level.thunderstorm_chaos_locations[ 1 ]  = ( -4224.48, 4582.69, 3637.07 );
 
-    //level thread devgui_zombie_healthbar();
-
+    level.thunderstorm_chaos_locations[ 2 ]  = ( -1427.1, -141.855, 2714.31 );
+    level.thunderstorm_chaos_locations[ 3 ]  = ( 2117.35, -3576.54, 3685.48 );
+    level.thunderstorm_chaos_locations[ 4 ]  = ( 2148.51, 2068.05, 3220.62 );
+    level.thunderstorm_chaos_locations[ 5 ]  = ( 6948.11, 10247.2, 4097.42 );
+    level.thunderstorm_chaos_locations[ 6 ]  = ( 12250.5, 4990.76, 5680.23 );
+    level.thunderstorm_chaos_locations[ 7 ]  = ( 10548.4, -1013.13, 41459.75 );
+    level.thunderstorm_chaos_locations[ 8 ]  = ( 13619.4, -3336.03, 4512.05 );
+    level.thunderstorm_chaos_locations[ 9 ]  = ( 8317.63, -5254.21, 4359.19 );
+    level.thunderstorm_chaos_locations[ 10 ]  = ( 8274, 12477.5, 4294.35 );
+    level.thunderstorm_chaos_locations[ 11 ]  = ( 2051.37, -7887.97, 4135.53 );
+    level.thunderstorm_chaos_locations[ 12 ]  = ( -4486.06, -5620.71, 5603.71 );
+    level.thunderstorm_chaos_locations[ 13 ]  = ( -9212.68, -10793.5, 3635.45 );
 
 }
 
+
+
+step3_talk()
+{
+    level endon( "end_game" );
+    level waittill( "s_talks_navcard" );
+    gets = level.players;
+    foreach( g in gets )
+    {
+        g playsound( "zmb_sq_navcard_success" );
+        playfx( level.myFx[ 82 ], g.origin );
+    }
+    meeting_vox13( "" );
+    wait 8;
+    foreach( g in gets )
+    {
+        g playsound( "zmb_sq_navcard_success" );
+    }
+    meeting_vox14( "" );
+    wait 6;
+    foreach( g in gets )
+    {
+        g playsound( "zmb_sq_navcard_success" );
+    }
+    meeting_vox15( "" );
+
+    //how much should we wait if someone shoots faster than schruder speaks?
+    level thread stop_for_a_second();
+    //apply a shot monitor for players
+    level thread someone_shot();
+    level waittill( "someone_shot" );
+    //if someone shot faster than schruder had finished talking
+    if( level.wait_time_left_after_someone_shot > 0 )
+    {
+        wait level.wait_time_left_after_someone_shot;
+    }
+    foreach( g in gets )
+    {
+        g playsound( "zmb_sq_navcard_success" );
+    }
+    meeting_vox16( "" );
+    
+
+}
 
 zombie_healthbar( pos, dsquared )
 {
@@ -155,7 +212,7 @@ schruder_model()
         }
     }
     
-    wait 8;
+    wait 2;
     if( level.dev_time ){ iprintlnbold( "BUS HAS BEEN DEFINED" );} 
     //rn just a reg spawn outside depo for debugging
     mr_s_location = ( -6260.04, 4286.27, -63.4731 );
@@ -191,10 +248,13 @@ schruder_model()
             if( distance2d( level.mr_s.origin, level.players[ s ].origin ) < 150 )
             {
                 level notify( "firsttime_meet" );
+                foreach( pl in level.players )
+                {
+                    pl playsound( "zmb_navcard_success" );
+                }
                 if( level.dev_time ) { iprintln( "SCRUDER WAS MET" ); }
                 i = 1;
                 wait 0.05;
-                level thread step1_talk();
                 break;
             }
         }
@@ -206,18 +266,28 @@ schruder_model()
 step1_talk()
 {
     level endon( "end_game" );
+
+    level waittill( "firsttime_meet" );
+    playfx( level.myFx[ 87 ], level.mr_s.origin );
+    gets = level.players;
+    foreach( g in gets )
+    {
+        g playsound( "zmb_sq_navcard_success" );
+    }
+    level thread while_schruder_speaks();
     meeting_vox01("");
     wait 6;
     meeting_vox02("");
     wait 9;
     meeting_vox03("");
-    wait 6;
+    wait 7;
     meeting_vox04("");
     wait 8;
     meeting_vox05("");
-    wait 6;
+    wait 7;
     meeting_vox06("");
     wait 8;
+    level notify( "stop_playing_sound" );
     if( level.dev_time ){ iprintln( "STEP 1 TALKS COMPLETED" ); }
 }
 test_powerups()
@@ -397,7 +467,7 @@ manage_multiple_pieces_new( max_instances )
 step2_talk()
 {
     level endon( "end_game" );
-
+    gets = level.players;
     flag_wait( "power_on" );
 
     while( i == 0 )
@@ -415,8 +485,12 @@ step2_talk()
         }
         wait 0.05;
     }
-
+    foreach( g in gets )
+    {
+        g playsound( "zmb_sq_navcard_success" );
+    }
     meeting_vox07("");
+    
     wait 6;
     meeting_vox08("");
     wait 6;
@@ -522,7 +596,126 @@ meeting_vox12( background_music )
     }
 }
 
+meeting_vox13( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "Haa haa, yes Wunderbaaar!";
+        subtitle_lower = "As soon as I heard the signal beep, I knew that you got the transmitter working again.";
+        duration = 7;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
 
+meeting_vox14( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "Wait a second..";
+        subtitle_lower = "Can you guys hear me at all? I can't hear none of you at least.";
+        duration = 5;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox15( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "Maybe the microphone is dead on the device..";
+        subtitle_lower = "Could you try shooting a weapon so that I know you can hear me?";
+        duration = 6;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread stop_for_a_second();
+    }
+}
+
+stop_for_a_second()
+{
+    level endon( "end_game" );
+    //level.dont_allow_speak_now = true;
+    for( i = level.wait_time_left_after_someone_shot; i > 0; i-- )
+    {
+        wait 1;
+        level.wait_time_left_after_someone_shot = i;
+        if( level.wait_time_left_after_someone_shot == 0 )
+        {
+            break;
+        }
+    }
+
+}
+
+someone_shot()
+{
+    level endon( "end_game" );
+    players = get_players();
+    for( i = 0; i < players.size; i++ )
+    {
+        players[ i ] thread monitor_shot();
+    }
+}
+
+monitor_shot()
+{
+    level endon( "someone_shot_weapon" );
+    while( true )
+    {
+        self waittill( "weapon_fired" );
+        level notify( "someone_shot" );
+        level notify( "someone_shot_weapon" );
+
+    }
+}
+meeting_vox16( background_music )
+{
+    level endon( "end_game" );
+
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "Perfect!";
+        subtitle_lower = "You should be good as long as you can hear me and obey my instructions.";
+        duration = 6;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+while_schruder_speaks()
+{
+    level endon( "stop_playing_sound" );
+    while( true )
+    {
+        level.mr_s playsound( level.mysounds[ 9 ] );
+        wait 0.15;
+        level.mr_s playsound( level.mysounds[ 9 ] );
+        wait 1.5;
+    }
+}
+
+print_level_vars()
+{
+    flag_wait( "initial_blackscreen_passed" );
+    while( true )
+    {
+        for( i = 0; i < level.zombie_vars.size; i++ )
+        {
+            iprintln( "^1" + level.zombie_vars[ i ].name );
+            wait 1;
+        }
+        wait 1;
+    }
+}
 
 
 
@@ -558,6 +751,7 @@ meeting_vox12( background_music )
 
 machine_says( sub_up, sub_low, duration, fadeTimer )
 {
+    level.play_schruder_background_sound = true;
 	subtitle_upper = NewHudElem();
 	subtitle_upper.x = 0;
 	subtitle_upper.y = -42;
@@ -592,6 +786,7 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
 	}
 	
 	wait ( duration );
+    level.play_schruder_background_sound = false;
     //level thread a_glowby( subtitle );
     //if( isdefined( subtitle_lower ) )
     //{

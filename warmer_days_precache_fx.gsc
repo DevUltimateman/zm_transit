@@ -45,7 +45,7 @@ init()
     //fx list
     level.myFx = [];
     //precache all fxs for fx list
-    level thread precache_myfx();
+    //level thread precache_myfx();
 }
 
 precache_myfx()
@@ -175,6 +175,10 @@ precache_myfx()
 	level.myFx[ 94 ] = level._effect["avogadro_health_full"];
 	level.myFx[ 95 ] = level._effect["avogadro_health_half"];
 	level.myFx[ 96 ] = level._effect["avogadro_health_low"];
+
+	level._effect[97] = loadfx( "misc/fx_zombie_powerup_on_red" );
+	level._effect[98] = loadfx( "misc/fx_zombie_powerup_red_grab" );
+	level._effect[99] = loadfx( "misc/fx_zombie_powerup_red_wave" );
 
 	//Test stuff from BO2 Beta dumb
 

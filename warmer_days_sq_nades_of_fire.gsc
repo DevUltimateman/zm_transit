@@ -313,7 +313,7 @@ watching_explo( id_ ) //implement repick nade failsafe
             playfxontag( level.myfx[ 30 ], zz, zz_head );
             wait randomfloatrange( 0.1, 0.3 );
             
-            self_nade_up = self.origin + ( 0, 0, 400 ); // might not just wanna use self...
+            self_nade_up = self.origin + ( 0, 0, 800 ); // might not just wanna use self...
             level thread zz_fx( zz, self_nade_up, id_ );
         }
 
@@ -475,7 +475,7 @@ firegrenades_throw_logic()
     while( true )
     {
         self waittill( "grenade_fire", g, weapname );
-        wait 0.05;
+        while( self fragButtonPressed()) { wait 0.05; } 
         //l
         self thread firegrenade_funny_time( xpl, orb, g, self ); //self on the parameter for "thrower"
     }
@@ -491,7 +491,8 @@ firegrenade_funny_time( explo, trail, linkto_object, thrower )
     playFXOnTag( trail, linkto_object, "tag_origin" );
     
     //reset for loop
-    first_time = true;
+    first_time = true; 
+    
 
     //custom explo array
     temp_array = [];
@@ -539,7 +540,7 @@ firegrenade_funny_time( explo, trail, linkto_object, thrower )
             //spawn in some lava fxs, we might wanna attach mspawner to a  rotateYAW func
             mspawn = spawn( "script_model", linkto_object.origin + temp_array[ i ] );
             mspawn setmodel( "tag_origin" );
-            wait 0.1;
+            wait 0.05;
             playfxontag( level.myFx[ 66 ], mspawn, "tag_origin" );
         }
 
@@ -606,17 +607,19 @@ firegrenade_go_poke( ent, who_id )
     }
 
     
-    wait randomfloatrange( 0.2, 0.5 );
+    wait randomfloatrange( 1, 1.5 );
     //let's delete the entity ( grenade )
     if( isDefined( ent ) )
     {
+        loc_spawn.origin = ent.origin;
+        wait 0.05;
         ent delete();
     }
-    
+    //this shoots the orb up in the air from the grenade
     playfxontag( level.myfx[ 2 ], loc_spawn, "tag_origin" );
-    earthquake( 2500, 1.2, 500, (0, 0, 0)  );
+    earthquake( 0.2, 4, loc_spawn.origin, 5000 );
     //earthquake(<scale>, <duration>, <source>, <radius>)
-    loc_spawn movez( randomintrange( 400, 750), randomfloatrange( 0.6, 1.4 ), 0.1, 0 );
+    loc_spawn movez( randomintrange( 750, 1200), randomfloatrange( 1, 1.4 ), 0.31, 0 );
     loc_spawn waittill( "movedone" );
 
     for( s = 0; s < hold_temp.size; s++ )

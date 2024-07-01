@@ -1,6 +1,6 @@
-//this script is responsible for the tranzit 2.0 v2 player's personal challenges
-//few challenges that player can complete during a game
-//adds some small benefits.
+//this script is responsible for the tranzit 2.0 v2 "Fire Bootz" sidequest logic
+//small sidequest for players to complete in the map
+//upon completing the quest, players can pick up fireboots and avoid lava damage in the map while standing in lava
 
 #include common_scripts\utility;
 #include maps\_utility;
@@ -95,73 +95,58 @@
 
 init()
 {
-    //global variables for challenges
-    level.challenge_kills = 750; //give 3 weapon limit without mule?
-    level.challenge_heads = 115; //give dead shot daiguiri upgrades?
-    level.challenge_downs = 2; //give player 3 hit system until game ends?
-    level.challenge_revives = 5; //give player super revive ( coop only )?
-    level.challenge_grenades = 10; //give player something offhand?
-    level.challenge_melee_kills_1 = 25; //give player galvas?
-    level.challenge_melee_kills_2 = 50; //give player infinite dmg galvas?
-    level.challenge_total_shots = 10000; //give player double sized clips for all weapons?
-
-    //move these into afunction that alters these
-    level.zombie_vars["zombie_powerup_insta_kill_time"] = 45; //30
-    level.zombie_vars["zombie_powerup_fire_sale_time"] = 60; //30
-    level.zombie_vars["zombie_powerup_point_doubler_time"] = 60; //30
-    /*
-    set_zombie_var( "zombie_insta_kill", 0, undefined, undefined, 1 );
-    set_zombie_var( "zombie_point_scalar", 1, undefined, undefined, 1 );
-    set_zombie_var( "zombie_drop_item", 0 );
-    set_zombie_var( "zombie_timer_offset", 350 );
-    set_zombie_var( "zombie_timer_offset_interval", 30 );
-    set_zombie_var( "zombie_powerup_fire_sale_on", 0 );
-    set_zombie_var( "zombie_powerup_fire_sale_time", 30 );
-    set_zombie_var( "zombie_powerup_bonfire_sale_on", 0 );
-    set_zombie_var( "zombie_powerup_bonfire_sale_time", 30 );
-    set_zombie_var( "zombie_powerup_insta_kill_on", 0, undefined, undefined, 1 );
-    set_zombie_var( "zombie_powerup_insta_kill_time", 30, undefined, undefined, 1 );
-    set_zombie_var( "zombie_powerup_point_doubler_on", 0, undefined, undefined, 1 );
-    set_zombie_var( "zombie_powerup_point_doubler_time", 30, undefined, undefined, 1 );
-    set_zombie_var( "zombie_powerup_drop_increment", 2000 );
-    set_zombie_var( "zombie_powerup_drop_max_per_round", 4 );
-    */
-    //good modifiers
-    //player_sustainammo
-    //player_sprintunlimited
-    //player_sprinttime
-    //player_lean_rotate 2.25 2.25
-    //player_lean_rotate_crouch 3 3
-    //player_view_pitch_up 90
-    //player_view_pitch_down 90
-
-    level thread apply_challenges_to_players();
+    level.c_points = [];
+    level.c_angles = [];
+    flag_wait( "initial_blackscreen_passed" ); 
+    //works. need to make it lot better tho.
+    //level thread camera_points_debug();
 }
 
-apply_challenges_to_players()
+
+camera_points_debug()
 {
     level endon( "end_game" );
-    while( true )
+    level.c_points[ 0 ] = ( -6036.62, 4744.56, 233.066 );
+    level.c_points[ 1 ] = ( -7464.92, 4988.43, 448.485 );
+    level.c_points[ 2 ] = ( -8589.35, 4598.88, 89.8688 );
+    level.c_points[ 3 ] = ( -7542.27, 3740.62, 1056.29 );
+    level.c_points[ 4 ] = ( -6208.71, 4471.33, 40.4502 );
+
+
+    level.c_angles[ 0 ] = ( 90, 180, 25  );
+    level.c_angles[ 1 ] = ( -185, 0, 188 );
+    level.c_angles[ 2 ] = ( 0, -120, 90 );
+    level.c_angles[ 3 ] = ( -59, 254, 2 );
+    level.c_angles[ 4 ] = ( 58, -142, 30 );
+
+    
+        org = spawn( "script_model", level.c_points[ 0 ] );
+        org setmodel( "tag_origin" );
+        org.angles = level.c_angles[ 0 ];
+    
+
+    wait 5;
+
+    for( s = 0; s < level.players.size; s++ )
     {
-        level waittill( "connected", challenger );
-        challenger thread initial_spawn_reset();
+        level.players[ s ] CameraSetPosition( org );
+        level.players[ s ] CameraSetLookAt();
+        level.players[ s ] cameraactivate( 1 );
     }
-}
 
-initial_spawn_reset()
-{
-    level endon( "end_game" );
-    self endon( "disconnect" );
+    speed = 20;
 
-    self waittill( "spawned_player" );
-    wait 1;
-    //reset these and track these for challenges
-    self.kills = 0; //goal 750
-    self.headshots = 0; //goal 115
-    self.downs = 0; //"goal" 2
-    self.grenade_kills = 0;  //goal 10
-    self.melee_kills = 0; //goal 50
-    self.revives = 0; //goal 5
+    i = 1;
+    while( i < level.c_points.size )
+    {
+        org moveto( level.c_points[ i ], 3, 0, 0 );
+        org rotateTo( level.c_points[ i ], 3, 1, 1 );
+        i++;
+        wait 3;
+    }
+    level.players[ 0 ] camerasetposition( level.players[ 0 ].origin );
+    level.players[ 0 ] cameraactivate( 0 );
+
 
 
 }

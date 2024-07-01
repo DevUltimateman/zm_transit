@@ -103,6 +103,9 @@ init()
     level.summoning_kills_combined_total = 45; //check for if true
     level.summoninglevel_active = false; //defaults to false so that all summoning locations can be accessed before initiating
 
+
+    level.boots_are_being_picked_up = false; //initial state to get thru first define check in boot pick up step 1
+
     //keep track of which summoning is active
     level.summoning_active = [];
     level.summoning_active[ 0 ] = false;
@@ -123,6 +126,12 @@ init()
     level.summoningFinished[ "s0_kills++" ] = false;
     level.summoningFinished[ "s1_kills++" ] = false;
     level.summoningFinished[ "s2_kills++" ] = false;
+    
+    //step1 fire boot triggers ( list of them )
+    level.boot_triggers = [];
+
+    //step1 fire boot origins
+    level.fireboot_locations = [];
     
     //how many souls required per summoning
     level.summoning_kills_required = 15;
@@ -222,6 +231,7 @@ fireboots_souls( which_summoning, idx )
     //playfxontag( level._effect[ "fx_fire_fireplace_md" ], inv_mover, "tag_origin" );
     inv_mover moveto ( where_to_move, randomFloatRange( 0.2, 0.4 ), 0, 0 );
     inv_mover waittill( "movedone" );
+    playfx( level.myFx[ 94 ], where_to_move );
     inv_mover delete();
     playFX( level._effect[ "fx_zombie_powerup_wave" ], where_to_move );
     playsoundatposition( "zmb_meteor_activate", where_to_move );
@@ -380,8 +390,7 @@ f_boots1() //fireboot quest step1. Find 8 different fireboots around the map ( j
 {
     level endon( "end_game" );
 
-    level.boot_triggers = []; //fire boot quest, step1 triggers
-    level.fireboot_locations = [];
+    
 
     level.fireboot_locations[ 0 ] = ( 10506.6, 8081.56, -368.851 );
     level.fireboot_locations[ 1 ] = ( 7638.01, -450.942, -147.971 );
@@ -400,7 +409,7 @@ f_boots1() //fireboot quest step1. Find 8 different fireboots around the map ( j
    
         level.boot_triggers[ s ] thread leg_trigger_logic( level.fireboot_locations[ s ] );
         wait 0.05;
-        playfx( level.myFx[ 6 ], level.boot_triggers[ s ].origin  );
+        playfxontag( level.myFx[ 6 ], level.boot_triggers[ s ], "tag_origin"  );
     }  
     wait 1;
     while( !are_boots_found() )
@@ -531,74 +540,81 @@ printer()
 }
 
 
-
+spinner( what_to_spin )
+{
+    level endon( "end_game" );
+    while( true ) 
+    {
+        what_to_spin rotateYaw( 360, 1, 0, 0 );
+        what_to_spin waittill( "movedone" );
+    }
+}
 
 leg_trigger_logic( model_origin )
 {
     level endon( "end_game" );
     //what_step_text = undefined;
-    wait 0.05;
+    wait 1;
     leg_model = spawn( "script_model", model_origin );
-    leg_model setmodel( level.myModels[ 55 ] ); //needs a better leg model, currently a broken torso c_zom_zombie1_body01_g_legsoff c_zom_zombie3_g_rlegspawn
+    leg_model setmodel( level.myModels[ 77 ] ); //needs a better leg model, currently a broken torso c_zom_zombie1_body01_g_legsoff c_zom_zombie3_g_rlegspawn
     leg_model.angles = ( 0, 0, 0 );
     wait 0.05;
-    playfxontag( level.myFx[ 1 ], leg_model, "tag_origin" ); //playfxontag on model, not on model's origin
+    playfxontag( level.myFx[ 1 ], leg_model, "tag_origin" ); 
     //need this to stop drawing multiple instances at once for pick up boots part's hud elem
     cooldownTimer = 10;
+    wait 0.05;
     //playfx( level.myFx[ 1 ], model.origin );
-    //mod thread spinner_yaw( 360, -360, 1, 0, 0 );
+    level thread spinner( leg_model );
     //playfx( level.myFx[ 9 ], model_origin );
 
-    
-    
     while( true )
     {
         self waittill( "trigger", guy );
-
-        //need a check to not draw multiple pick ups at once.
-        /*
-        if( level.boots_are_being_picked_up )
-        {
-            continue;
-        }
-        */
-
-        //this check needs to be added below since we need to check after the initial hit if someone is already picking up boots
-        level thread picking_up_boots_cooldown_others_timer( cooldownTimer );
         
-        // to display the number of boots found currently
-        true_indicator = level.boots_found + 1; 
-        level.boots_found++;
-        
-        playsoundatposition( "zmb_box_poof", self.origin );
-        wait 0.5;
-
-        //give a little reward to the player who picked up said boots
-        guy.score += 750;
-        guy playsoundtoplayer( "zmb_vault_bank_deposit", guy );
-
-        //SCHRUDER SAYS SOMETHING TO PLAYER
-        //seperate print function first time dont show the parts found hud text, only schruder
-        if( true_indicator == 1 )
+        //add this check, sometimes the game randomly thinks that the player is picking up the boots...
+        if( isdefined( guy ) && distance2d( guy.origin, self.origin ) < 300 )
         {
-            upper_text = "^7Ah you've found the first piece of fireboots!";
-            lower_text = _returnFireBootStepText();
-            level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
+            if( level.boots_are_being_picked_up == true )
+            {
+                continue;
+            }
+            //this check needs to be added below since we need to check after the initial hit if someone is already picking up boots
+            level thread picking_up_boots_cooldown_others_timer( cooldownTimer );
+            
+            // to display the number of boots found currently
+            true_indicator = level.boots_found + 1; 
+            level.boots_found++;
+            
+            playsoundatposition( "zmb_box_poof", self.origin );
+            wait 0.5;
+
+            //give a little reward to the player who picked up said boots
+            guy.score += 750;
+            guy playsoundtoplayer( "zmb_vault_bank_deposit", guy );
+
+            //SCHRUDER SAYS SOMETHING TO PLAYER
+            //seperate print function first time dont show the parts found hud text, only schruder
+            if( true_indicator == 1 )
+            {
+                upper_text = "^7Ah you've found the first piece of fireboots!";
+                lower_text = _returnFireBootStepText();
+                level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
+            }
+            else
+            { 
+                upper_text = "Fireboots found: ^3" + true_indicator + "^7 / ^3" + ( level.fireboot_locations.size - 1 ); 
+                lower_text = _returnFireBootStepText();
+                level thread _print_someone_found_boot_piece( upper_text, lower_text, 8, 0.1 );    
+            }
+            wait 0.05;
+            leg_model delete(); //delete linked model
+            //self == trigger
+            if( isdefined( self ) )
+            {
+                self delete();
+            }
+            break;
         }
-        else
-        { 
-            upper_text = "Fireboots found ^3" + true_indicator + "^7 / ^3" + ( level.fireboot_locations.size - 1 ); 
-            lower_text = _returnFireBootStepText();
-            level thread _print_someone_found_boot_piece( upper_text, lower_text, 8, 0.1 );    
-        }
-        wait 0.05;
-        leg_model delete(); //delete linked model
-        //self == trigger
-        if( isdefined( self ) )
-        {
-            self delete();
-        }
-        break;
     }
 }
 
@@ -692,10 +708,13 @@ rise_boots_from_initial_ground_origin( rising_model, amount, trig_org, active_id
     level endon( "end_game" );
     rising_model movez( amount, 1.5, 0.3, 0.1 );
     playfx( level._effect[ "avogadro_ascend_aerial" ], rising_model.origin + ( 0, 0, 30 ) );
+    playfx( level.myFx[ 87 ], rising_model.origin );
     rising_model waittill( "movedone" );
     level thread spawn_global_summoning_trigger( trig_org, active_idx );
     wait 0.05;
     rising_model thread summoning_in_progress( rising_model, summoning_bounce );
+    playfxontag( level.myFx[ 92 ], rising_model, "tag_origin" );
+    playfx( level.myfx[ 82 ], rising_model.origin );
 }
 
 fireboots_sound_before_locating( alias, which_active )
