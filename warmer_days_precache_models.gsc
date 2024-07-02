@@ -46,76 +46,92 @@ init()
     level.myModels = [];
     //my precache models
     level thread precacheModels();
+    level thread ondev();
 }
+
+ondev()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        level waittill( "connected", player );
+        player thread spawns_model();
+    }
+    
+}
+
 
 precachemodels()
 {
     level endon( "end_game" );
 
-    
-    level.myModels[ 0 ] = ( "t5_foliage_tree_burnt03" );
-    level.myModels[ 1 ] = ( "collision_player_64x64x256" );
+    //p6_zm_sign_diner
+    //so how gumps works. 
+    //as long as you are standing inside of a gump that the model is loaded in, you can see the model even across the map if placed there
+    //but once you leave the gump zone, the model is shrunk even when you would be close to it
+    level.myModels[ 0 ] = ( "p6_zm_sign_diner" ); // WORKS EVERYWHERE, DOESNT HAVE DISAPPEARING LOD LEAFS   "t5_foliage_tree_burnt03"
+    level.myModels[ 1 ] = ( "collision_player_64x64x256" );  // WORKS EVERYWHERE
     //level.myModels[1] = ( "collision_clip_sphere_64" );
-    level.myModels[ 2 ] = ( "t5_foliage_tree_burnt02" ); 
-    level.myModels[ 3 ] = ( "collision_player_32x32x128" ); 
-    level.myModels[ 4 ] = ( "t5_foliage_bush05" );
-    level.myModels[ 5 ] = ( "p6_grass_wild_mixed_med" );
-    level.myModels[ 6 ] = ( "foliage_red_pine_stump_lg" );
-    level.myModels[ 7 ] = ( "t5_foliage_shrubs02" );
-    level.myModels[ 8 ] = ( "p6_zm_quarantine_fence_01" );
-    level.myModels[ 9 ] = ( "p6_zm_quarantine_fence_02" );
+    level.myModels[ 2 ] = ( "t5_foliage_tree_burnt02" );   // WORKS EVERYWHERE, HAS DISAPPEARING LOD LEAFS
+    level.myModels[ 3 ] = ( "collision_player_32x32x128" );   // WORKS EVERYWHERE
+    level.myModels[ 4 ] = ( "t5_foliage_bush05" );  // WORKS EVERYWHERE
+    level.myModels[ 5 ] = ( "p6_grass_wild_mixed_med" );  // WORKS EVERYWHERE
+    level.myModels[ 6 ] = ( "foliage_red_pine_stump_lg" );  //WORKS AT CABIN BEFORE TOWN
+    level.myModels[ 7 ] = ( "t5_foliage_shrubs02" ); // WORKS EVERYWHERE
+    level.myModels[ 8 ] = ( "p6_zm_quarantine_fence_01" ); // WORKS EVERYWHERE, fence with wraps 
+    level.myModels[ 9 ] = ( "p6_zm_quarantine_fence_02" ); // WORKS EVERYWHERE, fence with only metal barriers ( see thruable )
     level.myModels[ 10 ] = ( "p6_zm_quarantine_fence_03" );
-    level.myModels[ 11 ] = ( "p6_zm_street_power_pole" );
-    level.myModels[ 12 ] = ( "veh_t6_civ_bus_zombie" );
-    level.myModels[ 13 ] = ( "veh_t6_civ_smallwagon_dead" );
-    level.myModels[ 14 ] = ( "p6_zm_brick_clump_red_depot" );
-    level.myModels[ 15 ] = ( "p_glo_street_light02_on_light" );
-    level.myModels[ 16 ] = ( "p_glo_electrical_pipes_long_depot" );
-    level.myModels[ 17 ] = ( "p_glo_powerline_tower_redwhite" );
-    level.myModels[ 18 ] = ( "mp_m_trash_pile" );
-
+    level.myModels[ 11 ] = ( "p6_zm_street_power_pole" ); //// WORKS DEPOT, big power telephone pole
+    level.myModels[ 12 ] = ( "veh_t6_civ_bus_zombie" ); //BIG BUS WITH BIG PLOW
+    level.myModels[ 13 ] = ( "veh_t6_civ_smallwagon_dead" ); // WORKS EVERYWHERE white car
+    level.myModels[ 14 ] = ( "p6_zm_brick_clump_red_depot" ); // WORKS dpo, bricks laying on ground
+    level.myModels[ 15 ] = ( "p_glo_street_light02_on_light" ); //// WORKS EVERYWHERE tilting downwards, could be a nice light for traps walls
+    level.myModels[ 16 ] = ( "p_glo_electrical_pipes_long_depot" ); //long tight pipe lol laying on ground tilted to left from player angles
+    level.myModels[ 17 ] = ( "p_glo_powerline_tower_redwhite" ); // WORKS EVERYWHERE big tower
+    level.myModels[ 18 ] = ( "mp_m_trash_pile" ); // WORKS dpo  faces forward
+ 
     //DAY 2 MODELS
-    level.myModels[ 19 ] = ( "com_payphone_america" );
-    level.myModels[ 20 ] = ( "com_stepladder_large_closed" );
-    level.myModels[ 21 ] = ( "dest_glo_powerbox_glass02_chunk03" );
-    level.myModels[ 22 ] = ( "hanging_wire_01" );
-    level.myModels[ 23 ] = ( "hanging_wire_02" );
-    level.myModels[ 24 ] = ( "hanging_wire_03" );
-    level.myModels[ 25 ] = ( "light_outdoorwall01_on" );
-    level.myModels[ 26 ] = ( "lights_indlight_on_depot" );
+    level.myModels[ 19 ] = ( "com_payphone_america" ); // WORKS depo, faces player opposite
+    level.myModels[ 20 ] = ( "com_stepladder_large_closed" ); //// WORKS EVERYWHERE
+    level.myModels[ 21 ] = ( "dest_glo_powerbox_glass02_chunk03" ); // WORKS EVERYWHERE transpare glass piece
+    level.myModels[ 22 ] = ( "hanging_wire_01" ); // WORKS depo
+    level.myModels[ 23 ] = ( "hanging_wire_02" );// WORKS de
+    level.myModels[ 24 ] = ( "hanging_wire_03" ); // WORKS de 
+    level.myModels[ 25 ] = ( "light_outdoorwall01_on" ); // WORKS de
+    level.myModels[ 26 ] = ( "lights_indlight_on_depot" ); // WORKS de
 
     level.myModels[ 27 ] = ( "p_glo_lights_fluorescent_yellow" );
-    level.myModels[ 28 ] = ( "p_glo_sandbags_green_lego_mdl" );
-    level.myModels[ 29 ] = ( "p_glo_tools_chest_short" );
-    level.myModels[ 30 ] = ( "p_glo_tools_chest_tall" );
-    level.myModels[ 31 ] = ( "p_jun_caution_sign" );
-    level.myModels[ 32 ] = ( "p_lights_cagelight02_red_off" );
-    level.myModels[ 33 ] = ( "p_jun_rebar02_single_dirty" );
+    level.myModels[ 28 ] = ( "p_glo_sandbags_green_lego_mdl" ); // WORKS EVERYWHERE
+    level.myModels[ 29 ] = ( "p_glo_tools_chest_short" ); // WORKS EVERYWHERE red hand carriable tool box
+    level.myModels[ 30 ] = ( "p_glo_tools_chest_tall" ); // WORKS depo white tool chestE
+    level.myModels[ 31 ] = ( "p_jun_caution_sign" ); // WORKS EVERYWHERE enter in the fog sign
+    level.myModels[ 32 ] = ( "p_lights_cagelight02_red_off" ); // WORKS EVERYWHERE could be used to blink red light in the safe base
+    level.myModels[ 33 ] = ( "p_jun_rebar02_single_dirty" ); // WORKS depo
 
     //level.myModels[34] = ( "NEXT LIST = p6 MODELS / DNT SPAWN THIS" );
-    level.myModels[ 34 ] = ( "p6_lights_club_recessed" );
-    level.myModels[ 35 ] = ( "p6_garage_pipes_1x128" );
-    level.myModels[ 36 ] = ( "p6_street_pole_sign_broken" );
-    level.myModels[ 37 ] = ( "p6_zm_buildable_battery" );
-    level.myModels[ 38 ] = ( "p6_zm_buildable_sq_scaffolding" );
-    level.myModels[ 39 ] = ( "p6_zm_buildable_sq_transceiver" );
-    level.myModels[ 40 ] = ( "p6_zm_building_rundown_01" );
-    level.myModels[ 41 ] = ( "p6_zm_building_rundown_03" );
-    level.myModels[ 42 ] = ( "p6_zm_chain_fence_piece_end" );
-    level.myModels[ 43 ] = ( "p6_zm_outhouse" );
-    level.myModels[ 44 ] = ( "p6_zm_power_station_railing_steps_labs" );
-    level.myModels[ 45 ] = ( "p6_zm_raingutter_clamp" );
-    level.myModels[ 46 ] = ( "p6_zm_rocks_large_cluster_01" );
-    level.myModels[ 47 ] = ( "p6_zm_rocks_medium_05" );
-    level.myModels[ 48 ] = ( "p6_zm_rocks_small_cluster_01" );
-    level.myModels[ 49 ] = ( "p6_zm_sign_terminal" );
-    level.myModels[ 50 ] = ( "p6_zm_sign_restrooms" );
-    level.myModels[ 51 ] = ( "p6_zm_street_power_pole" );
-    level.myModels[ 52 ] = ( "p6_zm_water_tower" );
+    level.myModels[ 34 ] = ( "p6_lights_club_recessed" ); // WORKS EVERYWHERE white lamp circle on ground good for safe base
+    level.myModels[ 35 ] = ( "p6_garage_pipes_1x128" ); // WORKS EVERYWHERE
+    level.myModels[ 36 ] = ( "p6_street_pole_sign_broken" ); // WORKS de
+    level.myModels[ 37 ] = ( "p6_zm_buildable_battery" ); // WORKS EVERYWHERE good for some pick up stuff
+    level.myModels[ 38 ] = ( "p6_zm_buildable_sq_scaffolding" ); // WORKS EVERYWHERE good for building a plank across the safe base?
+    level.myModels[ 39 ] = ( "p6_zm_buildable_sq_transceiver" ); // WORKS EVERYWHERE radio for pick up
+    level.myModels[ 40 ] = ( "p6_zm_building_rundown_01" ); // WORKS depo maybe put it up on the roof
+    level.myModels[ 41 ] = ( "p6_zm_building_rundown_03" ); // WORKS DEPO
+    level.myModels[ 42 ] = ( "p6_zm_chain_fence_piece_end" ); // WORKS EVERYWHERE END OF FENCE PIECE RAILING FACEING UP
+    level.myModels[ 43 ] = ( "p6_zm_outhouse" ); // WORKS depo shrek house
+    level.myModels[ 44 ] = ( "p6_zm_power_station_railing_steps_labs" ); // WORKS EVERYWHERE stairs railing
+    level.myModels[ 45 ] = ( "p6_zm_raingutter_clamp" ); // WORKS EVERYWHERE
+    level.myModels[ 46 ] = ( "p6_zm_rocks_large_cluster_01" ); // WORKS EVERYWHERE
+    level.myModels[ 47 ] = ( "p6_zm_rocks_medium_05" ); // WORKS EVERYWHERE
+    level.myModels[ 48 ] = ( "p6_zm_rocks_small_cluster_01" ); // WORKS EVERYWHERE
+    level.myModels[ 49 ] = ( "p6_zm_sign_terminal" ); // WORKS depo, terminal gold text
+    level.myModels[ 50 ] = ( "p6_zm_sign_restrooms" ); // WORKS de
+    level.myModels[ 51 ] = ( "p6_zm_street_power_pole" ); // WORKS depo smaller telephone
+    level.myModels[ 52 ] = ( "p6_zm_water_tower" ); // WORKS depo
 
     level.myModels[ 53 ] = ( "NEXT LIST = CAR MODELS / DNT SPAWN THIS" );
     level.myModels[ 54 ] = ( "test_macbeth_chart_unlit" );
-    level.myModels[ 55 ] = ( "test_sphere_lambert" );
+    level.myModels[ 55 ] = ( "test_sphere_silver" );
     level.myModels[ 56 ] = ( "veh_t6_civ_60s_coupe_dead" );
     level.myModels[ 57 ] = ( "veh_t6_civ_microbus_dead" );
     level.myModels[ 58 ] = ( "veh_t6_civ_movingtrk_cab_dead" );
@@ -144,5 +160,104 @@ precachemodels()
     for( i = 0; i < level.myModels.size; i++ )
     {
         precachemodel( level.myModels[ i ] ) ;
+    }
+}
+
+
+
+spawns_model()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+	self waittill( "spawned_player" );
+	index = 0;
+
+    
+	/*
+    s1 = actionslotonebuttonpressed();
+    s2 = actionsslottwobuttonpressed();
+    s3 = actionslotthreebuttonpressed();
+    s4 = actionslotfourbuttonpressed();
+    */
+
+    
+    while( true )
+    {
+        if ( self actionslotonebuttonpressed() )
+        {
+            
+            if( index < level.x_models.size  )
+            {
+                index++;
+				if( level.dev_time ){ iPrintLnBold( "INDEX: = " + index ); }
+            }
+			if( index == 0 )
+			{
+				if( level.dev_time ){ iprintlnbold( "Index is already at " +  index ); }
+				wait 0.1;
+			}
+            wait 0.5;
+                
+        }
+            
+		/*
+        if( self actionslottwobuttonpressed() )
+        {
+            if( index > 1 )
+            {
+                index--;
+				if( level.dev_time ){ iPrintLnBold( "INDEX: = " + index ); }
+            }
+			if( index == 0 )
+			{
+				if( level.dev_time ){ iprintlnbold( "Index is already at " +  index ); }
+				continue;
+			}
+            wait 0.08;
+        }
+		*/
+            
+
+        if( self actionslotthreebuttonpressed() )
+        {
+            if( self JumpButtonPressed() )
+            {
+                if( isdefined( gekko ) )
+                {
+                    gekko delete();
+                }
+            }
+            
+            gekko = spawn( "script_model", self.origin );
+            gekko setmodel( level.x_models[ index ] );
+            gekko.angles = level.players[ 0 ].angles;
+			if( level.dev_time ){ iprintlnbold( "Played a model: ^3" + level.x_models   [ index ] ); }
+            
+        }
+		/*
+        if( self actionslotfourbuttonpressed() )
+        {
+            mover = spawn( "script_model", self.origin + 200, 0, 30 );
+            mover setmodel( "tag_origin" );
+            mover.angles = ( 0, 0, 0 );
+            wait 0.05; 
+            playfxontag( level.myFx[ index ], mover, "tag_origin" );
+			xx = self actionslotthreebuttonpressed();
+			while( self meleeButtonPressed() )
+			{
+				if( level.dev_time )
+				{
+					iprintlnbold( "Remember to hit melee after " + xx );
+				}
+				wait 0.1;
+			}
+
+            //mover moveto( self getPlayerAngles( anglesToForward( self ) / 4 ), 2, 0.1, 0.1 );
+            wait 2;
+            mover delete();
+            wait 0.08;
+        }
+*/
+        wait 0.1;
     }
 }

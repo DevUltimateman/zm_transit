@@ -111,10 +111,9 @@ transmitter_wait_for_navcard()
             navtrig playsound( "zmb_sq_navcard_success" );
             level thread play_nav1_success( navtrig.origin );
             //update_sidequest_stats( "navcard_applied_zm_transit" );
-            wait 3;
-
-            //to make schruder talk with player
-            //this notify triggers a thread from: warmer_days_meet_mr_s.gsc
+            wait 3.2;
+            //this notify triggers a thread from: warmer_days_meet_mr_s.gsc to make schruder talk with player
+            //and starts the main quest step 4
             level notify( "s_talks_navcard" );
             navtrig sethintstring( "Transmitter is emitting ^3power...");
             break;

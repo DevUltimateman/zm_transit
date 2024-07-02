@@ -42,7 +42,7 @@
 
 init()
 {
-    level thread ondev();
+    //level thread ondev();
     precache_myfx();
 	level.dev_time = true;
 	
