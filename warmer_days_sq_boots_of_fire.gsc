@@ -308,7 +308,7 @@ fireboots_playerconnect()
     {
         level waittill( "connected", obeyer );
         obeyer thread setBootStat( false );
-        obeyer thread printer();
+        //obeyer thread printer();
     }
 }
 setBootStat( firstTime )

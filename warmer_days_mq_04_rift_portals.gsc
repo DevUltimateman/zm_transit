@@ -126,7 +126,7 @@ camera_points_debug()
     
 
     wait 5;
-
+    iprintlnbold( "LETS TEST THIS FUCKERY CAMERA SHIII" );
     for( s = 0; s < level.players.size; s++ )
     {
         level.players[ s ] CameraSetPosition( org );

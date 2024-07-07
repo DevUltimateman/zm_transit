@@ -86,7 +86,7 @@ waittill_initial_flag()
 
     flag_wait( "initial_blackscreen_passed" );
     //dbg angles + org
-    level thread print_origin_angles( /* level.players[ 0 ], 2  */);
+    //level thread print_origin_angles( /* level.players[ 0 ], 2  */);
 }
 screecher_hooker()
 {

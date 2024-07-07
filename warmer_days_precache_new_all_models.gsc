@@ -6,8 +6,8 @@ init()
         "p6_stanchion_post", //bus depo 3 
         "p_rus_locker_closed", //bus depo 4 
         "p_rus_locker_open", //bus depo 5 
-        "p_eb_lg_suitcase", //bus depo 6 
-        "p_eb_med_suitcase",  // 7
+        "p_eb_lg_suitcase", //bus depo 6  // use for bus depo step
+        "p_eb_med_suitcase",  // 7       // use for bus depo step after interacting
         "ny_harbor_planter", //bus depo 8
         "p6_chair_damaged_trash_panama", //bus depo 9
         "p6_zm_street_power_pole", //bus depo 10

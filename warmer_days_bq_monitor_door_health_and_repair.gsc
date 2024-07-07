@@ -41,3 +41,11 @@
 #include maps\mp\createfx\zm_transit_fx;
 
 #include maps\mp\zombies\_zm_craftables;
+
+init()
+{
+    flag_wait( "initial_blackscreen_passed" );
+
+    level.base_door_repair_trigger_location = ( 8397.05, -4620.56, 48.125 );
+    
+}

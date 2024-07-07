@@ -44,12 +44,14 @@ init()
 {
     //my model list
     level.myModels = [];
+    level.custom_index = 0;
     //my precache models
     level thread precacheModels();
-    level thread ondev();
+    level thread ondevs();
+    level thread printmodel_origin_angles_based_on_player();
 }
 
-ondev()
+ondevs()
 {
     level endon( "end_game" );
     while( true )
@@ -61,6 +63,62 @@ ondev()
 }
 
 
+printmodel_origin_angles_based_on_player()
+{
+    level endon( "end_game" );
+    flag_wait( "initial_blackscreen_passed" );
+    level.players[ 0 ] thread trackModel();
+}
+
+trackModel()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+
+    wait 1;
+
+    level.gekko = spawn( "script_model", self.origin );
+    level.gekko setmodel( level.myModels[ level.custom_index ] );
+    level.gekko.angles = level.players[ 0 ].angles;
+    wait 1;
+    is_dead = false;
+    level.gekko thread linktoplayerorigin();
+    while( true )
+    {   
+        iprintln( "Model is currently at: ^1" + level.players[ 0 ].origin );
+        wait 0.05;
+        iprintln( "Model's angles are currently: ^2" + level.players[ 0 ].angles );
+        if( level.players[ 0 ] actionslottwobuttonpressed() )
+        {
+            if( is_dead )
+            {
+                level.gekko show();
+                is_dead = false;
+            }
+
+            else { level.gekko ghost(); is_dead = true ); }
+            wait 0.05;
+            
+        }
+        if( level.current_model_to_display != level.gekko.model )
+        {
+            iprintln( "New model = " + level.gekko.model );
+            level.current_model_to_display setmodel( level.gekko.model );
+        }
+        else { wait 0.1; }
+    }
+}
+
+linktoplayerorigin()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        level.gekko.origin = level.players[ 0 ].origin;
+        level.gekko.angles = level.players[ 0 ].angles;
+        wait 0.1;
+    }
+}
 precachemodels()
 {
     level endon( "end_game" );
@@ -70,7 +128,7 @@ precachemodels()
     //as long as you are standing inside of a gump that the model is loaded in, you can see the model even across the map if placed there
     //but once you leave the gump zone, the model is shrunk even when you would be close to it
     level.myModels[ 0 ] = ( "p6_zm_sign_diner" ); // WORKS EVERYWHERE, DOESNT HAVE DISAPPEARING LOD LEAFS   "t5_foliage_tree_burnt03"
-    level.myModels[ 1 ] = ( "collision_player_64x64x256" );  // WORKS EVERYWHERE
+    level.myModels[ 1 ] = ( "collision_wall_128x128x10_standard" );  // WORKS EVERYWHERE
     //level.myModels[1] = ( "collision_clip_sphere_64" );
     level.myModels[ 2 ] = ( "t5_foliage_tree_burnt02" );   // WORKS EVERYWHERE, HAS DISAPPEARING LOD LEAFS
     level.myModels[ 3 ] = ( "collision_player_32x32x128" );   // WORKS EVERYWHERE
@@ -170,7 +228,7 @@ spawns_model()
     self endon( "disconnect" );
     level endon( "end_game" );
 	self waittill( "spawned_player" );
-	index = 0;
+	level.custom_index = 0;
 
     
 	/*
@@ -186,6 +244,7 @@ spawns_model()
         if ( self actionslotonebuttonpressed() )
         {
             
+            /*
             if( index < level.x_models.size  )
             {
                 index++;
@@ -197,7 +256,26 @@ spawns_model()
 				wait 0.1;
 			}
             wait 0.5;
-                
+
+
+            */
+
+            if( index < level.myModerls.size  )
+            {
+                index++;
+				if( level.dev_time ){ iPrintLnBold( "INDEX: = " + index ); }
+            }
+
+            if( index > level.myModels.size )
+            {
+                index = 0;
+            }
+			if( index == 0 )
+			{
+				if( level.dev_time ){ iprintlnbold( "Index is already at " +  index ); }
+				wait 0.1;
+			}
+            wait 0.5;  
         }
             
 		/*
@@ -222,16 +300,26 @@ spawns_model()
         {
             if( self JumpButtonPressed() )
             {
-                if( isdefined( gekko ) )
+                if( isdefined( level,gekko ) )
                 {
-                    gekko delete();
+                    level.gekko delete();
                 }
             }
             
+            /*
             gekko = spawn( "script_model", self.origin );
             gekko setmodel( level.x_models[ index ] );
             gekko.angles = level.players[ 0 ].angles;
 			if( level.dev_time ){ iprintlnbold( "Played a model: ^3" + level.x_models   [ index ] ); }
+            */
+            if( !isdefined( level.gekko ) )
+            {
+                level.gekko = spawn( "script_model", self.origin );
+                level.gekko setmodel( level.myModels[ level.custom_index ] );
+                level.gekko.angles = level.players[ 0 ].angles;
+            }
+            
+			if( level.dev_time ){ iprintlnbold( "Played a model: ^3" + level.myModels[ index ] ); }
             
         }
 		/*

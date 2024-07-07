@@ -41,3 +41,21 @@
 #include maps\mp\createfx\zm_transit_fx;
 
 #include maps\mp\zombies\_zm_craftables;
+
+init()
+{
+    flag_wait( "initial_blackscreen_passed" );
+
+    level.door_base_main_right_location = ( 8111.67, -5425.17, 48.125 );
+    level.door_base_main_left_location = ( 8272.36, -5425.29, 48.125 );
+
+    level.door_base_main_trigger_location = ( 8325.36, -5397.83, 48.125 );
+
+    level.door_base_main_left_collision_location = ( 8230.3, -5423.62, 48.125 );
+    level.door_base_main_right_collision_location = ( 8151.49, 5423.62, 48.125 );
+
+
+    
+}
+
+

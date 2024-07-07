@@ -41,3 +41,15 @@
 #include maps\mp\createfx\zm_transit_fx;
 
 #include maps\mp\zombies\_zm_craftables;
+
+init()
+{
+    flag_wait( "initial_blackscreen_passed" );
+
+    level.ledge_first_p_location = ( 8190.73, -5181.22, 256.247 );
+    level.ledge_second_p_location = ( 8265.8, -5112.79, 252.123 );
+
+    level.ledge_build_trigger_location = ( 8130.71, -5219.67, 264.125 );
+
+    
+}

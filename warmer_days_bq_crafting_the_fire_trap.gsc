@@ -87,6 +87,8 @@ coop_print_base_find_or_fortify( which_notify, who_found )
         _someone_unlocked_something( "^3" + who_found.name + " ^2fortified^7 survivor base by crafting a ^3Fire Trap^7 on the zombie window^7!", "", 6, 0.3 );
         break;
 
+        case "side_door_unlocked":
+        _someone_unlocked_something( "^5" + who_found.name + "^2fortified^7 survivor base by crafting a ^3Zombie Barricade^7 on the side entrance!", "", 6, 0.3 );
         default:
         break;
     }

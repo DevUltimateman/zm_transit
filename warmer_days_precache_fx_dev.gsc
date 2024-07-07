@@ -69,7 +69,7 @@ precache_myfx()
 	level.myFx[ 1 ] = loadfx( "maps/zombie/fx_zmb_race_trail_grief" );  //ee bolt
 	level.myFx[ 2 ] = loadfx( "maps/zombie/fx_zmb_race_trail_neutral" ); //ee bolt
 	level.myFx[ 3 ] = loadfx( "maps/zombie/fx_zmb_tranzit_sq_lightning_orb" ); //works
-	level.myFx[ 4]  = loadfx ("misc/fx_ui_flagbase_orange");//("maps/zombie/fx_zombie_exit_glow");//loadfx("misc/fx_ui_flagbase_orange");
+	level.myFx[ 4]  = loadfx ("race_soul_trail_green");//("maps/zombie/fx_zombie_exit_glow");//loadfx("misc/fx_ui_flagbase_orange");
 	level.myFx[ 5 ] = loadfx ("maps/zombie/zombie_fx_exit_marker");//("maps/zombie/zombie_fx_exit_marker");
 	level.myFx[ 6 ] = loadfx( "maps/zombie/fx_zmb_tranzit_marker" ); //yes pandora
 	level.myFx[ 7 ] = loadfx( "maps/zombie/fx_zmb_tranzit_marker_fl" ); //yes pandora
