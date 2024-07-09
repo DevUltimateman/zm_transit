@@ -48,16 +48,21 @@
 
 init()
 {
-    level.door_base_side_right_location = ( 7864.09, -5003.86, 48.125 );
-    level.door_base_side_left_location = ( 7864.09, -5100.36, 48.125 );
+    level.door_base_side_right_location = ( 8111.15, -5415.53, 1.75549 );
+    level.door_base_side_right_angles = ( 0, -179.115, 0 );
+
+    level.door_base_side_left_location = ( 8286.42, -5415.53, 1.75549 );
+    level.door_base_side_left_angles = ( 0, -179.115, 0 );
 
     level.door_base_side_trigger_location = ( 7919.84, -5114.17, 48.125 );
 
-    level.door_base_collision_clip_location = level.door_base_side_trigger_location;
+    level.door_base_collision_clip_location = ( 7875.72, -5052.77, -8.92751 );
+    level.door_base_collision_clip_angles = ( 0, 89.8134, 0 );
     flag_wait( "initial_blackscreen_passed" );
 
     
     level thread initialize_everything_for_side_door();
+    level thread spawn_collision_and_model();
 }
 
 
@@ -65,8 +70,8 @@ initialize_everything_for_side_door()
 {
     level endon( "end_game" );
     wait 20;
-    sglobal_gas_quest_trigger_spawner( level.door_base_collision_clip_location + ( 0,0, 20), "Press ^3[{+activate}] ^7to build zombie barricade", "Zombies are now ^3blocked^7 by this barricade!", level.myfx[ 75 ], level.myfx[ 76 ], "side_door_unlocked" );
-    level thread spawn_collision_and_model();
+    sglobal_gas_quest_trigger_spawner( level.door_base_collision_clip_location + ( 0,0, 70), "Press ^3[{+activate}] ^7to build zombie barricade", "Zombies are now ^3blocked^7 by this barricade!", level.myfx[ 75 ], level.myfx[ 76 ], "side_door_unlocked" );
+    
 }
  
 spawn_findable_piece()
@@ -77,9 +82,11 @@ spawn_findable_piece()
 spawn_collision_and_model()
 {
     level waittill( "side_door_unlocked" );
-    mt = spawn( "script_model", level.door_base_collision_clip_location );
+    wait 0.1;
+
+    mt = spawn( "script_model", level.door_base_collision_clip_location + ( 0, 0, 64 ) );
     mt setmodel( level.myModels[ 9 ] );
-    mt.angles = (0,0,0);
+    mt.angles = level.door_base_collision_clip_angles + ( 0, 180, 0 );
 
     wait 0.05;
     mt moveZ( -64, 1, 0.1, 0.1 );
@@ -87,16 +94,23 @@ spawn_collision_and_model()
     xx = mt.origin;
     wait 0.05;
 
-    mtc = spawn( "script_model", mt.origin  );
+    mtc = spawn( "script_model", level.door_base_collision_clip_location + (0,0,30)  );
     mtc setmodel( level.myModels[ 1 ] );
-    mtc.angles = (0,0,0);
+    mtc.angles = level.door_base_collision_clip_angles + ( 0, 180, 0 );
 
     wait 0.05;
+
+    mtc2 = spawn( "script_model", level.door_base_collision_clip_location );
+    mtc2 setmodel( level.myModels[ 1 ] );
+    mtc2.angles = level.door_base_collision_clip_angles + ( 0, 180, 0 );
+
+    wait 0.1;
+    
     guuguu = loadfx( "maps/zombie/fx_zmb_morsecode_traffic_loop" );
     wait 0.05;
-    playfx( guuguu, level.door_base_side_right_location );
+    playfx( level.myfx[ 0 ], level.door_base_collision_clip_location + ( 0, -55, 96  ) );
     wait 0.05;
-    playfx( guuguu, level.door_base_side_left_location );
+    playfx( level.myfx[ 0 ], level.door_base_collision_clip_location + ( 0, 55, 96 ) );
 }
 debug_outdoor_triggers()
 {

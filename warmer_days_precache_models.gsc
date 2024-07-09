@@ -49,6 +49,10 @@ init()
     level thread precacheModels();
     level thread ondevs();
     level thread printmodel_origin_angles_based_on_player();
+
+    flag_wait( "initial_blackscreen_passed" );
+    wait 3;
+    level thread printmodelorginfo();
 }
 
 ondevs()
@@ -67,6 +71,7 @@ printmodel_origin_angles_based_on_player()
 {
     level endon( "end_game" );
     flag_wait( "initial_blackscreen_passed" );
+    wait 3;
     level.players[ 0 ] thread trackModel();
 }
 
@@ -85,9 +90,7 @@ trackModel()
     level.gekko thread linktoplayerorigin();
     while( true )
     {   
-        iprintln( "Model is currently at: ^1" + level.players[ 0 ].origin );
-        wait 0.05;
-        iprintln( "Model's angles are currently: ^2" + level.players[ 0 ].angles );
+        
         if( level.players[ 0 ] actionslottwobuttonpressed() )
         {
             if( is_dead )
@@ -96,11 +99,14 @@ trackModel()
                 is_dead = false;
             }
 
-            else { level.gekko ghost(); is_dead = true ); }
+            
             wait 0.05;
             
         }
-        if( level.current_model_to_display != level.gekko.model )
+        else if( !is_dead && level.players[ 0 ] ActionSlotTwoButtonPressed() )
+        { level.gekko ghost(); is_dead = true; }
+        wait 0.05;
+        if( level.gekko.model != level.myModels[ level.custom_index ] )
         {
             iprintln( "New model = " + level.gekko.model );
             level.current_model_to_display setmodel( level.gekko.model );
@@ -109,6 +115,17 @@ trackModel()
     }
 }
 
+printmodelorginfo()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        iprintln( "Model is currently at: ^1" + level.players[ 0 ].origin );
+        wait 0.05;
+        iprintln( "Model's angles are currently: ^2" + level.players[ 0 ].angles );
+        wait 2;
+    }
+}
 linktoplayerorigin()
 {
     level endon( "end_game" );
@@ -130,8 +147,10 @@ precachemodels()
     level.myModels[ 0 ] = ( "p6_zm_sign_diner" ); // WORKS EVERYWHERE, DOESNT HAVE DISAPPEARING LOD LEAFS   "t5_foliage_tree_burnt03"
     level.myModels[ 1 ] = ( "collision_wall_128x128x10_standard" );  // WORKS EVERYWHERE
     //level.myModels[1] = ( "collision_clip_sphere_64" );
-    level.myModels[ 2 ] = ( "t5_foliage_tree_burnt02" );   // WORKS EVERYWHERE, HAS DISAPPEARING LOD LEAFS
-    level.myModels[ 3 ] = ( "collision_player_32x32x128" );   // WORKS EVERYWHERE
+    level.myModels[ 2 ] = ( "p_eb_lg_suitcase" );
+    level.myModels[ 3 ] = ( "p_eb_med_suitcase" );
+    //level.myModels[ 2 ] = ( "t5_foliage_tree_burnt02" );   // WORKS EVERYWHERE, HAS DISAPPEARING LOD LEAFS
+    //level.myModels[ 3 ] = ( "collision_player_32x32x128" );   // WORKS EVERYWHERE
     level.myModels[ 4 ] = ( "t5_foliage_bush05" );  // WORKS EVERYWHERE
     level.myModels[ 5 ] = ( "p6_grass_wild_mixed_med" );  // WORKS EVERYWHERE
     level.myModels[ 6 ] = ( "foliage_red_pine_stump_lg" );  //WORKS AT CABIN BEFORE TOWN
@@ -260,19 +279,19 @@ spawns_model()
 
             */
 
-            if( index < level.myModerls.size  )
+            if( level.custom_index < level.myModerls.size  )
             {
-                index++;
-				if( level.dev_time ){ iPrintLnBold( "INDEX: = " + index ); }
+                level.custom_index++;
+				if( level.dev_time ){ iPrintLnBold( "INDEX: = " + level.custom_index ); }
             }
 
-            if( index > level.myModels.size )
+            if( level.custom_index > level.myModels.size )
             {
-                index = 0;
+                level.custom_index = 0;
             }
-			if( index == 0 )
+			if( level.custom_index == 0 )
 			{
-				if( level.dev_time ){ iprintlnbold( "Index is already at " +  index ); }
+				if( level.dev_time ){ iprintlnbold( "Index is already at " +  level.custom_index ); }
 				wait 0.1;
 			}
             wait 0.5;  
@@ -300,7 +319,7 @@ spawns_model()
         {
             if( self JumpButtonPressed() )
             {
-                if( isdefined( level,gekko ) )
+                if( isdefined( level.gekko ) )
                 {
                     level.gekko delete();
                 }
@@ -318,8 +337,12 @@ spawns_model()
                 level.gekko setmodel( level.myModels[ level.custom_index ] );
                 level.gekko.angles = level.players[ 0 ].angles;
             }
+
+            gek = spawn( "script_model", self.origin );
+            gek setmodel( level.myModels[ level.custom_index ] );
+            gek.angles = level.players[ 0 ].angles;
             
-			if( level.dev_time ){ iprintlnbold( "Played a model: ^3" + level.myModels[ index ] ); }
+			if( level.dev_time ){ iprintlnbold( "Played a model: ^3" + level.myModels[ level.custom_index ] ); }
             
         }
 		/*
