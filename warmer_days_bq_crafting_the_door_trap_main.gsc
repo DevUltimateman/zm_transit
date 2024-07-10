@@ -44,6 +44,7 @@
 
 init()
 {
+    level thread for_connecting_players();
     flag_wait( "initial_blackscreen_passed" );
 
     level.door_base_main_right_location = ( 8111.67, -5425.17, 48.125 );
@@ -56,12 +57,54 @@ init()
 
     level.m_door_opening = false;
 
+    level.door_health_ = 750;
+    level.door_health_fixed_ = 750;
+
+    level.players_have_pieces = 0;
+
+    level.pieces_added_to_door = 0;
+    
+    level.random_base_piece = [];
+
+    level.random_base_piece_locations = [];
+    
+    level.door_needs_repairing = false; 
+
+    level.random_base_piece_locations[ 0 ] = ( -7497.26, 4912.35, -55.875 ); //outside of b depo power door
+    level.random_base_piece_locations[ 1 ] = ( -6247.48, 4134.22, -44.875 ); //below the hut roof b depo shack
+    level.random_base_piece_locations[ 2 ] = ( 2076.57, -1396.17, -53.0825 ); //next to box and trash town
+    level.random_base_piece_locations[ 3 ] = ( 683.194, -44.8365, -39.875 ); //inside of bank corner tiwb
+    level.random_base_piece_locations[ 4 ] = ( 11181.1, 8102.69, -572.589 ); //p station, behind a truck
+    level.random_base_piece_locations[ 5 ] = ( 11116.7, 8901.82, -575.875 ); //p station, next to lava pit ledge where u can die at
+    level.random_base_piece_locations[ 6 ] = ( 6598.41, -6213.3, -67.5996 ); //farm, when u come from the forest to farm., outsie
+    level.random_base_piece_locations[ 7 ] = ( 8272.08, -6656.33, 152.312 ); //farm, inside of house on the counter next to ref
+    level.random_base_piece_locations[ 8 ] = ( 1314.57, -2158.48, -61.8679 ); //shortcut to town, next to the truck before slope
+    level.random_base_piece_locations[ 9 ] = ( -6308.03, -5649.59, -34.7311 ); //diner, behind the foresty area next to gated fence
+    level.random_base_piece_locations[ 10 ] = ( -6345.25, -7544.87, 40.3869 ); //diner, on the table inside of kitchen
+    level.random_base_piece_locations[ 11 ] = ( -10849.3, -1519.92, 196.125 ); //tunnel, middle next to a huge lava pit
+    level.random_base_piece_locations[ 12 ] = ( -10910.5, -168.188, 192.125 ); //tunnel, when u enter from depo to tunnel, turn left when in  safe area
+
     level thread level_spawns_main_door_stuff();
     wait 15;
     level thread do_the_door();
     
 }
 
+for_connecting_players()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        level waittill( "connected", p );
+        p thread applyOnSpawn();
+    }
+}
+
+applyOnSpawn()
+{
+    self waittill( "spawned_player" );
+    self.has_bar_piece = 0;
+}
 
 
 do_the_door()
@@ -112,6 +155,7 @@ do_the_door()
     level.m_door_opening = false;
     level thread monitorMovement();
 
+    level thread monitorDoorHealth();
 
 }
 
@@ -122,6 +166,11 @@ monitorMovement()
     first_time_hit = false;
     while( true )
     {
+        if( level.door_health_ < 5 )
+        {
+            wait 5;
+            continue;
+        }
         if( level.m_door_opening == false )
         {
              //DO THE DOOR OPEN IF PLAYERS ARE WITHIN THE AREA
@@ -150,15 +199,10 @@ monitorMovement()
                 level.col_models[ 1 ] moveto( level.m_collisions[ 1 ] + ( -150, 0, 0 ), 1, 0.2, 0.2 );        
                 level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 150, 0, -54 ), 1, 0.2, 0.2 );
                 level.col_models[ 3 ] moveto( level.m_collisions[ 3 ] + ( 150, 0, 0 ), 1, 0.2, 0.2 ); 
-
                 level.main_door_base_left moveto( level.door_base_main_left_location + ( 150, 0, -54 ), 1, 0.2, 0.2 );
                 level.main_door_base_right moveto( level.door_base_main_right_location + ( -150, 0, -54 ), 1, 0.2, 0.2 );    
                 level.main_door_base_right playsound( level.mysounds[ 8 ] );
                 level.main_door_base_left playsound( level.mysounds[ 8 ] );
-                /*
-                level.main_door_base_right playsound( level.mysounds[ 9 ] );
-                level.main_door_base_left playsound( level.mysounds[ 9 ] );
-                */
                 level.main_door_base_right waittill( "movedone" );
                 level.main_door_base_right playsound( level.mysounds[ 9 ] );
                 level.main_door_base_left playsound( level.mysounds[ 9 ] );
@@ -221,11 +265,157 @@ level_spawns_main_door_stuff()
 {
     wait 0.1;
     sglobal_gas_quest_trigger_spawner( level.door_base_main_trigger_location, "Press ^3[{+activate}] ^7to build a main entrance barricade.", "^3Zombie Barricade ^7was built!", level.myfx[ 75 ], level.myfx[ 76 ], "main_door_unlocked" );
-
 }
 
 
+monitorDoorHealth()
+{
+    level endon( "end_game" );
+    self_has_targeted = false;
+    while( true )
+    {
+        zombies_ = getAIArray( level.zombie_team );
+        if( level.door_health < 5 && !self_has_targeted )
+        {
+            for( i = 0; i < zombies_.size; i++ )
+            {
+                if( distance2d( zombies_[ i ].origin, level.main_door_base_left.origin ) < 115 )
+                {
+                    zombie_hits_door = randomIntRange( 5, 25 );
+                    playfxontag( level.myfx[ 9 ], zombies_[ i ], "j_elbow_le" );
+                    level.door_health_ -= zombie_hits_door;
+                    if( level.dev_time ) { iprintln( "ZOMBIE hit main door and did ^1" + zombie_hits_door + " ^7amount of damage. ") ;
+                    iprintln( "MAIN DOOR HEALTH IS AT: ^3" + level.door_health_ + " ^7/ ^3 750" ); }
+                }
+            }
+        }
+        
+        //zombies did enough damage to the door
+        if( level.door_health_ < 5 )
+        {
+            level notify( "main_door_has_been_broken" );
+            level.door_needs_repairing = true;
+            if( level.dev_time ){ iprintln( "ZOMBIE DOOR BROKE!" ); }
+            self_has_targeted = true;
+            level thread blast_doors_wide_open();
+            level thread spawn_rebuildable_pieces();
 
+            while( !base_has_been_rebuilt() )
+            {
+                wait 1;
+            }
+            wait 0.05;
+            level thread blast_doors_wide_close();
+            level thread spawn_rebuildable_pieces();
+            if( level.dev_time )
+            { 
+                iprintln( "ZOMBIE MAIN DOOR BARRICADE HAS BEEN REBUILT" );
+            }
+            self_has_targeted = false;
+            wait 0.1;
+        }
+        wait randomFloatRange( 0.5, 2.5 );
+    }
+}
+
+blast_doors_wide_open()
+{
+    level endon( "end_game" );
+    level.col_models[ 0 ] moveto( level.m_collisions[ 0 ] + ( -150, 0, -54 ), 1, 0.2, 0.2 );
+    level.col_models[ 1 ] moveto( level.m_collisions[ 1 ] + ( -150, 0, 0 ), 1, 0.2, 0.2 );        
+    level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 150, 0, -54 ), 1, 0.2, 0.2 );
+    level.col_models[ 3 ] moveto( level.m_collisions[ 3 ] + ( 150, 0, 0 ), 1, 0.2, 0.2 ); 
+    level.main_door_base_left moveto( level.door_base_main_left_location + ( 150, 0, -54 ), 1, 0.2, 0.2 );
+    level.main_door_base_right moveto( level.door_base_main_right_location + ( -150, 0, -54 ), 1, 0.2, 0.2 );    
+    level.main_door_base_right playsound( level.mysounds[ 8 ] );
+    level.main_door_base_left playsound( level.mysounds[ 8 ] );
+    level.main_door_base_right waittill( "movedone" );
+    level.main_door_base_right playsound( level.mysounds[ 9 ] );
+    level.main_door_base_left playsound( level.mysounds[ 9 ] );
+}
+
+blast_doors_wide_close()
+{
+    level endon( "end_game" );
+    level.main_door_base_right moveto( level.door_base_main_right_location + ( 0, 0, -54 ), 0.6, 0, 0.2 );
+    level.main_door_base_left moveto( level.door_base_main_left_location + ( 0,0, -54 ), 0.6, 0, 0.2 );
+    level.main_door_base_right playsound( level.mysounds[ 8 ] );
+    level.main_door_base_left playsound( level.mysounds[ 8 ] );
+    level.main_door_base_left waittill( "movedone" );
+    level.col_models[ 0 ] moveto( level.m_collisions[ 0 ] + ( 0, 0, -54 ), 0.1, 0, 0 );
+    level.col_models[ 1 ] moveto( level.m_collisions[ 1 ], 0.1, 0, 0 );
+    level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 10, 0, -54 ), 0.1, 0, 0 );
+    level.col_models[ 3 ] moveto( level.m_collisions[ 3 ], 0.1, 0, 0 );
+    level.main_door_base_right playsound( level.mysounds[ 9 ] );
+    level.main_door_base_left playsound( level.mysounds[ 9 ] );
+}
+base_has_been_rebuilt()
+{
+    level endon( "end_game" );
+    if( level.door_health_ >= level.door_health_fixed_ )
+    {
+        return true;
+    }
+    return false;
+}
+
+player_has_added_a_piece()
+{
+    level endon( "end_game" );
+    level endon( "all_pieces_added" );
+    while( true )
+    {
+
+        level.pieces_added_to_door++;
+    }
+}
+spawn_rebuildable_pieces()
+{
+    spawn_amount = 6;
+    if( level.players_have_pieces > 3 )
+    {
+        return;
+    }
+
+    new_spawn_amount = spawn_amount - level.players_have_pieces;
+    for( i = 0; i < new_spawn_amount; i++ )
+    {
+        x_num = randomintrange( 0, level.random_base_piece_locations.size );
+        level.random_base_piece[ i  ] = spawn( "script_model", level.random_base_piece_locations[ x_num ] );
+        level.random_base_piece[ i ] setmodel( "tag_origin" );
+        level.random_base_piece[ i ].angles = ( 0, 0, 0 );
+        wait 0.05;
+        playfxontag( level.myfx[ 2 ], level.random_base_piece[ i ], "tag_origin" );
+        wait 0.05;
+        level.random_base_piece[ i ] thread letPlayerPickUp();
+        wait 0.1;
+    }
+
+    if( level.dev_time ){ iprintln( "WE SPAWNED " + level.random_base_piece.size + " amount of barriers to pick up" ); }
+}
+
+letPlayerPickUp()
+{
+    level endon( "end_game" );
+    wait 0.05;
+    p_t = spawn( "trigger_radius_use", self.origin, 48, 48, 48 );
+    p_t setCursorHint( "HINT_NOICON" );
+    p_t setHintString( "Press ^3[{+activate}] ^7to pick up a repair barricade for ^3Survivor Base" );
+    p_t TriggerIgnoreTeam();
+
+    while( true )
+    {
+        p_t waittill( "trigger", who );
+        p_t setHintString( "You picked up ^3Survivor Base ^7piece!" );
+        who.has_bar_piece++;
+        self delete();
+        wait 2;
+        p_t delete();
+        level.players_have_pieces++;
+        wait 0.1;
+        break;
+    }
+}
 sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
 {
     level endon( "end_game" );
@@ -297,7 +487,9 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
                 wait 0.05;
                 if( isdefined( level.main_door_tr ) )
                 {
-                    level.main_door_tr delete();
+                    level.main_door_tr thread monitorAfterWards();
+                    
+                    //level.main_door_tr delete();
                 }
                 if( isdefined( i_m ) )
                 {
@@ -307,6 +499,57 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
                 break;
             }
         }
+    }
+}
+
+monitorAfterWards()
+{
+    level endon( "end_game" );
+    
+    while( true )
+    {
+        if( level.door_health_ > 5 )
+        {
+            self sethintstring( "Door health: ^3" + level.door_health_ + " ^7/ ^3" + level.door_health_fixed_ );
+            wait 0.05;
+            while( level.door_health_ > 5 )
+            {
+                self sethintstring( "Door health: ^3" + level.door_health_ + " ^7/ ^3" + level.door_health_fixed_ );
+                wait 1;                         
+            }
+        }
+        
+        if( level.door_needs_repairing )
+        {
+            self sethintstring( "Press ^3[{+activate}] ^7to repair the door" );
+        }
+        else if  ( !level.door_needs_repairing )
+        {
+            self sethintstring( "Door health: ^3" + level.door_health_ + " ^7/ ^3" + level.door_health_fixed_ );
+        }
+        self waittill( "trigger", who );
+        if( level.door_health_ < 5 && level.pieces_added_to_door < 3 )
+        {
+            if( who.has_bar_piece > 0 )
+            {
+                self sethintstring( "You added a barricade piece to the door." );
+                level.pieces_added_to_door++;
+                level.players_have_pieces--;
+                wait 1;
+                who.has_bar_piece -= 1;
+
+                if( level.pieces_added_to_door >= 3 )
+                {
+                    self sethintstring( "The door is functional again!" );
+                    level.pieces_added_to_door = 0;
+                    level.door_health_ = level.door_health_fixed_;
+                    level.door_needs_repairing = false;
+                }
+            }
+
+            else { self sethintstring( "You don't have the required barricade piece." );}
+        }
+        wait 1.5;
     }
 }
 
