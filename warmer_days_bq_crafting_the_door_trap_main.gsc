@@ -50,10 +50,12 @@ init()
     level.door_base_main_right_location = ( 8111.67, -5425.17, 48.125 );
     level.door_base_main_left_location = ( 8272.36, -5425.29, 48.125 );
 
-    level.door_base_main_trigger_location = ( 8325.36, -5397.83, 48.125 );
-
+    level.door_base_main_trigger_location = ( 8492.35, -5215.87, 48.125 );
+    
     level.door_base_main_left_collision_location = ( 8230.3, -5423.62, 48.125 );
     level.door_base_main_right_collision_location = ( 8151.49, 5423.62, 48.125 );
+
+    level.open_air_lock_door_origin = ( 8193.19, -5431.71, 47.9033 );
 
     level.m_door_opening = false;
 
@@ -70,6 +72,8 @@ init()
     
     level.door_needs_repairing = false; 
 
+    level.m_door_opening = false;
+
     level.random_base_piece_locations[ 0 ] = ( -7497.26, 4912.35, -55.875 ); //outside of b depo power door
     level.random_base_piece_locations[ 1 ] = ( -6247.48, 4134.22, -44.875 ); //below the hut roof b depo shack
     level.random_base_piece_locations[ 2 ] = ( 2076.57, -1396.17, -53.0825 ); //next to box and trash town
@@ -84,12 +88,24 @@ init()
     level.random_base_piece_locations[ 11 ] = ( -10849.3, -1519.92, 196.125 ); //tunnel, middle next to a huge lava pit
     level.random_base_piece_locations[ 12 ] = ( -10910.5, -168.188, 192.125 ); //tunnel, when u enter from depo to tunnel, turn left when in  safe area
 
+    level thread airlocking_doors();
     level thread level_spawns_main_door_stuff();
+    level thread spawn_workbench_to_build_main_entrance();
     wait 15;
     level thread do_the_door();
     
 }
 
+airlocking_doors()
+{
+    level endon( "end_game" );
+    
+    level.airlock_origin = spawn( "script_model", level.open_air_lock_door_origin );
+    level.airlock_origin setmodel( "tag_origin" );
+    level.airlock_origin.angles = ( 0, 0, 0 );
+
+    if( level.dev_time ) { iprintln( "AIRLOCKING DOOR CHECK SPAWNED" );}
+}
 for_connecting_players()
 {
     level endon( "end_game" );
@@ -148,13 +164,9 @@ do_the_door()
         level.col_models[ i ].angles = level.main_door_base_left.angles;
         wait 0.05;    
     }
-
     wait 1;
-
     //monitor if players are close
-    level.m_door_opening = false;
     level thread monitorMovement();
-
     level thread monitorDoorHealth();
 
 }
@@ -176,11 +188,14 @@ monitorMovement()
              //DO THE DOOR OPEN IF PLAYERS ARE WITHIN THE AREA
             for( i = 0; i < level.players.size; i++ )
             {
-                if( distance2d( level.players[ i ].origin, level.main_door_base_right.origin ) < 225 && level.players[ i ].origin[ 2 ] < 109.039  && level.m_door_opening == false )
+                if( distance2d( level.players[ i ].origin, level.airlock_origin.origin ) < 40 )
                 {
-                    level.m_door_opening = true;
-                    first_time_hit = true;
-                    wait 0.05;
+                    if( level.players[ i ].origin[ 2 ] < 115  )
+                    {
+                        level.m_door_opening = true;
+                        first_time_hit = true;
+                        wait 0.05;
+                    }
                 }
                 else 
                 {
@@ -218,7 +233,7 @@ monitorMovement()
                 wait 1;
             }
 
-            else if( level.m_door_opening && !someone_is_touching_the_main_area() && level.main_door_base_right.origin != level.door_base_main_right_location )
+            if ( level.m_door_opening && !someone_is_touching_the_main_area() && level.main_door_base_right.origin != level.door_base_main_right_location )
             {
                 level.main_door_base_right moveto( level.door_base_main_right_location + ( 0, 0, -54 ), 0.6, 0, 0.2 );
                 level.main_door_base_left moveto( level.door_base_main_left_location + ( 0,0, -54 ), 0.6, 0, 0.2 );
@@ -237,10 +252,9 @@ monitorMovement()
                 level.m_door_opening = false;
             }
         }
-        else
-        {
-            wait 0.1;
-        }
+        
+        wait 0.1;
+        
     }
 }
 
@@ -251,7 +265,7 @@ someone_is_touching_the_main_area()
 
     for( i = 0; i < level.players.size; i++ )
     {
-        if( distance2d( level.players[ i ].origin, level.door_base_main_trigger_location ) < 225 && level.players[ i ].origin[ 2 ] < 109.039 )
+        if( distance2d( level.players[ i ].origin, level.open_air_lock_door_origin ) < 45 )
         {
             return true;
         }
@@ -279,8 +293,9 @@ monitorDoorHealth()
         {
             for( i = 0; i < zombies_.size; i++ )
             {
-                if( distance2d( zombies_[ i ].origin, level.main_door_base_left.origin ) < 115 )
+                if( distance2d( zombies_[ i ].origin, level.airlock_origin.origin ) < 35 )
                 {
+                    wait randomfloatrange( 0.05, 0.45 );
                     zombie_hits_door = randomIntRange( 5, 25 );
                     playfxontag( level.myfx[ 9 ], zombies_[ i ], "j_elbow_le" );
                     level.door_health_ -= zombie_hits_door;
@@ -291,7 +306,7 @@ monitorDoorHealth()
         }
         
         //zombies did enough damage to the door
-        if( level.door_health_ < 5 )
+        if( level.door_health_ < 5 && level.door_needs_repairing == false )
         {
             level notify( "main_door_has_been_broken" );
             level.door_needs_repairing = true;
@@ -381,7 +396,16 @@ spawn_rebuildable_pieces()
     for( i = 0; i < new_spawn_amount; i++ )
     {
         x_num = randomintrange( 0, level.random_base_piece_locations.size );
-        level.random_base_piece[ i  ] = spawn( "script_model", level.random_base_piece_locations[ x_num ] );
+        if( i > 0 && level.random_base_piece[ i ].origin == level.random_base_piece_locations[ x_num ] )
+        {
+            while( level.random_base_piece[ i - 1 ].origin == level.random_base_piece_locations[ x_num ] )
+            {
+                if( level.dev_time ){ iprintln( "WE ARE WAITING TO GET A PROPER SPAWN PIECE LOCATION" ); }
+                wait 0.05;
+                x_num = randomintrange( 0, level.random_base_piece_locations.size );
+            }
+        }
+        level.random_base_piece[ i ] = spawn( "script_model", level.random_base_piece_locations[ x_num ] );
         level.random_base_piece[ i ] setmodel( "tag_origin" );
         level.random_base_piece[ i ].angles = ( 0, 0, 0 );
         wait 0.05;
@@ -488,6 +512,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
                 if( isdefined( level.main_door_tr ) )
                 {
                     level.main_door_tr thread monitorAfterWards();
+                    level.main_door_tr thread playlocal_plrsound();
                     
                     //level.main_door_tr delete();
                 }
@@ -537,7 +562,9 @@ monitorAfterWards()
                 level.players_have_pieces--;
                 wait 1;
                 who.has_bar_piece -= 1;
-
+                
+                //is this a good notify sound?
+                self playlocal_plrsound();
                 if( level.pieces_added_to_door >= 3 )
                 {
                     self sethintstring( "The door is functional again!" );
@@ -690,4 +717,45 @@ _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
 	level thread Subtitle( text, text2, duration, fadetimer );
+}
+
+
+spawn_workbench_to_build_main_entrance()
+{
+    level endon( "end_game" );
+    wait 1;
+    org = ( 8505.35, -5215.87, 48.125 );
+    build_maind_door_table = spawn( "script_model", level.door_base_main_trigger_location );
+    build_maind_door_table setmodel( level.myModels[ 6 ] );
+    build_maind_door_table.angles = ( 0, 0.337615, 0 );
+
+    build_maind_door_table_clip = spawn( "script_model", org );
+    build_maind_door_table_clip setmodel( "collision_geo_64x64x64_standard" );
+    build_maind_door_table_clip.angles = ( 0, 0.337615, 0 );
+
+    head_org = ( 8499.34, -5286.22, 88.2415 );
+    build_maind_door_table_clip_head = spawn( "script_model", head_org );
+    build_maind_door_table_clip_head setmodel( "tag_origin" );
+    build_maind_door_table_clip_head.angles = ( 0, 0, 0 );
+
+    wait 0.1;
+    playFXOnTag( level.myfx[ 2 ], build_maind_door_table_clip_head, "tag_origin" );
+    wait 0.05;
+    playfxontag( level.myfx[ 75 ], build_maind_door_table_clip, "tag_origin" );
+    build_maind_door_table_clip_head thread spin_and_move_table_headm();
+    
+}
+
+spin_and_move_table_headm()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        self movez( 25, 0.8, 0.2, 0.2 );
+        self rotateyaw( 360, 0.8, 0.2, 0.2 );
+        self waittill( "movedone" );
+        self movez( -25, 0.8, 0.2, 0.2 );
+        self rotateyaw( 360, 0.8, 0.2, 0.2 );
+        self waittill( "movedone" );
+    }
 }

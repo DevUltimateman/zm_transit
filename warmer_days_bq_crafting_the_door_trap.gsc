@@ -54,7 +54,7 @@ init()
     level.door_base_side_left_location = ( 8286.42, -5415.53, 1.75549 );
     level.door_base_side_left_angles = ( 0, -179.115, 0 );
 
-    level.door_base_side_trigger_location = ( 7919.84, -5114.17, 48.125 );
+    level.door_base_side_trigger_location = ( 8101.83, -4942.4, 48.125 );
 
     level.door_base_collision_clip_location = ( 7875.72, -5052.77, -8.92751 );
     level.door_base_collision_clip_angles = ( 0, 89.8134, 0 );
@@ -62,7 +62,50 @@ init()
 
     
     level thread initialize_everything_for_side_door();
+    level thread spawn_workbench_to_build_side_barricade();
     level thread spawn_collision_and_model();
+}
+
+
+spawn_workbench_to_build_side_barricade()
+{
+    level endon( "end_game" );
+    wait 1;
+    org = ( 8101.83, -4942.4, 48.125 ); 
+    build_side_door_table = spawn( "script_model", org );
+    build_side_door_table setmodel( level.myModels[ 6 ] );
+    build_side_door_table.angles = ( 0, 71.8586, 0 );
+
+    build_side_door_table_clip = spawn( "script_model", level.door_base_side_trigger_location );
+    build_side_door_table_clip setmodel( "collision_geo_64x64x64_standard" );
+    build_side_door_table_clip.angles = ( 0, 71.8586, 0 );
+
+    head_org = ( 8189.51, -4945.98, 88.0626 );
+    build_side_door_table_clip_head = spawn( "script_model", head_org );
+    build_side_door_table_clip_head setmodel( "tag_origin" );
+    build_side_door_table_clip_head.angles = ( 0, 0, 0 );
+
+    wait 0.1;
+    playFXOnTag( level.myfx[ 2 ], build_side_door_table_clip_head, "tag_origin" );
+    wait 0.05;
+    playFXOnTag( level.myfx[ 75 ], build_side_door_table_clip, "tag_origin" );
+    wait 0.05;
+    build_side_door_table_clip_head thread spin_and_move_table_heads();
+    
+}
+
+spin_and_move_table_heads()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        self movez( 25, 0.8, 0.2, 0.2 );
+        self rotateyaw( 360, 0.8, 0.2, 0.2 );
+        self waittill( "movedone" );
+        self movez( -25, 0.8, 0.2, 0.2 );
+        self rotateyaw( 360, 0.8, 0.2, 0.2 );
+        self waittill( "movedone" );
+    }
 }
 
 
@@ -70,7 +113,8 @@ initialize_everything_for_side_door()
 {
     level endon( "end_game" );
     wait 20;
-    sglobal_gas_quest_trigger_spawner( level.door_base_collision_clip_location + ( 0,0, 70), "Press ^3[{+activate}] ^7to build zombie barricade", "Zombies are now ^3blocked^7 by this barricade!", level.myfx[ 75 ], level.myfx[ 76 ], "side_door_unlocked" );
+    sglobal_gas_quest_trigger_spawner( level.door_base_side_trigger_location + ( 0,0, 70), "Press ^3[{+activate}] ^7to build zombie barricade", "Zombies are now ^3blocked^7 by this barricade!", level.myfx[ 75 ], level.myfx[ 76 ], "side_door_unlocked" );
+    
     
 }
  

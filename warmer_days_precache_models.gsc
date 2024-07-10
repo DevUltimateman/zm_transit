@@ -145,7 +145,7 @@ precachemodels()
     //as long as you are standing inside of a gump that the model is loaded in, you can see the model even across the map if placed there
     //but once you leave the gump zone, the model is shrunk even when you would be close to it
     level.myModels[ 0 ] = ( "p6_zm_sign_diner" ); // WORKS EVERYWHERE, DOESNT HAVE DISAPPEARING LOD LEAFS   "t5_foliage_tree_burnt03"
-    level.myModels[ 1 ] = ( "collision_wall_128x128x10_standard" );  // WORKS EVERYWHERE
+    level.myModels[ 1 ] = ( "collision_geo_64x64x64_standard" );  // WORKS EVERYWHERE
     //level.myModels[1] = ( "collision_clip_sphere_64" );
     level.myModels[ 2 ] = ( "p_eb_lg_suitcase" );
     level.myModels[ 3 ] = ( "p_eb_med_suitcase" );
@@ -153,7 +153,7 @@ precachemodels()
     //level.myModels[ 3 ] = ( "collision_player_32x32x128" );   // WORKS EVERYWHERE
     level.myModels[ 4 ] = ( "t5_foliage_bush05" );  // WORKS EVERYWHERE
     level.myModels[ 5 ] = ( "p6_grass_wild_mixed_med" );  // WORKS EVERYWHERE
-    level.myModels[ 6 ] = ( "foliage_red_pine_stump_lg" );  //WORKS AT CABIN BEFORE TOWN
+    level.myModels[ 6 ] = ( "p6_zm_work_bench" ); //( "foliage_red_pine_stump_lg" );  //WORKS AT CABIN BEFORE TOWN
     level.myModels[ 7 ] = ( "t5_foliage_shrubs02" ); // WORKS EVERYWHERE
     level.myModels[ 8 ] = ( "p6_zm_quarantine_fence_01" ); // WORKS EVERYWHERE, fence with wraps 
     level.myModels[ 9 ] = ( "p6_zm_quarantine_fence_02" ); // WORKS EVERYWHERE, fence with only metal barriers ( see thruable )

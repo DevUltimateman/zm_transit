@@ -48,7 +48,7 @@ init()
     flag_wait( "initial_blackscreen_passed" );
     level.gas_canister_pick_location = ( -4844.13, -7173.79, -56.2322 );
     level.gas_tools_pick_location = ( -4219.75, -7871.54, -62.8096 );
-    level.gas_pour_location = ( 8456.87, -5348.09, 264.125 );
+    level.gas_pour_location = ( 8051.65, -5330.98, 264.125 ); 
     level.gas_fire_pick_location = ( 8410.4, -6343.49, 103.431 ); //outside farm main base next to house lava crack
     level.gas_fire_place_location = level.gas_pour_location;
 
@@ -63,6 +63,11 @@ init()
     //add a check before this so that we cant do it immediately
     //but now for testing on
     level thread do_everything_for_gas_pickup();
+    level thread spawn_workbench_to_build_fire_trap_entrance();
+    level thread global_gas_quest_trigger_spawner( level.gas_pour_location, "Hold ^3[{+activate}] ^7to pour gasoline on the floor.", "Floor is now littered with ^3Gasoline", level.myfx[ 75 ], level.myfx[ 76 ], "littered_floor" );
+
+    //change hintstring text once gas has been picked for work bench
+    level thread while_gas_hasnt_been_picked();
     
 }
 
@@ -180,16 +185,28 @@ _someone_unlocked_something( text, text2, duration, fadetimer )
     level endon( "end_game" );
 	level thread Subtitle( text, text2, duration, fadetimer );
 }
+
+while_gas_hasnt_been_picked()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        level.tr setHintString( "Workbench requires ^3Gasoline " );
+        level waittill( "fire_picking" );
+        level.tr sethintstring( "Workbench requires ^3Fire Crackers " );
+        break;
+    }
+}
 global_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
 {
     level endon( "end_game" );
 
-    tr = spawn( "trigger_radius_use", location, 0, 48, 48 );
-    tr setCursorHint( "HINT_NOICON" );
-    tr setHintString( text1 );
-    tr triggerignoreteam();
+    level.tr = spawn( "trigger_radius_use", location, 0, 48, 48 );
+    level.tr setCursorHint( "HINT_NOICON" );
+    level.tr setHintString( text1 );
+    level.tr triggerignoreteam();
     wait 0.05;
-    i_m = spawn( "script_model", tr.origin );
+    i_m = spawn( "script_model", level.tr.origin );
     i_m setmodel( "tag_origin" );
     i_m.angles = ( 0, 0, 0 );
     wait 0.5;
@@ -205,22 +222,22 @@ global_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
 
     while( true )
     {
-        tr waittill( "trigger", me );
+        level.tr waittill( "trigger", me );
         if( isplayer( me ) && is_player_valid( me ) )
         {
             
             me playsound( "zmb_sq_navcard_success" );
 
-            if( tr.origin == level.gas_pour_location )
+            if( level.tr.origin == level.gas_pour_location )
             {
                 if( isdefined( text2 ) && text2 != "" )
                 {
-                    tr setHintString( text2 );
+                    level.tr setHintString( text2 );
                 }
             }
-            if( tr.origin == level.gas_fire_pick_location + ( 0, 0, 60 ) )
+            if( level.tr.origin == level.gas_fire_pick_location + ( 0, 0, 60 ) )
             {
-                tr setHintString("");
+                level.tr setHintString("");
             }
             me thread playlocal_plrsound();
             current_w = me getCurrentWeapon();
@@ -230,7 +247,7 @@ global_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
             wait waiter;
             me maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
             me takeWeapon( "zombie_builder_zm" );
-            if( tr.origin == level.gas_pour_location )
+            if( level.tr.origin == level.gas_pour_location )
             {
                 //wait extra second to read the text
                 wait 1;
@@ -240,9 +257,9 @@ global_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
             {
                 level notify( notifier );
                 coop_print_base_find_or_fortify( notifier, me );
-                if( isdefined( tr ) )
+                if( isdefined( level.tr ) )
                 {
-                    tr delete();
+                    level.tr delete();
                 }
                 if( isdefined( i_m ) )
                 {
@@ -354,16 +371,16 @@ do_everything_for_gas_placedown()
     level endon( "end_game" );
 
 
-    level waittill( "gas_got_picked" );
+    //level waittill( "gas_got_picked" );
     //global_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
-    level thread global_gas_quest_trigger_spawner( level.gas_pour_location, "Hold ^3[{+activate}] ^7to pour gasoline on the floor.", "Floor is now littered with ^3Gasoline", level.myfx[ 75 ], level.myfx[ 76 ], "littered_floor" );
+    ///level thread global_gas_quest_trigger_spawner( level.gas_pour_location, "Hold ^3[{+activate}] ^7to pour gasoline on the floor.", "Floor is now littered with ^3Gasoline", level.myfx[ 75 ], level.myfx[ 76 ], "littered_floor" );
     level waittill( "littered_floor" );
     temp = spawn( "trigger_radius_use", level.gas_pour_location, 0, 48, 48 );
     temp setCursorHint( "HINT_NOICON" );
     temp setHintString( "Can't start a fire without ^3fire^7!" );
     temp triggerignoreteam();
 
-    level thread global_gas_quest_trigger_spawner( level.gas_fire_pick_location + ( 0, 0, 60 ), "Hold ^3[{+activate}]^7 to carry fire object.", "^3Fireplace^7 now kills all the zombies, that are trying to get into base from this window area.", "", "", "fire_picking" );
+    level thread global_gas_quest_trigger_spawner( level.gas_fire_pick_location + ( 0, 0, 60 ), "Press ^3[{+activate}]^7 to dig a fire crackers.", "", "", "", "fire_picking" );
     level waittill( "fire_picking" );
 
     level thread animate_fire_pickup( );
@@ -372,7 +389,7 @@ do_everything_for_gas_placedown()
     {
         temp delete();
     }
-    level thread global_gas_quest_trigger_spawner( level.gas_fire_place_location, "Hold ^3[{+activate}]^7 to carry fire object.", "^3Fireplace^7 now kills all the zombies, that are trying to get into base from this window area.", level.myfx[ 75 ], level.myfx[ 76 ], "firetrap_active" );
+    level thread global_gas_quest_trigger_spawner( level.gas_fire_place_location, "Press ^3[{+activate}]^7 to add fire crackers to the fire trap.", "^3Fireplace^7 now kills all the zombies, that are trying to get into base from this window area.", level.myfx[ 75 ], level.myfx[ 76 ], "firetrap_active" );
     level waittill( "firetrap_active" );
     
     fxs = 12;
@@ -413,3 +430,43 @@ do_everything_for_gas_placedown()
     level notify( "base_firetrap_active" );
 }
 
+
+spawn_workbench_to_build_fire_trap_entrance()
+{
+    level endon( "end_game" );
+    wait 7;
+    org = ( 8038.65, -5349.47, 264.125 );
+    build_firetrap_table = spawn( "script_model", level.gas_pour_location );
+    build_firetrap_table setmodel( level.myModels[ 6 ] );
+    build_firetrap_table.angles = ( 0, -142.748, 0 );
+
+    build_firetrap_table_clip = spawn( "script_model", org );
+    build_firetrap_table_clip setmodel( "collision_geo_64x64x64_standard" );
+    build_firetrap_table_clip.angles = (  0, -142.748, 0 );
+
+    head_org = ( 7991.02, -5270.24, 304.92 );
+    build_firetrap_table_clip_head = spawn( "script_model", head_org );
+    build_firetrap_table_clip_head setmodel( "tag_origin" );
+    build_firetrap_table_clip_head.angles = ( 0, 0, 0 );
+
+    wait 0.1;
+    playFXOnTag( level.myfx[ 2 ], build_firetrap_table_clip_head, "tag_origin" );
+    wait 0.05;
+    playfxontag( level.myfx[ 75 ], build_firetrap_table_clip, "tag_origin" );
+    build_firetrap_table_clip_head thread spin_and_move_table_headf();
+    
+}
+
+spin_and_move_table_headf()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        self movez( 25, 0.8, 0.2, 0.2 );
+        self rotateyaw( 360, 0.8, 0.2, 0.2 );
+        self waittill( "movedone" );
+        self movez( -25, 0.8, 0.2, 0.2 );
+        self rotateyaw( 360, 0.5, 0.2, 0.2 );
+        self waittill( "movedone" );
+    }
+}
