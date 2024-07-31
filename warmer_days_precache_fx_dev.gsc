@@ -65,6 +65,38 @@ precache_myfx()
     level endon(  "end_game" );
     
     level.myFx = [];
+	/*
+	level.fx_betas["meat_marker"] = loadfx("maps/zombie/fx_zmb_meat_marker");
+	level.fx_betas["butterflies"] = loadfx("maps/zombie/fx_zmb_impact_noharm");
+	level.fx_betas["meat_glow"] = loadfx("maps/zombie/fx_zmb_meat_glow");
+	level.fx_betas["meat_glow3p"] = loadfx("maps/zombie/fx_zmb_meat_glow_3p");
+	level.fx_betas["spawn_cloud"] = loadfx("maps/zombie/fx_zmb_race_zombie_spawn_cloud");
+	level.fx_betas["fw_burst"] = loadfx("maps/zombie/fx_zmb_race_fireworks_burst_center");
+	level.fx_betas["fw_impact"] = loadfx("maps/zombie/fx_zmb_race_fireworks_drop_impact");
+	level.fx_betas["fw_drop"] = loadfx("maps/zombie/fx_zmb_race_fireworks_drop_trail");
+	level.fx_betas["fw_trail"] = loadfx("maps/zombie/fx_zmb_race_fireworks_trail");
+	level.fx_betas["fw_trail_cheap"] = loadfx("maps/zombie/fx_zmb_race_fireworks_trail_intro");
+	level.fx_betas["fw_pre_burst"] = loadfx("maps/zombie/fx_zmb_race_fireworks_burst_small");
+	level.fx_betas["meat_bounce"] = loadfx("maps/zombie/fx_zmb_meat_collision_glow");
+
+	*/
+	
+	/*
+	level.myFx[ 0 ] = loadfx( "maps/zombie/fx_zmb_meat_marker" ); //small spark loop
+	level.myFx[ 1 ] = loadfx( "maps/zombie/fx_zmb_impact_noharm" );  //ee bolt
+	level.myFx[ 2 ] = loadfx( "maps/zombie/fx_zmb_meat_glow" ); //ee bolt
+	level.myFx[ 3 ] = loadfx( "maps/zombie/fx_zmb_meat_glow_3p" ); //works
+	level.myFx[ 4]  = loadfx ("maps/zombie/fx_zmb_race_zombie_spawn_cloud");//("maps/zombie/fx_zombie_exit_glow");//loadfx("misc/fx_ui_flagbase_orange");
+	level.myFx[ 5 ] = loadfx ("maps/zombie/fx_zmb_race_fireworks_burst_center");//("maps/zombie/zombie_fx_exit_marker");
+	level.myFx[ 6 ] = loadfx( "maps/zombie/fx_zmb_race_fireworks_drop_impact" ); //yes pandora
+	level.myFx[ 7 ] = loadfx( "maps/zombie/fx_zmb_race_fireworks_drop_trail" ); //yes pandora
+	level.myFx[ 8 ] = loadfx( "maps/zombie/fx_zmb_race_fireworks_trail_intro" ); //lighting beam buyable 
+	level.myFx[ 9 ] = loadfx( "maps/zombie/fx_zmb_race_fireworks_trail" ); //small explo with explo and blood
+	level.myFx[ 10 ] = loadfx( "maps/zombie/fx_zmb_race_fireworks_burst_small" ); //stays on 4 lights, front bus lights
+	level.myFx[ 11 ] = loadfx( "maps/zombie/fx_zmb_meat_collision_glow" ); //stays on small-medium yellow light orb similiar to mystery
+	level.myFx[ 12 ] = loadfx( "maps/zombie/fx_zmb_tranzit_bus_brakelights" ); //stays on red back lights of bus
+
+	*/
 	level.myFx[ 0 ] = loadfx( "env/electrical/fx_elec_wire_spark_burst" ); //small spark loop
 	level.myFx[ 1 ] = loadfx( "maps/zombie/fx_zmb_race_trail_grief" );  //ee bolt
 	level.myFx[ 2 ] = loadfx( "maps/zombie/fx_zmb_race_trail_neutral" ); //ee bolt
@@ -78,6 +110,8 @@ precache_myfx()
 	level.myFx[ 10 ] = loadfx( "maps/zombie/fx_zmb_tranzit_bus_headlight" ); //stays on 4 lights, front bus lights
 	level.myFx[ 11 ] = loadfx( "lens_flares/fx_lf_zmb_tranzit_bus_headlight" ); //stays on small-medium yellow light orb similiar to mystery
 	level.myFx[ 12 ] = loadfx( "maps/zombie/fx_zmb_tranzit_bus_brakelights" ); //stays on red back lights of bus
+
+	
 	level.myFx[ 13 ] = loadfx( "maps/zombie/fx_zmb_tranzit_bus_flashing_lights" ); //stays on orane red back lights of bus
 	level.myFx[ 14 ] = loadfx( "maps/zombie/fx_zmb_tranzit_bus_turnsignal_right" ); //small red light bulb 
 	level.myFx[ 15 ] = loadfx( "maps/zombie/fx_zmb_tranzit_bus_turnsignal_left" ); //small red light bulb 

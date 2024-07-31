@@ -131,7 +131,7 @@ moveeverything( suit_case )
         break;
     }
     
-    
+    //THIS SUITCASE STEP STILL IN PLACE?
 }
 
 spin_me_around()

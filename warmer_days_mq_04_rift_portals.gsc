@@ -97,7 +97,12 @@ init()
 {
     level.c_points = [];
     level.c_angles = [];
+
+    //origins for all lamps that need fixing
+    all_fixable_spots();
     flag_wait( "initial_blackscreen_passed" ); 
+
+    level thread start_fix_lamp_logic();
     //works. need to make it lot better tho.
     //level thread camera_points_debug();
 }
@@ -149,4 +154,182 @@ camera_points_debug()
 
 
 
+}
+
+
+start_fix_lamp_logic()
+{
+    level thread all_fixable_spots_spawn_fixer_logic();
+    level waittill( "start_fixing_rift_portals" );
+}
+
+
+all_fixable_spots()
+{
+    //where we spawn triggers
+    level.fixable_spots = [];
+
+    level.fixable_spots[ 0 ]  = ( 6285.55, 5085.74, -108.38 ); //between forest and town
+    level.fixable_spots[ 1 ]  = ( 8130.54, 4785.03, -365.242 ); //between corn and power
+    level.fixable_spots[ 2 ]  = ( -48.3219, -5441.79, -75.5432 ); //between diner and farm
+    level.fixable_spots[ 3 ]  = ( -6342.48, 4583.03, -63.875 ); //bus depot
+    level.fixable_spots[ 4 ]  = ( -4419.78, -615.827, 20.285 ); //next to bridge when going town to depo
+    level.fixable_spots[ 5 ]  = ( 10155, -1750.18, -220.092 ); //cornfields
+    level.fixable_spots[ 6 ]  = ( -3960.01, -7251.38, -63.875 ); //diner lamp, next to turbine door shack
+}
+
+LowerMessage( ref, text )
+{
+	if( !IsDefined( level.zombie_hints ) )
+    {
+        level.zombie_hints = [];
+    }
+	PrecacheString( text );
+	level.zombie_hints[ ref ] = text;
+}
+
+setLowerMessage( ent, default_ref )
+{
+	if( IsDefined( ent.script_hint ) )
+    {
+        self SetHintString( get_zombie_hint( ent.script_hint ) );
+    }	
+	else
+    {
+        self SetHintString( get_zombie_hint( default_ref ) );
+    }
+		
+}
+
+all_fixable_spots_spawn_fixer_logic()
+{
+    level endon( "end_game" );
+
+    size = 0; 
+    for( sizer = 0; sizer < level.fixable_spots; sizer++ )
+    {
+        fix_trig = spawn( "trigger_radius", level.fixable_spots[ sizer ], 0, 48, 48 );
+        fix_trig setCursorHint( "HINT_NOICON" );
+        wait 0.05;
+        //level thread LowerMessage( "LAMPHINTS", "Lamp requires power!" );
+        //fix_trig setLowerMessage( fix_trig, "LAMPHINTS" );
+        fix_trig setHintString( "Try fixing the lamp." );
+        wait 0.05;
+        fix_trig_available_fx = spawn( "script_model", level.fixable_spots[ sizer ]);
+        fix_trig_available_fx setmodel( "tag_origin" );
+        fix_trig_available_fx.angles = ( 0,0,0 );
+        wait 0.05;
+        playfxontag( level.myfx[ 2 ], fix_trig_available_fx, "tag_origin" );
+        fix_trig_available_fx thread monitor_everything( fix_trig );
+    }
+}
+
+monitor_everything( trigger_to_monitor )
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        for( close_ps = 0; close_ps < level.players.size; close_ps++ )
+        {
+            if( level.players[ close_ps ] isTouching( trigger_to_monitor ) )
+            {
+                someone_is_inside_of_trigger = true;
+
+                if( !isdefined( level.players[ close_ps ].buildableturbine ) )
+                {
+                    wait 0.05;
+                    continue;
+                }
+                if( distance2d( level.players[ close_ps ].buildableturbine.origin, trigger_to_monitor.origin ) < 200 )
+                {
+                    //someone is hitting the lamp with a turbine
+                    possible_light_locs = getstructarray( "screecher_escape", "targetname" );
+                    for( locs = 0; locs < possible_light_locs; locs++ )
+                    {
+                        if( distance2d( level.players[ close_ps ].origin, possible_light_locs[ locs ].origin ) < 150 )
+                        {
+                            wait 0.2;
+                            //notify said lamp to turn on once player has put a turbine below it.
+                            //need to add some sorta fxs on said process later
+                            if( level.dev_time ) { iprintlnbold( "WE JUST REPAIRED A LAMP!!!!"); }
+                            trigger_to_monitor setHintString( "Lamp got ^2fixed^7!" );
+                            /*
+                            foreach( playa in level.players )
+                            {
+                                //flickering white and sparks, could be used for before fixing em.
+                                //playa setclientfield( "screecher_maxis_lights", 1 );
+
+                                //not that good looking. Could be used to initialize this step.
+                                //playa setclientfield( "screecher_sq_lights", 1 );
+                                
+                            }
+                            */
+                            wait 3.5;
+                            //TODO::: //add some sorta fx & sonud for doing this lamp successfully
+                            //HERE
+                            level thread just_in_case_apply( locs );
+                            //trigger radius
+                            trigger_to_monitor delete();
+                            wait 0.1;
+                            //tag_origin model, that we play the initial fx on
+                            self delete();
+                            break;
+                        }
+                        wait 0.05;
+                    }
+                    wait 0.05;
+                }
+                wait 0.05;
+            }
+            wait 0.05;
+        }
+        wait 0.05;
+    }
+}
+
+just_in_case_apply( which_light ) // YEAH SOMETHING FROM THIS FUNCTION BREAKS THE GAME EVENTUALLY.
+//CALLING AN INPROPER FLAG VARIABLE OR SOMETHING??
+//DEBUG TOMORROW
+{
+    level endon( "end_game" );
+    
+    ws = getstructarray( "screecher_escape", "targetname" );
+
+    level notify( "safety_light_power_on", ws[ which_light ] );
+    level notify( "safety_light_power_on" );
+    
+    ws[ which_light ].target.power_on = true;
+    ws[ which_light ].target notify( "power_on" );
+    ws[ which_light ].power = true;
+    ws[ which_light ].power_on = true;
+    ws[ which_light ].powered = true;
+}
+
+player_entered_safety_light( player )
+{
+    safety = getstructarray( "screecher_escape", "targetname" );
+
+    if ( !isdefined( safety ) )
+        return false;
+
+    player.green_light = undefined;
+
+    for ( i = 0; i < safety.size; i++ )
+    {
+        if ( !( isdefined( safety[i].power_on ) && safety[i].power_on ) )
+            continue;
+
+        if ( !isdefined( safety[i].radius ) )
+            safety[i].radius = 256;
+
+        plyr_dist = distancesquared( player.origin, safety[i].origin );
+
+        if ( plyr_dist < safety[i].radius * safety[i].radius )
+        {
+            player.green_light = safety[i];
+            return true;
+        }
+    }
+
+    return false;
 }

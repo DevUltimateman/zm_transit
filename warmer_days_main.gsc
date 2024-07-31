@@ -64,9 +64,7 @@ init()
     //upon connecting
     level thread player_waiter();
 
-    //oih
-    level thread waittill_initial_flag();
-
+    //ghetto screechers off
     
 }
 
@@ -80,14 +78,6 @@ player_waiter()
     }
 }
 
-waittill_initial_flag()
-{
-    level endon( "end_game" );
-
-    flag_wait( "initial_blackscreen_passed" );
-    //dbg angles + org
-    //level thread print_origin_angles( /* level.players[ 0 ], 2  */);
-}
 screecher_hooker()
 {
     level endon( "end_game" );

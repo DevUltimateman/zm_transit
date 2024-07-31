@@ -43,14 +43,16 @@
 #include maps\mp\zombies\_zm_craftables;
 
 init()
-{
+{   
+    //why are we replacefuncing it here on this script file? O=: 
     replacefunc( ::manage_multiple_pieces, ::manage_multiple_pieces_new );
     level.player_out_of_playable_area_monitor = false;
     level.wait_time_left_after_someone_shot = 7; //dont allow schruder to talk even if someone_shot flag is set. wait at least this amount of time before continuing
     
     level.play_schruder_background_sound = false;
     //spawn schruder
-    //this also handles the initial talking with players
+    //this also calls a monitor_players from schruder function
+    //and then notifies step1_talk function to start rolling if conditions are met.
     level thread schruder_model();
     
     //wait till players discover schruder. 
@@ -92,7 +94,7 @@ init()
 step3_talk()
 {
     level endon( "end_game" );
-    level waittill( "s_talks_navcard" );
+    level waittill( "s_talks_navcard" ); //this level waittill notify is triggered from: warmer_days_mq_03_crafting_the_transmitter once players have succefully placed down their custom navcard
     gets = level.players;
     foreach( g in gets )
     {
@@ -121,6 +123,7 @@ step3_talk()
     //if someone shot faster than schruder had finished talking
     if( level.wait_time_left_after_someone_shot > 0 )
     {
+        //global timer variable that is decreased by "stop_for_a_second" function
         wait level.wait_time_left_after_someone_shot;
     }
     foreach( g in gets )
@@ -128,6 +131,16 @@ step3_talk()
         g playsound( "zmb_sq_navcard_success" );
     }
     meeting_vox16( "" );
+    wait 6;
+    meeting_vox17( "" );
+    wait 6;
+    meeting_vox18( "" );
+    wait 7.5;
+    meeting_vox19( "" );
+    wait 8;
+
+    level notify( "start_fixing_rift_portals" );
+
     
 
 }
@@ -241,13 +254,20 @@ schruder_model()
   
     level.mr_s_blocker linkto( level.mr_s );
 
+    level.mr_s_location thread monitor_first_meetup();
+
+}
+
+//FUNCTION TO MONITOR IF ONE OF THE PLAYERS DISCOVERS SCHRUDER
+monitor_first_meetup()
+{
     while( i == 0 )
     {
         for( s = 0; s < level.players.size; s++ )
         {
-            if( distance2d( level.mr_s.origin, level.players[ s ].origin ) < 150 )
+            if( distance2d( self.origin, level.players[ s ].origin ) < 150 )
             {
-                level notify( "firsttime_meet" );
+                level notify( "meet_schruder_time_first" );
                 foreach( pl in level.players )
                 {
                     pl playsound( "zmb_navcard_success" );
@@ -260,14 +280,15 @@ schruder_model()
         }
         wait 0.05;
     }
-
 }
 
+//THIS HAPPENS WHEN PLAYERS MEET SCHRUDER FOR FIRST TIME
+//THIS INITIATES THE MAIN EASTER EGG QUEST
 step1_talk()
 {
     level endon( "end_game" );
 
-    level waittill( "firsttime_meet" );
+    level waittill( "meet_schruder_time_first" );
     playfx( level.myFx[ 87 ], level.mr_s.origin );
     gets = level.players;
     foreach( g in gets )
@@ -275,21 +296,10 @@ step1_talk()
         g playsound( "zmb_sq_navcard_success" );
     }
     level thread while_schruder_speaks();
-    meeting_vox01("");
-    wait 6;
-    meeting_vox02("");
-    wait 9;
-    meeting_vox03("");
-    wait 7;
-    meeting_vox04("");
-    wait 8;
-    meeting_vox05("");
-    wait 7;
-    meeting_vox06("");
-    wait 8;
-    level notify( "stop_playing_sound" );
-    if( level.dev_time ){ iprintln( "STEP 1 TALKS COMPLETED" ); }
+    level thread schruder_talks_everything_part1();
 }
+
+
 test_powerups()
 {
     level endon( "end_game" );
@@ -464,20 +474,22 @@ manage_multiple_pieces_new( max_instances )
     self.managing_pieces = 1;
     self.piece_allocated = [];
 }
+
+//THIS TALK HAPPENS WHEN PLAYERS HAVE TURNED ON POWER AND RETURNED BACK TO SCHRUDER FOR MORE INFORMATION
 step2_talk()
 {
     level endon( "end_game" );
     gets = level.players;
     flag_wait( "power_on" );
-
+    i = 0;
     while( i == 0 )
     {
         for( s = 0; s < level.players.size; s++ )
         {
             if( distance2d( level.mr_s.origin, level.players[ s ].origin ) < 200 )
             {
-                level notify( "firsttime_meet" );
-                if( level.dev_time ) { iprintln( "SCRUDER WAS MET 2" ); }
+                level notify( "meet_schruder_time_second" );
+                if( level.dev_time ) { iprintln( "SCRUDER WAS MET AFTER TURNING ON THE POWER!" ); }
                 i = 1;
                 wait 0.05;
                 break;
@@ -489,8 +501,31 @@ step2_talk()
     {
         g playsound( "zmb_sq_navcard_success" );
     }
+}
+
+schruder_talks_everything_part1()
+{
+    level endon( "end_game" );
+    meeting_vox01("");
+    wait 6;
+    meeting_vox02("");
+    wait 9;
+    meeting_vox03("");
+    wait 7;
+    meeting_vox04("");
+    wait 8;
+    meeting_vox05("");
+    wait 7;
+    meeting_vox06("");
+    wait 8;
+    level notify( "stop_playing_sound" );
+    if( level.dev_time ){ iprintln( "STEP 1 TALKS COMPLETED" ); }
+}
+schruder_talks_everything_part2()
+{
+    level endon( "end_game" );
+    level waittill( "meet_schruder_time_second" );
     meeting_vox07("");
-    
     wait 6;
     meeting_vox08("");
     wait 6;
@@ -504,7 +539,6 @@ step2_talk()
     wait 8;
     if( level.dev_time ){ iprintln( "STEP 2 TALKS COMPLETED" ); }
 }
-
 
 meeting_vox07( background_music )
 {
@@ -635,6 +669,8 @@ meeting_vox15( background_music )
         duration = 6;
         fadetimer = 1;
         level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        //the function below monitors the time it takes to be able to access shooting part
+        //the function also counts and decreases the global variable till there is no time left.
         level thread stop_for_a_second();
     }
 }
@@ -686,6 +722,48 @@ meeting_vox16( background_music )
         subtitle_upper =  "Perfect!";
         subtitle_lower = "You should be good as long as you can hear me and obey my instructions.";
         duration = 6;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox17( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "I was thinking about something...";
+        subtitle_lower = "We might be able to fix those broken lamps around the map.";
+        duration = 6;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox18( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "We might be able to open ^5Rift Portals ^7 once the lamps are fixed.";
+        subtitle_lower = "The more you fix lamps, the better chances there are for the rift to open!";
+        duration = 7.5;
+        fadetimer = 1;
+        level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+    }
+}
+
+meeting_vox19( background_music )
+{
+    level endon( "end_game" );
+    if( background_music == "" )
+    {
+        //play_sound_at_pos( background_music, level.players[0].origin );
+        subtitle_upper =  "See if you can apply some power charges on said lamps.";
+        subtitle_lower = "I've marked the correct lamps for you that requires fixing.";
+        duration = 8;
         fadetimer = 1;
         level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
     }

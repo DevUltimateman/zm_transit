@@ -130,6 +130,7 @@ play_nav1_success( this_position )
         PlaySoundAtPosition( "zmb_sq_navcard_success", this_position );
     }
 }
+
 init_navcomputer_dont_rebuild_if_done()
 {
     flag_wait( "start_zombie_round_logic" );

@@ -42,11 +42,35 @@
 
 //#include scripts\zm\zm_transit\warmer_days_quest_firenade;
 
-
+main()
+{
+	//level thread lets_test_spawn();
+	fuckingfx();
+	
+}
+fuckingfx()
+{
+	level.fx_betas = [];
+	level.fx_betas["meat_marker"] = loadfx("maps/zombie/fx_zmb_meat_marker");
+	level.fx_betas["butterflies"] = loadfx("maps/zombie/fx_zmb_impact_noharm");
+	level.fx_betas["meat_glow"] = loadfx("maps/zombie/fx_zmb_meat_glow");
+	level.fx_betas["meat_glow3p"] = loadfx("maps/zombie/fx_zmb_meat_glow_3p");
+	level.fx_betas["spawn_cloud"] = loadfx("maps/zombie/fx_zmb_race_zombie_spawn_cloud");
+	level.fx_betas["fw_burst"] = loadfx("maps/zombie/fx_zmb_race_fireworks_burst_center");
+	level.fx_betas["fw_impact"] = loadfx("maps/zombie/fx_zmb_race_fireworks_drop_impact");
+	level.fx_betas["fw_drop"] = loadfx("maps/zombie/fx_zmb_race_fireworks_drop_trail");
+	level.fx_betas["fw_trail"] = loadfx("maps/zombie/fx_zmb_race_fireworks_trail");
+	level.fx_betas["fw_trail_cheap"] = loadfx("maps/zombie/fx_zmb_race_fireworks_trail_intro");
+	level.fx_betas["fw_pre_burst"] = loadfx("maps/zombie/fx_zmb_race_fireworks_burst_small");
+	level.fx_betas["meat_bounce"] = loadfx("maps/zombie/fx_zmb_meat_collision_glow");
+}
 init()
 {
+	fuckingfx();
+	
     flag_wait("initial_blackscreen_passed" );
-    wait 15;
+	wait 3;
+	//level thread lets_test_spawn();
     //iprintlnbold( "set_round_and_chaos" );
     //level thread set_round_and_chaos();
 
@@ -159,6 +183,7 @@ create_zombie_escape_spot()
 	//Objective_Set3D(1, true, (1, 1, 1), "Defend");
 	
 	
+	
 }
 rotate_sam()
 {
@@ -170,6 +195,29 @@ rotate_sam()
 	}
 }
 
+
+lets_test_spawn()
+{
+	
+	iprintln( "DOING A MEAT FXS TEST UP IN 3 SECONDS" );
+	iprintln( "WE HAVE " + level.fx_betas.size + " many beta fxs!" );
+	listvalue = 0;
+
+	player = getplayers()[0];
+	iprintln( "PLAYER 0 IS " + player.name );
+	while( true )
+	{
+		//level.fx_betas.size
+		//FIRST 12 = BETAS FOR NOW
+		for( listvalue = 0; listvalue < 12; listvalue++ )
+		{
+			playfx( level.myfx[ listvalue ], player.origin ); 
+			iprintln( "Played fx: " + level.myfx[ listvalue ] );
+			wait 0.8;
+		}
+		wait 0.05;
+	}
+}
 
 machine_says( sub_up, sub_low, duration, fadeTimer )
 {
