@@ -98,11 +98,32 @@ init()
     level.c_points = [];
     level.c_angles = [];
 
+    level.turbine_to_rift_treshold = 200; //distance in units
+    level._malfunction_complete = false; //just a check at power off stage
+    level.repaired_rifts = 0; //actually amount of fixed lamps for rift portal
+    level.core_fx_move_to_spots = [];
+
+    //these spots are above the reactor
+    level.core_fx_move_to_spots[ 0 ] = ( 12567.9, 7314.66, -558.17 );
+    level.core_fx_move_to_spots[ 1 ] = ( 12429.8, 7773.18, -675.528 );
+    level.core_fx_move_to_spots[ 2 ] = ( 11860.2, 7827.12, -517.097 );
+    level.core_fx_move_to_spots[ 3 ] = ( 12029.9, 7473.48, -682.232 );
+    level.core_fx_move_to_spots[ 4 ] = ( 12577.8, 7305.51, -586.626 );
+
+    //these spots are underneath the reactor
+    level.core_fx_move_to_spots[ 5 ] = ( 12463.6, 7714.85, -1143.62 );
+    level.core_fx_move_to_spots[ 6 ] = ( 11903.4, 7643.2, -1532.72 );
+    level.core_fx_move_to_spots[ 7 ] = ( 11999, 7425.26, -1103.36 );
+    level.core_fx_move_to_spots[ 8 ] = ( 12513.9, 7372.31, -1296.85 );
     //origins for all lamps that need fixing
     all_fixable_spots();
     flag_wait( "initial_blackscreen_passed" ); 
 
-    level thread start_fix_lamp_logic();
+    level thread start_fix_lamp_logic(); //lamp fix and all logic starts from here
+    level thread make_light_hinters(); //sparking light hints for each lamp post to draw players attention towards spots
+    
+    level thread test_turn_off_lamps();
+   
     //works. need to make it lot better tho.
     //level thread camera_points_debug();
 }
@@ -160,7 +181,6 @@ camera_points_debug()
 start_fix_lamp_logic()
 {
     level thread all_fixable_spots_spawn_fixer_logic();
-    level waittill( "start_fixing_rift_portals" );
 }
 
 
@@ -176,6 +196,7 @@ all_fixable_spots()
     level.fixable_spots[ 4 ]  = ( -4419.78, -615.827, 20.285 ); //next to bridge when going town to depo
     level.fixable_spots[ 5 ]  = ( 10155, -1750.18, -220.092 ); //cornfields
     level.fixable_spots[ 6 ]  = ( -3960.01, -7251.38, -63.875 ); //diner lamp, next to turbine door shack
+    level.fixable_spots[ 7 ] = ( -623.205, -642.809, -55.6223 ); //town to bridge 
 }
 
 LowerMessage( ref, text )
@@ -201,81 +222,85 @@ setLowerMessage( ent, default_ref )
 		
 }
 
-all_fixable_spots_spawn_fixer_logic()
+all_fixable_spots_spawn_fixer_logic() //is in use 
 {
     level endon( "end_game" );
 
     size = 0; 
-    for( sizer = 0; sizer < level.fixable_spots; sizer++ )
+    for( sizer = 0; sizer < level.fixable_spots.size; sizer++ )
     {
         fix_trig = spawn( "trigger_radius", level.fixable_spots[ sizer ], 0, 48, 48 );
         fix_trig setCursorHint( "HINT_NOICON" );
         wait 0.05;
-        //level thread LowerMessage( "LAMPHINTS", "Lamp requires power!" );
-        //fix_trig setLowerMessage( fix_trig, "LAMPHINTS" );
         fix_trig setHintString( "Try fixing the lamp." );
         wait 0.05;
-        fix_trig_available_fx = spawn( "script_model", level.fixable_spots[ sizer ]);
+        fix_trig_available_fx = spawn( "script_model", level.fixable_spots[ sizer ] + ( 0, 0, -30 ) );
         fix_trig_available_fx setmodel( "tag_origin" );
         fix_trig_available_fx.angles = ( 0,0,0 );
         wait 0.05;
         playfxontag( level.myfx[ 2 ], fix_trig_available_fx, "tag_origin" );
-        fix_trig_available_fx thread monitor_everything( fix_trig );
+        fix_trig_available_fx thread monitor_everything( fix_trig, sizer );
     }
+    //dont spawn the rift computer at power station till all lamps are fixed
+    level thread keep_track_of_repair_amount(); 
 }
 
-monitor_everything( trigger_to_monitor )
+make_light_hinters()
+{
+    level endon( "end_game" );
+    initial_hinters = getstructarray( "screecher_escape", "targetname" );
+    level.light_hinters = [];
+    for( i = 0; i < initial_hinters.size; i++ )
+    {
+        level.light_hinters[ i ] = spawn( "script_model", initial_hinters[ i ].origin + ( 0, 0, 148 ) );
+        level.light_hinters[ i ] setmodel( "tag_origin" );
+        level.light_hinters[ i ].angles = ( 0, 0, 0 );
+        wait 0.05;
+        playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
+
+        wait 0.13;
+        playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
+        wait 0.17;
+        playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
+
+        if( level.dev_time ) { iprintlnbold( "SPAWNED A LIGHT HINTER AT: " + level.light_hinters[ i ] ); }
+    }
+}
+monitor_everything( trigger_to_monitor, fixable_spot_integer ) //in use now
 {
     level endon( "end_game" );
     while( true )
     {
         for( close_ps = 0; close_ps < level.players.size; close_ps++ )
         {
+            //bypass remainng threas from for loop for checked player if not in reach
+            if( !level.players[ close_ps ] istouching( trigger_to_monitor ) ) { wait 0.05; continue; }
+            //player is close enough one of the tag_origin models
             if( level.players[ close_ps ] isTouching( trigger_to_monitor ) )
             {
-                someone_is_inside_of_trigger = true;
-
-                if( !isdefined( level.players[ close_ps ].buildableturbine ) )
+                //player is in reach but either dont have the turbine placed or dont own one.
+                if( !isdefined( level.players[ close_ps ].buildableturbine ) ) { wait 0.05; continue; }
+                //player is in reach and turbine's origin is inside of the treshold from lamp org
+                if( distance2d( level.players[ close_ps ].buildableturbine.origin, trigger_to_monitor.origin ) < level.turbine_to_rift_treshold )
                 {
-                    wait 0.05;
-                    continue;
-                }
-                if( distance2d( level.players[ close_ps ].buildableturbine.origin, trigger_to_monitor.origin ) < 200 )
-                {
-                    //someone is hitting the lamp with a turbine
+                    //turbine is in reach of the tag_origin.
+                    //now check which screecher_escape light is nearest
                     possible_light_locs = getstructarray( "screecher_escape", "targetname" );
-                    for( locs = 0; locs < possible_light_locs; locs++ )
+                    for( locs = 0; locs < possible_light_locs.size; locs++ )
                     {
+                        //is this player within 150 units from said screecher light?
                         if( distance2d( level.players[ close_ps ].origin, possible_light_locs[ locs ].origin ) < 150 )
                         {
-                            wait 0.2;
-                            //notify said lamp to turn on once player has put a turbine below it.
-                            //need to add some sorta fxs on said process later
+                            wait 1; //wait a second to not instantly notify that its fixed.
                             if( level.dev_time ) { iprintlnbold( "WE JUST REPAIRED A LAMP!!!!"); }
                             trigger_to_monitor setHintString( "Lamp got ^2fixed^7!" );
-                            /*
-                            foreach( playa in level.players )
-                            {
-                                //flickering white and sparks, could be used for before fixing em.
-                                //playa setclientfield( "screecher_maxis_lights", 1 );
-
-                                //not that good looking. Could be used to initialize this step.
-                                //playa setclientfield( "screecher_sq_lights", 1 );
-                                
-                            }
-                            */
-                            wait 3.5;
-                            //TODO::: //add some sorta fx & sonud for doing this lamp successfully
-                            //HERE
+                            wait 1.5;
                             level thread just_in_case_apply( locs );
-                            //trigger radius
-                            trigger_to_monitor delete();
+                            trigger_to_monitor delete(); //delete the trigger_radius trigger
                             wait 0.1;
-                            //tag_origin model, that we play the initial fx on
-                            self delete();
+                            self thread rise_bulb_underneath( locs, fixable_spot_integer );  //self = script_model, locs = index number of screecher_zone array
                             break;
                         }
-                        wait 0.05;
                     }
                     wait 0.05;
                 }
@@ -287,22 +312,508 @@ monitor_everything( trigger_to_monitor )
     }
 }
 
-just_in_case_apply( which_light ) // YEAH SOMETHING FROM THIS FUNCTION BREAKS THE GAME EVENTUALLY.
-//CALLING AN INPROPER FLAG VARIABLE OR SOMETHING??
-//DEBUG TOMORROW
+rise_bulb_underneath( value_at, fixable_integer ) //in use now
+{
+    level endon( "end_game" );
+    
+    target_light = getstructarray( "screecher_escape", "targetname" );
+    //do the "initial rise"
+    self moveto( target_light[ value_at ].origin, 2, 0.4, 0 );
+    self waittill( "movedone" );
+    playFXOnTag( level.myfx[ 16 ], self, "tag_origin" );
+    switch( fixable_integer ) //offsets based on location.
+    {
+        case 0: //forest to town
+            self movez( 140, 1.5, 0, 0.4 );
+            break;
+        case 1: //corn to pstation
+            self movez( 160, 1.5, 0, 0.4 );
+            break;
+        case 2: //diner to farm
+            self movez( 158, 1.5, 0, 0.4 );
+            break;
+        case 3: //bdepot
+            self movez( 146, 1.5, 0, 0.4 );
+            break;
+        case 4: //bridge to bdepot
+            self movez( 138, 1.5, 0, 0.4 );
+            break;
+        case 6: //diner pdoor
+            self movez( 146, 1.5, 0, 0.4 );
+            break;
+        case 5: //
+            self movez( 146, 1.5, 0, 0.4 );
+            break;
+        case 7: //town to bridge
+            self movez( 142, 1.5, 0, 0.4 );
+            break;
+        default:
+            self movez( 148, 1.5, 0, 0.4 );
+            break;
+    }
+    //self movez( 148, 1.5, 0, 0.4 );
+    self waittill( "movedone" );
+    level thread check_which_light_needs_changing( self ); 
+    //playfx( level.myfx[ 96 ], self.origin );
+    playLoopedFX( level.myfx[ 96 ], 1.2, self.origin );
+    
+    playfx( level._effect[ "fx_zmb_tranzit_light_safety_ric" ], self.origin, 0, -90 ); // good
+
+    //playfx( level. _effect[ "fx_zmb_tranzit_light_safety_max" ], self.origin, 0, -90 );  //good but doesnt have green light
+    playfx( level._effect[ "fx_zmb_tranzit_light_safety" ], self.origin, -50, -90 ); //boring basic light, this might need to be deleted from gsc and csc to not load in upon power turn on
+    //playfx( level._effect[ "fx_zmb_tranzit_light_safety_off" ], self.origin, 0, -90 ); //just a basic light usually not on. this is before u turn power on
+    self playLoopSound(  level.jsn_snd_lst[ 32 ] ); //these are "scary whispers", see if spawning multiple of em makes it a bit louder..
+    wait 0.05;
+    self playLoopSound(  level.jsn_snd_lst[ 32 ] );
+    wait 0.1;
+    self playLoopSound(  level.jsn_snd_lst[ 32 ] );
+    level.repaired_rifts++;
+    
+
+}
+
+test_turn_off_lamps()
+{
+    level endon( "end_game" );
+    level waittill( "power_on" );
+    wait 10;
+    iprintlnbold( "DOING THIS SHIT SHIT SHIT "); 
+    level.players[ 0 ] setclientfield( "screecher_sq_lights", 0 );
+    level.players[ 0 ] setclientfield( "sq_tower_sparks", 1 );
+}
+check_which_light_needs_changing( location_of_light )
+{
+    level endon( "end_game" );
+    for( i = 0; i < level.light_hinters.size; i++ )
+    {
+        if( distance2d( location_of_light.origin, level.light_hinters[ i ].origin ) < 250 )
+        {
+            if( level.dev_time ){ iprintlnbold( "WE JUST REMOVED THE LIGHT HINT FROM: ^1" + level.light_hinters[ i ].origin ); }
+            PlaySoundAtPosition( level.jsn_snd_lst[ 36 ], location_of_light.origin );
+            wait 0.05;
+            level.light_hinters[ i ] delete();
+        }
+        else{ if( level.dev_time ) { iprintlnbold( "^1COULDN'T FIND LIGHT HINT NEAR THIS SETUP!!!" ); } }
+    }
+}
+
+keep_track_of_repair_amount() //in use now
+{
+    level endon( "end_game" );
+    //remove wait when testing full functionality
+    wait 10;
+    level.repaired_rifts = level.fixable_spots.size;
+    while( level.repaired_rifts < level.fixable_spots.size )
+    {
+        wait 1;
+    }
+    level thread lamps_fixed_schruder_speaks();
+}
+
+lamps_fixed_schruder_speaks()
+{
+    level endon( "end_game" );
+    ///level waittill( "all_rift_lamps_repaired" );
+    _play_schruder_texts( "Ahh.. Very good!", "It seems that all the lamps are powered now!", 5, 0.5 );
+    wait 6;
+    _play_schruder_texts( "The rift needs to be opened now.", "There should be a computer inside of ^5Power Station^7!", 4, 0.5 );
+    wait 5;
+    _play_schruder_texts( "See if you can interact with the computer", "and get it to emit signals to the lamp!", 5, 0.5 );
+    wait 6;
+    //level notify( "spawn_rift_computer" );
+    level thread spawn_rift_computer();
+}
+
+spawn_rift_computer()
+{
+    level endon( "end_game" );
+    org = ( 12057.7, 8487.55, -714.927 );
+    level.rift_comp = spawn( "script_model", org );
+    level.rift_comp setModel( "tag_origin" );
+    level.rift_comp.angles = level.rift_comp.angles;
+
+    trig_ = spawn( "trigger_radius_use", org, 0, 85, 85 );
+    trig_ setCursorHint( "HINT_NOICON" );
+    trig_ setHintString( "^2Restore^7 computer save point." );
+    trig_ TriggerIgnoreTeam();
+    wait 0.05;
+    playFXOnTag( level.myfx[ 43 ], level.rift_comp, "tag_origin" );
+    wait 0.05;
+    playFXOnTag( level.myfx[ 45 ], level.rift_comp, "tag_origin" );
+    wait 0.05;
+    level thread computer_wait_for_player_interact( trig_ );
+}
+
+
+computer_wait_for_player_interact( trigger_delete ) //in use now
+{
+    level endon( "end_game" );
+    level endon( "someone_accessed_rift_computer" );
+    
+    while( true )
+    {
+        for( i = 0; i < level.players.size; i++ )
+        {
+            if( !distance2d( level.players[ i ].origin, level.rift_comp.origin ) > 40 ) { continue; }
+            if( distance2d( level.players[ i ].origin, level.rift_comp.origin ) < 35 )
+            {
+                if( !level.players[ i ] useButtonPressed() ) { continue; }
+                if( level.players[ i ] useButtonPressed() )
+                {
+                    
+                    PlaySoundAtPosition( level.jsn_snd_lst[ 31 ], trigger_delete.origin );
+                    if( isdefined( trigger_delete ) ) { trigger_delete delete(); }
+                    level thread computer_accessed_by_player(  level.players[ i ].name );
+                    wait 0.1;
+                    PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.rift_comp.origin );
+                    wait 0.2;
+                    level.rift_comp delete(); //delete the model that the player interacts with
+                    level notify( "someone_accessed_rift_computer" );
+                    break;
+                }
+            }
+        }
+        wait 0.1;
+    }
+}
+
+computer_accessed_by_player( playa )
+{
+    level endon( "end_game" );
+    wait randomfloatrange( 0.1, 1.2 );
+    _play_schruder_texts( "Excellent stuff!", "Survivor ^5" + playa + " ^7was able to restore the signal via computer!" , 5, 1 );
+    wait 5;
+    _play_schruder_texts( "Something's wrong with the computer..", "Access the control panel and restart the computer!", 5, 1 );
+    wait 5;
+    level thread wait_for_access_panel_interact();
+
+}
+
+wait_for_access_panel_interact()
+{
+    access_panel_org = ( 12702.5, 7629.84, -755.875 );
+    trig_panel = spawn( "trigger_radius_use", access_panel_org, 0, 48, 48 );
+    trig_panel setCursorHint( "HINT_NOICON" );
+    trig_panel setHintString( "^2Restore^7 computer save point." );
+
+    //trig_panel UseTriggerRequireLookAt();
+    trig_panel TriggerIgnoreTeam(); 
+    
+    playFXOnTag( level.myfx[ 46 ], trig_panel, "tag_origin" );
+
+    while( true )
+    {
+        trig_panel waittill( "trigger", who );
+        PlaySoundAtPosition( level.jsn_snd_lst[ 7 ], trig_panel.origin );
+        level thread do_zombie_builder_anim( who );
+        wait 0.1;
+        if( isdefined( who )  && isAlive( who ) )
+        {
+            trig_panel setHintString( "^2Restarting ^7the computer.." );
+            wait 1.5;
+            level thread malfunction_computers_sparks_fx();
+            for( x = 0; x < 3; x++ )
+            {
+                randomize = randomIntrange( 0, level.sparking_computers_locs.size ); 
+                PlaySoundAtPosition(level.jsn_snd_lst[ 4 ], level.sparking_computers_locs[ randomize ] ); //snd zmb_pwr_rm_bolt_lrg
+                wait 0.06;
+            }
+            PlaySoundAtPosition( level.jsn_snd_lst[ 42 ], trig_panel.origin );
+            wait 2.5;
+            trig_panel playSound( level.jsn_snd_lst[ 27 ] ); //snd evt_nuke_flash
+            wait 0.05;
+            trig_panel playSound( level.jsn_snd_lst[ 43 ] ); //snd amb_church_bell
+            trig_panel setHintString( "^1Critical ^7malfunction!" );
+            trig_panel playsound( level.jsn_snd_lst[ 30 ] );
+            wait 0.1;
+            trig_panel playSound( level.jsn_snd_lst[ 3 ] );
+            
+            level thread do_malfunction_visuals();
+            wait 1;
+            level thread play_scary_children(); //make some scary noises for the dark part
+            trig_panel setHintString("");
+            wait 30;
+            trig_panel delete();
+            break;
+        }
+    }
+    
+
+}
+
+
+
+spawn_initial_rift_portal_on_core()
+{
+    level endon( "end_game" );
+
+    level.core_rift_loc_topper = ( 12210.5, 7588.57, -461.155 );
+
+    level.core_rift_top = spawn( "script_model", level.core_rift_loc_topper );
+    level.core_rift_top setmodel( "tag_origin" );
+    level.core_rift_top.angles = level.core_rift_top_angles;
+
+
+    level.core_rift_locs = [];
+    level.core_rift_locs[ 0 ] = ( 12210.5, 7588.57, -480.404 ); //mid
+    level.core_rift_locs[ 1 ] = ( 12210.5, 7743.26, -480.404 ); //mid left
+    level.core_rift_locs[ 2 ] = ( 12210.5, 7433.57, -480.404 ); //mid right
+    level.core_rift_locs[ 3 ] = ( 12055.5, 7588.57, -480.404 ); //mid back
+    level.core_rift_locs[ 4 ] = ( 12365.5, 7588.57, -480.404 ); //mid front
+
+    for( i = 0; i < level.core_rift_locs.size; i++ )
+    {
+        spawnpoint = spawn( "script_model",  level.core_rift_locs[ i ] );
+        spawnpoint setModel( "tag_origin" );
+        spawnpoint.angles = spawnpoint.angles;
+        wait 0.05;
+        playfxontag( level.myfx[ 12 ], spawnpoint, "tag_origin" );
+    }
+}
+play_scary_children()
+{
+    level endon( "end_game" );
+    wait 1;
+    for( i = 0; i < 20; i++ )
+    {
+        
+        if( randomIntRange( 0, 5 ) > 2 )
+        {
+            if( randomintrange( 0, 10 ) > 7 )
+            {
+                PlaySoundAtPosition( level.jsn_snd_lst[ 37 ] , level.core_fx_move_to_spots[ randomIntRange( 0, level.core_fx_move_to_spots.size ) ] );
+                wait 1;
+            }
+            else{ PlaySoundAtPosition( level.jsn_snd_lst[ 38 ], level.core_fx_move_to_spots[ randomIntRange( 0, level.core_fx_move_to_spots.size ) ] ); wait 1; }
+        }
+        else { wait 1;}
+    }
+}
+
+do_malfunction_visuals()
+{
+    level endon( "end_game" );
+    foreach( plr in level.players )
+    {
+        electry = spawn( "script_model", plr getTagOrigin( "j_head" ) );
+        electry setmodel( "tag_origin" );
+        electry enableLinkTo();
+        electry linkto( plr, "j_head" );
+        electry thread delete_after_while();
+
+        plr thread fadeForAWhile( 0, 1, 0.5, 0.5, "white" );
+        plr setClientDvar( "r_exposureTweak", true );
+        plr setClientDvar( "r_exposurevalue", 8 );
+    }
+    wait 0.05;
+    level thread malfunction_core_fx();
+
+    while( !level._malfunction_complete )
+    {
+        wait 1;
+    }
+
+    foreach( pl in level.players )
+    {
+        pl thread fadeForAWhile( 0, 1, 0.5, 0.5, "white" );
+    }
+    wait 0.7;
+    foreach( pls in level.players )
+    {
+        pls setclientdvar( "r_exposurevalue", 3 );
+        pls setClientDvar( "r_exposureTweak", false );
+    }
+    
+}
+
+delete_after_while() //is used now
+{
+    level endon( "end_game" );
+    wait 0.7;
+    self delete();
+}
+fadeForAWhile( startwait, blackscreenwait, fadeintime, fadeouttime, shadername, n_sort ) //is used now
+{
+    if ( !isdefined( n_sort ) )
+        n_sort = 50;
+
+    wait( startwait );
+
+    if ( !isdefined( self ) )
+        return;
+
+    if ( !isdefined( self.blackscreen ) )
+        self.blackscreen = newclienthudelem( self );
+
+    self.blackscreen.x = 0;
+    self.blackscreen.y = 0;
+    self.blackscreen.horzalign = "fullscreen";
+    self.blackscreen.vertalign = "fullscreen";
+    self.blackscreen.foreground = 0;
+    self.blackscreen.hidewhendead = 0;
+    self.blackscreen.hidewheninmenu = 1;
+    self.blackscreen.sort = n_sort;
+
+    if ( isdefined( shadername ) )
+        self.blackscreen setshader( shadername, 640, 480 );
+    else
+        self.blackscreen setshader( "black", 640, 480 );
+
+    self.blackscreen.alpha = 0;
+
+    if ( fadeintime > 0 )
+        self.blackscreen fadeovertime( fadeintime );
+
+    self.blackscreen.alpha = 1;
+    wait( fadeintime );
+
+    if ( !isdefined( self.blackscreen ) )
+        return;
+
+    wait( blackscreenwait );
+
+    if ( !isdefined( self.blackscreen ) )
+        return;
+
+    if ( fadeouttime > 0 )
+        self.blackscreen fadeovertime( fadeouttime );
+
+    self.blackscreen.alpha = 0;
+    wait( fadeouttime );
+
+    if ( isdefined( self.blackscreen ) )
+    {
+        self.blackscreen destroy();
+        self.blackscreen = undefined;
+    }
+}
+do_zombie_builder_anim( players )
+{
+    level endon( "end_game" );
+    players endon( "disconnect" );
+    players endon( "death" );
+
+    ex_weapon = players getCurrentWeapon();
+    players giveweapon( "zombie_builder_zm" );
+    players switchToWeapon( "zombie_builder_zm" );
+    wait 3.5;
+    players maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( ex_weapon );
+    players takeWeapon( "zombie_builder_zm" );
+
+}
+malfunction_computers_sparks_fx() //is used now
+{
+    level endon( "end_game" );
+    level.sparking_computers_locs = [];
+    level.sparking_computers_locs[ 0 ] = ( 12006.7, 8499.82, -686.112 );
+    level.sparking_computers_locs[ 1 ] = ( 12075.6, 8503.3, -708 );
+    level.sparking_computers_locs[ 2 ] = ( 12465.9, 8173.58, -682.125 );
+    level.sparking_computers_locs[ 3 ] = ( 12474.5, 8236.4, -716.03 );
+    level.sparking_computers_locs[ 4 ] = ( 12352.6, 8515.76, -686.659 );
+    level.sparking_computers_locs[ 5 ] = ( 12321.5, 8511.94, -709.913 );
+
+
+    for( s = 0; s < level.sparking_computers_locs.size; s++ )
+    {
+        playfx( level.myfx[ 44 ], level.sparking_computers_locs[ s ] );
+        wait randomFloatRange( 0.3, 1.1 );
+    }
+    if( level.dev_time ){ iprintlnbold( "WE SPAWNED SPARKING FX FOR MALFUNC STEP" ); }
+}
+malfunction_core_fx() //is used now
+{
+    level endon( "end_game" );
+    level.core_fx_loc = ( 12207.7, 7581.04, -659.363 );
+    wait 0.05;
+    level thread playthisstupidfxontag();
+    wait 0.1;
+
+    for( i = 0; i < level.core_fx_move_to_spots.size; i++ )
+    {
+        temps = spawn( "script_model", level.core_fx_loc );
+        temps setModel( "tag_origin" );
+        temps.angles = temps.angles;
+
+        wait 0.05;
+
+        playfxontag( level.myfx[ 1 ], temps, "tag_origin" );
+        temps thread move_these_around();
+        playFXOnTag( level.myfx[ 48 ], temps, "tag_origin" );
+        wait randomFloatRange( 0.05, 0.6 );
+    }
+    level thread malfunction_time();
+
+}
+
+playthisstupidfxontag() //is used now
+{
+    level endon( "end_game" );
+    while ( true )
+    {
+        if( isDefined( level._malfunction_complete ) && level._malfunction_complete )
+        {
+            break;
+        }
+        playfx( level.myFx[ 82 ], level.core_fx_loc );
+        wait randomFloatRange( 2.9, 4.2 );
+        
+    }
+}
+malfunction_time() //is used now
+{
+    level endon( "end_game" );
+    for( time = 0; time < 5; time++ ) { wait 1; }
+    PlaySoundAtPosition(level.jsn_snd_lst[ 100 ], level.core_fx_loc ); //snd zmb_power_on_quad
+    for( turn_on_time = 0; turn_on_time < 30; turn_on_time++ ){ wait 1; }
+    level._malfunction_complete = true;
+    if( level.dev_time ){ iPrintLnBold( "MALFUNCTION STEP OK" ); }
+}
+
+move_these_around() //is used now
+{
+    level endon( "end_game" );
+    while( true )
+    {   
+        playfx( level.myFx[ 86 ], self.origin ); 
+        new_loc = randomIntRange( 0, level.core_fx_move_to_spots.size );
+        self moveto( level.core_fx_move_to_spots[ new_loc ], randomFloatRange( 0.15, 1.4 ), 0, 0 );
+        self waittill( "movedone" );
+        playFXOnTag( level.myfx[ 86 ], self, "tag_origin" );
+        if( level._malfunction_complete )
+        {
+            self moveTo( level.core_fx_loc, randomFloatRange( 0.5, 1.2 ), 0, 0.35 );
+            self waittill( "movedone" );
+            wait 0.05;
+            self delete();
+        }
+    }
+}
+just_in_case_apply( which_light )  // is used now
 {
     level endon( "end_game" );
     
     ws = getstructarray( "screecher_escape", "targetname" );
 
     level notify( "safety_light_power_on", ws[ which_light ] );
-    level notify( "safety_light_power_on" );
-    
-    ws[ which_light ].target.power_on = true;
-    ws[ which_light ].target notify( "power_on" );
-    ws[ which_light ].power = true;
-    ws[ which_light ].power_on = true;
-    ws[ which_light ].powered = true;
+    ws[ which_light ] notify( "safety_light_power_on" );
+    foreach( playa in level.players )
+    {
+        //playa setclientfield( "screecher_maxis_lights", true );
+        //playa setclientfield( "screecher_sq_lights", true );
+        //playa.green_light = ws[ which_light ];
+    }
+
+    /*
+        foreach( playa in level.players )
+        {
+            //flickering white and sparks, could be used for before fixing em.
+            //playa setclientfield( "screecher_maxis_lights", 1 );
+
+            //not that good looking. Could be used to initialize this step.
+            //playa setclientfield( "screecher_sq_lights", 1 );
+            
+        }
+    */
 }
 
 player_entered_safety_light( player )
@@ -332,4 +843,81 @@ player_entered_safety_light( player )
     }
 
     return false;
+}
+
+
+
+
+// HUD SPECIFIC | HUD SPECIFIC | HUD SPECIFIC | HUD SPECIFIC | HUD SPECIFIC | HUD SPECIFIC //
+
+//this is a global sayer, all players in game will receive this at once
+_play_schruder_texts( subtitle_upper, subtitle_lower, duration, fadetimer )
+{
+    level endon( "end_game" );
+	level thread SchruderSays( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+}
+
+SchruderSays( sub_up, sub_low, duration, fadeTimer )
+{
+	subtitle_upper = NewHudElem();
+	subtitle_upper.x = 0;
+	subtitle_upper.y = -42;
+	subtitle_upper SetText( sub_up );
+	subtitle_upper.fontScale = 1.46;
+	subtitle_upper.alignX = "center";
+	subtitle_upper.alignY = "middle";
+	subtitle_upper.horzAlign = "center";
+	subtitle_upper.vertAlign = "bottom";
+	subtitle_upper.sort = 1;
+    
+	subtitle_lower = undefined;
+	subtitle_upper.alpha = 0;
+    subtitle_upper fadeovertime( fadeTimer );
+    subtitle_upper.alpha = 1;
+
+	if ( IsDefined( sub_low ) )
+	{
+		subtitle_lower = NewHudelem();
+		subtitle_lower.x = 0;
+		subtitle_lower.y = -24;
+		subtitle_lower SetText( sub_low );
+		subtitle_lower.fontScale = 1.46;
+		subtitle_lower.alignX = "center";
+		subtitle_lower.alignY = "middle";
+		subtitle_lower.horzAlign = "center";
+		subtitle_lower.vertAlign = "bottom";
+		subtitle_lower.sort = 1;
+        subtitle_lower.alpha = 0;
+        subtitle_lower fadeovertime( fadeTimer );
+        subtitle_lower.alpha = 1;
+	}
+	
+	wait ( duration );
+	level thread flyby( subtitle_upper );
+    subtitle_upper fadeovertime( fadeTimer );
+    subtitle_upper.alpha = 0;
+	//subtitle Destroy();
+	
+	if ( IsDefined( subtitle_lower ) )
+	{
+		level thread flyby( subtitle_lower );
+        subtitle_lower fadeovertime( fadeTimer );
+        subtitle_lower.alpha = 0;
+	}
+    
+}
+
+//this a gay ass hud flyer, still choppy af
+flyby( element )
+{
+    level endon( "end_game" );
+    x = 0;
+    on_right = 640;
+
+    while( element.x < on_right )
+    {
+        element.x += 100;
+        wait 0.05;
+    }
+    element destroy();
 }

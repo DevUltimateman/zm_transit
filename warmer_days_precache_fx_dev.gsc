@@ -209,7 +209,7 @@ precache_myfx()
 	level.myFx[ 82 ] = loadfx( "maps/zombie/fx_zmb_tranzit_power_rising" ); //cool
 	level.myFx[ 83 ] = loadfx( "maps/zombie/fx_zmb_avog_storm" ); //storm clouds above loop
 	level.myFx[ 84 ] = loadfx( "maps/zombie/fx_zmb_avog_storm_low" ); //no work
-	level.myFx[ 58 ] = loadfx( "maps/zombie/fx_zmb_tranzit_window_dest_lg" ); //puff and window breaks
+	level.myFx[ 85 ] = loadfx( "maps/zombie/fx_zmb_tranzit_window_dest_lg" ); //puff and window breaks
 	level.myFx[ 86 ] = loadfx( "maps/zombie/fx_zmb_tranzit_spark_blue_lg_os" ); //cool blue explo
 	level.myFx[ 87 ] = loadfx( "maps/zombie/fx_zmb_race_zombie_spawn_cloud" ); //no
 	level.myFx[ 88 ] = level._effect[ "jetgun_smoke_cloud" ]; // spawn front of player and below to and loop it to make it look like player is in the mist ;)

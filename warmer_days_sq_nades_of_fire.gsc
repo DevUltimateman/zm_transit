@@ -816,12 +816,6 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
 	}
 	
 	wait ( duration );
-    //level thread a_glowby( subtitle );
-    //if( isdefined( subtitle_lower ) )
-    //{
-    //    level thread a_glowby( subtitle_lower );
-    //}
-    
 	level thread flyby( subtitle_upper );
     subtitle_upper fadeovertime( fadeTimer );
     subtitle_upper.alpha = 0;
@@ -846,18 +840,6 @@ flyby( element )
     while( element.x < on_right )
     {
         element.x += 100;
-        /*
-        //if( element.x < on_right )
-        //{
-            
-            //waitnetworkframe();
-        //    wait 0.01;
-        //}
-        //if( element.x >= on_right )
-        //{
-        //    element destroy();
-        //}
-        */
         wait 0.05;
     }
     element destroy();

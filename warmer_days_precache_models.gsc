@@ -47,7 +47,8 @@ init()
     level.custom_index = 0;
     //my precache models
     level thread precacheModels();
-    level thread ondevs();
+
+    //level thread ondevs(); //remove from real version
     level thread printmodel_origin_angles_based_on_player();
 
     flag_wait( "initial_blackscreen_passed" );
