@@ -115,6 +115,9 @@ init()
     level.core_fx_move_to_spots[ 6 ] = ( 11903.4, 7643.2, -1532.72 );
     level.core_fx_move_to_spots[ 7 ] = ( 11999, 7425.26, -1103.36 );
     level.core_fx_move_to_spots[ 8 ] = ( 12513.9, 7372.31, -1296.85 );
+
+
+    level.access_panel_org = ( 12702.5, 7629.84, -755.875 ); // other playable sfx at brkoen comp step
     //origins for all lamps that need fixing
     all_fixable_spots();
     flag_wait( "initial_blackscreen_passed" ); 
@@ -449,7 +452,7 @@ computer_wait_for_player_interact( trigger_delete ) //in use now
 {
     level endon( "end_game" );
     level endon( "someone_accessed_rift_computer" );
-    
+    a_comp = trigger_delete;
     while( true )
     {
         for( i = 0; i < level.players.size; i++ )
@@ -460,10 +463,11 @@ computer_wait_for_player_interact( trigger_delete ) //in use now
                 if( !level.players[ i ] useButtonPressed() ) { continue; }
                 if( level.players[ i ] useButtonPressed() )
                 {
-                    
+                    level thread malfunction_computers_sparks_fx();
                     PlaySoundAtPosition( level.jsn_snd_lst[ 31 ], trigger_delete.origin );
                     if( isdefined( trigger_delete ) ) { trigger_delete delete(); }
-                    level thread computer_accessed_by_player(  level.players[ i ].name );
+                    level thread computer_accessed_by_player(  level.players[ i ].name, a_comp );
+                    level thread play_computer_attention_sfx( level.players[ i ].origin, level.access_panel_org );
                     wait 0.1;
                     PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.rift_comp.origin );
                     wait 0.2;
@@ -477,22 +481,23 @@ computer_wait_for_player_interact( trigger_delete ) //in use now
     }
 }
 
-computer_accessed_by_player( playa )
+computer_accessed_by_player( playa, a_comp )
 {
     level endon( "end_game" );
-    wait randomfloatrange( 0.1, 1.2 );
+    a_comp_origin = a_comp.origin;
+    wait randomfloatrange( 1.1, 2.2 );
     _play_schruder_texts( "Excellent stuff!", "Survivor ^5" + playa + " ^7was able to restore the signal via computer!" , 5, 1 );
-    wait 5;
+    wait 6.2;
     _play_schruder_texts( "Something's wrong with the computer..", "Access the control panel and restart the computer!", 5, 1 );
     wait 5;
-    level thread wait_for_access_panel_interact();
+    level thread wait_for_access_panel_interact( a_comp_origin );
 
 }
 
-wait_for_access_panel_interact()
+wait_for_access_panel_interact( a_comp_origin )
 {
-    access_panel_org = ( 12702.5, 7629.84, -755.875 );
-    trig_panel = spawn( "trigger_radius_use", access_panel_org, 0, 48, 48 );
+    
+    trig_panel = spawn( "trigger_radius_use", level.access_panel_org, 0, 48, 48 );
     trig_panel setCursorHint( "HINT_NOICON" );
     trig_panel setHintString( "^2Restore^7 computer save point." );
 
@@ -501,6 +506,20 @@ wait_for_access_panel_interact()
     
     playFXOnTag( level.myfx[ 46 ], trig_panel, "tag_origin" );
 
+    hinter = spawn( "script_model", trig_panel.origin + ( 30, 0, 62 ) );
+    hinter setmodel( "tag_origin" );
+    hinter.angles = ( 0, 180, 0 );
+    wait 0.05;
+
+    sfx = spawn( "script_model", hinter.origin );
+    sfx setmodel( "tag_origin" );
+    sfx.angles = sfx.angles;
+    wait 0.05;
+    playfxontag( level.myfx[ 24 ], hinter, "tag_origin" );
+    wait 0.05;
+    playfxontag( level.myfx[ 45 ], hinter, "tag_origin" );
+
+    
     while( true )
     {
         trig_panel waittill( "trigger", who );
@@ -511,29 +530,42 @@ wait_for_access_panel_interact()
         {
             trig_panel setHintString( "^2Restarting ^7the computer.." );
             wait 1.5;
-            level thread malfunction_computers_sparks_fx();
+            
             for( x = 0; x < 3; x++ )
             {
                 randomize = randomIntrange( 0, level.sparking_computers_locs.size ); 
                 PlaySoundAtPosition(level.jsn_snd_lst[ 4 ], level.sparking_computers_locs[ randomize ] ); //snd zmb_pwr_rm_bolt_lrg
                 wait 0.06;
             }
-            PlaySoundAtPosition( level.jsn_snd_lst[ 42 ], trig_panel.origin );
+            wait 1;
             wait 2.5;
+            trig_panel setHintString( "^1Critical ^7malfunction!" );
+            sfx playsound( level.jsn_snd_lst[ 39 ] );
+            hinter movez( -60, 0.1, 0, 0 );
+            foreach( p in level.players )
+            {
+                p playsound( level.jsn_snd_lst[ 39 ]  );
+            }
+            PlaySoundAtPosition( level.jsn_snd_lst[ 39 ], sfx.origin + ( 100, 0, 0 ) );
+            wait 0.05;
+            PlaySoundAtPosition( level.jsn_snd_lst[ 39 ], sfx.origin + ( 100, 0, 0 ) );
+            level notify( "computer_accessed" ); //stop beeping broken computer sfx
+            wait 5;
             trig_panel playSound( level.jsn_snd_lst[ 27 ] ); //snd evt_nuke_flash
             wait 0.05;
             trig_panel playSound( level.jsn_snd_lst[ 43 ] ); //snd amb_church_bell
-            trig_panel setHintString( "^1Critical ^7malfunction!" );
             trig_panel playsound( level.jsn_snd_lst[ 30 ] );
             wait 0.1;
             trig_panel playSound( level.jsn_snd_lst[ 3 ] );
-            
             level thread do_malfunction_visuals();
+            PlaySoundAtPosition( level.jsn_snd_lst[ 3 ], trig_panel.origin );
             wait 1;
             level thread play_scary_children(); //make some scary noises for the dark part
             trig_panel setHintString("");
             wait 30;
             trig_panel delete();
+            hinter delete();
+            sfx delete();
             break;
         }
     }
@@ -541,7 +573,21 @@ wait_for_access_panel_interact()
 
 }
 
+play_computer_attention_sfx( b_comp, a_comp )
+{
+    level endon( "computer_accessed" );
+    level endon( "end_game" );
 
+    while( true )
+    {
+        PlaySoundAtPosition( level.jsn_snd_lst[ 20 ], b_comp );
+        PlaySoundAtPosition( level.jsn_snd_lst[ 4 ] , a_comp );
+        wait randomfloat( 0.38 );
+        PlaySoundAtPosition( level.jsn_snd_lst[ 4 ], b_comp );
+        PlaySoundAtPosition( level.jsn_snd_lst[ 20 ] , a_comp );
+        wait randomfloat( 0.38 );
+    }
+}
 
 spawn_initial_rift_portal_on_core()
 {
@@ -604,6 +650,8 @@ do_malfunction_visuals()
         plr thread fadeForAWhile( 0, 1, 0.5, 0.5, "white" );
         plr setClientDvar( "r_exposureTweak", true );
         plr setClientDvar( "r_exposurevalue", 8 );
+        plr setclientdvar( "cg_colorscale", "2 2 2" );
+        plr setclientdvar( "cg_colorhue", 250 );
     }
     wait 0.05;
     level thread malfunction_core_fx();
@@ -622,6 +670,8 @@ do_malfunction_visuals()
     {
         pls setclientdvar( "r_exposurevalue", 3 );
         pls setClientDvar( "r_exposureTweak", false );
+        plr setclientdvar( "cg_colorscale", "2 2 2" );
+        plr setclientdvar( "cg_colorhue", 0 );
     }
     
 }

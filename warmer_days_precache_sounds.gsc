@@ -117,7 +117,6 @@ precache_sounds()
 }
 
 
-
 json_soundaliaslist()
 {
     level.jsn_snd_lst = [];
@@ -132,9 +131,9 @@ json_soundaliaslist()
     level.jsn_snd_lst[ 8 ] = ( "zmb_whoosh" ); //no sound
     level.jsn_snd_lst[ 9 ] = ( "zmb_weap_wall" ); //when u purchase weapon off wall
     
-     level.jsn_snd_lst[ 10 ] = ( "vox_plr_3_riv_resp_wpck_monkey_1" ); //shitty marlton
-    level.jsn_snd_lst[ 11 ] = ( "vox_plr_3_riv_resp_wpck_monkey_4" );//shitty marlton
-    level.jsn_snd_lst[ 12 ] = ( "vox_plr_3_riv_resp_crawler_start_4" );//shitty marlton
+     level.jsn_snd_lst[ 10 ] = ( "amb_alarm_interior_industrial"  ); //shitty marlton
+    level.jsn_snd_lst[ 11 ] = ( "amb_alarm_interior" );//shitty marlton
+    level.jsn_snd_lst[ 12 ] = ( "amb_alarm_airraid" );//shitty marlton
     level.jsn_snd_lst[ 13 ] = ( "vox_plr_3_riv_resp_kill_headshot_2" );//shitty marlton
     level.jsn_snd_lst[ 14 ] = ( "vox_plr_3_riv_resp_kill_headshot_1" );//shitty marlton
     level.jsn_snd_lst[ 15 ] = ( "vox_bus_hint_upgrade_2" ); //unused ted talks about second bus upgrade
