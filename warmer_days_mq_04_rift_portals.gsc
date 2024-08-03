@@ -118,6 +118,31 @@ init()
 
 
     level.access_panel_org = ( 12702.5, 7629.84, -755.875 ); // other playable sfx at brkoen comp step
+    
+    
+    //these are  needed when we set up players cameras to get sucked by rift
+    level.initial_rift_loop_locations = [];
+    level.initial_rift_loop_locations[ 0 ] = ( 12472.5, 7936.19, -741.053 );
+    level.initial_rift_loop_locations[ 1 ] = ( 12111.1, 8012.86, -684.853 );
+    level.initial_rift_loop_locations[ 2 ] = ( 11777.6, 7756.22, -580.667 );
+    level.initial_rift_loop_locations[ 3 ] = ( 11848, 7369.15, -776.511 );
+    level.initial_rift_loop_locations[ 4 ] = ( 12187.6, 7390.46, -851.503 );
+    level.initial_rift_loop_locations[ 5 ] = ( 12659.3, 7483.28, -712.102 );
+
+
+
+
+    level.initial_rift_loop_locations_angles[ 0 ] = ( 0, 152.899, 0 );
+    level.initial_rift_loop_locations_angles[ 1 ] = ( 0, -173, 0 );
+    level.initial_rift_loop_locations_angles[ 2 ] = ( 0, -66.34442, 0 );
+    level.initial_rift_loop_locations_angles[ 3 ] = ( 0, 3.2102, 0 );
+    level.initial_rift_loop_locations_angles[ 4 ] = ( 0, -9.12193, 0 );
+    level.initial_rift_loop_locations_angles[ 5 ] = ( 0, 77.5547, 0  );
+
+    //for each player
+    level.initial_rift_core_loop_camera_obj = [];
+
+    level.global_looping_in_progress = false;
     //origins for all lamps that need fixing
     all_fixable_spots();
     flag_wait( "initial_blackscreen_passed" ); 
@@ -131,6 +156,102 @@ init()
     //level thread camera_points_debug();
 }
 
+spawn_initial_rift_camera_points()
+{
+    level endon( "end_game" );
+
+    earthquake( 0.25, 10, level.initial_rift_loop_locations[ 0 ], 1050 );
+    for( i = 0; i < level.players.size; i++ )
+    {
+        
+        playfxontag( level.myfx[ 82 ], level.players[ i ], "tag_origin" );
+
+        level.players[ i ] playsound( level.jsn_snd_lst[ 32 ] );
+        level.players[ i ] setMoveSpeedScale( 0.2 );
+        for( i = 0; i < 3; i++ )
+        {
+            level.players[ i ] playsound( level.jsn_snd_lst[ 34 ] );
+            wait 0.08;
+            PlaySoundAtPosition( level.jsn_snd_lst[ 42 ], level.players[ i ].origin );
+            wait 0.05;
+        }
+    }
+    wait randomFloat( 0.4 );
+    PlaySoundAtPosition( level.jsn_snd_lst[ 89 ], level.initial_rift_loop_locations[ 0 ] );
+
+    wait 1;
+    level.global_looping_in_progress = true;
+    wait 0.05;
+    level thread keep_players_on_loop_timer();
+    level thread fade_to_black_on_impact();
+    for( s = 0; s < level.players.size; s++ )
+    {
+        org = spawn( "script_model", level.players[ s ] geteye() );
+        org setmodel( "tag_origin" );
+        org.angles = level.players[ s ].angles;
+        wait 0.05;
+        playfxontag( level.myfx[ 1 ], org, "tag_origin" );
+        playfx( level.myfx[ 82 ], level.players[ s ].origin );
+        level.players[ s ] playsound( level.jsn_snd_lst[ 30 ] );
+        level.players[ s ] enableInvulnerability();
+        level.players[ s ] camerasetposition( org );
+        level.players[ s ] camerasetlookat();
+        level.players[ s ] cameraactivate( 1 );
+        level.players[ s ] hide();
+
+        wait 0.05;
+        level.players[ s ] freezeControls(true);
+        level.players[ s ] setclientdvar( "r_poisonfx_debug_enable", true );
+        org thread attachToLoop();// pass the camera index so we know which to loop
+        wait randomintrange( 4, 5 );
+        level thread fade_to_black_on_impact();
+
+    }
+    
+}
+
+fade_to_black_on_impact()
+{
+    level endon( "end_game" );
+    foreach( play in level.players )
+    {
+        play thread fadeForAWhile( 3, 1, 0.25, 0.5, "black" );
+        play playsound( level.jsn_snd_lst[ 29 ] );
+        
+    }
+    wait 1;
+    
+    foreach( p in level.players )
+    {
+        p playsound( level.mysounds[ 7 ] );
+        p show();
+        p freezeControls( false );
+        p setclientdvar( "r_poisonfx_debug_enable", false );
+    }
+
+    wait 4;
+
+}
+
+keep_players_on_loop_timer()
+{
+    level endon( "end_game" );
+    wait( randomintrange( 5, 8 ) );
+    level.global_looping_in_progress = false;
+    
+}
+attachtoloop()
+{
+    //self endon( "disconnect" );
+    level endon( "end_game" );
+    //angles = ( 0, -91.2141, 0 );
+    // rotateto( level.core_rift_top.origin + ( 0, 160, -120 ), 0.3, 0, 0 );
+    wait 0.1;
+    self moveto(  level.core_rift_top.origin, 5, 2, 0.1 );
+    self rotateto( level.core_rift_top.origin, 5, 2.1, 0 );
+    wait 5;
+    playfx( level.myfx[ 82 ], self.origin );    
+}
 
 camera_points_debug()
 {
@@ -566,6 +687,8 @@ wait_for_access_panel_interact( a_comp_origin )
             trig_panel delete();
             hinter delete();
             sfx delete();
+            //level thread move_camera_to_teleport();
+            level thread spawn_initial_rift_camera_points();
             break;
         }
     }
@@ -609,11 +732,21 @@ spawn_initial_rift_portal_on_core()
 
     for( i = 0; i < level.core_rift_locs.size; i++ )
     {
-        spawnpoint = spawn( "script_model",  level.core_rift_locs[ i ] );
-        spawnpoint setModel( "tag_origin" );
-        spawnpoint.angles = spawnpoint.angles;
+        level._s_spawnpoint[ i ] = spawn( "script_model",  level.core_rift_locs[ i ]  + ( 0, 0, 20 )  );
+        level._s_spawnpoint[ i ] setModel( "p6_zm_screecher_hole" );
+        level._s_spawnpoint[ i ].angles = ( randomIntRange( 170, 190 ), 0, 0 );
+        level._s_spawnpoint[ i ] playsound( "zmb_screecher_portal_spawn" );
+        playfxontag( level.myfx[ 87 ], level._s_spawnpoint[ i ], "tag_origin" );
         wait 0.05;
-        playfxontag( level.myfx[ 12 ], spawnpoint, "tag_origin" );
+        //playfxontag( level.myfx[ 12 ], spawnpoint, "tag_origin" );
+        playFXOnTag( level._effect[ "screecher_hole" ], level._s_spawnpoint[ i ], "tag_origin" );
+    }
+
+    wait 2;
+    foreach( sp in level._s_spawnpoint )
+    {
+        playFXOnTag( level._effect[ "screecher_vortex" ], sp, "tag_origin" );
+        sp playLoopSound( "zmb_screecher_portal_loop", 2 );
     }
 }
 play_scary_children()
@@ -636,6 +769,57 @@ play_scary_children()
     }
 }
 
+//exposurevalue for labs = 4.3
+//vc_rgbh = 1 1 1 1
+
+
+
+move_camera_to_teleport()
+{
+    level endon( "end_game" );
+
+    foreach( zombie in level.zombie_team )
+    {
+        zombie doDamage( zombie.health + 65, zombie.origin );
+    }
+    level.core_rift_camera_lerp_origin = ( 12235.2, 7578.6, -567.839 );
+    angles = ( -90, 0, 0 );
+
+
+    foreach( player in level.players )
+    {
+        cam = spawn( "script_model", player getEye() );
+        cam setmodel( "tag_origin" );
+        cam.angles = player.angles;
+        
+        wait 0.05;
+        player CameraSetPosition( cam, cam.angles );
+        player CameraSetLookAt();
+        player CameraActivate( true );
+
+        wait 0.05;
+        time = 3;
+        speed = 10;
+        player hide();
+        cam moveTo( level.core_rift_camera_lerp_origin, time, 1.2, 0 );
+        cam rotateTo( angles, time, 2, 0 );
+        cam rotateRoll( 360, time, 2, 0 );
+        cam waittill( "movedone" );
+
+        player CameraActivate( false );
+
+    }
+}
+
+//todo
+//make each player link to the spinning rift roll camera thing seperately at different times
+//loop players somewhere else before allowing them to link to loop where next person is already at
+//then spin all around room simultaneously
+//throw them towards generator
+//then dark puff
+//then rift on sky 
+//make them fly towwards some sorta rift landing
+//boom rifts opened
 do_malfunction_visuals()
 {
     level endon( "end_game" );
@@ -655,7 +839,7 @@ do_malfunction_visuals()
     }
     wait 0.05;
     level thread malfunction_core_fx();
-
+    level thread spawn_initial_rift_portal_on_core();
     while( !level._malfunction_complete )
     {
         wait 1;
@@ -673,6 +857,8 @@ do_malfunction_visuals()
         plr setclientdvar( "cg_colorscale", "2 2 2" );
         plr setclientdvar( "cg_colorhue", 0 );
     }
+
+    
     
 }
 
@@ -828,6 +1014,7 @@ move_these_around() //is used now
         new_loc = randomIntRange( 0, level.core_fx_move_to_spots.size );
         self moveto( level.core_fx_move_to_spots[ new_loc ], randomFloatRange( 0.15, 1.4 ), 0, 0 );
         self waittill( "movedone" );
+        playfx( level.myFx[ 92 ], self.origin );
         playFXOnTag( level.myfx[ 86 ], self, "tag_origin" );
         if( level._malfunction_complete )
         {
