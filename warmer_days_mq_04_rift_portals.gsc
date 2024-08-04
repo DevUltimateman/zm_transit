@@ -138,7 +138,7 @@ init()
     level.initial_rift_loop_locations_angles[ 3 ] = ( 0, 3.2102, 0 );
     level.initial_rift_loop_locations_angles[ 4 ] = ( 0, -9.12193, 0 );
     level.initial_rift_loop_locations_angles[ 5 ] = ( 0, 77.5547, 0  );
-
+    all_sky_camera_locations();
     //for each player
     level.initial_rift_core_loop_camera_obj = [];
 
@@ -154,6 +154,18 @@ init()
    
     //works. need to make it lot better tho.
     //level thread camera_points_debug();
+    level thread playerss();
+}
+
+playerss()
+{
+    level endon( "end_game" );
+    flag_wait( "initial_blackscreen_passed" );
+    wait 1;
+    for( i = 0; i < level.players.size; i++ )
+    {
+        level.players[ i ] thread do_rift_ride( "_corn" );
+    }
 }
 
 spawn_initial_rift_camera_points()
@@ -210,6 +222,203 @@ spawn_initial_rift_camera_points()
     
 }
 
+
+initial_camera_sky_spawn()
+{
+    level endon( "end_game" );
+
+    level.initial_sky_camera_location = [];
+    level.initial_sky_camera_location[ 0 ] = spawnStruct();
+    level.initial_sky_camera_location[ 1 ] = spawnStruct();
+    level.initial_sky_camera_location[ 2 ] = spawnStruct();
+    level.initial_sky_camera_location[ 3 ] = spawnStruct();
+    level.initial_sky_camera_location[ 4 ] = spawnStruct();
+    level.initial_sky_camera_location[ 5 ] = spawnStruct();
+    level.initial_sky_camera_location[ 6 ] = spawnStruct();
+    level.initial_sky_camera_location[ 7 ] = spawnStruct();
+
+
+    for( i = 0; i < level.initial_sky_camera_location.size; i++ )
+    {
+        level.initial_sky_camera_location[ i ].model = spawn( "script_model", level.sky_camera_location[ i ] );
+        level.initial_sky_camera_location[ i ].model setmodel( "tag_origin" );
+        level.initial_sky_camera_location[ i ].model.angles = level.initial_sky_camera_location[ i ].model.angles;
+        
+        level.initial_sky_camera_location[ i ].active = false;
+        wait 0.05;
+    }
+
+
+}
+
+
+do_rift_ride( sudo = "_corn" )
+{
+    level endon( "end_game" );
+
+    //self waittill( "spawned_player" );
+
+    wait 5;
+
+
+    rider = spawn( "script_model", level.sky_camera_tower_location[ 0 ] );
+    rider setmodel( "tag_origin" );
+    rider.angles = level.sky_camera_tower_location_angles[ 0 ] + ( 90, 0, 0 );
+
+    wait 0.05;
+    playfxontag( level.myfx[ 1 ], rider, "tag_origin" );
+
+
+    self CameraSetPosition( rider, rider.angles );
+    self CameraSetLookAt( level.sky_camera_tower_location[ level.sky_camera_tower_location.size ] );
+    self CameraActivate( true );
+    
+    i = 0;
+    while( i < level.sky_camera_tower_location.size )
+    {
+        rider moveto( level.sky_camera_tower_location[ i ], 0.3, 0.1, 0 );
+        rider waittill( "movedone" );
+        playfx( level.myFx[ 9 ], rider.origin );
+        i++;
+    }
+
+    wait 0.05;
+    s = 0;
+    self CameraSetLookAt();
+    alias = "level.sky_camera_location" + sudo;
+    while( s < level.sky_camera_location_corn.size )
+    {
+        rider moveto( level.sky_camera_location_corn[ s ], 2, 0, 0.4 );
+        if( s == level.sky_camera_location_corn.size )
+        {
+            rider rotateto( level.sky_camera_location_corn_angles[ s ], 2, 0.75, 0.75 );
+        }
+        else 
+        {
+            rider rotateto( level.sky_camera_location_corn_angles[ s + 1 ], 2, 0.75, 0.75 );
+        }
+        wait 2;
+        s++;
+    }
+
+    wait 0.05;
+    self CameraSetPosition( self.origin );
+    self CameraActivate( false );
+
+    
+}
+all_sky_camera_locations()
+{
+
+    level.sky_camera_location = [];
+    level.sky_camera_location_angles = [];
+
+    
+    //initial teleport ( players shoot up inside of the tower of babble tower)
+    level.sky_camera_tower_location = [];
+    level.sky_camera_tower_location_angles = [];
+    level.sky_camera_tower_location[ 0 ] = ( 7646.74, -470.402, 97.9369 );
+    level.sky_camera_tower_location_angles[ 0 ] = ( 90, 90.6, 0 );
+    level.sky_camera_tower_location[ 1 ] = ( 7646.74, -470.402, 340.938 );
+    level.sky_camera_tower_location_angles[ 1 ] = ( 90, 90.6, 0 );
+    level.sky_camera_tower_location[ 2 ] = ( 7646.74, -470.402, 610.401 );
+    level.sky_camera_tower_location_angles[ 2 ] = ( 90, 90.6, 0 );
+    level.sky_camera_tower_location[ 3 ] = ( 7646.74, -470.402, 917.295 );
+    level.sky_camera_tower_location_angles[ 3 ] = ( 90, 90.6, 0 );
+    level.sky_camera_tower_location[ 4 ] = ( 7646.74, -470.402, 1234.61 );
+    level.sky_camera_tower_location_angles[ 4 ] = ( 90, 90.6, 0 );
+    level.sky_camera_tower_location[ 5 ] = (  7646.74, -470.402, 3509.49 );
+    level.sky_camera_tower_location_angles[ 5 ] = ( 90, 90.6, 0 );
+
+
+
+
+    ///CORNFIELD CORNFIELD CORNFIELD CORNFIELD LOCATIONS ///
+    //above hill, facing towards tower of babble
+    level.sky_camera_location_corn[ 0 ] = ( 9256.96, 1063.87, 1188.62 );
+    level.sky_camera_location_corn_angles[ 0 ] = ( 0, -76.9979, 0 );
+    //normal ride
+    level.sky_camera_location_corn[ 1 ] = ( 9721.89, 336.649, 652.762 );
+    level.sky_camera_location_corn_angles[ 1 ] = ( 0, -126.431, 0 );
+    level.sky_camera_location_corn[ 2 ] = ( 8855.87, -577.69, 63.9675 );
+    level.sky_camera_location_corn_angles[ 2 ] = ( 0, -139.796, 0 );
+    level.sky_camera_location_corn[ 3 ] = ( 7148.16, -1255.52, -5.77788 );
+    level.sky_camera_location_corn_angles[ 3 ] = ( 0, -175.293, 0 );
+    level.sky_camera_location_corn[ 4 ] = ( 7138.88, -1920.26, 150.252 );
+    level.sky_camera_location_corn_angles[ 4 ] = ( 0, -82.7767, 0 );
+    level.sky_camera_location_corn[ 5 ] = ( 9633.77, -2582.43, 441.656 );
+    level.sky_camera_location_corn_angles[ 5 ] = ( 0, 5351, 0 );
+    level.sky_camera_location_corn[ 6 ] = ( 11871.2, -1837.52, -155.799 );
+    level.sky_camera_location_corn_angles[ 6 ] = ( 0, 28.7735, 0 );
+    level.sky_camera_location_corn[ 7 ] = ( 13444.5, -780.406, -5.63429 );
+    level.sky_camera_location_corn_angles[ 7 ] = ( 0, 38.9408, 0 );
+    //inside of nacht facing towards entrance
+    level.sky_camera_location_corn[ 8 ] = ( 13905.1, -293.264, -179.409 );
+    level.sky_camera_location_corn_angles[ 8 ] = ( 0, -143.866, 0 );
+    ///END OF CORNFIELD END OF CORNFIELD LOCATIONS ///
+
+
+
+    /*
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    
+    level.sky_camera_location[  ] = (  );
+    level.sky_camera_location_angles[  ] = (  );
+    */
+
+}
 fade_to_black_on_impact()
 {
     level endon( "end_game" );
