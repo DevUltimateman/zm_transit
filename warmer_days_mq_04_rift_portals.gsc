@@ -154,7 +154,17 @@ init()
    
     //works. need to make it lot better tho.
     //level thread camera_points_debug();
-    level thread playerss();
+
+    //debugs the camera motion
+    //level thread playerss();
+
+
+    //for the new sky box we might wanna use different values
+    //skytransition true
+    //skyrotation 250
+    //skybleed = 1 or 0.8 for day light sky
+
+    §
 }
 
 playerss()
@@ -471,7 +481,7 @@ all_sky_camera_locations()
     //bus depot /// / //////////////
     level.rift_camera_bepo = [];
     level.rift_camera_bepo_angles = [];
-
+    /*
     level.rift_camera_bepo[  ] = (  );
     level.rift_camera_bepo_angles[  ] = (  );
     /*
