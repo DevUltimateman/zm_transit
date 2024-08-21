@@ -44,10 +44,10 @@
 init()
 {
     //units
-    how_far_can_i_see = 18000; 
+    how_far_can_i_see = 20000; 
 
     //cull distance
-    setCullDist( level.how_far_can_i_see );
+    setCullDist( how_far_can_i_see );
 
     //disable annoying monkeys
     //level.is_player_in_screecher_zone = ::screecher_hooker;

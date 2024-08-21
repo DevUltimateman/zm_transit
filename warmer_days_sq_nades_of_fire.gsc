@@ -76,7 +76,7 @@ tm_()
     {
         wait 10.0;
         notifydata = spawnstruct();
-        notifydata.titletext = &"MP_CHALLENGE_COMPLETED";
+        notifydata.titletext = "THIS_SHIIIIIIIT";
         notifydata.notifytext = "wheee";
         notifydata.sound = "mp_challenge_complete";
         self thread maps\mp\gametypes_zm\_hud_message::notifymessage( notifydata );
@@ -97,8 +97,7 @@ fordev()
     setdvar( "player_clipSizeMultiplier", 2.0 );    
     for( i = 0; i < level.players.size; i++ )
     {
-        level.players[ i ] thread tm_(); // see if the text notify data works
-        level.players[ i ] enableInvulnerability();
+        level.players[ i ] enableInvulnerability();  
         level.players[ i ].score += 50000;
         level.players[ i ] thread firegrenades_step2();
     }
@@ -310,7 +309,7 @@ watching_explo( id_ ) //implement repick nade failsafe
             }
             playfxontag( level.myFx[ 2 ], zz, "j_head" );
             wait 0.05;
-            playfxontag( level.myfx[ 30 ], zz, zz_head );
+            playfxontag( level.myfx[ 30 ], zz,"j_head" );
             wait randomfloatrange( 0.1, 0.3 );
             
             self_nade_up = self.origin + ( 0, 0, 800 ); // might not just wanna use self...
@@ -339,7 +338,7 @@ zz_fx( my_zombie, nade_loc, me_player )
     playfxontag( level.myFx[ 69 ], head, "tag_origin" );
     my_zombie dodamage( my_zombie.health + 1000, head );
     playfxontag( level.myFx[ 1 ], newspawn, "tag_origin" );
-    my_zombie playsound( "zmb_avogadro_death_short" );
+    my_zombie playsound( level.jsn_snd_lst[ 34 ] ); //screams from spooked guyyyy
     //assign the variable for new target
     if( isDefined( nade_loc ) )
     {
@@ -355,8 +354,8 @@ zz_fx( my_zombie, nade_loc, me_player )
     }
     wait 0.09;
     //failsafe for stuck fxs
-    if( !isAlive( my_zombie ) )
-    {
+    //if( !isAlive( my_zombie ) )
+    //{
         
         //new_target = my_zombie.origin + ( randomintrange( 120, 250 ), randomintrange( -50, 50 ), 2 );
         
@@ -366,20 +365,24 @@ zz_fx( my_zombie, nade_loc, me_player )
         t_y = 0;
         t_z = randomintrange( 15, 55 );
 
-        //THIS PART IS FOR PLAYERS GET CHARGED WITH PLASMA
-        new_target = me_player.origin + (  t_x, t_y, t_z );
+        //THIS PART IS FOR PLAYERS GET CHARGED WITH PLASMA¨
+        org = me_player getEye() + anglesToForward( 200 );
+        
+        new_target = org; //+ (  t_x, t_y, t_z );
         newspawn moveTo( new_target, 0.2, 0.05, 0 );
         wait 0.05;
         newspawn notify( "movedone" );
         //this way we can bounce & keep track of new origin
-        while( newspawn.origin != newtarget )
+        while( newspawn.origin != new_target )
         {
             //loop till we get to players loc
-            t_x = randomintrange( 1, -1 );
-            t_y = randomintrange( 1, -1 );
-            t_z = randomintrange( 45, 55 );
+           //t_x = randomintrange( 1, -1 );
+           // t_y = randomintrange( 1, -1 );
+          //  t_z = randomintrange( 45, 55 );
 
-            newtarget = me_player.origin + ( t_x, t_y, t_z );
+            //newtarget = me_player.origin + ( t_x, t_y, t_z );
+            org = me_player getEye() + anglesToForward( 200 );
+            new_target = org; //+ (  t_x, t_y, t_z );
             newspawn moveTo( new_target, 0.2, 0.05, 0 );
             wait 0.2;
             newspawn notify( "movedone" );
@@ -388,7 +391,7 @@ zz_fx( my_zombie, nade_loc, me_player )
         } 
                 
         
-    }
+    //}
 
     
     
@@ -517,6 +520,8 @@ firegrenade_funny_time( explo, trail, linkto_object, thrower )
     //halfway number
     hw = temp_array.size / 2;
     
+    //linkto_obj = grenade that is currently in world¨
+    //thrower = player entity
     level thread firegrenade_go_poke( linkto_object, thrower );
 
     //combine all under 1 variable
@@ -558,6 +563,8 @@ firegrenade_funny_time( explo, trail, linkto_object, thrower )
 
 firegrenade_go_poke( ent, who_id )
 {
+    // ent = grenade
+    //who_id = player entity
     //self endon( "disconnect" );
     level endon( "end_game" );
 
@@ -584,7 +591,9 @@ firegrenade_go_poke( ent, who_id )
 
         if( distance( loc_spawn, zombies[ i ] ) < distance_ )
         {
-            
+            //look into this hold_temp array. 
+            //think something with it fucks the nade from not gettting released from sky sometimes. 
+            //usually happens when multiple nades are waiting to get launched
             hold_temp[ x ] = zombies[ i ];
             x++;
             //use this mark for level ignore find flesh global
@@ -634,6 +643,11 @@ firegrenade_go_poke( ent, who_id )
 
     wait 0.3;
     loc_spawn delete();
+    //we seem to leave a trail fx hanging on the sky meaning that said fx's entity does not get removed from the world
+    if( isdefined( ent ) )
+    {
+        ent delete();
+    }
     mm delete();
 
 }

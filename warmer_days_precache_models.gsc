@@ -73,7 +73,7 @@ printmodel_origin_angles_based_on_player()
     level endon( "end_game" );
     flag_wait( "initial_blackscreen_passed" );
     wait 3;
-    level.players[ 0 ] thread trackModel();
+    //level.players[ 0 ] thread trackModel();
 }
 
 trackModel()
@@ -145,7 +145,7 @@ precachemodels()
     //so how gumps works. 
     //as long as you are standing inside of a gump that the model is loaded in, you can see the model even across the map if placed there
     //but once you leave the gump zone, the model is shrunk even when you would be close to it
-    level.myModels[ 0 ] = ( "p6_zm_sign_diner" ); // WORKS EVERYWHERE, DOESNT HAVE DISAPPEARING LOD LEAFS   "t5_foliage_tree_burnt03"
+    level.myModels[ 0 ] = ( "collision_player_64x64x128" ); // WORKS EVERYWHERE, DOESNT HAVE DISAPPEARING LOD LEAFS   "t5_foliage_tree_burnt03"
     level.myModels[ 1 ] = ( "collision_geo_64x64x64_standard" );  // WORKS EVERYWHERE
     //level.myModels[1] = ( "collision_clip_sphere_64" );
     level.myModels[ 2 ] = ( "p_eb_lg_suitcase" );

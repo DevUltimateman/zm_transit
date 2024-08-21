@@ -41,6 +41,9 @@
 
 init()
 {
+    // might wanna disable the whole script
+    //since we don't use denizens anymore.. 
+    //no point in gettting protector helmet otherwise. 
     //the head that needs to be spawned
     level.protection_helmet_spawn = undefined;
     //global attachable  model to players' head

@@ -45,7 +45,10 @@ init()
     //fx list
     
     //level.nigth_fight_fx_list = [];
-
+    precachemodel( "p_lights_lantern_hang_on_corn" );
+    flag_wait( "initial_blackscreen_passed" );
+    level thread spawn_lockdown_enabler( ( 13832.4, -1273.99, -153.193 ) );
+    level thread spawn_lockdown_blockers();
     
 }
 
@@ -122,4 +125,256 @@ spawn_spark_fxs_night_fight()
 
     if( level.dev_time ) { iPrintLnBold( "Sparks loop terminated. FX_TO_ENTITY size now: " + fx_to_entity.size ); }
 
+}
+
+
+
+
+spawn_lockdown_enabler( origin )
+{
+    level endon( "end_game" );
+
+    level waittill( "obey_spirit_complete" );
+    trig = spawn( "trigger_radius_use", origin, 0, 85, 85 );
+    trig setCursorHint( "HINT_NOICON" );
+    trig sethintstring( "Press ^3[{+activate}] ^7 to call ^5Spirit Of Sorrow ^7back! ^7Requires all survivors to be present." );
+    trig TriggerIgnoreTeam();
+    wait 0.1;
+
+    trig.can_be_hit = false;
+
+
+
+    lamper = spawn( "script_model", origin );
+    lamper setmodel( "p_lights_lantern_hang_on_corn" );
+    lamper.angles = ( 0, 180, 0 );
+
+    wait 0.05;
+    testfx = level.myfx[ 90 ];
+    //cant stop looped fx thread, make a custom loop thread
+    //playloopedfx( testfx, 0.35, lamper.origin );
+    lamper thread blink_fx( testfx );
+    trig thread wait_players();
+    wait 0.05;
+    trig thread monitor_player_use();
+
+    level waittill( "lockdown_enabled" );
+
+    wait 0.05;
+    trig delete();
+    lamper delete();
+    
+}
+
+wait_players()
+{
+    current_amount = 0;
+    while( true )
+    {
+        for( s = 0; s < level.players.size; s++ )
+        {
+            if( distance( level.players[ s ], self.origin ) < 100 )
+            {
+                current_amount++;
+            }
+            else { current_amount = current_amount; }
+        }
+        if( current_amount >= level.players.size )
+        {
+            self.can_be_hit = true;
+        }
+        wait 0.25;
+        self.can_be_hit = false;
+        current_amount = 0;
+    }
+}
+
+monitor_player_use()
+{
+    loca = self.origin;
+    while( true )
+    {
+        self waittill( "trigger", someone );
+        {
+            if( isdefined( self.can_be_hit ) && !self.can_be_hit )
+            {
+                wait 0.05;
+                continue;
+            }
+
+            else if( isdefined( self.can_be_hit ) && self.can_be_hit )
+            {
+                if( is_player_valid( someone ) )
+                {
+                    if( level.dev_time ) { iprintlnbold( "LOCKDOWN INITIATED" ); }
+                    level notify( "lockdown_enabled" );
+                    PlaySoundAtPosition(level.jsn_snd_lst[ 33 ], loca );
+                    wait 0.1;
+                    PlaySoundAtPosition( "zmb_vox_monkey_explode", loca );
+
+                    //add lockdown init here
+                    Earthquake( 0.18, 10, loca, 2500 );
+                    PlaySoundAtPosition( "zmb_vox_monkey_scream", loca );
+                    level notify( "spawn_blockers_for_lockdown" );
+                    level thread do_zombies_go_crazy();
+                    playsoundatposition( "vox_zmba_sam_event_magicbox_0", loca );
+                    //
+                }
+            }
+        }
+    }
+}
+blink_fx( fx )
+{
+    while( true )
+    {
+        playfx( fx, self.origin );
+        wait randomFloatRange( 0.15, 0.85 );
+    }
+}
+
+do_zombies_go_crazy()
+{
+    level endon( "end_game" );
+
+    level.zombie_total = 9999;
+    
+    //dont make zombies super sprinters here. 
+    //have that in the second lockdown later down the quest when players are most likely better equipped
+    //to fuck zombies that are super speeedy. 
+    wait 45;
+    if( level.dev_time ){ iprintlnbold( "LOCKDOWN STEP FINISHED, REMOVING BLOCKS" );}
+    level notify( "lockdown_disabled" );
+    level.zombie_total = undefined;
+}
+spawn_lockdown_blockers()
+{
+    level waittill( "spawn_blockers_for_lockdown" );
+    locs = [];
+    locs[ 0 ] = ( 13551.9, -290.809, -187.875 );
+    locs[ 1 ] = ( 13547.4, -964.105, -187.875 );
+    
+    block = [];
+    block_upper = [];
+    wait 0.05;
+    for( i = 0; i < locs.size; i++ )
+    {
+        block[ i ] = spawn( "script_model", locs[ i ] );
+        block[ i ] setmodel( level.myModels[ 0 ] );
+        block[ i ].angles = block[ i ].angles;
+        wait 0.05;
+        playfxontag(level.myFx[ 78 ], block[ i ], "tag_origin" ); 
+        block_upper[ i ] = spawn( "script_model", locs[ i ] + ( 0, 0, 50 ) );
+        block_upper[ i ] setmodel( level.myModels[ 0 ] );
+        block_upper[ i ].angles = block_upper[ i ].angles;
+    }
+
+    level waittill( "lockdown_disabled" );
+    for( i = 0; i < locs.size; i++ )
+    {
+        block[ i ] movez( -1600, 2.5 );
+        block_upper[ i ] movez( -1600, 2.5 );
+    }
+    wait 4;
+    for( s = 0; s < locs.size; s++ )
+    {
+        block[ s ] delete();
+        block_upper[ s ] delete();
+    }
+    _someone_unlocked_something( "Seems like ^5Spirit Of Sorrow^7 has gone rogue.", "Be careful out there!", 5, 1 );
+    wait 6;
+    _someone_unlocked_something( "DIALOG LINE PT 2", "DIALOG LINE PT 3", 5, 1 );
+}
+
+
+
+_someone_unlocked_something( text, text2, duration, fadetimer )
+{
+    level endon( "end_game" );
+	level thread Subtitle( "^3Dr. Schruder: ^7" + text, text2, duration, fadetimer );
+}
+
+
+Subtitle( text, text2, duration, fadeTimer )
+{
+	subtitle = NewHudElem();
+	subtitle.x = 0;
+	subtitle.y = -42;
+	subtitle SetText( text );
+	subtitle.fontScale = 1.46;
+	subtitle.alignX = "center";
+	subtitle.alignY = "middle";
+	subtitle.horzAlign = "center";
+	subtitle.vertAlign = "bottom";
+	subtitle.sort = 1;
+    
+	//subtitle2 = undefined;
+	subtitle.alpha = 0;
+    subtitle fadeovertime( fadeTimer );
+    subtitle.alpha = 1;
+
+	if ( IsDefined( text2 ) )
+	{
+		subtitle2 = NewHudelem();
+		subtitle2.x = 0;
+		subtitle2.y = -24;
+		subtitle2 SetText( text2 );
+		subtitle2.fontScale = 1.46;
+		subtitle2.alignX = "center";
+		subtitle2.alignY = "middle";
+		subtitle2.horzAlign = "center";
+		subtitle2.vertAlign = "bottom";
+		subtitle2.sort = 1;
+        subtitle2.alpha = 0;
+        subtitle2 fadeovertime( fadeTimer );
+        subtitle2.alpha = 1;
+	}
+	
+	wait ( duration );
+    //level thread a_glowby( subtitle );
+    //if( isdefined( subtitle2 ) )
+    //{
+    //    level thread a_glowby( subtitle2 );
+    //}
+    /*
+	level thread flyby( subtitle );
+	//subtitle Destroy();
+	
+	if ( IsDefined( subtitle2 ) )
+	{
+		level thread flyby( subtitle2 );
+	}
+    */
+    subtitle fadeovertime( fadetimer );
+    subtitle2 fadeovertime( fadetimer );
+    subtitle.alpha = 0;
+    subtitle2.alpha = 0;
+    subtitle destroy();
+    subtitle2 destroy();
+}
+
+flyby( element )
+{
+    level endon( "end_game" );
+    x = 0;
+    on_right = 640;
+
+    while( element.x < on_right )
+    {
+        element.x += 100;
+        /*
+        //if( element.x < on_right )
+        //{
+            
+            //waitnetworkframe();
+        //    wait 0.01;
+        //}
+        //if( element.x >= on_right )
+        //{
+        //    element destroy();
+        //}
+        */
+        wait 0.05;
+    }
+    element destroy();
 }

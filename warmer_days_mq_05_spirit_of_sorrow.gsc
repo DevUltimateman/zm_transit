@@ -75,7 +75,7 @@ waitflag()
     flag_wait( "initial_blackscreen_passed" );
     
     //step 1
-    //level thread monitor_players(); //disabled for now. dont want to go underneath pylon and start follow spirit step while testing other stuff.
+    level thread monitor_players(); //disabled for now. dont want to go underneath pylon and start follow spirit step while testing other stuff.
     level waittill( "players_obey" ); //all players gathered together underneath the pylon
     
     //step 2
@@ -92,17 +92,25 @@ waitflag()
     //step3
     level thread nacht_shooter(); //shoot array of spirits from nacht roof
     
-    //level waittill( "obey_spirit_complete" ); //debug to not let this go past
-    foreach( player in level.players )
+    level waittill( "lockdown_disabled" ); //debug to not let this go past
+    foreach( play in level.players )
     {
-        player thread scripts\zm\zm_transit\warmer_days_main::dev_visuals();
+        play setclientdvar( "r_lighttweaksuncolor", "0.5 0.8 0.9" );
+        play setclientdvar( "r_lighttweaksunlight", 12  );
+        play setclientdvar( "r_lighttweaksundirection",( -45, 210, 0 ) );
+        play setclientdvar( "r_sky_intensity_factor0", 1  );
+        play setclientdvar( "r_bloomtweaks", 1  );
+        play setclientdvar( "cg_usecolorcontrol", 1 );
+        play setclientdvar( "cg_colorscale", "1 1 1"  );
+        play setclientdvar( "sm_sunsamplesizenear", 1.4  );
+        play setclientdvar( "wind_global_vector", ( 200, 250, 50 )  );
+        play setclientdvar( "r_fog", 0  );
+        play setclientdvar( "r_lodbiasrigid", -1000  );
+        play setclientdvar( "r_lodbiasskinned", -1000 );
+        play setclientdvar( "cg_fov_default", 90 );
+        play setclientdvar( "vc_fsm", "1 1 1 1" );
+        play setclientdvar( "r_skyColorTemp", 6500 );
     }
-    //step4
-    //the fxs from nacht will power up all the bus stop locations
-    //not fully tho, players must activate them with zombie souls in order to use them in the future
-    
-
-
 }
 
 spirit_thunder_locations()
@@ -381,12 +389,8 @@ player_is_away()
         {
             return false;
         }
-        else 
-        {
-            return true;
-        }
+        else { return true; }
     }
-    
 }
 
 players_are_here()
@@ -403,18 +407,10 @@ players_are_here()
         }
     }
     wait 2.5;
-
     //if all players are touching the zone
-    if( reaching >= real_deal )
-    {
-        return true;
-    }
+    if( reaching >= real_deal ) { return true; }
     //all players didnt touch the shit simultaneously
-    else
-    {
-        reaching = 0;
-        return false;
-    }
+    else { reaching = 0; return false; }
 }
 
 spawn_spirit()

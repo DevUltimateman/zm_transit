@@ -299,7 +299,7 @@ do_everything_for_gas_pickup()
 
     gas_trig = spawn( "trigger_radius_use", level.gas_canister_pick_location, 0, 48, 48 );
     gas_trig setcursorhint( "HINT_NOICON" );
-    gas_trig sethintstring( "Hold ^3[{+activate}] ^7 to pick up ^3Gasoline" );
+    gas_trig sethintstring( "Press ^3[{+activate}] ^7 to pick up ^3Gasoline" );
     gas_trig triggerignoreteam();
     wait 0.05;
     inv_mod_fx = spawn( "script_model", gas_trig.origin + ( 0, -40, 65) );

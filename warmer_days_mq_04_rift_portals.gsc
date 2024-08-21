@@ -164,7 +164,7 @@ init()
     //skyrotation 250
     //skybleed = 1 or 0.8 for day light sky
 
-    §
+    
 }
 
 playerss()
