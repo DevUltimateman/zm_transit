@@ -58,7 +58,7 @@ init()
     level.firegrenade_quest_active = false;
 
     //setup firenade quest
-    level thread quest_firenades_init();
+    level thread quest_firenades_init(); //enable later back on
 
     //for summoning
     //ignore_find_flesh
@@ -221,7 +221,13 @@ firegrenades_step2()
     idx = undefined;
 
     //waiter because we initiate this thread upon when spawned in and can't start counting entity.nade_used till the notify "its_time" happens
-    level waittill( "its_time" );
+   
+   //*************************************************** */
+   
+    level waittill( "its_time" ); //enable back on later
+
+
+    //*************************************************** */
     //while we are less than the goal to hit
     while( self.nade_used < to_use )
     {
@@ -238,15 +244,15 @@ firegrenades_step2()
         //give frametime
         wait 0.05;
         //requires player id also to know who's self.nades_used index to increase
-        nade thread watching_explo( idx );
+        nade thread charge_player_nades( idx );
         if( self.nades_used >= to_use )
         {
-            nade notify( "please_notify" ); //force kill watching_explo function
-            self notify( "reward_me" );
+            nade notify( "please_notify" ); //force kill charge_player_nades function
+            self notify( "reward_me" ); //notify global func to give player their firenades
             if( level.dev_time ){ iprintlnbold( "dev_time info: Player " + idx.name + " received ^3firenades"); }
             iprintlnbold( "Player " + idx.name + " achieved ^3firenades" );
             ///a required statement? We are in while( this ) loop..
-            //break;
+            break;
         }
     }
     wait 0.05;
@@ -259,7 +265,7 @@ firegrenades_step2()
 
 }
 
-watching_explo( id_ ) //implement repick nade failsafe
+charge_player_nades( id_ ) //implement repick nade failsafe
 {
     level endon( "end_game" );
     self endon( "please_notify" );
@@ -287,8 +293,11 @@ watching_explo( id_ ) //implement repick nade failsafe
             //increase player's total pool size
             id_.nades_used++;
             soft_spot_active = true;
-            iprintlnbold( "Player " + id_.name + " increased zombies_to_pass index" );
-            iprintln( "Player " + id_.name + "'s idx count for firegrenades is at " + id_.nades_used + "/12" );
+            if( level.dev_time )
+            {
+                iprintlnbold( "Player " + id_.name + " increased zombies_to_pass index" );
+                iprintln( "Player " + id_.name + "'s idx count for firegrenades is at " + id_.nades_used + "/12" );
+            }
             //dont let other zombies increase nades_used size despite them "getting affected by visual fxs too".
             this_time_not_used = false;
             wait( 0.05 );
@@ -309,11 +318,11 @@ watching_explo( id_ ) //implement repick nade failsafe
             }
             playfxontag( level.myFx[ 2 ], zz, "j_head" );
             wait 0.05;
-            playfxontag( level.myfx[ 30 ], zz,"j_head" );
+            playfxontag( level.myfx[ 29 ], zz, "j_head" );
             wait randomfloatrange( 0.1, 0.3 );
             
             self_nade_up = self.origin + ( 0, 0, 800 ); // might not just wanna use self...
-            level thread zz_fx( zz, self_nade_up, id_ );
+            level thread charging_fx_from_zombie_to_sky_then_to_player( zz, self_nade_up, id_ );
         }
 
         //need time if nade has been targeted so that the fxs wont spawn all at same time
@@ -324,7 +333,7 @@ watching_explo( id_ ) //implement repick nade failsafe
     }
 }
 //zombie fx mover to firenade summoning
-zz_fx( my_zombie, nade_loc, me_player )
+charging_fx_from_zombie_to_sky_then_to_player( my_zombie, nade_loc, me_player )
 {
     level endon( "end_game" );
     head = my_zombie gettagorigin( "j_head" );
@@ -405,6 +414,7 @@ zz_fx( my_zombie, nade_loc, me_player )
     newspawn delete();
     
 }
+
 //player thread, monitors grenade button
 // self == player
 firegrenade_monitor_throw()
@@ -472,15 +482,15 @@ firegrenades_throw_logic()
     self endon( "disconnect" );
     level endon( "end_game" );
 
-    xpl = level.myFx[ 9 ];
-    orb = level.myFx[ 1 ]; 
+    xpl_fx = level.myFx[ 9 ];
+    orb_fx = level.myFx[ 1 ]; 
 
     while( true )
     {
         self waittill( "grenade_fire", g, weapname );
         while( self fragButtonPressed()) { wait 0.05; } 
         //l
-        self thread firegrenade_funny_time( xpl, orb, g, self ); //self on the parameter for "thrower"
+        self thread firegrenade_funny_time( xpl_fx, orb_fx, g, self ); //self on the parameter for "thrower"
     }
 }
 
@@ -546,7 +556,7 @@ firegrenade_funny_time( explo, trail, linkto_object, thrower )
             mspawn = spawn( "script_model", linkto_object.origin + temp_array[ i ] );
             mspawn setmodel( "tag_origin" );
             wait 0.05;
-            playfxontag( level.myFx[ 66 ], mspawn, "tag_origin" );
+            playfxontag( level.myFx[ 17 ], mspawn, "tag_origin" ); //temp fx for now to see whats fucking
         }
 
         //assign temp array random values to grenade loc & combine grenade + temp_array random values into one variable = comboer
@@ -555,13 +565,13 @@ firegrenade_funny_time( explo, trail, linkto_object, thrower )
         wait randomfloatrange( 0.08, 0.3 );
     }
 
-    wait 0.2;
+    wait 10; //originally 0.2. something gets fucked so check
     temp_array delete(); //temp random locations []
     mspawn delete(); //model
     
 }
 
-firegrenade_go_poke( ent, who_id )
+firegrenade_go_poke( grenade_model, who_id )
 {
     // ent = grenade
     //who_id = player entity
@@ -569,17 +579,18 @@ firegrenade_go_poke( ent, who_id )
     level endon( "end_game" );
 
     level waittill( "death_by" + who_id );
-    location_ = ent.origin;
-    loc_spawn = spawn( "script_model", location_ );
-    loc_spawn setmodel( "tag_origin" );
-    loc_spawn.angles = loc_spawn.angles;
+    location_ = grenade_model.origin;
+    x = 0;
+    grenade_that_flies_to_sky = spawn( "script_model", location_ );
+    grenade_that_flies_to_sky setmodel( "tag_origin" );
+    grenade_that_flies_to_sky.angles = grenade_that_flies_to_sky.angles;
 
     zombies = getAIArray( level.zombie_team );
     distance_ = 500;
 
-    playfxontag( level.myfx[ 35 ], loc_spawn, "tag_origin" );
+    playfxontag( level.myfx[ 35 ], grenade_that_flies_to_sky, "tag_origin" );
 
-    hold_temp = [];
+    temporarily_targeted_zombies = [];
     for( i = 0; i < zombies.size; i++ )
     {
         if( i == 0 )
@@ -589,25 +600,27 @@ firegrenade_go_poke( ent, who_id )
         }
         
 
-        if( distance( loc_spawn, zombies[ i ] ) < distance_ )
+        if( distance( grenade_that_flies_to_sky, zombies[ i ] ) < distance_ )
         {
-            //look into this hold_temp array. 
+            //look into this temporarily_targeted_zombies array. 
             //think something with it fucks the nade from not gettting released from sky sometimes. 
             //usually happens when multiple nades are waiting to get launched
-            hold_temp[ x ] = zombies[ i ];
+            temporarily_targeted_zombies[ x ] = zombies[ i ];
             x++;
             //use this mark for level ignore find flesh global
-            zombies[ i ].marked_to_summon = true;
-            if( isAlive( zombies[ i ] ) )
+            temporarily_targeted_zombies[ x ] .marked_to_summon = true;
+            if( isAlive( temporarily_targeted_zombies[ x ]  ) )
             {
-                self.a.nodeath = true;
-                self notify( "killanimscript" );
-                mm = spawn( "script_model", self.origin );
-                mm setmodel( "tag_origin" );
-                self enableLinkTo();
-                self linkto( mm );
-                mm movez( 200, 0.05, 0, 0 );
-                mm hoverme( self );
+                temporarily_targeted_zombies[ x ].a.nodeath = true; //all zombies[ i ] inside of isAlive() has been previously coded as self.
+                temporarily_targeted_zombies[ x ]  notify( "killanimscript" );
+                //mm = spawn( "script_model", temporarily_targeted_zombies[ x ].origin );
+                //mm setmodel( "tag_origin" );
+
+                //was I high when I wrote these?
+                //zombies[ i ] enableLinkTo();
+                //zombies[ i ] linkto( mm );
+                //mm movez( 200, 0.05, 0, 0 );
+                //mm hoverme( zombies[ i ] );
                 
 
             }
@@ -618,71 +631,102 @@ firegrenade_go_poke( ent, who_id )
     
     wait randomfloatrange( 1, 1.5 );
     //let's delete the entity ( grenade )
-    if( isDefined( ent ) )
+    if( isDefined( grenade_model ) )
     {
-        loc_spawn.origin = ent.origin;
+        grenade_that_flies_to_sky.origin = grenade_model.origin;
         wait 0.05;
-        ent delete();
+        grenade_model delete();
     }
     //this shoots the orb up in the air from the grenade
-    playfxontag( level.myfx[ 2 ], loc_spawn, "tag_origin" );
-    earthquake( 0.2, 4, loc_spawn.origin, 5000 );
+    playfxontag( level.myfx[ 2 ], grenade_that_flies_to_sky, "tag_origin" );
+    earthquake( 0.2, 4, grenade_that_flies_to_sky.origin, 5000 );
     //earthquake(<scale>, <duration>, <source>, <radius>)
-    loc_spawn movez( randomintrange( 750, 1200), randomfloatrange( 1, 1.4 ), 0.31, 0 );
-    loc_spawn waittill( "movedone" );
+    grenade_that_flies_to_sky movez( randomintrange( 750, 1200), randomfloatrange( 1, 1.4 ), 0.31, 0 );
+    grenade_that_flies_to_sky waittill( "movedone" );
 
-    for( s = 0; s < hold_temp.size; s++ )
+    for( s = 0; s < temporarily_targeted_zombies.size; s++ )
     {
-        temper = spawn( "script_model", loc_spawn.origin );
-        temper setmodel( "tag_origin" );
-        temper.angles = temper.angles;
-        wait 0.05;
-        playfxontag( level.myfx[ 1 ], temper, "tag_origin" );
-        temper thread find_destroy( hold_temp[ s ], temper );
+        trail_from_sky_to_ground = spawn( "script_model", grenade_that_flies_to_sky.origin );
+        trail_from_sky_to_ground setmodel( "tag_origin" );
+        trail_from_sky_to_ground.angles = trail_from_sky_to_ground.angles;
+        wait 0.1;
+        playfxontag( level.myfx[ 1 ], trail_from_sky_to_ground, "tag_origin" );
+        trail_from_sky_to_ground thread find_and_destroy_zombie( temporarily_targeted_zombies[ s ], trail_from_sky_to_ground );
     }
 
-    wait 0.3;
-    loc_spawn delete();
+    wait 0.1;
+    grenade_that_flies_to_sky delete();
+
+    //remove array to free up usage
+    array_delete( temporarily_targeted_zombies );
     //we seem to leave a trail fx hanging on the sky meaning that said fx's entity does not get removed from the world
-    if( isdefined( ent ) )
+    if( isdefined( grenade_model ) )
     {
-        ent delete();
+        grenade_model delete();
     }
-    mm delete();
-
+    
+    //delete the zombie hoverer entity
+    //foreach( m in mm )
+    //{
+    //    m delete();
+    //}
+    //another failsafe delete in case array deletion fails
+    // if( isdefined( mm ) ){ mm delete(); }
+    
 }
 
-find_destroy( zombie_to_kill, dispose_model )
+//this function has been fixed now. no more orbs staying stuck on the sky in some cases, force deletes the entity if that happens
+find_and_destroy_zombie( zombie_to_kill, orb_from_sky )
 {
     self endon( "death" );
     level endon( "end_game" );
 
-    self moveto( zombie_to_kill.origin, randomfloatrange( 0.1, 0.28 ), 0, 0 );
+    //add a failsafe in case the targeting system fails, otherwise sky will have orbs hovering that do not get deleted when needed. 
+    level thread failsafe_remove( self );
+    self moveto( zombie_to_kill.origin + ( 0, 0, 40 ), randomfloatrange( 0.1, 0.28 ), 0, 0 );
     self waittill( "movedone" );
+
+    //orb has been moved to zombie's location, now play somew spark fxs before killing it
     for( i = 0; i < 4; i++ )
     {
-        playfxontag( level.myfx[ 43 ], self, "tag_origin" );
+        playfx( level.myfx[ 85 ], self.origin + ( randomintrange( -40, 40 ), randomintrange( -60, 60 ), randomintrange( -15, 15 ) ) );
         wait .05;
-        
     }
     playfxontag( level.myf[ 68 ], zombie_to_kill, zombie_to_kill getTagOrigin( "j_head" ) );
-    get = zombie_to_kill.origin;
-    zombie_to_kill doDamage( zombie_to_kill.health + 1000, self.origin );
-    self StartRagdoll();
+    
+    level thread move_fire_below_and_delete( level.myfx[ 70 ], zombie_to_kill.origin );
+
+
+    zombie_to_kill doDamage( zombie_to_kill.health + 1000, zombie_to_kill.origin );
+    zombie_to_kill StartRagdoll();
 
     wait( 0.05 );
 
-    zombie_to_kill LaunchRagdoll( ( 0, 0, -1000 ) );
-
-    playfx( level.myfx[ 9 ], get );
-
-    //dev
-    xxx = dispose_model delete();
-    iprintlnbold( "DISPOSE MODE = " + xxx );
-    //prod
-    dispose_model delete();
+    zombie_to_kill LaunchRagdoll( ( 0, 0, 100 ) );
+    //delete the entity once it has hit zombie
+    orb_from_sky delete();
 }
 
+move_fire_below_and_delete( fx, zombie_death_loc )
+{
+    ent_mover = spawn( "script_model", zombie_death_loc );
+    ent_mover setmodel( "tag_origin" );
+    ent_mover.angles = ent_mover.angles;
+
+    wait 0.05;
+    playfxontag( fx, ent_mover, "tag_origin" );
+    ent_mover movez( -400, 4, 1, 0 );
+    ent_mover waittill( "movedone" );
+    ent_mover delete();
+}
+failsafe_remove( object )
+{
+    wait 5;
+    if( isdefined( object ) )
+    {
+        object delete();
+    }
+}
 hoverme( linked )
 {
     level endon("end_game");
@@ -753,9 +797,6 @@ firegrenade_touched( who )
                 //add this trigger to player's claimed nodes    
                 who.hit_list[ i ] = true;
                 who.hits++; //increase player who hit score
-                //increment player's hit count by 1
-                //who.hits++; 
-
                 //force end thread
                 iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
                 self notify( "gucci" ); 
@@ -864,7 +905,7 @@ flyby( element )
 // RANDOM REGS | RANDOM REGS | RANDOM REGS | RANDOM REGS | RANDOM REGS //
 
 
-//move entity up and down
+//for moving the hittable nade spots
 mover_z( up, down, timer, acc, decc )
 {
     level endon( "end_game" );
@@ -881,7 +922,7 @@ mover_z( up, down, timer, acc, decc )
     }
 }
 
-//spin entity around the clock and vise versa
+//for spinning the hittable nade spots
 spinner_yaw( clockwise, counterclock, timer, lerp_acc, lerp_decc )
 {
     level endon( "end_game" );
