@@ -42,9 +42,10 @@
 
 init()
 {
-    //level thread ondev();
+    level thread ondev();
     precache_myfx();
 	level.dev_time = true;
+	default_fxs();
 	
 }
 
@@ -54,11 +55,33 @@ ondev()
     while( true )
     {
         level waittill( "connected", player );
-        player thread spawnsfx();
+		//my custom array of fxs
+        //player thread spawnsfx();
+
+		//tranzit's default fxs
+		player thread spawnsfx_transit_default_ones();
+		//only for development
+		player thread spawn_cloud_on_press();
+		//player thread strapper();
     }
     
 }
 
+spawn_cloud_on_press()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+	self waittill( "spawned_player" );
+	while( true )
+	{
+		if( self useButtonPressed() )
+		{
+			playfx( level._effects[ 47 ], self.origin );
+			wait 1;
+		}
+		wait 0.05;
+	}
+}
 
 precache_myfx()
 {
@@ -212,15 +235,15 @@ precache_myfx()
 	level.myFx[ 85 ] = loadfx( "maps/zombie/fx_zmb_tranzit_window_dest_lg" ); //puff and window breaks
 	level.myFx[ 86 ] = loadfx( "maps/zombie/fx_zmb_tranzit_spark_blue_lg_os" ); //cool blue explo
 	level.myFx[ 87 ] = loadfx( "maps/zombie/fx_zmb_race_zombie_spawn_cloud" ); //no
-	level.myFx[ 88 ] = level._effect[ "jetgun_smoke_cloud" ]; // spawn front of player and below to and loop it to make it look like player is in the mist ;)
-	level.myFx[ 89 ] = level._effect[ "jetgun_knockdown_ground" ];
-	level.myFx[ 90 ] = level._effect[ "zombie_guts_explosion" ]; // good splatter
-	level.myFx[ 91 ] = level._effect["avogadro_phasing"]; //good for i.e when player flashes looks like somthing went into body
-	level.myFx[ 92 ] = level._effect[ "avogadro_bolt" ]; //looks good for player upgrade
-	level.myFx[ 93 ] = level._effect["avogadro_phasing"];
-	level.myFx[ 94 ] = level._effect["avogadro_health_full"]; //good electric ball that burst towards somewhere ground
-	level.myFx[ 95 ] = level._effect["avogadro_health_half"];
-	level.myFx[ 96 ] = level._effect["avogadro_health_low"]; //loop this for i.e navcard step on the device for like 15 times. really nice, about half a sec
+	level.myFx[ 88 ] = level._effects[ "jetgun_smoke_cloud" ]; // spawn front of player and below to and loop it to make it look like player is in the mist ;)
+	level.myFx[ 89 ] = level._effects[ "jetgun_knockdown_ground" ];
+	level.myFx[ 90 ] = level._effects[ "zombie_guts_explosion" ]; // good splatter
+	level.myFx[ 91 ] = level._effects["avogadro_phasing"]; //good for i.e when player flashes looks like somthing went into body
+	level.myFx[ 92 ] = level._effects[ "avogadro_bolt" ]; //looks good for player upgrade
+	level.myFx[ 93 ] = level._effects["avogadro_phasing"];
+	level.myFx[ 94 ] = level._effects["avogadro_health_full"]; //good electric ball that burst towards somewhere ground
+	level.myFx[ 95 ] = level._effects["avogadro_health_half"];
+	level.myFx[ 96 ] = level._effects["avogadro_health_low"]; //loop this for i.e navcard step on the device for like 15 times. really nice, about half a sec
 	level.myFx[97] = loadfx( "misc/fx_zombie_powerup_on_red" );
 	level.myFx[98] = loadfx( "misc/fx_zombie_powerup_red_grab" );
 	level.myFx[99] = loadfx( "misc/fx_zombie_powerup_red_wave" );
@@ -247,6 +270,172 @@ precache_myfx()
     
 }
 
+strapper()
+{
+	self endon( "disconnect" );
+	level endon( "end_game" );
+
+	mo = spawn( "script_model", self.origin );
+	mo setmodel( "tag_origin" );
+	mo.angles = self.angles;
+	wait 0.05;
+	playfxontag( level._effects[ 47 ], mo, "tag_origin" );
+	while( true )
+	{
+		mo.origin = self.origin + ( 0,0, 90 );
+		wait 0.05;
+	}
+}
+
+spawnsfx_transit_default_ones()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+	self waittill( "spawned_player" );
+
+	//level._effects[ 47 ] = the poisonous cloud fx
+	
+	//playfxontag( level._effects[47], self, "tag_origin" );
+	index = 0;
+	/*
+    s1 = actionslotonebuttonpressed();
+    s2 = actionsslottwobuttonpressed();
+    s3 = actionslotthreebuttonpressed();
+    s4 = actionslotfourbuttonpressed();
+    */
+
+    
+    while( true )
+    {
+        if ( self actionslotonebuttonpressed() )
+        {
+            
+            if( index < level._effects.size  )
+            {
+                index++;
+				if( level.dev_time ){ iPrintLnBold( "INDEX: = " + index ); }
+            }
+			if( index == 0 )
+			{
+				if( level.dev_time ){ iprintlnbold( "Index is already at " +  index ); }
+				wait 0.1;
+			}
+            wait 0.5;
+                
+        }
+            
+		/*
+        if( self actionslottwobuttonpressed() )
+        {
+            if( index > 1 )
+            {
+                index--;
+				if( level.dev_time ){ iPrintLnBold( "INDEX: = " + index ); }
+            }
+			if( index == 0 )
+			{
+				if( level.dev_time ){ iprintlnbold( "Index is already at " +  index ); }
+				continue;
+			}
+            wait 0.08;
+        }
+		*/
+            
+
+        if( self actionslotthreebuttonpressed() )
+        {
+            playfx( level._effects[ index ], self.origin );
+			if( level.dev_time ){ iprintlnbold( "Played an fx: ^3" + level._effects[ index ] ); }
+            
+        }
+
+        wait 0.1;
+    }
+}
+
+
+default_fxs()
+{
+	level._effects = [];
+	level._effects[0] = loadfx( "bio/insects/fx_insects_swarm_md_light" );
+    level._effects[1] = loadfx( "maps/zombie/fx_zmb_tranzit_flourescent_flicker" );
+    level._effects[2] = loadfx( "maps/zombie/fx_zmb_tranzit_flourescent_glow" );
+    level._effects[3] = loadfx( "maps/zombie/fx_zmb_tranzit_flourescent_glow_lg" );
+    level._effects[4] = loadfx( "maps/zombie/fx_zmb_tranzit_flourescent_dbl_glow" );
+    level._effects[5] = loadfx( "maps/zombie/fx_zmb_tranzit_depot_map_flicker" );
+    level._effects[6] = loadfx( "maps/zombie/fx_zmb_tranzit_light_bulb_xsm" );
+    level._effects[7] = loadfx( "maps/zombie/fx_zmb_tranzit_light_glow" );
+    level._effects[8] = loadfx( "maps/zombie/fx_zmb_tranzit_light_glow_xsm" );
+    level._effects[9] = loadfx( "maps/zombie/fx_zmb_tranzit_light_glow_fog" );
+    level._effects[10] = loadfx( "maps/zombie/fx_zmb_tranzit_light_depot_cans" );
+    level._effects[11] = loadfx( "maps/zombie/fx_zmb_tranzit_light_desklamp" );
+    level._effects[12] = loadfx( "maps/zombie/fx_zmb_tranzit_light_town_cans" );
+    level._effects[13] = loadfx( "maps/zombie/fx_zmb_tranzit_light_town_cans_sm" );
+    level._effects[14] = loadfx( "maps/zombie/fx_zmb_tranzit_light_street_tinhat" );
+    level._effects[15] = loadfx( "maps/zombie/fx_zmb_tranzit_street_lamp" );
+    level._effects[16] = loadfx( "maps/zombie/fx_zmb_tranzit_truck_light" );
+    level._effects[17] = loadfx( "maps/zombie/fx_zmb_tranzit_spark_int_runner" );
+    level._effects[18] = loadfx( "maps/zombie/fx_zmb_tranzit_spark_ext_runner" );
+    level._effects[19] = loadfx( "maps/zombie/fx_zmb_tranzit_spark_blue_lg_loop" );
+    level._effects[20] = loadfx( "maps/zombie/fx_zmb_tranzit_spark_blue_sm_loop" );
+    level._effects[21] = loadfx( "maps/zombie/fx_zmb_tranzit_bar_glow" );
+    level._effects[22] = loadfx( "maps/zombie/fx_zmb_tranzit_transformer_on" );
+    level._effects[23] = loadfx( "fog/fx_zmb_fog_closet" );
+    level._effects[24] = loadfx( "fog/fx_zmb_fog_low_300x300" );
+    level._effects[25] = loadfx( "fog/fx_zmb_fog_thick_600x600" );
+    level._effects[26] = loadfx( "fog/fx_zmb_fog_thick_1200x600" );
+    level._effects[27] = loadfx( "fog/fx_zmb_fog_transition_600x600" );
+    level._effects[28] = loadfx( "fog/fx_zmb_fog_transition_1200x600" );
+    level._effects[29] = loadfx( "fog/fx_zmb_fog_transition_right_border" );
+    level._effects[30] = loadfx( "maps/zombie/fx_zmb_tranzit_smk_interior_md" );
+    level._effects[31] = loadfx( "maps/zombie/fx_zmb_tranzit_smk_interior_heavy" );
+    level._effects[32] = loadfx( "maps/zombie/fx_zmb_ash_ember_1000x1000" );
+    level._effects[33] = loadfx( "maps/zombie/fx_zmb_ash_ember_2000x1000" );
+    level._effects[34] = loadfx( "maps/zombie/fx_zmb_ash_rising_md" );
+    level._effects[35] = loadfx( "maps/zombie/fx_zmb_ash_windy_heavy_sm" );
+    level._effects[36] = loadfx( "maps/zombie/fx_zmb_ash_windy_heavy_md" );
+    level._effects[37] = loadfx( "maps/zombie/fx_zmb_lava_detail" );
+    level._effects[38] = loadfx( "maps/zombie/fx_zmb_lava_edge_100" );
+    level._effects[39] = loadfx( "maps/zombie/fx_zmb_lava_50x50_sm" );
+    level._effects[40] = loadfx( "maps/zombie/fx_zmb_lava_100x100" );
+    level._effects[41] = loadfx( "maps/zombie/fx_zmb_lava_river" );
+    level._effects[42] = loadfx( "maps/zombie/fx_zmb_lava_creek" );
+    level._effects[43] = loadfx( "maps/zombie/fx_zmb_lava_crevice_glow_50" );
+    level._effects[44] = loadfx( "maps/zombie/fx_zmb_lava_crevice_glow_100" );
+    level._effects[45] = loadfx( "maps/zombie/fx_zmb_lava_crevice_smoke_100" );
+    level._effects[46] = loadfx( "maps/zombie/fx_zmb_lava_smoke_tall" );
+    level._effects[47] = loadfx( "maps/zombie/fx_zmb_lava_smoke_pit" );
+    level._effects[48] = loadfx( "maps/zombie/fx_zmb_tranzit_bowling_sign_fog" );
+    level._effects[49] = loadfx( "maps/zombie/fx_zmb_tranzit_lava_distort" );
+    level._effects[50] = loadfx( "maps/zombie/fx_zmb_tranzit_lava_distort_sm" );
+    level._effects[51] = loadfx( "maps/zombie/fx_zmb_tranzit_lava_distort_detail" );
+    level._effects[52] = loadfx( "maps/zombie/fx_zmb_tranzit_fire_med" );
+    level._effects[53] = loadfx( "maps/zombie/fx_zmb_tranzit_fire_lrg" );
+    level._effects[54] = loadfx( "maps/zombie/fx_zmb_tranzit_smk_column_lrg" );
+    level._effects[55] = loadfx( "maps/zombie/fx_zmb_papers_windy_slow" );
+    level._effects[56] = loadfx( "maps/zombie/fx_zmb_tranzit_god_ray_short_warm" );
+    level._effects[57] = loadfx( "maps/zombie/fx_zmb_tranzit_god_ray_vault" );
+    level._effects[58] = loadfx( "maps/zombie/fx_zmb_tranzit_key_glint" );
+    level._effects[59] = loadfx( "maps/zombie/fx_zmb_tranzit_god_ray_interior_med" );
+    level._effects[60] = loadfx( "maps/zombie/fx_zmb_tranzit_god_ray_interior_long" );
+    level._effects[61] = loadfx( "maps/zombie/fx_zmb_tranzit_god_ray_depot_cool" );
+    level._effects[62] = loadfx( "maps/zombie/fx_zmb_tranzit_god_ray_depot_warm" );
+    level._effects[63] = loadfx( "maps/zombie/fx_zmb_tranzit_god_ray_tunnel_warm" );
+    level._effects[64] = loadfx( "maps/zombie/fx_zmb_tranzit_god_ray_pwr_station" );
+    level._effects[65] = loadfx( "maps/zombie/fx_zmb_tranzit_light_safety" );
+    level._effects[66] = loadfx( "maps/zombie/fx_zmb_tranzit_light_safety_off" );
+    level._effects[67] = loadfx( "maps/zombie/fx_zmb_tranzit_light_safety_max" );
+    level._effects[68] = loadfx( "maps/zombie/fx_zmb_tranzit_light_safety_ric" );
+    level._effects[69] = loadfx( "maps/zombie/fx_zmb_tranzit_bridge_dest" );
+    level._effects[70] = loadfx( "maps/zombie/fx_zmb_tranzit_power_pulse" );
+    level._effects[71] = loadfx( "maps/zombie/fx_zmb_tranzit_power_on" );
+    level._effects[72] = loadfx( "maps/zombie/fx_zmb_tranzit_power_rising" );
+    level._effects[73] = loadfx( "maps/zombie/fx_zmb_avog_storm" );
+    level._effects[74] = loadfx( "maps/zombie/fx_zmb_avog_storm_low" );
+    level._effects[75] = loadfx( "maps/zombie/fx_zmb_tranzit_window_dest_lg" );
+    level._effects[76] = loadfx( "maps/zombie/fx_zmb_tranzit_spark_blue_lg_os" );
+    level._effects[77] = loadfx( "maps/zombie/fx_zmb_race_zombie_spawn_cloud" );
+}
 spawnsfx()
 {
     self endon( "disconnect" );

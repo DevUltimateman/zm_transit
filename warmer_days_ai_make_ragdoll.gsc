@@ -93,7 +93,7 @@
 init()
 {
     flag_wait( "initial_blackscreen_passed" );
-    level thread actors_killed();
+    //level thread actors_killed();
 }
 waittillDeath()
 {
@@ -137,6 +137,7 @@ world_dir( angles, multiplier )
     z = angles[ 2 ] * multiplier;
     return ( x, y, z );
 }
+
 actors_killed()
 {
     while( true )

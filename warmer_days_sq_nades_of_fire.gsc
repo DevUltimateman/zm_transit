@@ -613,6 +613,7 @@ firegrenade_go_poke( grenade_model, who_id )
             {
                 temporarily_targeted_zombies[ x ].a.nodeath = true; //all zombies[ i ] inside of isAlive() has been previously coded as self.
                 temporarily_targeted_zombies[ x ]  notify( "killanimscript" );
+                
                 //mm = spawn( "script_model", temporarily_targeted_zombies[ x ].origin );
                 //mm setmodel( "tag_origin" );
 
@@ -660,19 +661,7 @@ firegrenade_go_poke( grenade_model, who_id )
     //remove array to free up usage
     array_delete( temporarily_targeted_zombies );
     //we seem to leave a trail fx hanging on the sky meaning that said fx's entity does not get removed from the world
-    if( isdefined( grenade_model ) )
-    {
-        grenade_model delete();
-    }
-    
-    //delete the zombie hoverer entity
-    //foreach( m in mm )
-    //{
-    //    m delete();
-    //}
-    //another failsafe delete in case array deletion fails
-    // if( isdefined( mm ) ){ mm delete(); }
-    
+    if( isdefined( grenade_model ) ) { grenade_model delete(); }
 }
 
 //this function has been fixed now. no more orbs staying stuck on the sky in some cases, force deletes the entity if that happens
@@ -695,8 +684,6 @@ find_and_destroy_zombie( zombie_to_kill, orb_from_sky )
     playfxontag( level.myf[ 68 ], zombie_to_kill, zombie_to_kill getTagOrigin( "j_head" ) );
     
     level thread move_fire_below_and_delete( level.myfx[ 70 ], zombie_to_kill.origin );
-
-
     zombie_to_kill doDamage( zombie_to_kill.health + 1000, zombie_to_kill.origin );
     zombie_to_kill StartRagdoll();
 
@@ -715,18 +702,17 @@ move_fire_below_and_delete( fx, zombie_death_loc )
 
     wait 0.05;
     playfxontag( fx, ent_mover, "tag_origin" );
-    ent_mover movez( -400, 4, 1, 0 );
+    ent_mover movez( -400, 4, 3, 0 );
     ent_mover waittill( "movedone" );
     ent_mover delete();
 }
+
 failsafe_remove( object )
 {
     wait 5;
-    if( isdefined( object ) )
-    {
-        object delete();
-    }
+    if( isdefined( object ) ) { object delete(); }
 }
+
 hoverme( linked )
 {
     level endon("end_game");
@@ -737,19 +723,12 @@ hoverme( linked )
         self waittill( "movedone" );
         self movez( -40, 0.34, 0.1, 0 );
         self waittill( "movedone" );
-        
-        
     }
 }
 
 stop_zomb()
 {
-	if ( is_true( self.marked_to_summon ) )
-	{
-		return true;
-	}
-
-	return false;
+	if ( is_true( self.marked_to_summon ) ) { return true; } return false;
 }
 
 //player's own list of hit triggers

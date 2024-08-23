@@ -182,6 +182,7 @@ wait_players()
         if( current_amount >= level.players.size )
         {
             self.can_be_hit = true;
+            break;
         }
         wait 0.25;
         self.can_be_hit = false;
@@ -224,6 +225,7 @@ monitor_player_use()
         }
     }
 }
+
 blink_fx( fx )
 {
     while( true )
@@ -266,7 +268,7 @@ spawn_lockdown_blockers()
         playfxontag(level.myFx[ 78 ], block[ i ], "tag_origin" ); 
         block_upper[ i ] = spawn( "script_model", locs[ i ] + ( 0, 0, 50 ) );
         block_upper[ i ] setmodel( level.myModels[ 0 ] );
-        block_upper[ i ].angles = block_upper[ i ].angles;
+        block_upper[ i ].angles = block[ i ].angles;
     }
 
     level waittill( "lockdown_disabled" );
