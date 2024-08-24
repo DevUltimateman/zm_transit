@@ -50,8 +50,8 @@ init()
     setCullDist( how_far_can_i_see );
 
     //disable annoying monkeys
-    //level.is_player_in_screecher_zone = ::screecher_hooker;
-    level.player_out_of_playable_area_monitor = false;
+    level.is_player_in_screecher_zone = ::screecher_hooker;
+    level.player_out_of_playable_area_monitor = 0;
 
     //foce non client dvars to be applied
     setdvar( "player_backspeedscale", 1 );
@@ -60,6 +60,7 @@ init()
     setdvar( "dtp_post_move_pause", 0 );
     setdvar( "dtp_exhaustion_window", 100 );
     setdvar( "dtp_startup_delay", 50 ); //100
+    setDvar( "scr_screecher_ignore_player", 1 );
 
     //upon connecting
     level thread player_waiter();
@@ -84,7 +85,7 @@ screecher_hooker()
     while( level.players.size < 4 )
     {
         return 0;
-        wait 0.1;
+        wait 0.05;
     }
     
 }
@@ -110,6 +111,7 @@ dev_visuals()
     self waittill( "spawned_player" );
     self setclientdvar( "r_lighttweaksuncolor", "0.5 0.8 0.9" );
     self setclientdvar( "r_lighttweaksunlight", 12  );
+    self setclientdvar( "r_filmusetweaks", true );
     self setclientdvar( "r_lighttweaksundirection",( -45, 210, 0 ) );
     self setclientdvar( "r_sky_intensity_factor0", 5  );
     self setclientdvar( "r_bloomtweaks", 1  );

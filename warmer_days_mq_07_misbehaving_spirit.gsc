@@ -42,7 +42,7 @@
 #include maps\mp\createart\zm_transit_art;
 #include maps\mp\createfx\zm_transit_fx;
 
-
+/*
 init()
 {
     level.poisonous_clouds = []; 
@@ -167,7 +167,6 @@ init()
 
 
 
-
 initialize_poisonous_step()
 {
     level endon( "end_game" );
@@ -183,3 +182,6 @@ initialize_poisonous_step()
     }
      
 }
+
+
+*/

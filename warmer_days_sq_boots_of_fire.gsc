@@ -396,9 +396,9 @@ f_boots1() //fireboot quest step1. Find 8 different fireboots around the map ( j
     level.fireboot_locations[ 1 ] = ( 7638.01, -450.942, -147.971 );
     level.fireboot_locations[ 2 ] = ( 7892.54, -6079.53, 253.161 );
     level.fireboot_locations[ 3 ] = ( 1424.37, -1478.38, 41.5605 );
-    level.fireboot_locations[ 5 ] = ( 1221.56, -658.023, 68.6946 );
-    level.fireboot_locations[ 6 ] = ( -11742.6, -827.903, 249.517 );
-    level.fireboot_locations[ 7 ] = ( -6211.82, -5684.03, -0.988062 );
+    level.fireboot_locations[ 4 ] = ( 1221.56, -658.023, 68.6946 );
+    level.fireboot_locations[ 5 ] = ( -11742.6, -827.903, 249.517 );
+    level.fireboot_locations[ 6 ] = ( -6211.82, -5684.03, -0.988062 );
     wait 0.05;
 
     for( s = 0; s < level.fireboot_locations.size; s++ )
@@ -572,7 +572,7 @@ leg_trigger_logic( model_origin )
         self waittill( "trigger", guy );
         
         //add this check, sometimes the game randomly thinks that the player is picking up the boots...
-        if( isdefined( guy ) && distance2d( guy.origin, self.origin ) < 300 )
+        if( isdefined( guy ) && distance( guy.origin, self.origin ) < 300 )
         {
             if( level.boots_are_being_picked_up == true )
             {

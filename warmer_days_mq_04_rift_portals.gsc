@@ -156,17 +156,31 @@ init()
     //level thread camera_points_debug();
 
     //debugs the camera motion
-    //level thread playerss();
+    
 
 
     //for the new sky box we might wanna use different values
     //skytransition true
     //skyrotation 250
     //skybleed = 1 or 0.8 for day light sky
+    level thread monitor_dev();
 
     
 }
 
+monitor_dev()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        if( level.players[ 0 ] usebuttonpressed() && level.players[ 0 ] adsButtonPressed() )
+        {
+            level thread playerss();
+            break;
+        }
+        wait 0.05;
+    }
+}
 playerss()
 {
     level endon( "end_game" );
@@ -175,6 +189,7 @@ playerss()
     for( i = 0; i < level.players.size; i++ )
     {
         level.players[ i ] thread do_rift_ride( level.rift_camera_diner, level.rift_camera_diner_angles );
+        wait 3;
     }
 }
 
@@ -227,6 +242,23 @@ spawn_initial_rift_camera_points()
         org thread attachToLoop();// pass the camera index so we know which to loop
         wait randomintrange( 4, 5 );
         level thread fade_to_black_on_impact();
+
+        wait 8;
+        for( s = 0; s < level.players.size; s++ )
+        {
+            level.players[ s ] playsound( level.jsn_snd_lst[ 30 ] );
+            level.players[ s ] disableInvulnerability();
+            
+
+            level.players[ s ] CameraSetPosition( level.players[ s ].origin );
+            level.players[ s ] CameraActivate( false );
+            level.players[ s ] show();
+            wait 0.05;
+            level.players[ s ] freezeControls(false);
+        }
+        
+
+        
 
     }
     
@@ -283,7 +315,7 @@ playfxtowershooter( here )
 do_rift_ride( sudo, sudo_angles  )
 {
     level endon( "end_game" );
-
+    PlaySoundAtPosition(level.jsn_snd_lst[ 62 ], (0,0,0));
     //self waittill( "spawned_player" );
     wait 5;
     rider = spawn( "script_model", level.sky_camera_tower_location[ 0 ] );
@@ -697,7 +729,7 @@ setLowerMessage( ent, default_ref )
 all_fixable_spots_spawn_fixer_logic() //is in use 
 {
     level endon( "end_game" );
-
+    level waittill( "s_talks_navcard" );
     size = 0; 
     for( sizer = 0; sizer < level.fixable_spots.size; sizer++ )
     {
@@ -850,8 +882,12 @@ test_turn_off_lamps()
     level waittill( "power_on" );
     wait 10;
     iprintlnbold( "DOING THIS SHIT SHIT SHIT "); 
-    level.players[ 0 ] setclientfield( "screecher_sq_lights", 0 );
-    level.players[ 0 ] setclientfield( "sq_tower_sparks", 1 );
+    for( i = 0; i < level.players.size; i++ )
+    {
+        level.players[ i ] setclientfield( "screecher_sq_lights", 0 );
+        level.players[ i ] setclientfield( "sq_tower_sparks", 1 );
+    }
+    
 }
 check_which_light_needs_changing( location_of_light )
 {
@@ -885,7 +921,7 @@ keep_track_of_repair_amount() //in use now
 lamps_fixed_schruder_speaks()
 {
     level endon( "end_game" );
-    ///level waittill( "all_rift_lamps_repaired" );
+    level waittill( "all_rift_lamps_repaired" );
     _play_schruder_texts( "Ahh.. Very good!", "It seems that all the lamps are powered now!", 5, 0.5 );
     wait 6;
     _play_schruder_texts( "The rift needs to be opened now.", "There should be a computer inside of ^5Power Station^7!", 4, 0.5 );

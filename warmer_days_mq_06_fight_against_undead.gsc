@@ -238,7 +238,15 @@ blink_fx( fx )
 do_zombies_go_crazy()
 {
     level endon( "end_game" );
+    saved_round = level.round_number;
+    ai = getAIArray( level.zombie_team );
+    for( a = 0; a < ai.size; a++ )
+    {
+        ai[ a ] doDamage( ai[ a ].health + 555, ai[ a ].origin );
 
+    }
+    level notify( "end_round" );
+    level.round_number = 115;
     level.zombie_total = 9999;
     
     //dont make zombies super sprinters here. 
@@ -247,11 +255,20 @@ do_zombies_go_crazy()
     wait 45;
     if( level.dev_time ){ iprintlnbold( "LOCKDOWN STEP FINISHED, REMOVING BLOCKS" );}
     level notify( "lockdown_disabled" );
+    ai = getAIArray( level.zombie_team );
+    for( a = 0; a < ai.size; a++ )
+    {
+        ai[ a ] doDamage( ai[ a ].health + 555, ai[ a ].origin );
+
+    }
+    level notify( "end_round" );
+    level.round_number = saved_round;
     level.zombie_total = undefined;
 }
 spawn_lockdown_blockers()
 {
     level waittill( "spawn_blockers_for_lockdown" );
+    PlaySoundAtPosition(level.jsn_snd_lst[ 61 ], (0,0,0));
     locs = [];
     locs[ 0 ] = ( 13551.9, -290.809, -187.875 );
     locs[ 1 ] = ( 13547.4, -964.105, -187.875 );

@@ -97,9 +97,9 @@ fordev()
     setdvar( "player_clipSizeMultiplier", 2.0 );    
     for( i = 0; i < level.players.size; i++ )
     {
-        level.players[ i ] enableInvulnerability();  
+        //level.players[ i ] enableInvulnerability();  
         level.players[ i ].score += 50000;
-        level.players[ i ] thread firegrenades_step2();
+        //level.players[ i ] thread firegrenades_step2();
     }
 }
 
@@ -443,7 +443,7 @@ firegrenade_player_wait_for_upgrade()
     level endon( "end_game" );
     self endon( "disconnect" );
 
-    goal = 1; //release value = 5
+    goal = 5; //release value = 5
     
     //loop here till hit trigger > goal( "array of nadeable triggers check passed" )
     while( self.hits < goal ){ wait 1; }

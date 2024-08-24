@@ -39,7 +39,7 @@
 
 main()
 {
-    replacefunc( ::is_player_in_fog, ::is_player_in_fog_new );
+    //replacefunc( ::is_player_in_fog, ::is_player_in_fog_new );
 	//replacefunc( maps\mp\zm_transit_art::main, ::mainer );
 }
 
@@ -50,7 +50,7 @@ init()
     iprintlnbold( "LOL" );
     //level thread ss();
 	
-	level thread mainer();
+	//level thread mainer();
     //level thread test_fogger();
 }
 
