@@ -349,9 +349,9 @@ fireboots_quest_init()
 all_boots_summoned()
 {
     level endon( "end_game" );
-    if( level.summoningkills[ 0 ] +
-        level.summoningkills[ 1 ] +
-        level.summoningkills[ 2 ] >= level.summoning_kills_combined_total  ) { return true; } return false;
+    if( level.summoningkills[ "s0_kills++" ] +
+        level.summoningkills[ "s1_kills++" ] +
+        level.summoningkills[ "s2_kills++" ] >= level.summoning_kills_combined_total  ) { return true; } return false;
 }
 
 monitor_all_boots()

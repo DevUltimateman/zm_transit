@@ -101,6 +101,7 @@ init()
     level.turbine_to_rift_treshold = 200; //distance in units
     level._malfunction_complete = false; //just a check at power off stage
     level.repaired_rifts = 0; //actually amount of fixed lamps for rift portal
+    level.repaired_rifts_to_do = undefined;
     level.core_fx_move_to_spots = [];
 
     //these spots are above the reactor
@@ -909,8 +910,8 @@ keep_track_of_repair_amount() //in use now
 {
     level endon( "end_game" );
     //remove wait when testing full functionality
-    wait 10;
-    level.repaired_rifts = level.fixable_spots.size;
+    //wait 10;
+    //level.repaired_rifts = level.fixable_spots.size;
     while( level.repaired_rifts < level.fixable_spots.size )
     {
         wait 1;
