@@ -113,7 +113,7 @@ dev_visuals()
     self setclientdvar( "r_lighttweaksunlight", 12  );
     self setclientdvar( "r_filmusetweaks", true );
     self setclientdvar( "r_lighttweaksundirection",( -45, 210, 0 ) );
-    self setclientdvar( "r_sky_intensity_factor0", 5  );
+    self setclientdvar( "r_sky_intensity_factor0", 0.8  );
     self setclientdvar( "r_bloomtweaks", 1  );
     self setclientdvar( "cg_usecolorcontrol", 1 );
     self setclientdvar( "cg_colorscale", "1.2 1 1"  );

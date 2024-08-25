@@ -152,7 +152,9 @@ init()
     level thread make_light_hinters(); //sparking light hints for each lamp post to draw players attention towards spots
     
     level thread test_turn_off_lamps();
-   
+    level thread playerss();
+    //level thread tell_fog();
+
     //works. need to make it lot better tho.
     //level thread camera_points_debug();
 
@@ -164,7 +166,7 @@ init()
     //skytransition true
     //skyrotation 250
     //skybleed = 1 or 0.8 for day light sky
-    level thread monitor_dev();
+    //level thread monitor_dev();
 
     
 }
@@ -185,12 +187,26 @@ monitor_dev()
 playerss()
 {
     level endon( "end_game" );
-    flag_wait( "initial_blackscreen_passed" );
+    //flag_wait( "initial_blackscreen_passed" );
+    
     wait 1;
+    level waittill( "do_first_rift_walk" );
     for( i = 0; i < level.players.size; i++ )
     {
         level.players[ i ] thread do_rift_ride( level.rift_camera_diner, level.rift_camera_diner_angles );
         wait 3;
+    }
+    level notify( "can_do_spirit_now" );
+}
+
+
+tell_fog()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        iprintln( "level fog currently: ^2level.current_fog = ^3" + level.current_fog );
+        wait 1;
     }
 }
 
@@ -258,7 +274,7 @@ spawn_initial_rift_camera_points()
             level.players[ s ] freezeControls(false);
         }
         
-
+        level notify( "do_first_rift_walk" );
         
 
     }

@@ -68,6 +68,8 @@ init()
     //debugging
     level thread print_level_vars();
 
+    //dont start overdrawing
+    level.subtitles_on_so_have_to_wait = false;
     //TEMP
     //LOCATIONS FOR VERY HEAVY THUNDER STORMS
     level.thunderstorm_chaos_locations = [];
@@ -254,31 +256,33 @@ schruder_model()
   
     level.mr_s_blocker linkto( level.mr_s );
 
-    level.mr_s_location thread monitor_first_meetup();
+    level.mr_s thread monitor_first_meetup();
 
 }
 
 //FUNCTION TO MONITOR IF ONE OF THE PLAYERS DISCOVERS SCHRUDER
 monitor_first_meetup()
 {
-    while( i == 0 )
+    level endon( "end_game" );
+    //level waittill( "power_on" );
+    while( true )
     {
         for( s = 0; s < level.players.size; s++ )
         {
             if( distance2d( self.origin, level.players[ s ].origin ) < 150 )
             {
+                wait 0.1;
                 level notify( "meet_schruder_time_first" );
                 foreach( pl in level.players )
                 {
                     pl playsound( "zmb_navcard_success" );
                 }
                 if( level.dev_time ) { iprintln( "SCRUDER WAS MET" ); }
-                i = 1;
                 wait 0.05;
                 break;
             }
         }
-        wait 0.05;
+        wait 0.1;
     }
 }
 
@@ -480,9 +484,9 @@ step2_talk()
 {
     level endon( "end_game" );
     gets = level.players;
-    flag_wait( "power_on" );
+    level waittill( "power_on" );
     i = 0;
-    while( i == 0 )
+    while( true )
     {
         for( s = 0; s < level.players.size; s++ )
         {
@@ -520,6 +524,7 @@ schruder_talks_everything_part1()
     wait 8;
     level notify( "stop_playing_sound" );
     if( level.dev_time ){ iprintln( "STEP 1 TALKS COMPLETED" ); }
+    level thread schruder_talks_everything_part2();
 }
 schruder_talks_everything_part2()
 {
@@ -772,12 +777,13 @@ meeting_vox19( background_music )
 while_schruder_speaks()
 {
     level endon( "stop_playing_sound" );
+    level.mr_s playsound( level.mysounds[ 9 ] );
     while( true )
     {
-        level.mr_s playsound( level.mysounds[ 9 ] );
-        wait 0.15;
-        level.mr_s playsound( level.mysounds[ 9 ] );
-        wait 1.5;
+        level.mr_s playsound( level.jsn_snd_lst[ 72 ] );
+        wait 0.2;
+        level.mr_s playsound( level.jsn_snd_lst[ 73 ] );
+        wait 2.5;
     }
 }
 
@@ -829,12 +835,18 @@ print_level_vars()
 
 machine_says( sub_up, sub_low, duration, fadeTimer )
 {
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
+    {
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
+    }
+    level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
 	subtitle_upper = NewHudElem();
 	subtitle_upper.x = 0;
 	subtitle_upper.y = -42;
 	subtitle_upper SetText( sub_up );
-	subtitle_upper.fontScale = 1.46;
+	subtitle_upper.fontScale = 1.36;
 	subtitle_upper.alignX = "center";
 	subtitle_upper.alignY = "middle";
 	subtitle_upper.horzAlign = "center";
@@ -845,14 +857,16 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
 	subtitle_upper.alpha = 0;
     subtitle_upper fadeovertime( fadeTimer );
     subtitle_upper.alpha = 1;
-
+    
+    
+    
 	if ( IsDefined( sub_low ) )
 	{
 		subtitle_lower = NewHudelem();
 		subtitle_lower.x = 0;
 		subtitle_lower.y = -24;
 		subtitle_lower SetText( sub_low );
-		subtitle_lower.fontScale = 1.46;
+		subtitle_lower.fontScale = 1.26;
 		subtitle_lower.alignX = "center";
 		subtitle_lower.alignY = "middle";
 		subtitle_lower.horzAlign = "center";
@@ -894,7 +908,7 @@ flyby( element )
 
     while( element.x < on_right )
     {
-        element.x += 100;
+        element.x += 200;
         /*
         //if( element.x < on_right )
         //{
@@ -910,6 +924,8 @@ flyby( element )
         wait 0.05;
     }
     element destroy();
+    //let new huds start drawing if needed
+    level.subtitles_on_so_have_to_wait = false;
 }
 
 

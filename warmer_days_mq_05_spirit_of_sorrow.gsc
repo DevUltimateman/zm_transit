@@ -75,7 +75,7 @@ waitflag()
     flag_wait( "initial_blackscreen_passed" );
     
     //step 1
-    level waittill( "power_on" );
+    level waittill( "can_do_spirit_now" );
     level thread monitor_players(); //disabled for now. dont want to go underneath pylon and start follow spirit step while testing other stuff.
     level waittill( "players_obey" ); //all players gathered together underneath the pylon
     

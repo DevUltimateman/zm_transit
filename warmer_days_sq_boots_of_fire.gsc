@@ -399,15 +399,16 @@ f_boots1() //fireboot quest step1. Find 8 different fireboots around the map ( j
     level.fireboot_locations[ 4 ] = ( 1221.56, -658.023, 68.6946 );
     level.fireboot_locations[ 5 ] = ( -11742.6, -827.903, 249.517 );
     level.fireboot_locations[ 6 ] = ( -6211.82, -5684.03, -0.988062 );
-    wait 0.05;
+    wait 0.1;
 
     for( s = 0; s < level.fireboot_locations.size; s++ )
     {
         level.boot_triggers[ s ] = spawn( "trigger_radius", level.fireboot_locations[ s ], 48, 48, 48 );
         level.boot_triggers[ s ] setHintString( "" );
 	    level.boot_triggers[ s ] setCursorHint( "HINT_NOICON" );
-   
-        level.boot_triggers[ s ] thread leg_trigger_logic( level.fireboot_locations[ s ] );
+
+        wait 1;
+        level.boot_triggers[ s ] thread leg_trigger_logic( level.boot_triggers[ s ].origin );
         wait 0.05;
         playfxontag( level.myFx[ 6 ], level.boot_triggers[ s ], "tag_origin"  );
     }  
@@ -570,50 +571,65 @@ leg_trigger_logic( model_origin )
     while( true )
     {
         self waittill( "trigger", guy );
-        
-        //add this check, sometimes the game randomly thinks that the player is picking up the boots...
-        if( isdefined( guy ) && distance( guy.origin, self.origin ) < 300 )
+        if( !is_player_valid( guy ) && isdefined( level.boots_are_being_picked_up ) && level.boots_are_being_picked_up )
         {
-            if( level.boots_are_being_picked_up == true )
+            wait 0.1;
+            continue;
+        }
+        if( isdefined( level.boots_are_being_picked_up ) && level.boots_are_being_picked_up )
+        {
+            wait 0.1;
+            continue;
+        }
+        //add this check, sometimes the game randomly thinks that the player is picking up the boots...
+        if( isdefined( guy ) && distance2d( guy.origin, self.origin ) < 300 )
+        {
+            if( !is_player_valid( guy ) && isdefined( level.boots_are_being_picked_up ) && level.boots_are_being_picked_up )
             {
+                wait 0.1;
                 continue;
             }
-            //this check needs to be added below since we need to check after the initial hit if someone is already picking up boots
-            level thread picking_up_boots_cooldown_others_timer( cooldownTimer );
-            
-            // to display the number of boots found currently
-            true_indicator = level.boots_found + 1; 
-            level.boots_found++;
-            
-            playsoundatposition( "zmb_box_poof", self.origin );
-            wait 0.5;
-
-            //give a little reward to the player who picked up said boots
-            guy.score += 750;
-            guy playsoundtoplayer( "zmb_vault_bank_deposit", guy );
-
-            //SCHRUDER SAYS SOMETHING TO PLAYER
-            //seperate print function first time dont show the parts found hud text, only schruder
-            if( true_indicator == 1 )
+            if( isdefined( level.boots_are_being_picked_up ) && level.boots_are_being_picked_up )
             {
-                upper_text = "^7Ah you've found the first piece of fireboots!";
-                lower_text = _returnFireBootStepText();
-                level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
+                wait 0.1;
+                continue;
             }
-            else
-            { 
-                upper_text = "Fireboots found: ^3" + true_indicator + "^7 / ^3" + ( level.fireboot_locations.size - 1 ); 
-                lower_text = _returnFireBootStepText();
-                level thread _print_someone_found_boot_piece( upper_text, lower_text, 8, 0.1 );    
-            }
-            wait 0.05;
-            leg_model delete(); //delete linked model
-            //self == trigger
-            if( isdefined( self ) )
+
+            if( is_player_valid( guy ) && isdefined( level.boots_are_being_picked_up ) && !level.boots_are_being_picked_up )
             {
-                self delete();
+                 //this check needs to be added below since we need to check after the initial hit if someone is already picking up boots
+                level thread picking_up_boots_cooldown_others_timer( cooldownTimer );
+                
+                // to display the number of boots found currently
+                //true_indicator = level.boots_found + 1; 
+                level.boots_found++;
+                playsoundatposition( "zmb_box_poof", self.origin );
+                wait 0.5;
+                //give a little reward to the player who picked up said boots
+                guy.score += 750;
+                guy playsoundtoplayer( "zmb_vault_bank_deposit", guy );
+                //SCHRUDER SAYS SOMETHING TO PLAYER
+                //seperate print function first time dont show the parts found hud text, only schruder
+                if( level.boots_found == 1 )
+                {
+                    upper_text = "^7Ah you've found the first piece of fireboots!";
+                    lower_text = _returnFireBootStepText();
+                    level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
+                }
+                else
+                { 
+                    upper_text = "Fireboots found: ^3" + level.boots_found + "^7 / ^3" + ( level.fireboot_locations.size - 1 );//- 1  ); 
+                    lower_text = _returnFireBootStepText();
+                    level thread _print_someone_found_boot_piece( upper_text, lower_text, 8, 0.1 );    
+                }
+                wait 0.05;
+                //self == trigger
+                if( isdefined( self ) ) { self delete(); }
+                if( isdefined( leg_model ) ) {  leg_model delete(); } //delete linked model
+                wait 0.1;
+                break;
             }
-            break;
+           
         }
     }
 }
@@ -876,7 +892,7 @@ flyby( element )
 
     while( element.x < on_right )
     {
-        element.x += 100;
+        element.x += 200;
         /*
         //if( element.x < on_right )
         //{

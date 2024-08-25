@@ -99,7 +99,7 @@ fordev()
     {
         //level.players[ i ] enableInvulnerability();  
         level.players[ i ].score += 50000;
-        //level.players[ i ] thread firegrenades_step2();
+        level.players[ i ] thread firegrenades_step2();
     }
 }
 
@@ -128,6 +128,9 @@ quest_firenades_init()
     level thread firegrenade_assign_hitlist_to_connecting_midgame();
 
     /* STEP 2 | STEP 2 | STEP 2 | STEP 2 */
+
+
+
     
 }
 
@@ -199,6 +202,8 @@ firegrenade_monitor_someone_hit_trigger( value )
                 
                 wait randomfloatrange( 0.05, 0.08 );
             }
+
+            wait 1; break;
         }
         wait 0.05;
         
@@ -215,7 +220,7 @@ firegrenades_step2()
     //the least amount of uses we can have / start with
     self.nades_used = 0;
     //this many times math zombie - nade origin < 870 / randomint( 0, 6 ) has to happen before goal == reached
-    to_use = 2; //12 = release value or 6 in total...
+    to_use = 4; //12 = release value or 6 in total...
     
     //idx will be the player entity eventually
     idx = undefined;
@@ -224,7 +229,7 @@ firegrenades_step2()
    
    //*************************************************** */
    
-    level waittill( "its_time" ); //enable back on later
+    self waittill( "its_time" ); //enable back on later
 
 
     //*************************************************** */
@@ -433,7 +438,7 @@ firegrenade_monitor_throw()
     {
         self waittill( "grenade_fire", my_grenade );
         wait 0.05;                                      
-        my_grenade thread firegrenade_touched( self ); //self == the trigger that the grenade might hit
+        my_grenade thread firegrenade_touched(  self ); //pass player as self to increase hit list size on impact
     } 
 }
 
@@ -444,10 +449,18 @@ firegrenade_player_wait_for_upgrade()
     self endon( "disconnect" );
 
     goal = 5; //release value = 5
-    
+    hit_list_ = 0;
     //loop here till hit trigger > goal( "array of nadeable triggers check passed" )
-    while( self.hits < goal ){ wait 1; }
-    
+    while( self.hits < goal )
+    { 
+        wait 1;
+        if( self.hits > hit_list_ )
+        {
+            hit_list_++;
+            self _someone_unlocked_something_client( "^3Firegrenades found^7", hit_list_ + "^3 / ^7" + goal, 3, 0.2 );
+        } 
+    }
+    self notify( "_start_sq_nade_step2_for_player" );
     //player hit all the spots, reward the player
     if( level.dev_time ){ iprintlnbold( "Player ^3" + self.name + " ^7 reached part: WHIZZ NEAR BY ZOMBIES with NADES" ); }
     
@@ -456,7 +469,7 @@ firegrenade_player_wait_for_upgrade()
     _someone_unlocked_something( "What!? How did you find all the nades so quickly?", "Silly you, you still have things to do.. ^3Zombie ^7go boom! ", 8, 0.1 );
 
     //notify the waittill("its_time") to progress into firenade step 2
-    level notify( "its_time" ); //custom noti / waittill
+    self notify( "its_time" ); //custom noti / waittill
     
     //wait player to achieve fireblaze nades ( happens after getting 12 near by kills with throwable grenades against zombies. )
     self waittill( "reward_me" ); //custom noti / waittill
@@ -778,7 +791,8 @@ firegrenade_touched( who )
                 who.hits++; //increase player who hit score
                 //force end thread
                 iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
-                self notify( "gucci" ); 
+                //self notify( "gucci" ); 
+                wait 0.1;
                 break;
             }
         }
@@ -813,6 +827,76 @@ _someone_unlocked_something( subtitle_upper, subtitle_lower, duration, fadetimer
     level endon( "end_game" );
 	level thread SchruderSays( "^3Dr. Schrude: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
 }
+
+_someone_unlocked_something_client( subtitle_upper, subtitle_lower, duration, fadetimer )
+{
+    level endon( "end_game" );
+    self endon( "disconnect ");
+	self thread SchruderSaysClient( subtitle_upper, subtitle_lower, duration, fadetimer );
+}
+
+SchruderSaysClient( sub_up, sub_low, duration, fadeTimer )
+{
+    if( isdefined( subtitle_upper ) )
+    {
+        subtitle_upper destroy();
+    }
+	subtitle_upper = NewClientHudElem( self );
+	subtitle_upper.x = 0;
+	subtitle_upper.y = -42;
+	subtitle_upper SetText( sub_up );
+	subtitle_upper.fontScale = 1.46;
+	subtitle_upper.alignX = "center";
+	subtitle_upper.alignY = "middle";
+	subtitle_upper.horzAlign = "center";
+	subtitle_upper.vertAlign = "bottom";
+	subtitle_upper.sort = 1;
+    
+	subtitle_lower = undefined;
+	subtitle_upper.alpha = 0;
+    subtitle_upper fadeovertime( fadeTimer );
+    subtitle_upper.alpha = 1;
+
+	if ( IsDefined( sub_low ) )
+	{
+        if( isdefined( subtitle_lower ) )
+        {
+            subtitle_lower destroy();
+        }
+		subtitle_lower = NewClientHudElem( self );
+		subtitle_lower.x = 0;
+		subtitle_lower.y = -24;
+		subtitle_lower SetText( sub_low );
+		subtitle_lower.fontScale = 1.46;
+		subtitle_lower.alignX = "center";
+		subtitle_lower.alignY = "middle";
+		subtitle_lower.horzAlign = "center";
+		subtitle_lower.vertAlign = "bottom";
+		subtitle_lower.sort = 1;
+        subtitle_lower.alpha = 0;
+        subtitle_lower fadeovertime( fadeTimer );
+        subtitle_lower.alpha = 1;
+	}
+	
+	wait ( duration );
+	level thread flyby( subtitle_upper );
+    subtitle_upper fadeovertime( fadeTimer );
+    subtitle_upper.alpha = 0;
+    wait fadeTimer;
+    subtitle_upper destroy();
+	//subtitle Destroy();
+	
+	if ( IsDefined( subtitle_lower ) )
+	{
+		level thread flyby( subtitle_lower );
+        subtitle_lower fadeovertime( fadeTimer );
+        subtitle_lower.alpha = 0;
+        wait fadeTimer;
+        subtitle_lower destroy();
+	}
+    
+}
+
 
 SchruderSays( sub_up, sub_low, duration, fadeTimer )
 {
@@ -853,6 +937,8 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
 	level thread flyby( subtitle_upper );
     subtitle_upper fadeovertime( fadeTimer );
     subtitle_upper.alpha = 0;
+    wait fadeTimer;
+    subtitle_upper destroy();
 	//subtitle Destroy();
 	
 	if ( IsDefined( subtitle_lower ) )
@@ -860,6 +946,8 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
 		level thread flyby( subtitle_lower );
         subtitle_lower fadeovertime( fadeTimer );
         subtitle_lower.alpha = 0;
+        wait fadeTimer;
+        subtitle_lower destroy();
 	}
     
 }
