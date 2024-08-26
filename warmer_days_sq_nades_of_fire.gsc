@@ -839,7 +839,7 @@ SchruderSaysClient( sub_up, sub_low, duration, fadeTimer )
 {
     if( isdefined( subtitle_upper ) )
     {
-        subtitle_upper destroy();
+        subtitle_upper destroy_hud();
     }
 	subtitle_upper = NewClientHudElem( self );
 	subtitle_upper.x = 0;
@@ -861,7 +861,7 @@ SchruderSaysClient( sub_up, sub_low, duration, fadeTimer )
 	{
         if( isdefined( subtitle_lower ) )
         {
-            subtitle_lower destroy();
+            subtitle_lower destroy_hud();
         }
 		subtitle_lower = NewClientHudElem( self );
 		subtitle_lower.x = 0;
@@ -883,7 +883,7 @@ SchruderSaysClient( sub_up, sub_low, duration, fadeTimer )
     subtitle_upper fadeovertime( fadeTimer );
     subtitle_upper.alpha = 0;
     wait fadeTimer;
-    subtitle_upper destroy();
+    subtitle_upper destroy_hud();
 	//subtitle Destroy();
 	
 	if ( IsDefined( subtitle_lower ) )
@@ -892,7 +892,7 @@ SchruderSaysClient( sub_up, sub_low, duration, fadeTimer )
         subtitle_lower fadeovertime( fadeTimer );
         subtitle_lower.alpha = 0;
         wait fadeTimer;
-        subtitle_lower destroy();
+        subtitle_lower destroy_hud();
 	}
     
 }
@@ -938,7 +938,7 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
     subtitle_upper fadeovertime( fadeTimer );
     subtitle_upper.alpha = 0;
     wait fadeTimer;
-    subtitle_upper destroy();
+    subtitle_upper destroy_hud();
 	//subtitle Destroy();
 	
 	if ( IsDefined( subtitle_lower ) )
@@ -947,7 +947,7 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
         subtitle_lower fadeovertime( fadeTimer );
         subtitle_lower.alpha = 0;
         wait fadeTimer;
-        subtitle_lower destroy();
+        subtitle_lower destroy_hud();
 	}
     
 }

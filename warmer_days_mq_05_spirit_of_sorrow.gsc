@@ -823,14 +823,14 @@ Subtitle( text, text2, duration, fadeTimer )
         subtitle fadeOverTime( 0.1 );
         subtitle.alpha = 0;
         wait 0.1;
-        subtitle destroy();
+        subtitle destroy_hud();
     }
     if( isdefined( subtitle2 ) )
     {
         subtitle2 fadeovertime( 0.1 );
         subtitle.alpha = 0;
         wait 0.1;
-        subtitle2 destroy();
+        subtitle2 destroy_hud();
     }
 	subtitle = NewHudElem();
 	subtitle.x = 0;
@@ -896,7 +896,7 @@ flyby( element )
         */
         wait 0.05;
     }
-    element destroy();
+    element destroy_hud();
 }
 
 

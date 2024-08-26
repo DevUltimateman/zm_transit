@@ -53,7 +53,7 @@ init()
 
     flag_wait( "initial_blackscreen_passed" );
     wait 3;
-    //level thread printmodelorginfo();
+    level thread printmodelorginfo();
 }
 
 ondevs()

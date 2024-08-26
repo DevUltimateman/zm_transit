@@ -259,7 +259,7 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
 	level thread flyby( subtitle_upper ); //might want to add a parameter that lets the top text to fade and bottom text to fly & fade
     subtitle_upper fadeovertime( fadeTimer );
     subtitle_upper.alpha = 0;
-	//subtitle Destroy();
+	//subtitle destroy_hud();
 	
 	if ( IsDefined( subtitle_lower ) )
 	{
@@ -297,5 +297,5 @@ flyby( element )
         */
     //    wait 0.05;
     //}
-    element destroy();
+    element destroy_hud();
 }

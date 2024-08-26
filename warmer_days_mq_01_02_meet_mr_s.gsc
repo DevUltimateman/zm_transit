@@ -923,7 +923,7 @@ flyby( element )
         */
         wait 0.05;
     }
-    element destroy();
+    element destroy_hud();
     //let new huds start drawing if needed
     level.subtitles_on_so_have_to_wait = false;
 }

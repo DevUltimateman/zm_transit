@@ -368,8 +368,8 @@ Subtitle( text, text2, duration, fadeTimer )
     subtitle2 fadeovertime( fadetimer );
     subtitle.alpha = 0;
     subtitle2.alpha = 0;
-    subtitle destroy();
-    subtitle2 destroy();
+    subtitle destroy_hud();
+    subtitle2 destroy_hud();
 }
 
 flyby( element )
@@ -395,5 +395,5 @@ flyby( element )
         */
         wait 0.05;
     }
-    element destroy();
+    element destroy_hud();
 }

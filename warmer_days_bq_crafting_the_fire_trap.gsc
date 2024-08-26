@@ -146,10 +146,10 @@ Subtitle( text, text2, duration, fadeTimer )
     subtitle.alpha = 0;
     
     wait fadetimer;
-    subtitle destroy();
+    subtitle destroy_hud();
     if( isdefined( subtitle2 ) )
     {
-    subtitle2 destroy();
+    subtitle2 destroy_hud();
     }
     
 }
@@ -177,7 +177,11 @@ flyby( element )
         */
         wait 0.05;
     }
-    element destroy();
+    if( isdefined( element ) )
+    {
+        element destroy_hud();
+    }
+    
 }
 
 _someone_unlocked_something( text, text2, duration, fadetimer )

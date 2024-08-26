@@ -653,7 +653,7 @@ print_text_middle( text1, duration, fadefloat )
     middle_t.alpha = 1;
     wait ( duration );
     middle_t.alpha = 0;
-    middle_t destroy();
+    middle_t destroy_hud();
 }
 picking_up_boots_cooldown_others_timer( time )
 {
@@ -805,6 +805,7 @@ fireboots_sound_before_locating( alias, which_active )
                     iprintln( "Exiting out of while loop for linked model" );
                     
                 }
+                wait 1;
                 break;
             }
         }
@@ -880,8 +881,8 @@ Subtitle( text, text2, duration, fadeTimer )
     subtitle2 fadeovertime( fadetimer );
     subtitle.alpha = 0;
     subtitle2.alpha = 0;
-    subtitle destroy();
-    subtitle2 destroy();
+    subtitle destroy_hud();
+    subtitle2 destroy_hud();
 }
 
 flyby( element )
@@ -907,7 +908,7 @@ flyby( element )
         */
         wait 0.05;
     }
-    element destroy();
+    element destroy_hud();
 }
 
 summoning_in_progress( model, bounce_upwards )

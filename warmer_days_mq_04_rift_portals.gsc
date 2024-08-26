@@ -1320,7 +1320,7 @@ fadeForAWhile( startwait, blackscreenwait, fadeintime, fadeouttime, shadername, 
 
     if ( isdefined( self.blackscreen ) )
     {
-        self.blackscreen destroy();
+        self.blackscreen destroy_hud();
         self.blackscreen = undefined;
     }
 }
@@ -1557,5 +1557,5 @@ flyby( element )
         element.x += 100;
         wait 0.05;
     }
-    element destroy();
+    element destroy_hud();
 }
