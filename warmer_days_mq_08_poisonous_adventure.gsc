@@ -47,11 +47,17 @@ init()
 {
     all_suitcase_ground_position();
     level thread rise_suitcase();
+    //need to have these initialized here for debugging purposes coz we dont pick up the original suitcase now while testiing
+    level.suitcase_rise_model = "p_eb_lg_suitcase";
+    level.suitcase_land_model = "p_eb_med_suitcase"; 
     level.suitcases_collected = 0;
     precachemodel( "t6_wpn_zmb_perk_bottle_tombstone_world" );
-    level thread are_players_close_to_spawn_suitcase();
-}
 
+    flag_wait( "initial_blackscreen_passed" );
+    
+    level thread do_first_dialog();
+    level thread spawn_drinkable_step(); //reward and spawn drinkable immunity
+}
 
 rise_suitcase()
 {
@@ -65,8 +71,7 @@ rise_suitcase()
     level.suitcase_landing_spot_angles = ( 0, -98.4235, 0 );
 
 
-    level.suitcase_rise_model = level.myModels[ 2 ];
-    level.suitcase_land_model = level.myModels[ 3 ];
+    
 
     wait 1;
     trigger = spawn( "trigger_radius", level.suitcase_rise_spot, 100, 100, 100 );
@@ -98,7 +103,7 @@ rise_suitcase()
 moveeverything( suit_case )
 {
     level endon( "end_game" );
-    suit_case thread spin_me_around();
+    suit_case thread spin_me_around_mq_first_time_pick_up();
     wait 0.05;
     suit_case moveto( level.suitcase_rise_to_spot, 1.5, 0.3, 0.2 );
     suit_case waittill( "movedone" );
@@ -127,44 +132,85 @@ moveeverything( suit_case )
         trigu waittill( "trigger", who );
         who playsound( "zmb_sq_navcard_success" );
         trigu sethintstring( "^5You ^7picked up ^2Poison^7!" );
+        suit_case notify( "stop_spinning" );
         suit_case delete();
         wait 2.5;
 
         trigu delete();
         
         level notify( "someone_picked_up_poison" );
+        
+        wait 0.1;
         break;
     }
     
     //THIS SUITCASE STEP STILL IN PLACE?
 }
 
-spin_me_around()
+do_first_dialog()
+{
+    level waittill( "start_find_suitcase_dialog" );
+    do_dialog_here( "It seems that ^5Spirit Of Sorrow^7 has called in her cloud friends.", "Said clouds are dangerous and you should avoid them at all cost.", 10, 3 );
+    wait 8;
+    do_dialog_here( "We could try crafting ^3immune drink^7 from all the drinks.", "Think that will allow you to travel thru the mist safely...", 8, 2 );
+    wait 6;
+    do_dialog_here( "See if you can locate the ^3mixing suitcase^7 from ^3Bus Depo^7...", "Think I've seen it laying there recently.", 9, 2 );
+    wait 8;
+    level waittill( "someone_picked_up_poison" );
+    do_dialog_here( "Excellent! You found the ^3mixing suitcase^7...", "We'll need the suitcase in our next step..", 9, 2 );
+    wait 6;
+    do_dialog_here( "The suitcase will teleport on the ground, close to a ^4perk machine^7.", "Look around if you can find one somewhere close in here.", 8, 2 );
+    wait 7;
+    do_dialog_here( "I'll let you figure out what to do next...", "Don't dissapoint me!", 7, 2 );
+    wait 6;
+    level thread are_players_close_to_spawn_suitcase();
+    wait 5;
+    level waittill( "all_suitcases_collected" );
+    wait 0.35;
+    do_dialog_here( "Hahaa, wunderbaar!", "You're quite a sharp shooter.", 8, 2  );
+    wait 5;
+    do_dialog_here( "The suitcase is full of combined mixes!", "You could try bringing it to lab...", 9, 2 );
+    wait 6;
+    do_dialog_here( "We might be able to craft the serum now..", "Once you've drank it, you should earn immunity towards those toxic clouds", 10, 3 );
+    level waittill( "crafting_serum" );
+}
+spin_me_around_mq_first_time_pick_up() 
 {
     level endon( "end_game" );
     self endon( "death" );
     self endon( "stop_spinning" );
     while( true )
     {
-        self rotateyaw( 360, 1, 0, 0 );
-        wait 1;
+        self rotateyaw( 360, 0.5, 0, 0 );
+        wait 0.5;
     }
 }
 
+spin_me_around_mq() 
+{
+    level endon( "end_game" );
+    self endon( "death" );
+    self endon( "stop_spinning" );
+    while( true )
+    {
+        self rotateyaw( 360, 0.5, 0, 0 );
+        wait 0.5;
+    }
+}
 
 all_suitcase_ground_position()
 {
     level.suitcase_ground_positions = [];
     //quick
-    level.suitcase_ground_positions[ 0 ] = ( -6704.51, 5039.83, -55.875 );
+    level.suitcase_ground_positions[ 0 ] = ( -6704.51, 5039.83, -45.875 );
     //speed
     level.suitcase_ground_positions[ 1 ] = ( -5530.7, -7865.11, 0.125 );
     //dtap
     level.suitcase_ground_positions[ 2 ] = ( 8038.52, -4657.54, 264.125 );
     //toomb
-    level.suitcase_ground_positions[ 3 ] = ( 10863, 8290.47, -407.875 );
+    //level.suitcase_ground_positions[ 3 ] = ( 10863, 8290.47, -407.875 );
     //jugg
-    level.suitcase_ground_positions[ 4 ] = ( 1038.92, -1490.15, 128.125 );
+    level.suitcase_ground_positions[ 3 ] = ( 1038.92, -1490.15, 128.125 );
 
 
 }
@@ -173,26 +219,36 @@ are_players_close_to_spawn_suitcase()
 {
     level endon( "end_game" );
     //level waittill( "monitor_suitcases" ); //enable back later
+    level.current_suitcase_location = undefined;
     wait 5;
     while( true )
     {
+        if( level.suitcases_collected == 4 )
+        {
+            if( level.dev_time ){ iprintlnbold( "ALL SUITCASES COLLECTED" ); }
+            break;
+        }
         for( i = 0; i < level.players.size; i++ )
         {
             for( s = 0; s < level.suitcase_ground_positions.size; s++ )
             {
-                if( distance( level.players[ i ].origin, level.suitcase_ground_positions[ s ] ) < 100 )
+                if( distance( level.players[ i ].origin, level.suitcase_ground_positions[ s ] ) < 140 && level.current_suitcase_location != level.suitcase_ground_positions[ s ] )
                 {
                     wait 0.1;
                     level.suitcases_collected++;
+                    level.current_suitcase_location = level.suitcase_ground_positions[ s ];
                     if( level.dev_time ){ iprintlnbold( "^2SUITCASE LOCATED, SPAWNING IT" ); }
                     level thread spawn_suitcase_perka( level.suitcase_ground_positions[ s ] );
+
                     wait 0.1;
+                    ArrayRemoveIndex(level.suitcase_ground_positions, s );
+                    break;
                 }
             }
         }
-        if( level.suitcases_collected >= level.suitcase_ground_positions.size )
+        if( level.suitcases_collected >= 4 )
         {
-            level notify( "all_suitcases_collected" );
+            //level notify( "all_suitcases_collected" );
             wait 0.1;
             break;
         }
@@ -200,6 +256,8 @@ are_players_close_to_spawn_suitcase()
         
     }
 }
+
+
 spawn_suitcase_perka( location )
 {
     level endon( "end_game" );
@@ -207,35 +265,175 @@ spawn_suitcase_perka( location )
     m_suitcase setmodel( level.suitcase_rise_model );
     m_suitcase.angles = m_suitcase.angles;
     wait 0.05;
-    
+    playfxontag( level._effect[ "lght_mrker" ], m_suitcase, "tag_origin" );
+    PlaySoundAtPosition(level.jsn_snd_lst[ 8 ], m_suitcase.origin );
     earthquake( 0.25, 10, location, 1050 );
+    playfxontag( level.myfx[ 2 ], m_suitcase, "tag_origin" );
     m_suitcase thread do_show_and_flying( location );
+    m_suitcase thread rotate_me();
+
+    level waittill( "bottle_has_been_returned" );
+    m_suitcase.is_on_ground_now = false;
+    m_suitcase thread rotate_me();
+    PlaySoundAtPosition( level.jsn_snd_lst[ 3 ], m_suitcase.origin );
+    earthquake( 0.25, 10, m_suitcase.origin, 1050 );
+    wait 1;
+
+    m_suitcase movez( 200, 2.2, 0.5, 0 );
+    m_suitcase waittill( "movedone" );
+    playfx( level.myFx[ 91 ], m_suitcase.origin );
+
+    wait 1;
+    m_suitcase delete();
+    level notify( "delete_all_suitcase_related" );
+
+}
 
 
+spawn_drinkable_step()
+{
+    level endon( "end_game" );
+    //level waittill( "all_suitcases_collected" );
+    origin_lo = ( 1159.12, 1185.97, -260.295 );
+    spawnable_drink = spawn( "script_model", origin_lo + ( 0, 0, 5 ) );
+    spawnable_drink setmodel( "t6_wpn_zmb_perk_bottle_tombstone_world" );
+    spawnable_drink.angles = ( -4, 10, 0 );
+
+    spawnable_case = spawn( "script_model", origin_lo );
+    spawnable_case setmodel( level.suitcase_land_model );
+    spawnable_case.angles = ( 0, 190, 0 );
+
+    wait 0.05;
+    playfx( level.myfx[ 2 ], spawnable_case.origin );
+    wait 1;
+    
+    anim_trig = spawn( "trigger_radius_use", origin_lo, 2, 48, 48 );
+    anim_trig setCursorHint( "HINT_NOICON" );
+    anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
+    anim_trig TriggerIgnoreTeam();
+    foreach( playa in level.players )
+    {
+        playa.has_immunity = false;
+        playa.has_immunity_health = 1000;
+    }
+    wait 0.05;
+    while( true )
+    {
+        anim_trig waittill( "trigger", who ); 
+        
+        if( who.has_immunity ) 
+        {
+            anim_trig setHintString( "You already have ^3Immunity Drink^7 effects!" );
+            wait 2.5;
+            anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
+            wait 2.5;
+        }
+        if( is_player_valid( who ) )
+        {
+            if(  isdefined( who.has_immunity ) && !who.has_immunity  )
+            {
+                anim_trig setHintString( "Mixing ^3Immunity Drink^7" );
+                who.has_immunity = true;
+                if( !isdefined( who.has_immunity_health ) )
+                {
+                    who.has_immunity_health = 1000;
+                }
+
+                
+                who playsound( "zmb_sq_navcard_success" );
+                who thread playlocal_plrsound();
+                current_w = who getCurrentWeapon();
+                who giveWeapon( "zombie_builder_zm" );
+                who switchToWeapon( "zombie_builder_zm" );
+                waiter = 3.5;
+                wait waiter;
+                who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
+                who takeWeapon( "zombie_builder_zm" );
+                anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
+            }
+            if( who.has_immunity == false && who.has_immunity_health < 50 )
+            {
+            }
+
+            if( isdefined( who.has_immunity ) && who.has_immunity_health < 100 )
+            {
+                anim_trig setHintString( "Mixing ^3Immunity Drink^7" );
+                who playsound( "zmb_sq_navcard_success" );
+                who.has_immunity_health = 1000;
+                who thread playlocal_plrsound();
+                current_w = who getCurrentWeapon();
+                who giveWeapon( "zombie_builder_zm" );
+                who switchToWeapon( "zombie_builder_zm" );
+                waiter = 3.5;
+                wait waiter;
+                who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
+                who takeWeapon( "zombie_builder_zm" );
+                if( level.dev_time ){ iprintln( "^3 PLAYER HAS IMMUNITY HEALTHA AT ^7" + who.has_immunity_health ); }
+                anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
+                    
+                
+            }
+        }
+    }
+}
+
+playlocal_plrsound()
+{
+    self endon( "disconnect" );
+    self playsound( level.mysounds[ 12 ] );
+    wait 0.05;
+    self playsound( level.mysounds[ 8 ] );
+    wait 0.6;
+    self playsound( level.mysounds[ 9 ] );
+}
+
+
+rotate_me()
+{
+    
+    while( true )
+    {
+        if( !isdefined( self ) )
+        {
+            break;
+        }
+        if( self.is_on_ground_now == true )
+        {
+            self rotateyaw( 360, 0.9, 0, 0.7 );
+            wait 0.9;
+            break;
+        }
+        self rotateYaw( 360, 0.9, 0, 0 );
+        //self rotatePitch( 360, 0.4, 0, 0 );
+        wait 0.9;
+    }
 }
 
 do_show_and_flying( landing_spot )
 {
     level endon( "end_game" );
+    self.is_on_ground_now = false;
     playfx( level.myFx[ 92 ], self.origin );
     wait 0.05;
     playfxontag( level.myfx[ 2 ], self, "tag_origin" );
-    self moveto( self.origin + ( 20, -10, 25 ), 2, 0.2, 0 );
+    self moveto( self.origin + ( 40, -10, 55 ), 0.8, 0.2, 0 );
     self waittill( "movedone" );
     PlaySoundAtPosition(level.jsn_snd_lst[ 8 ], self.origin );
 
-    self moveto( self.origin + ( -30, 20, -30 ), 1, 0, 0 );
+    self moveto( self.origin + ( -20, 70, 40 ), 1, 0, 0 );
     PlaySoundAtPosition(level.jsn_snd_lst[ 5 ], self.origin );
     self waittill( "movedone" );
     PlaySoundAtPosition(level.jsn_snd_lst[ 4 ], self.origin );
-    self moveto( self.origin + ( 15, 15, 15 ), 2, 0, 0.8 );
+    self moveto( self.origin + ( 15, 15, 15 ), 0.8, 0, 0 );
     self waittill( "movedone" );
 
-    self moveto( landing_spot + ( 0, 0, -10 ), 3, 0, 0.8 );
+    self moveto( landing_spot + ( 0, 0, -10 ), .3, 0, 0 );
     self waittill( "movedone" );
+    playfx( level.myFx[ 95 ], self.origin + ( 0, 0, 20 ) );
     self setmodel(  level.suitcase_land_model );
 
     level thread spn_out_bottles( landing_spot );
+    self.is_on_ground_now = true;
 }
 
 spn_out_bottles( perk_landing )
@@ -247,9 +445,605 @@ spn_out_bottles( perk_landing )
         bottles[ s ] setmodel( "t6_wpn_zmb_perk_bottle_tombstone_world" );
         bottles[ s ].angles = ( 0, 180, 90 );
         wait 0.05;
+        playfxontag( level.myFx[ 20 ], bottles[ s ], "tag_origin" );
         bottles[ s ] thread tilt();
         bottles[ s ] thread animate();
     }
+
+    level notify( "spawn_rogue_bottle" );
+    level thread spawn_rogue_bottle( perk_landing );
+    level waittill( "delete_all_suitcase_related" );
+    foreach( bs in bottles )
+    {
+        bs delete();
+    }
+}
+
+playsoundlooper()
+{
+    while( isdefined( self  ) )
+    {
+        PlaySoundAtPosition(level.mysounds[ 12 ], self.origin );
+        wait randomFloatRange( 2, 4 );
+    }
+}
+
+spin_all_over_yaw()
+{
+    level endon( "end_game" );
+    self.angles = ( -90, 0, 0 );
+    while( isdefined( self ) )
+    {
+        self rotateYaw( 360, 1, 0, 0 );
+        wait 1;
+    }
+}
+
+spin_all_over_roll()
+{
+    level endon( "end_game" );
+    while( isdefined( self ) )
+    {
+        self rotateRoll( 360, 2, 0, 0 );
+        wait 2;
+    }
+}
+
+spin_all_over_pitch()
+{
+    level endon( "end_game" );
+    while( isdefined( self ) )
+    {
+        self rotatePitch( 360, 2, 0, 0 );
+        wait 2;
+    }
+}
+spawn_rogue_bottle( location )
+{
+    level endon( "end_game" );
+
+    mq_shooting_bottle = spawn( "script_model", location );
+    mq_shooting_bottle setmodel( "t6_wpn_zmb_perk_bottle_tombstone_world" );
+    mq_shooting_bottle.angles = mq_shooting_bottle.angles;
+    wait 0.05;
+    mq_shooting_bottle playLoopSound(  level.jsn_snd_lst[ 26 ] );
+    mq_shooting_bottle thread playsoundlooper();
+    mq_trigger_shot = spawn( "trigger_damage", location, 50, 50, 50 );
+    mq_trigger_shot setHintString( "" );
+    mq_trigger_shot setCursorHint( "HINT_NOICON" );
+    mq_trigger_shot SetVisibleToAll();
+    mq_shooting_bottle thread spin_all_over_yaw();
+   // mq_shooting_bottle thread spin_all_over_pitch();
+   // mq_shooting_bottle thread spin_all_over_roll();
+    mq_trigger_shot setCanDamage( true );
+    
+    wait 0.1;
+    mq_trigger_shot enablelinkto();
+    
+    mq_trigger_shot linkto( mq_shooting_bottle );
+    if( level.dev_time ){ iprintln( "TRIGGER ORG: ^1" + mq_trigger_shot.origin + " ^7\nBOTTLE ORG: ^2" + mq_shooting_bottle.origin ); }
+    playfxontag( level.myfx[ 1 ], mq_shooting_bottle, "tag_origin" );
+    wait 0.05;
+    playfxontag( level.myFx[ 34 ], mq_shooting_bottle, "tag_origin" );
+    wait 0.05;
+    initial_moves = [];
+    suitcase_locs = [];
+    speed_here_next = [];
+
+    PlaySoundAtPosition( level.jsn_snd_lst[ 70 ], mq_trigger_shot.origin );
+    playsoundatposition( level.jsn_snd_lst[ 91 ], mq_shooting_bottle.origin );
+    suitcase_locs[ 0 ] = ( -6704.51, 5039.83, -45.875 ); //quick
+    suitcase_locs[ 1 ] = ( -5530.7, -7865.11, 0.125 ); //speed
+    suitcase_locs[ 2 ] = (  8038.52, -4657.54, 264.125 ); //dtap
+    suitcase_locs[ 3 ] = ( 1038.92, -1490.15, 128.125 ); //jugg
+    
+    //bus depo / revive
+    if( location == suitcase_locs[ 0 ] )
+    {
+        initial_moves[ 0 ] = ( -6714.11, 5000.25, 41.3182 );
+        initial_moves[ 1 ] = ( -6710.76, 5154.51, 83.8797 );
+        initial_moves[ 2 ] = ( -6557.36, 5244.08, -27.2726 );
+        initial_moves[ 2 ] = ( -6646.91, 5512.69, 25.937 );
+        initial_moves[ 3 ] = ( -6821.92, 5449.45, -7.61107 );
+
+        speed_here_next[ 0 ] = ( -6962.61, 5185.69, 67.5095 );
+        speed_here_next[ 1 ] = ( -7112.4, 5411.83, -7.1482 );
+        speed_here_next[ 2 ] = ( -6651.42, 5404.02, 88.2427 );
+        speed_here_next[ 3 ] = ( -6546.44, 5133.73, -19.5703 );
+        speed_here_next[ 4 ] = ( -6458.99, 5565.77, 70.2642 );
+        speed_here_next[ 5 ] = ( -6890.43, 5575.94, -24.1671 );
+    }
+
+    //diner / speedcola
+    if( location == suitcase_locs[ 1 ] )
+    {
+        initial_moves[ 0 ] = ( -5582.81, -7913.1, 73.4702 );
+        initial_moves[ 1 ] = ( -5627.35, -7848.69, 56.5499 );
+        initial_moves[ 2 ] = ( -5752.32, -7666.93, 56.7257 );
+        initial_moves[ 2 ] = ( -5560.73, -7669.82, 21.1548 );
+        initial_moves[ 3 ] = ( -5530.96, -7783.97, 103.966 );
+
+        speed_here_next[ 0 ] = ( -5794.35, -7814.55, 42.9144 );
+        speed_here_next[ 1 ] = ( -6035.39, -7537.24, 7.56216 );
+        speed_here_next[ 2 ] = ( -6449.57, -7942.64, 44.9581 );
+        speed_here_next[ 3 ] = ( -6661.28, -7592.77, 43.144 );
+        speed_here_next[ 4 ] = ( -6044.07, -7412.59, 48.0143 );
+        speed_here_next[ 5 ] = ( -5676.97, -7607.33, 24.6354 );
+    }
+
+
+
+    //farm / dtap
+    if( location == suitcase_locs[ 2 ] )
+    {
+        initial_moves[ 0 ] = ( 8038.52, -4657.54, 464.125 );
+        initial_moves[ 1 ] = ( 7944.04, -4755.14, 394.782 );
+        initial_moves[ 2 ] = ( 8164.06, -4942.67, 250.788 );
+        initial_moves[ 2 ] = ( 8421.76, -4758.49, 424.573 );
+        initial_moves[ 3 ] = ( 8478.01, -4977.29, 273.032 );
+
+        speed_here_next[ 0 ] = ( 8369.62, -5165.18, 394.973 );
+        speed_here_next[ 1 ] = ( 8194.24, -5499.25, 366.946 );
+        speed_here_next[ 2 ] = ( 8118.66, -5077.78, 239.292 );
+        speed_here_next[ 3 ] = ( 8368.06, -5313.82, 84.5687 );
+        speed_here_next[ 4 ] = ( 8189.15, -4538.1, 146.291 );
+        speed_here_next[ 5 ] = ( 8170.38, -4476.42, 356.048 );
+        speed_here_next[ 6 ] = ( 8064.32, -4725.57, 315.313 );
+        
+
+    }
+
+    //town / jugg
+    if( location == suitcase_locs[ 3 ] )
+    {
+        initial_moves[ 0 ] = ( 1034.38, -1513.6, 251.053 );
+        initial_moves[ 1 ] = ( 876.068, -1483.1, 137.595 );
+        initial_moves[ 2 ] = ( 935.746, -1332.83, 324.934 );
+        initial_moves[ 2 ] = ( 1002.54, -1228.56, 200.671 );
+        initial_moves[ 3 ] = ( 892.121, -1393.99, 155.566 );
+
+        speed_here_next[ 0 ] = ( 917.207, -1340.73, 270.436 );
+        speed_here_next[ 1 ] = ( 1120.07, -1217.03, 218.252 );
+        speed_here_next[ 2 ] = ( 1276.07, -643.25, 73.8733 );
+        speed_here_next[ 3 ] = ( 867.41, -911.584, 204.835 );
+        speed_here_next[ 4 ] = ( 735.281, -1063.95, 221.801 );
+        speed_here_next[ 5 ] = ( 971.751, -1248.05, 147.405 );
+    }
+
+    mq_shooting_bottle thread add_veryfastfx();
+    for( s = 0; s < initial_moves.size; s++ )
+    {
+        mq_shooting_bottle moveto( initial_moves[ s ], 1, 0.2, 0.2 );
+        mq_shooting_bottle waittill( "movedone" );
+        PlaySoundAtPosition( level.jsn_snd_lst[ 70 ], mq_shooting_bottle.origin );
+        playfxontag( level.myFx[ 46 ], mq_shooting_bottle, "tag_origin" );
+    }
+
+    if( level.dev_time ){ iprintlnbold( "WAITING FOR INTERACTING" ); }
+    mq_shooting_bottle  thread mover_updown();
+    mq_shooting_bottle.health = 5;
+    mq_shooting_bottle setcandamage( true );
+    while( true )
+    {
+        mq_trigger_shot waittill(  "damage", amount, attacker );
+        if( isplayer( attacker ) )
+        {
+            playfx( level.myFx[ 96 ], mq_trigger_shot.origin );
+            PlaySoundAtPosition(level.jsn_snd_lst[ 43 ] , mq_trigger_shot.origin );
+            mq_shooting_bottle notify( "stop_hovers" );
+            break;
+        }
+        
+    }
+    mq_shooting_bottle thread playfiretrails();
+    for( x = 0; x < speed_here_next.size; x++ )
+    {
+        randomtime = randomfloatrange( 0.8, 1.4 );
+        mq_shooting_bottle moveto( speed_here_next[ x ], randomtime, ( randomtime / 4 ), ( randomtime / 2 ) );
+        wait randomtime + 0.05;
+        mq_shooting_bottle thread mover_updown();
+        mq_trigger_shot waittill( "damage", amount, attacker );
+        if( isplayer( attacker ) )
+        {
+            if( level.dev_time )
+            { 
+                iprintlnbold( "MOVING BOTTLE AGAIN" );
+            }
+            level thread add_spark_fx_then_delete( mq_shooting_bottle );
+            PlaySoundAtPosition(level.jsn_snd_lst[ 43 ] , mq_trigger_shot.origin );
+           // playfx( level.myFx[ 96 ], mq_shooting_bottle.origin );
+            playFXOnTag( level.myFx[ 33 ], mq_shooting_bottle, "tag_origin" );
+            mq_shooting_bottle notify( "stop_hovers" );
+
+
+        }
+    }
+
+    mq_shooting_bottle moveto( location, 3, 1, 1.5 ); 
+    
+    mq_shooting_bottle waittill( "movedone" );
+    level thread loop_big_fxs( mq_shooting_bottle.origin );
+    mq_shooting_bottle moveto( location + ( 0, 0, 90 ), 2, 0.4, 0.5 );
+    mq_shooting_bottle waittill( "movedone" );  
+    level thread fxsfxs( location + ( 0, 0, 90 ) );
+    iprintlnbold( "DAMAGE GIVEN NADE" );    
+    level notify( "bottle_has_been_returned" );
+    wait 1;
+    playfxontag( level._effect[ "avogadro_ascend_aerial" ], mq_shooting_bottle, "tag_origin" );
+    wait 0.05;
+    if( level.suitcases_collected == 4 )
+    {
+        wait 1;
+        level notify( "all_suitcases_collected" );
+    }
+    
+    playfxontag( level.myFx[ 92 ], mq_shooting_bottle, "tag_origin" );
+    if( isdefined( mq_trigger_shot ) )
+    {
+        playfx( level.myFx[ 90 ], mq_trigger_shot.origin );
+        mq_trigger_shot delete();
+    }
+
+    if( isdefined( mq_shooting_bottle ) )
+    {
+        playfx( level.myFx[ 90 ], mq_shooting_bottle.origin );
+        mq_shooting_bottle delete();
+    }
+    
+
+}
+ 
+loop_big_fxs( here )
+{
+    level endon( "end_game" );
+    for( i = 0; i < 12; i++ )
+    {
+        playfx( level.myFx[ 3 ], here );
+        wait randomfloatrange( 0.08, 0.9 );
+    }
+}
+
+do_dialog_here( sub_up, sub_low, duration, fader )
+{
+    subtitle_upper =  sub_up;
+    subtitle_lower = sub_low;
+    durations = duration;
+    fadetimer = fader;
+    level thread machine_says( "^3Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, durations, fadetimer );
+}
+
+machine_says( sub_up, sub_low, duration, fadeTimer )
+{
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
+    {
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
+    }
+    level.subtitles_on_so_have_to_wait = true;
+    level.play_schruder_background_sound = true;
+	subtitle_upper = NewHudElem();
+	subtitle_upper.x = 0;
+	subtitle_upper.y = -42;
+	subtitle_upper SetText( sub_up );
+	subtitle_upper.fontScale = 1.36;
+	subtitle_upper.alignX = "center";
+	subtitle_upper.alignY = "middle";
+	subtitle_upper.horzAlign = "center";
+	subtitle_upper.vertAlign = "bottom";
+	subtitle_upper.sort = 1;
+    
+	subtitle_lower = undefined;
+	subtitle_upper.alpha = 0;
+    subtitle_upper fadeovertime( fadeTimer );
+    subtitle_upper.alpha = 1;
+    
+    
+    
+	if ( IsDefined( sub_low ) )
+	{
+		subtitle_lower = NewHudelem();
+		subtitle_lower.x = 0;
+		subtitle_lower.y = -24;
+		subtitle_lower SetText( sub_low );
+		subtitle_lower.fontScale = 1.26;
+		subtitle_lower.alignX = "center";
+		subtitle_lower.alignY = "middle";
+		subtitle_lower.horzAlign = "center";
+		subtitle_lower.vertAlign = "bottom";
+		subtitle_lower.sort = 1;
+        subtitle_lower.alpha = 0;
+        subtitle_lower fadeovertime( fadeTimer );
+        subtitle_lower.alpha = 1;
+	}
+	
+	wait ( duration );
+    level.play_schruder_background_sound = false;
+    //level thread a_glowby( subtitle );
+    //if( isdefined( subtitle_lower ) )
+    //{
+    //    level thread a_glowby( subtitle_lower );
+    //}
+    
+	level thread flyby( subtitle_upper );
+    subtitle_upper fadeovertime( fadeTimer );
+    subtitle_upper.alpha = 0;
+	//subtitle Destroy();
+	
+	if ( IsDefined( subtitle_lower ) )
+	{
+		level thread flyby( subtitle_lower );
+        subtitle_lower fadeovertime( fadeTimer );
+        subtitle_lower.alpha = 0;
+	}
+    
+}
+
+//this a gay ass hud flyer, still choppy af
+flyby( element )
+{
+    level endon( "end_game" );
+    x = 0;
+    on_right = 640;
+
+    while( element.x < on_right )
+    {
+        element.x += 200;
+        wait 0.05;
+    }
+    element destroy_hud();
+    //let new huds start drawing if needed
+    level.subtitles_on_so_have_to_wait = false;
+}
+
+
+
+add_veryfastfx()
+{
+    for( i = 0; i < 3; i++ )
+    {
+        playFXOnTag( level.myFx[ 47 ], self, "tag_origin" );
+        wait randomfloatrange( 0.1, 0.45 );
+    }
+    
+}
+
+add_spark_fx_then_delete( selfie )
+{
+    temp = spawn( "script_model", selfie.origin );
+    temp setmodel( "tag_origin" );
+    temp.angles = temp.angles;
+    wait 0.05;
+    playfxontag( level.myFx[ 44 ], temp, "tag_origin" );
+    wait 0.05;
+    playfxontag( level.myFx[ 44 ], temp, "tag_origin"  );
+    wait 2;
+    temp delete();
+}
+playfiretrails()
+{
+    s = 0;
+    while( isdefined( self ) )
+    {
+        playfxontag( level.myFx[ 43 ], self, "tag_origin" );
+        wait 6;
+        if( s > 4 )
+        {
+            break;
+        }
+        s++;
+    }
+}
+fxsfxs( here )
+{
+    for( i = 0; i < 25; i++ )
+    {
+        playfx( level.myFx[ 94 ], here );
+        wait 0.08;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+do_initial_move_in( which_bottle_location, mq_shooting_bottle )
+{
+    level endon( "end_game" );
+    //what_location = return_initial_move_in_spots( which_bottle_location );
+    if( level.dev_time ){ iprintlnbold( "LOCATION FOR SUITCASE MOVE IN = " + level.current_suitcase_location ); }
+
+
+    if( level.current_suitcase_location == level.suitcase_ground_positions[ 0 ] )
+    {
+        level thread initial_mover_quickrevive(  mq_shooting_bottle  );
+    }
+    /*
+    if( level.current_suitcase_location == level.suitcase_ground_positions[ 1 ] )
+    {
+         level thread initial_mover_speedcola(  mq_shooting_bottle  );
+    }
+    if( level.current_suitcase_location == level.suitcase_ground_positions[ 2 ] )
+    {
+         level thread initial_mover_dtap(  mq_shooting_bottle  );
+    }
+    else if( level.current_suitcase_location == level.suitcase_ground_positions[ 3 ] )
+    {
+        level thread initial_mover_jugg(  mq_shooting_bottle  );
+    }
+    */
+}
+
+initial_mover_quickrevive( who )
+{
+    level endon( "end_game" );
+    locations = [];
+    locations[ 0 ] = ( -7720.93, 4165.48, 56.849 );
+    locations[ 1 ] = ( -5748.13, 7279.16, 1.36866 );
+    locations[ 2 ] = ( 6311.64, 4354.8, 12.9813 );
+    locations[ 3 ] = ( -6969.74, 5231.99, -2.49943 );
+    locations[ 4 ] = ( -5823.07, 3171.74, 59.1614 );
+    locations[ 5 ] = ( -6890.17, 5237.41, 72.2193 );
+    wait 0.05;
+    //who thread spin_me_around_mq();
+    
+    for( i = 0; i < locations.size; i++ )
+    {
+        timer = randomfloatrange( 2, 3 );
+        who moveto( locations[ i ], timer, 0, 0 );
+        wait timer + 0.05;
+    }
+    who thread mover_updown();
+
+}
+
+initial_mover_speedcola( who )
+{
+    level endon( "end_game" );
+    locations = [];
+    locations[ 0 ] = ( -6720.93, 5165.48, 56.849 );
+    locations[ 1 ] = ( -6748.13, 5279.16, 1.36866 );
+    locations[ 2 ] = ( 6911.64, 5354.8, 12.9813 );
+    locations[ 3 ] = ( -6969.74, 5231.99, -2.49943 );
+    locations[ 4 ] = ( -6823.07, 5171.74, 59.1614 );
+    locations[ 5 ] = ( -6890.17, 5237.41, 72.2193 );
+    who thread spin_me_around_mq();
+    who thread mover_updown();
+    for( i = 0; i < locations.size; i++ )
+    {
+        timer = randomfloatrange( 0.2, 0.4 );
+        who moveto( locations[ 0 ], timer, 0, timer / 2 );
+        wait timer;
+    }
+
+}
+
+initial_mover_dtap( who )
+{
+    level endon( "end_game" );
+    locations = [];
+    locations[ 0 ] = ( -6720.93, 5165.48, 56.849 );
+    locations[ 1 ] = ( -6748.13, 5279.16, 1.36866 );
+    locations[ 2 ] = ( 6911.64, 5354.8, 12.9813 );
+    locations[ 3 ] = ( -6969.74, 5231.99, -2.49943 );
+    locations[ 4 ] = ( -6823.07, 5171.74, 59.1614 );
+    locations[ 5 ] = ( -6890.17, 5237.41, 72.2193 );
+    who thread spin_me_around_mq();
+    who thread mover_updown();
+    for( i = 0; i < locations.size; i++ )
+    {
+        timer = randomfloatrange( 0.2, 0.4 );
+        who moveto( locations[ 0 ], timer, 0, timer / 2 );
+        wait timer;
+    }
+
+}
+
+initial_mover_jugg( who )
+{
+    level endon( "end_game" );
+    locations = [];
+    locations[ 0 ] = ( -6720.93, 5165.48, 56.849 );
+    locations[ 1 ] = ( -6748.13, 5279.16, 1.36866 );
+    locations[ 2 ] = ( 6911.64, 5354.8, 12.9813 );
+    locations[ 3 ] = ( -6969.74, 5231.99, -2.49943 );
+    locations[ 4 ] = ( -6823.07, 5171.74, 59.1614 );
+    locations[ 5 ] = ( -6890.17, 5237.41, 72.2193 );
+    who thread spin_me_around_mq();
+    who thread mover_updown();
+    for( i = 0; i < locations.size; i++ )
+    {
+        timer = randomfloatrange( 0.2, 0.4 );
+        who moveto( locations[ 0 ], timer, 0, timer / 2 );
+        wait timer;
+    }
+
+}
+
+mover_updown()
+{
+    level endon( "end_game" );
+    self endon( "stop_hovers" );
+    while( true )
+    {
+        if( isdefined( self ) )
+        {
+            self movez( 100, 1, 0.1, 0.1 );
+            wait 1;
+            self movez( -100, 1, 0.1, 0.1 );
+            wait 1;
+        }
+    }
+}
+/*
+initial_mover_quickrevive( who )
+{
+    level endon( "end_game" );
+    locations = [];
+    locations[ 0 ] = (  );
+    locations[ 1 ] = (  );
+    locations[ 2 ] = (  );
+    locations[ 3 ] = (  );
+    locations[ 4 ] = (  );
+    locations[ 5 ] = (  );
+
+}
+
+initial_mover_quickrevive( who )
+{
+    level endon( "end_game" );
+    locations = [];
+    locations[ 0 ] = (  );
+    locations[ 1 ] = (  );
+    locations[ 2 ] = (  );
+    locations[ 3 ] = (  );
+    locations[ 4 ] = (  );
+    locations[ 5 ] = (  );
+
+}
+
+initial_mover_quickrevive( who )
+{
+    level endon( "end_game" );
+    locations = [];
+    locations[ 0 ] = (  );
+    locations[ 1 ] = (  );
+    locations[ 2 ] = (  );
+    locations[ 3 ] = (  );
+    locations[ 4 ] = (  );
+    locations[ 5 ] = (  );
+
+}
+*/
+which_is_closest()
+{
+    level endon( "end_game" );
+
+    level.suitcase_ground_positions = [];
+    //quick
+    level.suitcase_ground_positions[ 0 ] = ( -6704.51, 5039.83, -45.875 );
+    //speed
+    level.suitcase_ground_positions[ 1 ] = ( -5530.7, -7865.11, 0.125 );
+    //dtap
+    level.suitcase_ground_positions[ 2 ] = ( 8038.52, -4657.54, 264.125 );
+    //toomb
+    //level.suitcase_ground_positions[ 3 ] = ( 10863, 8290.47, -407.875 );
+    //jugg
+    level.suitcase_ground_positions[ 3 ] = ( 1038.92, -1490.15, 128.125 );
+
+
+
 }
 
 animate()
@@ -262,11 +1056,13 @@ animate()
         self moveto( old_org, 0, 0, 0 ); 
         wait 0.05;
         //&&randoms = randomfloatrange( 0.9, 1.9 );
-        self moveto( self.origin + ( 0, randomintrange( 2, 10 ), randomintrange( 190, 200 ) ), randoms, 0, 0 );
+        self moveto( self.origin + ( 0, randomintrange( 20, 300 ), randomintrange( 190, 200 ) ), randoms, 0, 0 );
         wait randoms + 0.05;
         self.origin = old_org;
     }
 }
+
+
 
 tilt()
 {

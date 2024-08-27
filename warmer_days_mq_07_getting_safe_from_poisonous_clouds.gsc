@@ -885,6 +885,7 @@ level_waittill_continue_mq()
 level_guide_players_to_depo_blockers()
 {
     level endon( "end_game" );
+     level notify( "start_find_suitcase_dialog" );
     guide_blockers = [];
     guide_blockers[ 0 ] = ( 201.949, -5322.47, -73.5151 );
     guide_blockers[ 1 ] = ( 130.762, -5055.91, -67.0904 );
@@ -963,6 +964,8 @@ level_guide_players_to_depo_blockers()
     {
         s delete();
     }
+    //notify warmer_days_mq_08_poisonous_adventure.gsc to start running its logic
+   
 }
 fade_to_black_on_impact_self_only()
 {
