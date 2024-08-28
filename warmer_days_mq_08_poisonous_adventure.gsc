@@ -1,6 +1,11 @@
-//codename: warmer_days_mq_02_meet_mr_s.gsc
-//purpose: handles the first time meeting with Mr.Schruder
-//release: 2023 as part of tranzit 2.0 v2 update
+//::purpose
+//
+//  after poisonous clouds have pushed players to farm and clouds have disappeared
+//  this script handles the spawning of initial suitcase at bus depo
+// this script then does the locate suitcases near perk machines logic
+// each location has a shootable perk bottle step that players must complete
+//  upon completion a potion spawns inside of labs and players can take a zip from it and become immune to poisonous clouds
+
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\gametypes\_hud_message;
 #include maps\mp\ombies\_zm_stats;
@@ -43,6 +48,61 @@
 #include maps\mp\zombies\_zm_craftables;
 
 
+main()
+{
+    replacefunc( ::disable_triggers, ::disable_triggers_custom );
+}
+
+disable_triggers_custom()
+{
+    trig = getentarray( "trigger_Keys", "targetname" );
+    for( i = 0; i < trig.size; i++ )
+    {
+        playfxontag( level.myfx[ 1 ], trig, "tag_origin" );
+        trig trigger_on();
+    }
+}
+
+levelBusLi()
+{
+    //flag_wait( "initial_blackscreen_passed" );
+    wait 6;
+   // level.the_bus.frontLight 	= SpawnAndLinkFXToOffset( level._effect[ "fx_busInsideLight" ], self, ( 130, 0, 130), ( -90, 0, 0 ) );
+	//level.the_bus.centerLight 	= SpawnAndLinkFXToOffset( level._effect[ "fx_busInsideLight" ], self, (   0, 0, 130), ( -90, 0, 0 ) );
+	//level.the_bus.backLight 		= SpawnAndLinkFXToOffset( level._effect[ "fx_busInsideLight" ], self, (-130, 0, 130), ( -90, 0, 0 ) );
+
+    level.the_bus thread busFuelTankSetup();
+    level.the_bus thread busRoofRailsSetup();
+}
+
+busRoofRailsSetup()
+{
+	roof_rails = GetEntArray("roof_rail_entity", "targetname");
+	for ( i = 0; i < roof_rails.size; i++ )
+	{
+		roof_rails[i] LinkTo( self, "", self worldtolocalcoords(roof_rails[i].origin), roof_rails[i].angles + self.angles);
+	}
+}
+
+
+busFuelTankSetup()
+{
+	script_origin = Spawn( "script_origin", self.origin + ( -193, 75, 48 ) );
+	script_origin.angles = ( 0, 180, 0 );
+	script_origin LinkTo( self );
+	self.fuelTankModelPoint = script_origin;
+    wait 0.05; 
+    playfxontag( level.myfx[ 1 ], self.fuelTankModelPoint, "tag_origin" );
+
+	script_origin = Spawn( "script_origin", self.origin + ( -193, 128, 48 ) );
+	script_origin LinkTo( self );
+	self.fuelTankTriggerPoint = script_origin;
+
+    wait 0.05; 
+    playfxontag( level.myfx[ 2 ], self.fuelTankTriggerPoint, "tag_origin" );
+    wait 0.05;
+}
+
 init()
 {
     all_suitcase_ground_position();
@@ -52,11 +112,15 @@ init()
     level.suitcase_land_model = "p_eb_med_suitcase"; 
     level.suitcases_collected = 0;
     precachemodel( "t6_wpn_zmb_perk_bottle_tombstone_world" );
+    precache_these_too();
 
     flag_wait( "initial_blackscreen_passed" );
     
     level thread do_first_dialog();
     level thread spawn_drinkable_step(); //reward and spawn drinkable immunity
+    level thread levelBusLi();
+
+    //for debugging vanilla triggers
 }
 
 rise_suitcase()
@@ -149,6 +213,7 @@ moveeverything( suit_case )
 
 do_first_dialog()
 {
+    /*
     level waittill( "start_find_suitcase_dialog" );
     do_dialog_here( "It seems that ^5Spirit Of Sorrow^7 has called in her cloud friends.", "Said clouds are dangerous and you should avoid them at all cost.", 10, 3 );
     wait 8;
@@ -172,7 +237,16 @@ do_first_dialog()
     do_dialog_here( "The suitcase is full of combined mixes!", "You could try bringing it to lab...", 9, 2 );
     wait 6;
     do_dialog_here( "We might be able to craft the serum now..", "Once you've drank it, you should earn immunity towards those toxic clouds", 10, 3 );
+    */
     level waittill( "crafting_serum" );
+    //needs a 10 second wait so we dont have overlapping text
+    wait 10;
+    do_dialog_here( "Fantastic, you've crafted the potion!", "Feel free to take a zip from it..", 6, 1 );
+    wait 7;
+    do_dialog_here( "You should be immune to Element ^3115 ^7clouds now.", "Keep an eye on the immune meter, it tells you if you need a refill of drinks", 8, 1 );
+    wait 9;
+    do_dialog_here( "We are able to continue now", "Do next easter egg step start here", 7, 1 );
+    wait 10;
 }
 spin_me_around_mq_first_time_pick_up() 
 {
@@ -289,25 +363,60 @@ spawn_suitcase_perka( location )
 
 }
 
+precache_these_too()
+{
+    precachemodel( "p_rus_electric_boxes4" );
+    precachemodel( "p_rus_pipes_modular_valve" );
+}
 
+hover_drinkable_location()
+{
+    while( isdefined( self ) )
+    {
+        self movez( 6, 2, 0.5, 0.5 );
+        //self rotateYaw( 360, 4, 0, 0 );
+        wait 2;
+        self movez( -6, 2, 0.5, 0.5 );
+        wait 2;
+    }
+}
+
+spin_drinkable_location()
+{
+    while( isdefined( self ) )
+    {
+        self rotateYaw( 360, 2, 0, 0 );
+        wait 2;
+    }
+}
 spawn_drinkable_step()
 {
     level endon( "end_game" );
     //level waittill( "all_suitcases_collected" );
+    wait 1;
     origin_lo = ( 1159.12, 1185.97, -260.295 );
-    spawnable_drink = spawn( "script_model", origin_lo + ( 0, 0, 5 ) );
+    spawnable_drink = spawn( "script_model", origin_lo + ( 0, 0, 15 ) );
     spawnable_drink setmodel( "t6_wpn_zmb_perk_bottle_tombstone_world" );
-    spawnable_drink.angles = ( -4, 10, 0 );
+    spawnable_drink.angles = ( 4, 10, 0 );
 
+    wait 1;
+
+    spawnable_lighter = spawn( "script_model", origin_lo + ( 0, 0, 5 ) );
+    spawnable_lighter setmodel( "tag_origin" );
+    spawnable_lighter.angles = ( 5, 10, 0 );
+
+    wait 1;
     spawnable_case = spawn( "script_model", origin_lo );
-    spawnable_case setmodel( level.suitcase_land_model );
-    spawnable_case.angles = ( 0, 190, 0 );
+    spawnable_case setmodel( "p_rus_electric_boxes4" );
+    spawnable_case.angles = ( 90, 270, 0 );
 
+    
+    //spawnable_case thread hover_drinkable_location();
     wait 0.05;
     playfx( level.myfx[ 2 ], spawnable_case.origin );
     wait 1;
-    
-    anim_trig = spawn( "trigger_radius_use", origin_lo, 2, 48, 48 );
+    playfxontag( level.myFx[ 41 ], spawnable_lighter, "tag_origin" );
+    anim_trig = spawn( "trigger_radius_use", origin_lo + ( 0, 0, 0 ), 1, 12, 12 );
     anim_trig setCursorHint( "HINT_NOICON" );
     anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
     anim_trig TriggerIgnoreTeam();
@@ -317,9 +426,23 @@ spawn_drinkable_step()
         playa.has_immunity_health = 1000;
     }
     wait 0.05;
+
+    spawnable_case.angles = ( 0, 180, 90 );
+    initial_hit = true;
     while( true )
     {
         anim_trig waittill( "trigger", who ); 
+        if( initial_hit  )
+        {
+            initial_hit = false;
+            earthquake( 0.25, 10, spawnable_drink.origin, 1050 );
+            spawnable_lighter thread spin_drinkable_location();
+            wait 1;
+            spawnable_drink thread hover_drinkable_location();
+            spawnable_drink thread spin_drinkable_location();
+            level notify( "crafting_serum" );
+
+        }
         
         if( who.has_immunity ) 
         {
@@ -349,6 +472,16 @@ spawn_drinkable_step()
                 wait waiter;
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_builder_zm" );
+                wait 0.1;
+                anim_trig sethintstring( "^3Immunity Drink ^7is ready to be consumed!" );
+                wait 0.05;
+                who giveWeapon( "zombie_perk_bottle_tombstone" );
+                who switchToweapon( "zombie_perk_bottle_tombstone" );
+                wait 2.5;
+                who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
+                who takeWeapon( "zombie_perk_bottle_tombstone" );
+                level thread machine_says(  "Survivor ^3" + who.name + "^7 upgraded their ^5abilities.^7", "Survivor now has ^3Immunity Drink ^7effects.", 4.5, 0.15 );
+                wait 0.1;
                 anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
             }
             if( who.has_immunity == false && who.has_immunity_health < 50 )
@@ -359,6 +492,7 @@ spawn_drinkable_step()
             {
                 anim_trig setHintString( "Mixing ^3Immunity Drink^7" );
                 who playsound( "zmb_sq_navcard_success" );
+                
                 who.has_immunity_health = 1000;
                 who thread playlocal_plrsound();
                 current_w = who getCurrentWeapon();
@@ -370,7 +504,7 @@ spawn_drinkable_step()
                 who takeWeapon( "zombie_builder_zm" );
                 if( level.dev_time ){ iprintln( "^3 PLAYER HAS IMMUNITY HEALTHA AT ^7" + who.has_immunity_health ); }
                 anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
-                    
+                
                 
             }
         }

@@ -584,6 +584,7 @@ testingg()
 {
     self endon( "disconnect" );
     level endon( "end_game" );
+    level waittill( "forever" );
     while( true )
     {
         self waittill( "weapon_fired", weap );
@@ -625,7 +626,9 @@ move_poisonous_clouds_main_quest()
     level thread keep_track_of_all_on_farm();
     //spawn on demand cloud fx already on farm
     level thread spawn_static_clouds_on_demand_at( level.poisonous_ground_clouds_origins_farm );
-    wait  randomintrange( 5, 10 );
+    wait  randomintrange( 2, 4 );
+    for( s = 0; s < level.players.size; s++ ){ level.players[ s ] thread fade_to_black_on_impact_self_only(); }
+    wait 3;
     foreach( player in level.players )
     {
         for( i = 0; i < 4; i++ )
@@ -672,18 +675,6 @@ monitor_arrive_farm()
     self endon( "disconnect" );
     while( true )
     {
-        /*
-        if( distance( self.origin, level.farmcheckpoint_ent[ 0 ] ) > 150 )
-        {
-            wait 1;
-            continue;
-        }
-        if( distance( self.origin, level.farmcheckpoint_ent[ 1 ] ) > 150 )
-        {
-            wait 1;
-            continue;
-        }
-        */
         if( distance( self.origin, level.farmcheckpoint_ent[ 0 ].origin  ) < 150  || distance( self.origin, level.farmcheckpoint_ent[ 1 ].origin ) < 150  )
         {
             if( level.dev_time )
@@ -1118,8 +1109,7 @@ triangle_cloud_follow()
     self endon( "death" );
     self endon( "stop_following_clouds" );
 
-    wait 2;
-    self thread fade_to_black_on_impact_self_only();
+    
     wait 2;
     offset_ = 270;  
     offsetn_ = -270;
@@ -1164,8 +1154,8 @@ move_to_farmgoal( value ) //max time to move = 70 seconds from spawn to farm
 {
     level endon( "end_game" );
 
-    timer = randomintrange( 60, 70 );
-    self moveto( level.mq_clouds_goal[ value ], timer, 25, 20 );
+    timer = randomintrange( 90, 100 );
+    self moveto( level.mq_clouds_goal[ value ], timer, 5, 30 );
     self waittill( "movedone" );
     self thread hover_me_around();
 }

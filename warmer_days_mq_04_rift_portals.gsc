@@ -104,6 +104,7 @@ init()
     level.repaired_rifts_to_do = undefined;
     level.core_fx_move_to_spots = [];
 
+    level.first_time_doing_ride = false;
     //these spots are above the reactor
     level.core_fx_move_to_spots[ 0 ] = ( 12567.9, 7314.66, -558.17 );
     level.core_fx_move_to_spots[ 1 ] = ( 12429.8, 7773.18, -675.528 );
@@ -153,6 +154,9 @@ init()
     
     level thread test_turn_off_lamps();
     level thread playerss();
+
+    wait 5;
+    level thread setup_all_rift_use_setup();
     //level thread tell_fog();
 
     //works. need to make it lot better tho.
@@ -329,61 +333,78 @@ playfxtowershooter( here )
     wait randomfloatrange( 0.3, 0.7 );
     playfx( level.myfx[ 9 ], here );
 }
-do_rift_ride( sudo, sudo_angles  )
+do_rift_ride( sudo, sudo_angles, real_player  )
 {
     level endon( "end_game" );
     PlaySoundAtPosition(level.jsn_snd_lst[ 62 ], (0,0,0));
-    //self waittill( "spawned_player" );
-    wait 5;
-    rider = spawn( "script_model", level.sky_camera_tower_location[ 0 ] );
-    rider setmodel( "tag_origin" );
-    rider.angles = level.sky_camera_tower_location_angles[ 0 ] + ( 90, 0, 0 );
-    wait 0.05;
-    
-    playfxontag( level.myfx[ 1 ], rider, "tag_origin" );
-    self CameraSetPosition( rider, rider.angles );
-    self CameraSetLookAt( level.sky_camera_tower_location[ level.sky_camera_tower_location.size ] );
-    self CameraActivate( true );
-    self setclientdvar( "r_fog", true );
-    self setclientdvar( "r_poisonfx_debug_enable", true );
-    
-    i = 0;
-    while( i < level.sky_camera_tower_location.size )
+
+    if( level.first_time_doing_ride )
     {
-        rider moveto( level.sky_camera_tower_location[ i ], 0.3, 0.1, 0 );
-        rider waittill( "movedone" );
-        playfx( level.myFx[ 9 ], rider.origin );
-        level thread playfxtowershooter( rider.origin );
-        i++;
+        //self waittill( "spawned_player" );
+        wait 5;
+        rider = spawn( "script_model", level.sky_camera_tower_location[ 0 ] );
+        rider setmodel( "tag_origin" );
+        rider.angles = level.sky_camera_tower_location_angles[ 0 ] + ( 90, 0, 0 );
+        wait 0.05;
+        
+        playfxontag( level.myfx[ 1 ], rider, "tag_origin" );
+        real_player CameraSetPosition( rider, rider.angles );
+        real_player CameraSetLookAt( level.sky_camera_tower_location[ level.sky_camera_tower_location.size ] );
+        real_player CameraActivate( true );
+        real_player setclientdvar( "r_fog", true );
+        real_player setclientdvar( "r_poisonfx_debug_enable", true );
+        
+        i = 0;
+        while( i < level.sky_camera_tower_location.size )
+        {
+            rider moveto( level.sky_camera_tower_location[ i ], 0.3, 0.1, 0 );
+            rider waittill( "movedone" );
+            playfx( level.myFx[ 9 ], rider.origin );
+            level thread playfxtowershooter( rider.origin );
+            i++;
+        }
+        wait 0.05;
+        real_player camerasetposition( rider );
+        real_player camerasetlookat();
+
+        real_player CameraActivate( true );
+        
+        s = 0;
+        alias = "level.sky_camera_location" + sudo;
+        holesize = "level.rift_camera" + sudo;
+        
+        //holesize.size;
+
+        holesizeangles = "level.rift_camera" + sudo + "_angles";
+        rider thread playheresomedarks();
+        location_to_set_player = sudo[ sudo.size ];
+        new_location_to_set_player = location_to_set_player + ( 0, 0, 20 );
+        wait 0.05;
+        real_player.origin = sudo[ sudo.size ];
+        real_player setOrigin( sudo[ sudo.size ] );
     }
-    wait 0.05;
-    self camerasetposition( rider );
-    self camerasetlookat();
-
-    self CameraActivate( true );
     
+
+
+    wait 0.05;
+    //set player to to new location already
     s = 0;
-    alias = "level.sky_camera_location" + sudo;
-    holesize = "level.rift_camera" + sudo;
-    
-    //holesize.size;
+    real_player.origin = sudo[sudo.size];
+    real_player setOrigin( sudo[ sudo.size ] );
+    real_player.ignoreme = true;
 
-    holesizeangles = "level.rift_camera" + sudo + "_angles";
-    rider thread playheresomedarks();
-    location_to_set_player = sudo[ sudo.size ];
-    new_location_to_set_player = location_to_set_player + ( 0, 0, 20 );
+    wait 1;
+    rider = spawn( "script_model", sudo[ 0 ] );
+    rider setmodel( "tag_origin" );
+    rider.angles = (0,0,0);
     wait 0.05;
-    self.origin = level.rift_camera_diner[ 8 ];
-    self setOrigin( level.rift_camera_diner[ 8 ] );
-
-
-    //debug /////////////////////////////
-    //self CameraSetPosition( self.origin );
-    //self cameraactivate( false );    
-    /////////////////////////////////
-
-
-
+        
+    playfxontag( level.myfx[ 1 ], rider, "tag_origin" );
+    real_player CameraSetPosition( rider, rider.angles );
+    real_player CameraSetLookAt();
+    real_player CameraActivate( true );
+    real_player setclientdvar( "r_fog", true );
+    real_player setclientdvar( "r_poisonfx_debug_enable", true );
     while( s < sudo.size )
     {
         speed = 750;
@@ -400,18 +421,20 @@ do_rift_ride( sudo, sudo_angles  )
         }
         else { rider rotateto(sudo_angles[ s + 1 ], time, 0, 0  );}
         
-        if( s > sudo.size - 7 )
+        if( s > sudo.size - ( sudo.size / 2 ) )
         {
-            self thread fade_to_black_on_impact_self_only();
+            real_player thread fade_to_black_on_impact_self_only();
         }
         wait( time - q_time);
         s++;
     }
     wait 0.05;
-    self CameraSetPosition( self.origin );
-    self CameraActivate( false );
-    self setclientdvar( "r_fog", false );
-    self setclientdvar( "r_poisonfx_debug_enable", false );
+    real_player.origin = sudo[ sudo.size ];
+    real_player setOrigin( sudo[ sudo.size ] );
+    real_player CameraSetPosition( real_player.origin );
+    real_player CameraActivate( false );
+    real_player setclientdvar( "r_fog", false );
+    real_player setclientdvar( "r_poisonfx_debug_enable", false );
 
     rider delete();
 }
@@ -430,6 +453,152 @@ all_rift_gump_prepare_locations()
     
 }
 
+
+new_do_summoning_animation( real_player, cam_loc, cam_ang, which_lamp )
+{
+    ground_origin = self.origin;
+    elevate_origin = ground_origin + ( 0, 0, 120 );
+    
+    //diner
+    //int_cam
+    //tag_cam
+
+    int_cam = ( -3959.79, -7270.67, 64.9125 );
+    int_cam_angles = ( 0, 26.6467, 0 );
+    tag_cam = ( -4172.44, -7347.67, -62.899 );
+    tag_cam_angles = ( 0, 22.362, 0 );
+    /* 
+    // ALL POSSIBLE RIDE TARGETS
+    level.rift_camera_town
+    level.rift_camera_pstation
+    level.rift_camera_bepo
+    level.rift_camera_diner
+    level.rift_camera_corn
+
+    //LAMP BUS DEPO -->             CORNFIELD LANDING
+    //LAMP DINER -->                POWER STATION LANDING
+    //LAMP DINER FOREST -->         BUS DEPO LANDING
+    //LAMP CORNFIELD -->            TOWN LANDING
+    //LAMP CORNFIELD TO POWER -->   BUS DEPO LANDING
+    //LAMP POWER STATION -->        DINER LANDING
+    //LAMP POWER TO TOWN -->        BUS DEPO LANDING
+    //LAMP AFTER BRIDGE -->         CORNFIELD LANDING
+    do_rift_ride( sudo, sudo_angles, real_player  )
+    */
+    switch( which_lamp )
+    {
+        case "3p_diner_cam":
+            int_cam = ( -3959.79, -7270.67, 64.9125 );
+            int_cam_angles = ( 0, 26.6467, 0 );
+            tag_cam = ( -4172.44, -7347.67, -62.899 );
+            tag_cam_angles = ( 0, 22.362, 0 );
+            ride_path = level.rift_camera_pstation;
+            ride_angles = level.rift_camera_pstation_angles;
+            break;
+
+        case "3p_depo_cam":
+            int_cam = ( -6345.48, 4557.82, 39.8997 );
+            int_cam_angles = ( 0, 128.628, 39.8997 );
+            tag_cam = ( -6092.08, 4435.41, -86.852 );
+            tag_cam_angles = ( 0, 139.774, 0 );
+            ride_path = level.rift_camera_corn;
+            ride_angles = level.rift_camera_corn_angles;
+            break;
+
+        case "3p_bridge_cam":
+            int_cam = ( -4403.42, -611.41, 121.119 );
+            int_cam_angles = ( 0, -132.407, 0 );
+            tag_cam = ( -4224.5, -417.632, -40.6571 );
+            tag_cam_angles = ( 0, -131.632, 0 );
+            ride_path = level.rift_camera_corn;
+            ride_angles = level.rift_camera_corn_angles;
+            break;
+
+        case "3p_town_cam":
+            int_cam = ( -620.785, -589.074, 58.7679 );
+            int_cam_angles = ( 0, -115.074, 0 );
+            tag_cam = ( -499.97, -391.066, -95.1842 );
+            tag_cam_angles = ( 0, -118.066, 0 );
+            ride_path = level.rift_camera_diner;
+            ride_angles = level.rift_camera_diner_angles;
+            break;
+
+        case "3p_cabin_cam":
+            int_cam = ( 6300.21, 5100.45, 3.35658 );
+            int_cam_angles = ( 0, -88.8682, 0 );
+            tag_cam = ( 6367.86, 5387.7, -148.319 );
+            tag_cam_angles = ( 0, -115.082, 0 );
+            ride_path = level.rift_camera_bepo;
+            ride_angles = level.rift_camera_bepo_angles;
+            break;
+
+        case "3p_corn_off_cam":
+            int_cam = ( 8150.26, 4803.07, -259.528 );
+            int_cam_angles = ( 0, -122.717, 0 );
+            tag_cam = ( 8340.19, 4916.78, -409.016 );
+            tag_cam_angles = ( 0, -128.084, 0 );
+            ride_path = level.rift_camera_bepo;
+            ride_angles = level.rift_camera_bepo_angles;
+            break;
+
+
+        case "3p_corn_cam":
+            int_cam = ( 10147.6, -1720.6, -111.971 );
+            int_cam_angles = ( 0, -91.3017, 0 );
+            tag_cam = ( 10270, -1555.53, -253.924 );
+            tag_cam_angles = ( 0, -137.796, 0 );
+            ride_path = level.rift_camera_town;
+            ride_path = level.rift_camera_town_angles;
+            break;
+
+        case "3p_short_cam":
+            int_cam = ( -68.2999, -5450.4, 28.0531 );
+            int_cam_angles = ( 0, -4.25701, 0 );
+            tag_cam = ( -229.188, -5490.72, -79.9476 );
+            tag_cam_angles = ( 0, 29.0755, 0 );
+            ride_path = level.rift_camera_pstation;
+            ride_angles = level.rift_camera_pstation_angles;
+            break;
+    }
+    
+    wait 0.05;
+
+    real_player thread moveup();
+
+    cam = spawn( "script_model", int_cam );
+    cam setmodel( "tag_origin" );
+    cam.anlges = int_cam_angles;
+
+    wait 0.05;
+
+    real_player CameraSetPosition( cam, cam.angles );
+    real_player CameraSetLookAt( int_cam );
+    real_player CameraActivate( true );
+
+    cam moveto( tag_cam, 3, 0.5, 1 );
+    cam rotateto( tag_cam_angles, 3, 0.5, 1 );
+    cam waittill( "movedone" );
+    real_player thread fade_to_black_on_impact_self_only();
+    //do rift_spawning now 
+    level thread do_rift_ride( ride_path, ride_angles, real_player );
+    wait 1;
+    cam delete();
+
+
+
+
+}
+
+moveup()
+{
+    xx = 0;
+    origin_z = self.origin;
+    origin_to_reach = origin_z + (0, 0, 80 );
+    playfx( level._effect[ "avogadro_ascend_aerial" ], origin_to_reach );
+    wait 0.5;
+    playfx( level._effect[ "avogadro_ascend_aerial" ], origin_to_reach );
+    self notify( "ready_for_rift_traversal" );
+}
 all_sky_camera_locations()
 {
 
@@ -530,9 +699,93 @@ all_sky_camera_locations()
     //bus depot /// / //////////////
     level.rift_camera_bepo = [];
     level.rift_camera_bepo_angles = [];
-    /*
-    level.rift_camera_bepo[  ] = (  );
-    level.rift_camera_bepo_angles[  ] = (  );
+
+    level.rift_camera_bepo[ 0 ] = ( -2498.59, -1289.89, 597.602 );
+    level.rift_camera_bepo_angles[ 0 ] = ( 0, 174.755, 0 );
+
+    level.rift_camera_bepo[ 1 ] = ( -3697.78, 389.264, 509.038 );
+    level.rift_camera_bepo_angles[ 1 ] = ( 0, 126.256, 0 );
+
+    level.rift_camera_bepo[ 2 ] = ( -5100.91, 3439.08, 772.748 );
+    level.rift_camera_bepo_angles[ 2 ] = ( 0, 137.396, 0 );
+
+    level.rift_camera_bepo[ 3 ] = ( -6525.38, 3811.48, 111 );
+    level.rift_camera_bepo_angles[ 3 ] = ( 0, 135.797, 0 );
+
+    level.rift_camera_bepo[ 4 ] = ( -6860.74, 4647.12, 177.563 );
+    level.rift_camera_bepo_angles[ 4 ] = ( 0, 102.456, 0 );
+
+    level.rift_camera_bepo[ 5 ] = ( -6875.5, 5189.5, -55.7142 );
+    level.rift_camera_bepo_angles[ 5 ] = ( 0, 80.4317, 0 );
+
+    level.rift_camera_bepo[ 6 ] = ( -6538.65, 5466.4, 51.5091 );
+    level.rift_camera_bepo_angles[ 6 ] = ( 0, -21.0599, 0 );
+
+    level.rift_camera_bepo[ 7 ] = ( -6372.51, 5361.47, -50.2016 );
+    level.rift_camera_bepo_angles[ 7 ] = ( 0, 161.445, 0 );
+
+    //town /// / //////////////
+    level.rift_camera_town = [];
+    level.rift_camera_town_angles = [];
+
+    level.rift_camera_town[ 0 ] = ( 5444.39, -753.746, 924.149 );
+    level.rift_camera_town_angles[ 0 ] = ( 0, -167.288, 0 );
+
+    level.rift_camera_town[ 1 ] = ( 4613.87, 506.248, 124.318 );
+    level.rift_camera_town_angles[ 1 ] = ( 0, 110.979, 0 );
+
+    level.rift_camera_town[ 2 ] = ( 2967.25, 1066.12, 68.136 );
+    level.rift_camera_town_angles[ 2 ] = ( 0, 160.284, 0 );
+
+    level.rift_camera_town[ 3 ] = ( 1649.76, 14.0788, 388.203 );
+    level.rift_camera_town_angles[ 3 ] = ( 0, -142.882, 0 );
+
+    level.rift_camera_town[ 4 ] = ( 1301.96, -885.42, 103.821 );
+    level.rift_camera_town_angles[ 4 ] = ( 0, -82.0011, 0 );
+
+    level.rift_camera_town[ 5 ] = ( 1658.36, -1723.16, 35.6396 );
+    level.rift_camera_town_angles[ 5 ] = ( 0, 108.447, 0 );
+
+
+   
+    //oower station /// / //////////////
+    level.rift_camera_pstation = [];
+    level.rift_camera__pstation_angles = [];
+
+    level.rift_camera_pstation[ 0 ] = ( -9425.66, 4886.18, 90.961 );
+    level.rift_camera_pstation_angles[ 0 ] = ( 0, 76.4053, 0 );
+
+    level.rift_camera_pstation[ 1 ] = ( 8960.94, 6270.89, -277.254 );
+    level.rift_camera_pstation_angles[ 1 ] = ( 0, 111.957, 0 );
+
+    level.rift_camera_pstation[ 2 ] = ( 9348.7, 7725.44, -39.5388 );
+    level.rift_camera_pstation_angles[ 2 ] = ( 0, 48.6977, 0 );
+
+    level.rift_camera_pstation[ 3 ] = ( 9985.02, 8093.17, -480.09 );
+    level.rift_camera_pstation_angles[ 3 ] = ( 0, 5.0985, 0 );
+
+    level.rift_camera_pstation[ 4 ] = ( 10692.9, 7689.95, -370.095 );
+    level.rift_camera_pstation_angles[ 4 ] = ( 0, -41.6538, 0 );
+
+    level.rift_camera_pstation[ 5 ] = ( 11361, 8080.74, -536.233 );
+    level.rift_camera_pstation_angles[ 5 ] = ( 0, -127.204, 0 );
+
+
+
+
+    //ORDER
+
+    //LAMP BUS DEPO -->             CORNFIELD LANDING
+    //LAMP DINER -->                POWER STATION LANDING
+    //LAMP DINER FOREST -->         BUS DEPO LANDING
+    //LAMP CORNFIELD -->            TOWN LANDING
+    //LAMP CORNFIELD TO POWER -->   BUS DEPO LANDING
+    //LAMP POWER STATION -->        DINER LANDING
+    //LAMP POWER TO TOWN -->        BUS DEPO LANDING
+    //LAMP AFTER BRIDGE -->         CORNFIELD LANDING
+
+
+    //
     /*
     level.sky_camera_location[  ] = (  );
     level.sky_camera_location_angles[  ] = (  );
@@ -598,7 +851,7 @@ fade_to_black_on_impact_self_only()
 {
     level endon( "end_game" );
     
-    self thread fadeForAWhile( 3, 1, 0.25, 0.5, "black" );
+    self thread fadeForAWhile( 0, 2.4, 0.25, 0.5, "black" );
     self playsound( level.jsn_snd_lst[ 29 ] );
     wait 5;
     self playsound( level.mysounds[ 7 ] );
@@ -743,6 +996,196 @@ setLowerMessage( ent, default_ref )
 		
 }
 
+initialize_all_rift_rides( which_spot )
+{
+    //ORDER
+
+    //LAMP BUS DEPO -->             CORNFIELD LANDING
+    //LAMP DINER -->                POWER STATION LANDING
+    //LAMP DINER FOREST -->         BUS DEPO LANDING
+    //LAMP CORNFIELD -->            TOWN LANDING
+    //LAMP CORNFIELD TO POWER -->   BUS DEPO LANDING
+    //LAMP POWER STATION -->        DINER LANDING
+    //LAMP POWER TO TOWN -->        BUS DEPO LANDING
+    //LAMP AFTER BRIDGE -->         CORNFIELD LANDING
+
+    /* 
+    // ALL POSSIBLE RIDE TARGETS
+    level.rift_camera_town
+    level.rift_camera_pstation
+    level.rift_camera_bepo
+    level.rift_camera_diner
+    level.rift_camera_corn
+    do_rift_ride( sudo, sudo_angles, real_player  )
+    */
+}
+
+call_summoning_on_player_logic( ride_loc, ride_ang, which_lamp )
+{
+    level endon( "end_game" );
+    old_hintstring = self.hintstring;
+    while( isdefined( self ) )
+    {
+        self waittill( "trigger", player_to_summon );
+        wait 0.05;
+        earthquake( 0.25, 10, self.origin, 1050 );
+        level thread new_do_summoning_animation( player_to_summon, ride_loc, ride_ang, which_lamp );
+        self thread xdfx();
+        self.hintstring = "^6Summoning in progress!";
+        //earthquake here
+        //spawn summoning portal model here
+        //move player up here
+        wait 5;
+        self.hintstring = old_hintstring;
+
+    }
+}
+
+xdfx()
+{
+    s = spawn( "script_model", self.origin );
+    s setmodel( "tag_origin" );
+    s.angles = ( 0, 0, 0 );
+    wait 0.1;
+    playFXOnTag( level.myfx[ 48 ], s, "tag_origin" );
+    wait 0.1;
+    playFXOnTag( level.myfx[ 48 ], s, "tag_origin" );
+    wait 1.5;
+    s delete();
+    
+    
+}
+
+setup_all_rift_use_setup()
+{
+    for( i = 0; i < level.fixable_spots.size; i++ )
+    {
+        level thread spawn_callable_rift_ride( level.fixable_spots[ i ], i );
+        wait 0.1;
+    }
+}
+//CRASHES ON LAMP BEFORE PSTATION,
+//CHECK IF GLOBAL OR JUST THAT LAMP'S ISSUE
+//WE ALSO DO TELEPORT INSTANTLY AFTER 3PERSON VIEW
+//FIX THE FLY IN TOO
+spawn_callable_rift_ride( where, index )
+{
+    level endon( "end_game" );
+    
+    //index is based on "level.fixable_spots[ index ]
+    if( index == 0 ) //cabin woods lamp, landing loc = diner
+    {
+        land_loc = "^3Mike's ^7Diner";
+        trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
+        trig_ setHintString( "Press ^3[{+activate}] ^7to summon yourself. ^6[ ^7Landing location: ^6" + land_loc + "^3 ]");
+        trig_ setCursorHint( "HINT_NOICON" );
+        trig_ TriggerIgnoreTeam();
+        wait 0.1;
+        level thread spawn_on_trig_( trig_ );
+        trig_ thread call_summoning_on_player_logic( level.rift_camera_diner, level.rift_camera_diner_angles, "3p_cabin_cam" );
+    }
+        
+    if( index == 1 ) //corn to power lamp, landing loc = depo
+    {
+        land_loc = "^3Grandtourissa's ^7Bus Depo";
+        trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
+        trig_ setHintString( "Press ^3[{+activate}] ^7to summon yourself. ^3[ ^7Landing location: ^5" + land_loc + "^3 ]");
+        trig_ setCursorHint( "HINT_NOICON" );
+        trig_ TriggerIgnoreTeam();
+        wait 0.1;
+        level thread spawn_on_trig_( trig_ );
+        trig_ thread call_summoning_on_player_logic( level.rift_camera_bepo, level.rift_camera_bepo_angles, "3p_cprn_off_cam" );
+    }
+    
+    if( index == 2 ) //diner forest lamp, landing loc = depo
+    {
+        land_loc = "^3Grandtourissa's ^7Bus Depo";
+        trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
+        trig_ setHintString( "Press ^3[{+activate}] ^7to summon yourself. ^3[ ^7Landing location: ^5" + land_loc + "^3 ]");
+        trig_ setCursorHint( "HINT_NOICON" );
+        trig_ TriggerIgnoreTeam();
+        wait 0.1;
+        level thread spawn_on_trig_( trig_ );
+        trig_ thread call_summoning_on_player_logic( level.rift_camera_bepo, level.rift_camera_bepo_angles, "3p_short_cam" );
+    }
+    
+    if( index == 3 ) //bus depo lamp, landing loc = cornfield
+    {
+        land_loc = "^3Angelina's ^7Cornfields";
+        trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
+        trig_ setHintString( "Press ^3[{+activate}] ^7to summon yourself. ^3[ ^7Landing location: ^5" + land_loc + " ^3]");
+        trig_ setCursorHint( "HINT_NOICON" );
+        trig_ TriggerIgnoreTeam();
+        wait 0.1;
+        level thread spawn_on_trig_( trig_ );
+        trig_ thread call_summoning_on_player_logic( level.rift_camera_corn, level.rift_camera_corn_angles, "3p_depo_cam" );
+    }
+     
+    if( index == 4 ) //bridge lamp, landing loc = cornfield
+    {
+        land_loc = "^3Angelina's ^7Cornfields";
+        trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
+        trig_ setHintString( "Press ^3[{+activate}] ^7to summon yourself. ^3[ ^7Landing location: ^5" + land_loc + "^3 ]");
+        trig_ setCursorHint( "HINT_NOICON" );
+        trig_ TriggerIgnoreTeam();
+        wait 0.1;
+        level thread spawn_on_trig_( trig_ );
+        trig_ thread call_summoning_on_player_logic( level.rift_camera_corn, level.rift_camera_corn_angles, "3p_bridge_cam" );
+    }
+
+   
+    if( index == 5 ) //cornfield lamp, landing loc = town
+    {
+        land_loc = "^3Ravenholm's ^7Townhall";
+        trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
+        trig_ setHintString( "Press ^3[{+activate}] ^7to summon yourself. ^3[ ^7Landing location: ^5" + land_loc + "^3 ]");
+        trig_ setCursorHint( "HINT_NOICON" );
+        trig_ TriggerIgnoreTeam();
+        wait 0.1;
+        level thread spawn_on_trig_( trig_ );
+        
+        trig_ thread call_summoning_on_player_logic( level.rift_camera_town, level.rift_camera_town_angles, "3p_corn_cam" );
+    }
+
+    if( index == 6 ) //diner lamp, landing loc = pstation
+    {
+        land_loc = "^3Stalinburgh's ^7Power Station";
+        trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
+        trig_ setHintString( "Press ^3[{+activate}] ^7to summon yourself. ^3[ ^7Landing location: ^5" + land_loc + "^3 ]");
+        trig_ setCursorHint( "HINT_NOICON" );
+        trig_ TriggerIgnoreTeam();
+        wait 0.1;
+        level thread spawn_on_trig_( trig_ );
+        trig_ thread call_summoning_on_player_logic( level.rift_camera_pstation, level.rift_camera_pstation_angles, "3p_diner_cam"  );
+    }
+    
+    if( index == 7 ) //town lamp next to zombie spawner, landing loc =  diner
+    {
+        land_loc = "^3Mike's ^7Diner";
+        trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
+        trig_ setHintString( "Press ^3[{+activate}] ^7to summon yourself. ^3[ ^7Landing location: ^5" + land_loc + "^3 ]");
+        trig_ setCursorHint( "HINT_NOICON" );
+        trig_ TriggerIgnoreTeam();
+        wait 0.1;
+        level thread spawn_on_trig_( trig_ );
+        trig_ thread call_summoning_on_player_logic( level.rift_camera_diner, level.rift_camera_diner_angles, "3p_town_cam" );
+    }
+    
+}
+
+spawn_on_trig_( trig_ )
+{
+    mods = spawn( "script_model", trig_.origin + ( 0, 0, 15 ) );
+    mods setmodel( "tag_origin" );
+    mods.angles = mods.angles;
+    wait 0.05;
+    playfxontag( level.myfx[ 1 ], mods, "tag_origin" );
+}
+initialize_rift_ride_for_caller( who_called, which_target )
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+}
 all_fixable_spots_spawn_fixer_logic() //is in use 
 {
     level endon( "end_game" );
@@ -817,6 +1260,7 @@ monitor_everything( trigger_to_monitor, fixable_spot_integer ) //in use now
                             trigger_to_monitor setHintString( "Lamp got ^2fixed^7!" );
                             wait 1.5;
                             level thread just_in_case_apply( locs );
+                            
                             trigger_to_monitor delete(); //delete the trigger_radius trigger
                             wait 0.1;
                             self thread rise_bulb_underneath( locs, fixable_spot_integer );  //self = script_model, locs = index number of screecher_zone array
@@ -832,12 +1276,13 @@ monitor_everything( trigger_to_monitor, fixable_spot_integer ) //in use now
         wait 0.05;
     }
 }
-
 rise_bulb_underneath( value_at, fixable_integer ) //in use now
 {
     level endon( "end_game" );
     
     target_light = getstructarray( "screecher_escape", "targetname" );
+
+    //level notify( "start_thread_" + );
     //do the "initial rise"
     self moveto( target_light[ value_at ].origin, 2, 0.4, 0 );
     self waittill( "movedone" );

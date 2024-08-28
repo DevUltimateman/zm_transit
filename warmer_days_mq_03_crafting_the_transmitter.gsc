@@ -80,6 +80,10 @@ track_transmitter_progress()
     //flag_wait( "schruder_talk_done" );
     //wait_for_buildable( "sq_common" );
     if( level.dev_time ){ iprintlnbold( "WE SHOULD TRACK TRANSMITTER NOW" ); }
+    
+    
+    //need to have sq_common built first
+    wait_for_buildable( "sq_common" );
     //spawn the transmitter trigger
     level thread transmitter_wait_for_navcard();
 

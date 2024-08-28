@@ -92,128 +92,262 @@
 
 
 
-/*
-
-
-lerp_from_offset_to_offset( x, y, z )
+init()
 {
-    self endon( "disconnect" );
-    level endon( "end_game" );
+    level thread for_joining_players();
+}
 
-    self waittill( "spwaned_player" );
+for_joining_players()
+{
+    level endon( "end_game" );
     while( true )
     {
-        
-        if( !isAlive( self ) )
+        level waittill( "connected", player );
+        //player thread lerp_from_offset_to_offset();
+        player thread on_spawn();
+    }
+}
+
+on_spawn()
+{
+    self waittill( "spawned_player" );
+    self thread do_weapon_change_offsets();
+} 
+
+
+do_weapon_change_offsets()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    wait 1;
+    if( level.dev_time ){ iprintlnbold( "DOING OFFSETTER THREAD" ); }
+    //initial spawn m1911 offset
+    self thread while_ads( 0.8, 1.6, -1.8 );
+    wait 2;
+    while( true )
+    {
+        self waittill( "weapon_change", weapon );
+        xw = get_weapon_offsetter_x( weapon );
+        xy = get_weapon_offsetter_y( weapon );
+        xz = get_weapon_offsetter_z( weapon );
+        self thread while_ads( xw, xy, xz );
+        self setClientDvar( "cg_gun_x", xw );
+        self setclientdvar( "cg_gun_y", xy );
+        self setclientdvar( "cg_gun_z", xz );
+    }
+}
+
+while_ads( x, y, z )
+{
+    self endon( "end_ads_thread" );
+    self endon( "disconnect" );
+    self endon( "weapon_change" );
+    level endon( "end_game" );
+    self.is_adsing = false;
+    while( true )
+    {
+        if( self adsButtonPressed() )
+        {
+            self.is_adsing = true;
+            self setclientdvar( "cg_gun_x", 0 );
+            self setclientdvar( "cg_gun_y", 0 );
+            self setclientdvar( "cg_gun_z", 0 );
+            while( self adsButtonPressed() )
+            {
+                wait 0.05;
+            }
+            self.is_adsing = false;
+        }
+        else if( !self adsbuttonpressed() && !self.is_adsing )
+        {
+            if( getDvar( "cg_gun_x" ) != x ) { self setclientdvar( "cg_gun_x", x );}// if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); }  }
+            if( getDvar( "cg_gun_y" ) != y ) { self setclientdvar( "cg_gun_y", y );}// if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); } }
+            if( getDvar( "cg_gun_z" ) != z ) { self setclientdvar( "cg_gun_z", z );} //if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); } }
+        }
+        wait 0.05;
+    }
+}
+lerp_weapon_offsets( x_target, y_target, z_target )
+{
+    self endon( "weapon_change" );
+    self endon( "disconnect" );
+    self endon( "death" );
+
+    x_goal = false;
+    y_goal = false;
+    z_goal = false;
+    self.lerper = true;
+    x_dvar_current = getDvar( "cg_gun_x" );
+    y_dvar_current = getdvar( "cg_gun_y" );
+    z_dvar_current = getdvar( "cg_gun_z" );
+
+    iprintln( "OFFSETS CURRENT : : : " + x_dvar_current + "  " + y_dvar_current + "  " + z_dvar_current );
+    iprintln( "OFFSETS TARGET : : : " + x_target + "  " + y_target + "  " + z_target );
+
+    first_up = false;
+    second_up = false;
+    third_up = false;
+    while( true )
+    {
+
+    }
+    if( !first_up )
+    {
+        if( x_dvar_current > x_target )
+        {
+            first_up = false;
+        }
+        else { first_up = true; }
+    }
+
+    if( !second_up )
+    {
+        if( y_dvar_current > y_target )
+        {
+            second_up = false;
+        }
+        else { second_up = true; }
+    }
+
+    if( !third_up )
+    {
+        if( z_dvar_current > z_target )
+        {
+            third_up = false;
+        }
+        else { third_up = true; }
+    }
+    while( self.lerper )
+    {
+        //if dvars are currently higher than the target value
+        if( !first_up && !x_goal )
+        {
+            get_current = getdvar( "cg_gun_x" );
+            get_current -= 0.1;
+            self setclientdvar( "cg_gun_x", get_current );
+            if( get_current == x_target )
+            {
+                x_goal = true;
+            }
+        }
+
+        if( first_up && !x_goal )
+        {
+            get_current = getdvar( "cg_gun_x" );
+            get_current += 0.1;
+            self setclientdvar( "cg_gun_x", get_current );
+            if( get_current == x_target )
+            {
+                x_goal = true;
+            }
+        }
+
+        //if dvars are currently higher than the target value
+        if( !second_up && !y_goal )
+        {
+            get_current = getdvar( "cg_gun_y" );
+            get_current -= 0.1;
+            self setclientdvar( "cg_gun_y", get_current );
+            if( get_current == y_target )
+            {
+                y_goal = true;
+            }
+        }
+
+        if( second_up && !y_goal )
+        {
+            get_current = getdvar( "cg_gun_y" );
+            get_current += 0.1;
+            self setclientdvar( "cg_gun_y", get_current );
+            if( get_current == y_target )
+            {
+                y_goal = true;
+            }
+        }
+
+        //if dvars are currently higher than the target value
+        if( !third_up && !z_goal )
+        {
+            get_current = getdvar( "cg_gun_z" );
+            get_current -= 0.1;
+            self setclientdvar( "cg_gun_z", get_current );
+            if( get_current == z_target )
+            {
+                z_goal = true;
+            }
+        }
+
+        if( third_up && !z_goal )
+        {
+            get_current = getdvar( "cg_gun_z" );
+            get_current += 0.1;
+            self setclientdvar( "cg_gun_z", get_current );
+            if( get_current == z_target )
+            {
+                z_goal = true;
+            }
+        }
+
+        if( first_up && second_up && third_up && self.lerper )
         {
             wait 1;
-            continue;
+            iprintlnbold( "WEAPON LERPING COMPLETE" );
+            wait 0.05;
+            self.lerper = false;
+            break;
         }
 
-        if( isAlive( self ) )
-        {
-            self.x_gunpos = false;
-            self.y_gunpos = false;
-            self.z_gunpos = false;
-            while( self.is_lerping )
-            {
-                wait 0.05;
-            }
-            current_offset = array( self getDvarFloat( "cg_gun_x" ), self getdvarfloat( "cg_gun_y"), self getdvarfloat( "cg_gun_z" ) );
-            current_weapon = self getCurrentWeapon();
-            saved_offset = current_offset;
-            self waittill( "weapon_switch" );
-            wait 0.2;
-            if( self getCurrentWeapon() != current_weapon )
-            {
-                new_offset = array( self getDvarFloat( "cg_gun_x" ), self getdvarfloat( "cg_gun_y"), self getdvarfloat( "cg_gun_z" ) );
-                for( i = 0; i < saved_offset.size; i++ )
-                {
-                    if( saved_offset[ i ] == new_offset[ i ] )
-                    {
-                        wait 0.05;
-                    }
-                    else 
-                    {
-                        lerp_to_values = offsetter( self getCurrentWeapon() );
-                        self.is_lerping = true;
-                        self thread lerp_gun_x( lerp_to_values[ 0 ] );
-                        self thread lerp_gun_y( lerp_to_values[ 1 ] );
-                        self thread lerp_gun_z( lerp_to_values[ 2 ] );
 
-                        while( !self.x_gunpos || !self.y_gunpos || !self.z_gunpos)
-                        {
-                            wait 0.05;
-                        }
-                        self.is_lerping = false;
-                    }
-                }
-            }
-            else 
-            {
-                wait 0.05;
-            }
-        }
-    }
-}
-
-lerp_gun_x( value )
-{
-    self endon( "disconnect" );
-    while( self getdvarfloat( "cg_gun_x" ) != value ) 
-    {
-        value_to_add = self getdvarfloat( "cg_gun_x" ) + 0.1;
-        self setclientdvar( "cg_gun_x", value_to_add );
         wait 0.05;
     }
-    self.x_gunpos = true;
 }
 
-lerp_gun_y( value )
-{
-    self endon( "disconnect" );
-    while( self getdvarfloat( "cg_gun_y" ) != value ) 
-    {
-        value_to_add = self getdvarfloat( "cg_gun_y" ) + 0.1;
-        self setclientdvar( "cg_gun_y", value_to_add );
-        wait 0.05;
-    }
-    self.y_gunpos = true;
-}
 
-lerp_gun_z( value )
-{
-    self endon( "disconnect" );
-    while( self getdvarfloat( "cg_gun_z" ) != value ) 
-    {
-        value_to_add = self getdvarfloat( "cg_gun_z" ) + 0.1;
-        self setclientdvar( "cg_gun_z", value_to_add );
-        wait 0.05;
-    }
-    self.z_gunpos = true;
-}
-offsetter( weapon_type )
+get_weapon_offsetter_x( weapon_type )
 {
     switch( weapon_type )
     {
-        case "m1991_zm":
-            offset_array = array( 0.8, 1.6, -1.8 );
-            break; 
+        case "m1911_zm":
+            return 0.8;
 
         case "mp5k_zm":
-            offset_array = array( -0.3, 2.4, -1.3 );
-            break;
+            return -0.3;
         
         case "m14_zm":
-            offset_array = array( -2.3, 3, 0.3 );
-            break;
+            return -2.3;
+    
+        default:
+            return 0;
+    }
+}
+get_weapon_offsetter_y( weapon_type )
+{
+    switch( weapon_type )
+    {
+        case "m1911_zm":
+            return  1.6;
+        case "mp5k_zm":
+            return 2.4;
+        
+        case "m14_zm":
+            return 3;
         
         default:
-            offset_array = array( 0, 0, 0 );
-            break;
-        
+            return 0;
     }
-    return offset_array;
+}
+get_weapon_offsetter_z( weapon_type )
+{
+    switch( weapon_type )
+    {
+        case "m1911_zm":
+            return -1.8;
+        case "mp5k_zm":
+            return -1.3;
+        case "m14_zm":
+            return 0.3 ;
+        default:
+            return 0;
+    }
 }
 
-*/
