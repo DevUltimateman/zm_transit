@@ -397,7 +397,7 @@ get_weapon_offsetter_x( weapon_type )
         case "knife_ballistic_zm":
         return -3;
 
-        case "knife_ballistic_bowie_zm"
+        case "knife_ballistic_bowie_zm":
         return -3;
 
         case "raygun_mark2_zm":
@@ -489,7 +489,7 @@ get_weapon_offsetter_y( weapon_type )
 
         case "knife_ballistic_zm":
         return 1;
-        case "knife_ballistic_bowie_zm"
+        case "knife_ballistic_bowie_zm":
         return 1;
         case "raygun_mark2_zm":
         return 3.5;
@@ -579,7 +579,7 @@ get_weapon_offsetter_z( weapon_type )
         case "knife_ballistic_zm":
         return 0;
 
-        case "knife_ballistic_bowie_zm"
+        case "knife_ballistic_bowie_zm":
         return 0;
 
         case "raygun_mark2_zm":
