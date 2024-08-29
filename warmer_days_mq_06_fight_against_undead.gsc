@@ -49,6 +49,7 @@ init()
     flag_wait( "initial_blackscreen_passed" );
     level thread spawn_lockdown_enabler( ( 13832.4, -1273.99, -153.193 ) );
     level thread spawn_lockdown_blockers();
+    level.lock_down_enabled = false;
     
 }
 
@@ -134,7 +135,8 @@ spawn_lockdown_enabler( origin )
 {
     level endon( "end_game" );
 
-    level waittill( "obey_spirit_complete" );
+    //turn back on for full build
+    //level waittill( "obey_spirit_complete" );
     trig = spawn( "trigger_radius_use", origin, 0, 85, 85 );
     trig setCursorHint( "HINT_NOICON" );
     trig sethintstring( "Press ^3[{+activate}] ^7 to call ^5Spirit Of Sorrow ^7back! ^7Requires all survivors to be present." );
@@ -166,6 +168,19 @@ spawn_lockdown_enabler( origin )
     
 }
 
+playlockdown_song()
+{
+    level endon( "end_game" );
+    while( level.lock_down_enabled )
+    {
+        for( i = 0; i < level.players.size; i++ )
+        {
+            level.players[ i ] playsound( "mus_load_zm_transit_dr" );
+        }
+        wait 20;
+    }
+    level.lock_down_enabled = false;
+}
 wait_players()
 {
     current_amount = 0;
@@ -207,8 +222,11 @@ monitor_player_use()
             {
                 if( is_player_valid( someone ) )
                 {
+                    level.lock_down_enabled = true;
                     if( level.dev_time ) { iprintlnbold( "LOCKDOWN INITIATED" ); }
                     level notify( "lockdown_enabled" );
+                    level thread playlockdown_song();
+                    
                     PlaySoundAtPosition(level.jsn_snd_lst[ 33 ], loca );
                     wait 0.1;
                     PlaySoundAtPosition( "zmb_vox_monkey_explode", loca );
@@ -240,35 +258,37 @@ do_zombies_go_crazy()
     level endon( "end_game" );
     saved_round = level.round_number;
     ai = getAIArray( level.zombie_team );
+    level notify( "end_round" );
     for( a = 0; a < ai.size; a++ )
     {
         ai[ a ] doDamage( ai[ a ].health + 555, ai[ a ].origin );
 
     }
-    level notify( "end_round" );
+    
     level.round_number = 115;
     level.zombie_total = 9999;
     
     //dont make zombies super sprinters here. 
     //have that in the second lockdown later down the quest when players are most likely better equipped
     //to fuck zombies that are super speeedy. 
-    wait 45;
+    wait 48;
     if( level.dev_time ){ iprintlnbold( "LOCKDOWN STEP FINISHED, REMOVING BLOCKS" );}
     level notify( "lockdown_disabled" );
     ai = getAIArray( level.zombie_team );
+    level notify( "end_round" );
     for( a = 0; a < ai.size; a++ )
     {
         ai[ a ] doDamage( ai[ a ].health + 555, ai[ a ].origin );
 
     }
-    level notify( "end_round" );
+    
     level.round_number = saved_round;
     level.zombie_total = undefined;
 }
 spawn_lockdown_blockers()
 {
     level waittill( "spawn_blockers_for_lockdown" );
-    PlaySoundAtPosition(level.jsn_snd_lst[ 61 ], (0,0,0));
+    //PlaySoundAtPosition(level.jsn_snd_lst[ 61 ], (0,0,0));
     locs = [];
     locs[ 0 ] = ( 13551.9, -290.809, -187.875 );
     locs[ 1 ] = ( 13547.4, -964.105, -187.875 );
