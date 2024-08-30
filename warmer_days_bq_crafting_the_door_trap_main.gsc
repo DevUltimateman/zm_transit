@@ -315,6 +315,7 @@ someone_is_touching_the_main_area()
 level_spawns_main_door_stuff()
 {
     wait 0.1;
+    level thread base_fxs();
     sglobal_gas_quest_trigger_spawner( level.door_base_main_trigger_location, "Press ^3[{+activate}] ^7to build a main entrance barricade.", "^3Zombie Barricade ^7was built!", level.myfx[ 75 ], level.myfx[ 76 ], "main_door_unlocked" );
 }
 
@@ -350,6 +351,61 @@ level_spawns_main_door_stuff()
 //7985.66, -4735.01, 455.078
 //8426.28, -4842.27, 472.34
 //8021.4, -5290.2, 447.812
+
+base_fxs()
+{
+    level endon( "end_game" );
+
+    //firetrap light curve
+    curved_lights_origins =[];
+    curved_lights_origins[ 0 ] = ( 8428.1, -5172.75, 264.125 );
+    curved_lights_origins[ 1 ] = ( 8419.41, -5228.11, 264.125 );
+    curved_lights_origins[ 2 ] = ( 8407.34, -5298, 264.125 );
+    curved_lights_origins[ 3 ] = ( 8378.76, -5354.92, 264.125 );
+    curved_lights_origins[ 4 ] = ( 8321.37, -5401.48, 264.125 );
+    
+    for( a = 0; a < curved_lights_origins.size; a++ )
+    {
+        playfx( level._effects[ 13 ], curved_lights_origins[ a ] );
+        wait 1;
+        playfx( level._effects[ 18 ], curved_lights_origins[ a ] );
+        wait 0.05;
+    }
+
+    //hanging light bulbs
+    hanging_bulb_origins = [];
+    hanging_bulb_origins[ 0 ] = ( 8182.29, -5086.54, 389.636 );
+    hanging_bulb_origins[ 1 ] = ( 7985.66, -4735.01, 455.078 );
+    hanging_bulb_origins[ 2 ] = ( 8426.28, -4842.27, 472.34 );
+    hanging_bulb_origins[ 3 ] = ( 8021.4, -5290.2, 447.812 );
+
+    for( i = 0; i < hanging_bulb_origins.size; i++ )
+    {
+        playfx( level._effects[ 9 ], hanging_bulb_origins[ i ] );
+        wait 0.05;
+        playfx( level._effects[ 18 ], hanging_bulb_origins[ i ] );
+    }
+
+    //outside lights upwards
+    outside_lights_origins = [];
+    outside_lights_origins[ 0 ] = ( 8083.96, -5463.78, 43.2023 );
+    outside_lights_origins[ 1 ] = ( 8300.14, -5448.42, 42.9963 );
+    outside_lights_origins[ 2 ] = ( 7842.77, -4984.68, 44.6423 );
+    outside_lights_origins[ 3 ] = ( 7844.62, -5124.6, 43.2751 );
+
+    for( z = 0; z < outside_lights_origins.size; z++ )
+    {
+        playfx( level._effects[ 12 ], outside_lights_origins[ z ] );
+        wait 1;
+        playfx( level._effects[ 14 ], outside_lights_origins[ z ] );
+        wait 0.05;
+        playfx( level._effects[ 16 ], outside_lights_origins[ z ] );
+        wait 0.05;
+        playfx( level._effects[ 18 ], outside_lights_origins[ z ] );
+        wait 0.05;
+    }
+    
+}
 monitorDoorHealth()
 {
     level endon( "end_game" );
@@ -814,7 +870,7 @@ spawn_collectables_for_bench() //works well now
     possible_origins[ 4 ] = ( 1609.28, -4479.94, -66.4735 ); //shortcut
 
     possible_origins_angles[ 0 ] = ( 0, 113, 0 );
-    possible_origins_angles[ 1 ] = ( 0, 85, 0 );
+    possible_origins_angles[ 1 ] = ( 0, 99, 0 );
     possible_origins_angles[ 2 ] = ( 0, 355, 0 );
     possible_origins_angles[ 3 ] = ( 0, -7, 0 );
     possible_origins_angles[ 4 ] = ( 0, 310, 0 );

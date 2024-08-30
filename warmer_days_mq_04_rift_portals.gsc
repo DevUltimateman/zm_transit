@@ -659,6 +659,7 @@ new_do_summoning_animation( real_player, cam_loc, cam_ang, which_lamp )
     cam = spawn( "script_model", int_cam );
     cam setmodel( "tag_origin" );
     cam.anlges = int_cam_angles;
+    real_player thread play_crows();
 
     wait 0.05;
 
@@ -1928,7 +1929,15 @@ player_entered_safety_light( player )
     return false;
 }
 
-
+play_crows()
+{
+    for( i = 0; i < 6; i++ )
+    {
+        self playsound( level.jsn_snd_lst[ 36 ] );
+        wait randomfloatrange( 0.05, 0.3 );
+    }
+    
+}
 
 
 // HUD SPECIFIC | HUD SPECIFIC | HUD SPECIFIC | HUD SPECIFIC | HUD SPECIFIC | HUD SPECIFIC //
