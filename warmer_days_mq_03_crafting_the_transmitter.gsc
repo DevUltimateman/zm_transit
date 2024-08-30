@@ -184,7 +184,7 @@ Subtitle( text, text2, duration, fadeTimer )
 	subtitle.x = 0;
 	subtitle.y = -42;
 	subtitle SetText( text );
-	subtitle.fontScale = 1.46;
+	subtitle.fontScale = 1.32;
 	subtitle.alignX = "center";
 	subtitle.alignY = "middle";
 	subtitle.horzAlign = "center";
@@ -202,7 +202,7 @@ Subtitle( text, text2, duration, fadeTimer )
 		subtitle2.x = 0;
 		subtitle2.y = -24;
 		subtitle2 SetText( text2 );
-		subtitle2.fontScale = 1.46;
+		subtitle2.fontScale = 1.22;
 		subtitle2.alignX = "center";
 		subtitle2.alignY = "middle";
 		subtitle2.horzAlign = "center";

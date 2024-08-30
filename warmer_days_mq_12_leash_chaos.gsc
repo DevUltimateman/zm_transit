@@ -225,7 +225,7 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
 	subtitle_upper.x = 0;
 	subtitle_upper.y = -42;
 	subtitle_upper SetText( sub_up );
-	subtitle_upper.fontScale = 1.46;
+	subtitle_upper.fontScale = 1.32;
 	subtitle_upper.alignX = "center";
 	subtitle_upper.alignY = "middle";
 	subtitle_upper.horzAlign = "center";
@@ -243,7 +243,7 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
 		subtitle_lower.x = 0;
 		subtitle_lower.y = -24;
 		subtitle_lower SetText( sub_low );
-		subtitle_lower.fontScale = 1.46;
+		subtitle_lower.fontScale = 1.22;
 		subtitle_lower.alignX = "center";
 		subtitle_lower.alignY = "middle";
 		subtitle_lower.horzAlign = "center";

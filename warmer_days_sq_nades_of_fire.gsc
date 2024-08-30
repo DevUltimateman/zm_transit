@@ -99,7 +99,7 @@ fordev()
     {
         //level.players[ i ] enableInvulnerability();  
         level.players[ i ].score += 50000;
-        level.players[ i ] thread firegrenades_step2();
+        //level.players[ i ] thread firegrenades_step2();
     }
 }
 
@@ -152,7 +152,7 @@ firegrenades_step1()
 
     for( x = 0; x < locations.size; x++ )
     {
-        level.trigger_to_hit_with_nade[ x ] = spawn( "trigger_radius", locations[ x ], 80, 80, 80 );
+        level.trigger_to_hit_with_nade[ x ] = spawn( "trigger_radius", locations[ x ], 120, 120, 120 );
         level.trigger_to_hit_with_nade[ x ] setHintString( "" );
 	    level.trigger_to_hit_with_nade[ x ] setCursorHint( "HINT_NOICON" );
         wait 0.05;
@@ -430,15 +430,20 @@ firegrenade_monitor_throw()
     //initialise self triggers for nade ( per player )
     self.hits = 0;      //the amount of hittable spots = 5
     self.has_hit_ = 0; //tracker
-
+    self.hit_list = [];
+    self.hit_list[ 0 ] = false;
+    self.hit_list[ 1 ] = false;
+    self.hit_list[ 2 ] = false;
+    self.hit_list[ 3 ] = false;
+    self.hit_list[ 4 ] = false;
     self thread firegrenade_player_wait_for_upgrade(); //println noti
-    self thread firegrenade_has_player_hit_list(); //false, true list of hit locs
+    self firegrenade_has_player_hit_list(); //false, true list of hit locs
     
     while( true )
     {
         self waittill( "grenade_fire", my_grenade );
         wait 0.05;                                      
-        my_grenade thread firegrenade_touched(  self ); //pass player as self to increase hit list size on impact
+        my_grenade thread firegrenade_touched( self ); //pass player as self to increase hit list size on impact
     } 
 }
 
@@ -448,25 +453,15 @@ firegrenade_player_wait_for_upgrade()
     level endon( "end_game" );
     self endon( "disconnect" );
 
-    goal = 5; //release value = 5
-    hit_list_ = 0;
-    //loop here till hit trigger > goal( "array of nadeable triggers check passed" )
-    while( self.hits < goal )
-    { 
-        wait 1;
-        if( self.hits > hit_list_ )
-        {
-            hit_list_++;
-            self _someone_unlocked_something_client( "^3Firegrenades found^7", hit_list_ + "^3 / ^7" + goal, 3, 0.2 );
-        } 
-    }
+    self waittill( "start_step2" );
+    wait 4.5;
     self notify( "_start_sq_nade_step2_for_player" );
     //player hit all the spots, reward the player
     if( level.dev_time ){ iprintlnbold( "Player ^3" + self.name + " ^7 reached part: WHIZZ NEAR BY ZOMBIES with NADES" ); }
     
     //the real on screen subtitles for this step
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
-    _someone_unlocked_something( "What!? How did you find all the nades so quickly?", "Silly you, you still have things to do.. ^3Zombie ^7go boom! ", 8, 0.1 );
+    self _someone_unlocked_something_client( "What!? How did you find all the nades so quickly?", "Silly you, you still have things to do.. ^3Zombie ^7go boom! ", 8, 0.1 );
 
     //notify the waittill("its_time") to progress into firenade step 2
     self notify( "its_time" ); //custom noti / waittill
@@ -626,17 +621,6 @@ firegrenade_go_poke( grenade_model, who_id )
             {
                 temporarily_targeted_zombies[ x ].a.nodeath = true; //all zombies[ i ] inside of isAlive() has been previously coded as self.
                 temporarily_targeted_zombies[ x ]  notify( "killanimscript" );
-                
-                //mm = spawn( "script_model", temporarily_targeted_zombies[ x ].origin );
-                //mm setmodel( "tag_origin" );
-
-                //was I high when I wrote these?
-                //zombies[ i ] enableLinkTo();
-                //zombies[ i ] linkto( mm );
-                //mm movez( 200, 0.05, 0, 0 );
-                //mm hoverme( zombies[ i ] );
-                
-
             }
             
         }
@@ -748,16 +732,12 @@ stop_zomb()
 firegrenade_has_player_hit_list()
 {
     level endon( "end_game" );
-    self endon( "disconnect" );
-
     self.hit_list = [];
     self.hit_list[ 0 ] = false;
     self.hit_list[ 1 ] = false;
     self.hit_list[ 2 ] = false;
     self.hit_list[ 3 ] = false;
     self.hit_list[ 4 ] = false;
-
-    //if player has picked up the shoes
     self.has_picked_up_boots = false;
 }
 
@@ -767,37 +747,57 @@ firegrenade_touched( who )
     self endon( "disconnect" );
     level endon( "end_game" );
     self endon( "gucci" );
-
-    while( true )
+    while( isdefined( self ) )
     {
         for( i = 0; i < level.trigger_to_hit_with_nade.size; i++ )
         {
             if( isdefined( self ) && self istouching( level.trigger_to_hit_with_nade[ i ] ) )
             {
+                
+
+                if( who.hit_list[ i ] == false )
+                { 
+                    //add this trigger to player's claimed nodes    
+                    who.hits++;
+                    who.hit_list[ i ] = true;
+                    who _someone_unlocked_something_client( "^5Fire Grenades Found", who.hits + " ^5/^7 5", 4, 1 );
+                    //who.hits++; //increase player who hit score
+                    iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
+                    //self notify( "gucci" ); 
+                    
+                    //if no claimed node, notify the black_hole thread to play an fx on notifier + i's value
+                    level.trigger_to_hit_with_nade[ i ] notify( "someone_located_" + i );  
+                    wait 0.1;
+                    if( who.hit_list[ 0 ] == true &&
+                        who.hit_list[ 1 ] == true &&
+                        who.hit_list[ 2 ] == true && 
+                        who.hit_list[ 3 ] == true &&
+                        who.hit_list[ 4 ] == true  )
+                    {
+                        who notify( "start_step2" );
+                        break;
+                    }
+
+                    
+                    break;
+
+                }
+
                 //check if player has already claimed this node by checking if the i matches to self.hit_list  in h_players_claimed_nodes
                 //if true, force end this function
-                if( who.hit_list[ i ] != false )
+                if( who.hit_list[ i ] == true )
                 {
                     //end, break this thread since we have touched this
                     if( level.dev_time ){ iprintlnbold( "skipping player, since player already has this trigger claimed. Node_num: ^3" + i ) ; }
-                    self notify ( "gucci" ); 
+                    wait 0.05;
+                    break;
                 }
-
-                //if no claimed node, notify the black_hole thread to play an fx on notifier + i's value
-                level.trigger_to_hit_with_nade[ i ] notify( "someone_located_" + i );
-
-                //add this trigger to player's claimed nodes    
-                who.hit_list[ i ] = true;
-                who.hits++; //increase player who hit score
-                //force end thread
-                iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
-                //self notify( "gucci" ); 
-                wait 0.1;
-                break;
             }
+            wait 0.05;
         }
         wait 0.05;
     }
+    
 }
 
 //check if firegrenade quest is active and assign a hit_list to a connecting player if thats the case
@@ -845,7 +845,7 @@ SchruderSaysClient( sub_up, sub_low, duration, fadeTimer )
 	subtitle_upper.x = 0;
 	subtitle_upper.y = -42;
 	subtitle_upper SetText( sub_up );
-	subtitle_upper.fontScale = 1.46;
+	subtitle_upper.fontScale = 1.32;
 	subtitle_upper.alignX = "center";
 	subtitle_upper.alignY = "middle";
 	subtitle_upper.horzAlign = "center";
@@ -867,7 +867,7 @@ SchruderSaysClient( sub_up, sub_low, duration, fadeTimer )
 		subtitle_lower.x = 0;
 		subtitle_lower.y = -24;
 		subtitle_lower SetText( sub_low );
-		subtitle_lower.fontScale = 1.46;
+		subtitle_lower.fontScale = 1.22;
 		subtitle_lower.alignX = "center";
 		subtitle_lower.alignY = "middle";
 		subtitle_lower.horzAlign = "center";
@@ -904,7 +904,7 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
 	subtitle_upper.x = 0;
 	subtitle_upper.y = -42;
 	subtitle_upper SetText( sub_up );
-	subtitle_upper.fontScale = 1.46;
+	subtitle_upper.fontScale = 1.32;
 	subtitle_upper.alignX = "center";
 	subtitle_upper.alignY = "middle";
 	subtitle_upper.horzAlign = "center";
@@ -922,7 +922,7 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
 		subtitle_lower.x = 0;
 		subtitle_lower.y = -24;
 		subtitle_lower SetText( sub_low );
-		subtitle_lower.fontScale = 1.46;
+		subtitle_lower.fontScale = 1.22;
 		subtitle_lower.alignX = "center";
 		subtitle_lower.alignY = "middle";
 		subtitle_lower.horzAlign = "center";

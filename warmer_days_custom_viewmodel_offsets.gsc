@@ -104,7 +104,7 @@ for_joining_players()
     {
         level waittill( "connected", player );
         //player thread lerp_from_offset_to_offset();
-        //player thread on_spawn();
+        player thread on_spawn();
     }
 }
 
@@ -146,6 +146,7 @@ while_ads( x, y, z )
     self.is_adsing = false;
     while( true )
     {
+        //if( !self isOnGround() )
         if( self adsButtonPressed() )
         {
             self.is_adsing = true;
@@ -316,7 +317,7 @@ get_weapon_offsetter_x( weapon_type )
         case "m14_zm":
             return -2.3;
 
-        case "judg_zm":
+        case "judge_zm":
         return 2.5;
 
         case "kard_zm":
@@ -427,7 +428,7 @@ get_weapon_offsetter_y( weapon_type )
         case "m14_zm":
             return 3;
         
-        case "judg_zm":
+        case "judge_zm":
         return 0.8;
         case "kard_zm":
             return 1;    
@@ -474,7 +475,7 @@ get_weapon_offsetter_y( weapon_type )
         case "galil_zm":
         return 1.6;
         case "fnfal_zm":
-        return 1.6
+        return 1.6;
         case "barretm82_zm":
         return 1.2;
 
@@ -526,7 +527,7 @@ get_weapon_offsetter_z( weapon_type )
         case "m14_zm":
             return 0.3 ;
 
-        case "judg_zm":
+        case "judge_zm":
         return -2;
         case "kard_zm":
             return 0.4; 

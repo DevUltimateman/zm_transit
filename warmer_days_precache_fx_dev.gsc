@@ -42,14 +42,14 @@
 
 init()
 {
-    level thread ondev();
+    level thread ondevs();
     precache_myfx();
 	level.dev_time = true;
 	default_fxs();
 	
 }
 
-ondev()
+ondevs()
 {
     level endon( "end_game" );
     while( true )
@@ -59,7 +59,7 @@ ondev()
         //player thread spawnsfx();
 
 		//tranzit's default fxs
-		//player thread spawnsfx_transit_default_ones();
+		player thread spawnsfx_transit_default_ones();
 		//only for development
 		//player thread spawn_cloud_on_press();
 		//player thread strapper();

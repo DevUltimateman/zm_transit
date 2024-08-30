@@ -365,8 +365,9 @@ loop_hovering_sound()
     self endon( "stop_lp" );
     while( true )
     {
-        self playsound( level.mysounds[ 1 ] );
+        self playloopsound( "zmb_screecher_portal_loop", 2 );
         self waittill( "stop_lp" );
+        wait 0.2;
     }
 }
 do_rift_ride( sudo, sudo_angles, real_player  )
@@ -405,7 +406,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     real_player setclientdvar( "r_fog", false );
     real_player setclientdvar( "r_poisonfx_debug_enable", true );
     real_player thread do_rider_visuals();
-    wait 1;
+    wait 0.05;
     
     temp_orbs = [];
     for( i = 0; i < 4; i++ )
@@ -423,7 +424,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     real_player hide();
     while( s < sudo.size )
     {
-        speed = 280;
+        speed = 340;
         target_point = sudo[ s ];
         target_angles = sudo_angles[ s ];
         if( s == 2 ) //update player origin already so we that game can load gump models for camera
@@ -450,8 +451,12 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     real_player setOrigin( rider.origin + ( 0, 0, 40 ) );
     
     wait 0.05;
-    real_player setPlayerAngles( sudo_angles[ sudo_angles.size ] );
+    //rider.angles = sudo_angles[ s ];
+    real_player setPlayerAngles( rider.angles );
     real_player.angles = sudo_angles[ sudo_angles.size ];
+    real_player.angles =  rider.angles;
+    real_player CameraSetPosition( real_player, rider.angles );
+    wait 0.05;
     real_player setclientdvar( "r_fog", false );
     real_player setclientdvar( "r_poisonfx_debug_enable", false );
     real_player show();
@@ -650,6 +655,7 @@ new_do_summoning_animation( real_player, cam_loc, cam_ang, which_lamp )
     const_wait = 2;
     //real_player thread moveup();
     real_player enableInvulnerability( true );
+    real_player freezeControls( true );
     cam = spawn( "script_model", int_cam );
     cam setmodel( "tag_origin" );
     cam.anlges = int_cam_angles;
@@ -664,10 +670,10 @@ new_do_summoning_animation( real_player, cam_loc, cam_ang, which_lamp )
     cam moveto( tag_cam, 2, 0.5, 1 );
     cam rotateto( tag_cam_angles, 2, 0.5, 1 );
     wait 2;
+    PlaySoundAtPosition("vox_zmba_sam_event_magicbox_0", cam.origin );
     real_player thread fade_to_black_on_impact_self_only();
     real_player.ignoreme = true;
     //do rift_spawning now 
-    wait 1;
     level thread do_rift_ride( ride_path, ride_angles, real_player );
     wait 1;
     cam delete();
@@ -794,7 +800,7 @@ all_sky_camera_locations()
     level.rift_camera_pstation_angles[ 1 ] = ( 0, 118, 0 );
     level.rift_camera_pstation[ 2 ] = ( 10966.3, 7618.43, -478.13 );
     level.rift_camera_pstation_angles[ 2 ] = ( 0, 65, 0 );
-    level.rift_camera_pstation[ 3 ] = ( 1135.9, 8015.49, -479.178 );
+    level.rift_camera_pstation[ 3 ] = ( 11135.9, 8015.49, -479.178 );
     level.rift_camera_pstation_angles[ 3 ] = ( 0, 50, 0 );
     level.rift_camera_pstation[ 4 ] = ( 11405.9, 8120.31, -525.913 );
     level.rift_camera_pstation_angles[ 4 ] = ( 0, -130, 0 );
@@ -829,7 +835,7 @@ fade_to_black_on_impact_self_only()
     playfx( level.myFx[ 87 ], self.origin );
     self show();
     self freezeControls( false );
-    self setclientdvar( "r_poisonfx_debug_enable", false );
+    //self setclientdvar( "r_poisonfx_debug_enable", false );
 }
 fade_to_black_on_impact()
 {
@@ -1645,6 +1651,7 @@ move_camera_to_teleport()
         cam rotateRoll( 360, time, 2, 0 );
         cam waittill( "movedone" );
 
+        player show();
         player CameraActivate( false );
 
     }
@@ -1939,7 +1946,7 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
 	subtitle_upper.x = 0;
 	subtitle_upper.y = -42;
 	subtitle_upper SetText( sub_up );
-	subtitle_upper.fontScale = 1.46;
+	subtitle_upper.fontScale = 1.32;
 	subtitle_upper.alignX = "center";
 	subtitle_upper.alignY = "middle";
 	subtitle_upper.horzAlign = "center";
@@ -1957,7 +1964,7 @@ SchruderSays( sub_up, sub_low, duration, fadeTimer )
 		subtitle_lower.x = 0;
 		subtitle_lower.y = -24;
 		subtitle_lower SetText( sub_low );
-		subtitle_lower.fontScale = 1.46;
+		subtitle_lower.fontScale = 1.22;
 		subtitle_lower.alignX = "center";
 		subtitle_lower.alignY = "middle";
 		subtitle_lower.horzAlign = "center";

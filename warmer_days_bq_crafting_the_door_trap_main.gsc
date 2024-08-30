@@ -44,9 +44,9 @@
 
 init()
 {
-    level thread for_connecting_players();
+    precachemodel( "p6_wood_plank_rustic01_2x12_96" );
     flag_wait( "initial_blackscreen_passed" );
-
+    level thread for_connecting_players();
     level.door_base_main_right_location = ( 8111.67, -5425.17, 48.125 );
     level.door_base_main_left_location = ( 8272.36, -5425.29, 48.125 );
 
@@ -74,6 +74,9 @@ init()
 
     level.m_door_opening = false;
 
+    //airlock door pieces that needs to be found = 2 total
+    level.collected_door_pieces = 0;
+
     level.random_base_piece_locations[ 0 ] = ( -7497.26, 4912.35, -55.875 ); //outside of b depo power door
     level.random_base_piece_locations[ 1 ] = ( -6247.48, 4134.22, -44.875 ); //below the hut roof b depo shack
     level.random_base_piece_locations[ 2 ] = ( 2076.57, -1396.17, -53.0825 ); //next to box and trash town
@@ -88,13 +91,28 @@ init()
     level.random_base_piece_locations[ 11 ] = ( -10849.3, -1519.92, 196.125 ); //tunnel, middle next to a huge lava pit
     level.random_base_piece_locations[ 12 ] = ( -10910.5, -168.188, 192.125 ); //tunnel, when u enter from depo to tunnel, turn left when in  safe area
 
+
+    //spawns the airlock origin checker that checks if players are touching the door zone to open / close it
     level thread airlocking_doors();
+
+
+    //this spawns the trigger to build main door upgrade
     level thread level_spawns_main_door_stuff();
+
+    //this only spawns the worbench model and fx where player must build the safehouse upgrade
     level thread spawn_workbench_to_build_main_entrance();
+    wait 1;
+
+    //this spawns 2 pieces that players must find to build the main door for safe  house ( air locking door )
+    level thread spawn_collectables_for_bench();
     wait 15;
+
+    //this spawns the initial door anims + locations then it continues to thread if players are close and it also runs move door func
     level thread do_the_door();
+    //( "main_door_unlocked" );
     
 }
+
 
 airlocking_doors()
 {
@@ -128,7 +146,20 @@ do_the_door()
     level endon( "end_game" );
 
     level waittill( "main_door_unlocked" );
+
+    level.right_blocker = spawn( "script_model", ( 8132.66, -5428.57, 48.125 ) );
+    level.right_blocker setmodel( "collision_geo_64x64x64_standard" );
+    level.right_blocker.angles = ( 0, 180, 0 );
+
+    level.mid_blocker = spawn( "script_model", ( 8210.66, -5426.57, 48.125 ) );
+    level.mid_blocker setmodel( "collision_geo_64x64x64_standard" );
+    level.mid_blocker.angles = ( 0, 180, 0 );
+
+    level.left_blocker = spawn( "script_model", ( 8258.66, -5426.57, 48.125 ) );
+    level.left_blocker setmodel( "collision_geo_64x64x64_standard" );
+    level.left_blocker.angles = ( 0, 180, 0 );
     //level waittill( "m_door_done" );
+    wait 0.05;
     level.main_door_base_right = spawn( "script_model", level.door_base_main_right_location + ( 0, 0, 64 ) );
     level.main_door_base_right setmodel( level.myModels[ 9 ] );
     level.main_door_base_right.angles = ( 0, 180, 0 );
@@ -144,26 +175,27 @@ do_the_door()
     level.main_door_base_right rotateyaw( 360, 0.3, 0, 0.1 );
     level.main_door_base_left rotateyaw( 360, 0.3, 0, 0.1 );
 
-    level.main_door_base_right moveto( level.door_base_main_right_location + ( 0,0, -54 ), 0.6, 0, 0.2 ); 
-    level.main_door_base_left moveto( level.door_base_main_left_location + ( 0, 0, -54 ), 0.6, 0, 0.2 );
+    level.main_door_base_right moveto( level.door_base_main_right_location + ( 0,0, -44 ), 0.6, 0, 0.2 ); 
+    level.main_door_base_left moveto( level.door_base_main_left_location + ( 0, 0, -44 ), 0.6, 0, 0.2 );
 
     level.main_door_base_left waittill( "movedone" );
-
+    /*
     level.m_collisions = [];
-    level.m_collisions[ 0 ] = ( level.door_base_main_right_location + ( 0, 0, -54 ) );
-    level.m_collisions[ 1 ] = ( level.door_base_main_right_location );
+    level.m_collisions[ 0 ] = ( level.door_base_main_right_location + ( 0, 0, -44 ) );
+    level.m_collisions[ 1 ] = ( level.door_base_main_right_location + ( 0, 0, -44 ) );
 
-    level.m_collisions[ 2 ] = ( level.door_base_main_left_location + ( 0, 0, -54 ) );
-    level.m_collisions[ 3 ] = ( level.door_base_main_left_location  );
+    level.m_collisions[ 2 ] = ( level.door_base_main_left_location + ( 0, 0, -44 ) );
+    level.m_collisions[ 3 ] = ( level.door_base_main_left_location + ( 0, 0, -44 )  );
 
     level.col_models = [];
     for( i = 0; i < level.m_collisions.size; i++ )
     {
         level.col_models[ i ] = spawn( "script_model", level.m_collisions[ i ] );
-        level.col_models[ i ] setmodel( level.myModels[ 1 ] );
+        level.col_models[ i ] setmodel( "collision_geo_64x64x64_standard" );
         level.col_models[ i ].angles = level.main_door_base_left.angles;
         wait 0.05;    
     }
+    */
     wait 1;
     //monitor if players are close
     level thread monitorMovement();
@@ -188,7 +220,7 @@ monitorMovement()
              //DO THE DOOR OPEN IF PLAYERS ARE WITHIN THE AREA
             for( i = 0; i < level.players.size; i++ )
             {
-                if( distance2d( level.players[ i ].origin, level.airlock_origin.origin ) < 40 )
+                if( distance2d( level.players[ i ].origin, level.airlock_origin.origin ) < 60 )
                 {
                     if( level.players[ i ].origin[ 2 ] < 115  )
                     {
@@ -209,13 +241,15 @@ monitorMovement()
         {
             if( first_time_hit )
             {
-                
-                level.col_models[ 0 ] moveto( level.m_collisions[ 0 ] + ( -150, 0, -54 ), 1, 0.2, 0.2 );
-                level.col_models[ 1 ] moveto( level.m_collisions[ 1 ] + ( -150, 0, 0 ), 1, 0.2, 0.2 );        
-                level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 150, 0, -54 ), 1, 0.2, 0.2 );
-                level.col_models[ 3 ] moveto( level.m_collisions[ 3 ] + ( 150, 0, 0 ), 1, 0.2, 0.2 ); 
-                level.main_door_base_left moveto( level.door_base_main_left_location + ( 150, 0, -54 ), 1, 0.2, 0.2 );
-                level.main_door_base_right moveto( level.door_base_main_right_location + ( -150, 0, -54 ), 1, 0.2, 0.2 );    
+                level.mid_blocker movez( -180, 0.5, 0, 0 );
+                level.right_blocker movez( -180, 0.5, 0, 0 );
+                level.left_blocker movez( -180, 0.5, 0, 0 );
+                //level.col_models[ 0 ] moveto( level.m_collisions[ 0 ] + ( -150, 0, -44 ), 1, 0.2, 0.2 );
+                //level.col_models[ 1 ] moveto( level.m_collisions[ 1 ] + ( -150, 0, -44 ), 1, 0.2, 0.2 );        
+                //level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 150, 0, -44 ), 1, 0.2, 0.2 );
+                //level.col_models[ 3 ] moveto( level.m_collisions[ 3 ] + ( 150, 0, -44 ), 1, 0.2, 0.2 ); 
+                level.main_door_base_left moveto( level.door_base_main_left_location + ( 150, 0, -44 ), 1, 0.2, 0.2 );
+                level.main_door_base_right moveto( level.door_base_main_right_location + ( -150, 0, -44 ), 1, 0.2, 0.2 );    
                 level.main_door_base_right playsound( level.mysounds[ 8 ] );
                 level.main_door_base_left playsound( level.mysounds[ 8 ] );
                 level.main_door_base_right waittill( "movedone" );
@@ -235,15 +269,18 @@ monitorMovement()
 
             if ( level.m_door_opening && !someone_is_touching_the_main_area() && level.main_door_base_right.origin != level.door_base_main_right_location )
             {
-                level.main_door_base_right moveto( level.door_base_main_right_location + ( 0, 0, -54 ), 0.6, 0, 0.2 );
-                level.main_door_base_left moveto( level.door_base_main_left_location + ( 0,0, -54 ), 0.6, 0, 0.2 );
+                level.mid_blocker movez( 180, 0.5, 0, 0 );
+                level.right_blocker movez( 180, 0.5, 0, 0 );
+                level.left_blocker movez( 180, 0.5, 0, 0 );
+                level.main_door_base_right moveto( level.door_base_main_right_location + ( 0, 0, -44 ), 0.6, 0, 0.2 );
+                level.main_door_base_left moveto( level.door_base_main_left_location + ( 0,0, -44 ), 0.6, 0, 0.2 );
                 level.main_door_base_right playsound( level.mysounds[ 8 ] );
                 level.main_door_base_left playsound( level.mysounds[ 8 ] );
                 level.main_door_base_left waittill( "movedone" );
-                level.col_models[ 0 ] moveto( level.m_collisions[ 0 ] + ( 0, 0, -54 ), 0.1, 0, 0 );
-                level.col_models[ 1 ] moveto( level.m_collisions[ 1 ], 0.1, 0, 0 );
-                level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 10, 0, -54 ), 0.1, 0, 0 );
-                level.col_models[ 3 ] moveto( level.m_collisions[ 3 ], 0.1, 0, 0 );
+                //level.col_models[ 0 ] moveto( level.m_collisions[ 0 ] + ( 0, 0, -44 ), 0.1, 0, 0 );
+                //level.col_models[ 1 ] moveto( level.m_collisions[ 1 ] + ( 0, 0, -44 ), 0.1, 0, 0 );
+                //level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 0, 0, -44 ), 0.1, 0, 0 );
+                //level.col_models[ 3 ] moveto( level.m_collisions[ 3 ] + ( 0, 0, -44 ), 0.1, 0, 0 );
                 level.main_door_base_right playsound( level.mysounds[ 9 ] );
                 level.main_door_base_left playsound( level.mysounds[ 9 ] );
 
@@ -265,7 +302,7 @@ someone_is_touching_the_main_area()
 
     for( i = 0; i < level.players.size; i++ )
     {
-        if( distance2d( level.players[ i ].origin, level.open_air_lock_door_origin ) < 45 )
+        if( distance2d( level.players[ i ].origin, level.open_air_lock_door_origin ) < 55 )
         {
             return true;
         }
@@ -281,7 +318,38 @@ level_spawns_main_door_stuff()
     sglobal_gas_quest_trigger_spawner( level.door_base_main_trigger_location, "Press ^3[{+activate}] ^7to build a main entrance barricade.", "^3Zombie Barricade ^7was built!", level.myfx[ 75 ], level.myfx[ 76 ], "main_door_unlocked" );
 }
 
+//10
+//11
+//12
+//13 = with small flies
+//level._effects[ 11 ] for safehouse entrance lights point upwards
 
+//left side lamp = look from outside
+//8083.96, -5463.78, 43.2023
+//righ sidee 8300.14, -5448.42, 42.9963
+
+
+//other door script
+//outside lookin
+//left
+//7842.77, -4984.68, 44.64.23
+//right
+//7844.62, -5124.6, 43.2751
+
+
+//firetrap curve light spawns 
+//lookin at window from left to right
+//8428.1, -5172.75, 264.125
+//8419.41, -5228.11, 264.125
+//8407.34, -5298, 264.125
+//8378.76, -5354.92, 264.125
+//8321.37, -5401.48, 264.125
+
+//possible light bulb hangin
+//8182.29, -5086.54, 389.636
+//7985.66, -4735.01, 455.078
+//8426.28, -4842.27, 472.34
+//8021.4, -5290.2, 447.812
 monitorDoorHealth()
 {
     level endon( "end_game" );
@@ -293,7 +361,7 @@ monitorDoorHealth()
         {
             for( i = 0; i < zombies_.size; i++ )
             {
-                if( distance2d( zombies_[ i ].origin, level.airlock_origin.origin ) < 35 )
+                if( distance2d( zombies_[ i ].origin, level.airlock_origin.origin ) < 65 )
                 {
                     wait randomfloatrange( 0.05, 0.45 );
                     zombie_hits_door = randomIntRange( 5, 25 );
@@ -406,7 +474,7 @@ spawn_rebuildable_pieces()
             }
         }
         level.random_base_piece[ i ] = spawn( "script_model", level.random_base_piece_locations[ x_num ] );
-        level.random_base_piece[ i ] setmodel( "tag_origin" );
+        level.random_base_piece[ i ] setmodel( "p6_wood_plank_rustic01_2x12_96" );
         level.random_base_piece[ i ].angles = ( 0, 0, 0 );
         wait 0.05;
         playfxontag( level.myfx[ 2 ], level.random_base_piece[ i ], "tag_origin" );
@@ -446,7 +514,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
 
     level.main_door_tr = spawn( "trigger_radius_use", location, 0, 48, 48 );
     level.main_door_tr setCursorHint( "HINT_NOICON" );
-    level.main_door_tr setHintString( text1 );
+    level.main_door_tr sethintstring( "This upgrade is ^1missing ^7some fence pieces" );    
     level.main_door_tr triggerignoreteam();
     wait 0.05;
     i_m = spawn( "script_model", level.main_door_tr.origin );
@@ -463,6 +531,9 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
         }
     }
     wait 0.05;
+    
+    level waittill( "found_all_door_pieces" );
+    level.main_door_tr setHintString( text1 );
     while( true )
     {
         level.main_door_tr waittill( "trigger", me );
@@ -638,7 +709,7 @@ Subtitle( text, text2, duration, fadeTimer )
 	subtitle.x = 0;
 	subtitle.y = -42;
 	subtitle SetText( text );
-	subtitle.fontScale = 1.46;
+	subtitle.fontScale = 1.32;
 	subtitle.alignX = "center";
 	subtitle.alignY = "middle";
 	subtitle.horzAlign = "center";
@@ -656,7 +727,7 @@ Subtitle( text, text2, duration, fadeTimer )
 		subtitle2.x = 0;
 		subtitle2.y = -24;
 		subtitle2 SetText( text2 );
-		subtitle2.fontScale = 1.46;
+		subtitle2.fontScale = 1.22;
 		subtitle2.alignX = "center";
 		subtitle2.alignY = "middle";
 		subtitle2.horzAlign = "center";
@@ -695,7 +766,7 @@ flyby( element )
 
     while( element.x < on_right )
     {
-        element.x += 100;
+        element.x += 200;
         /*
         //if( element.x < on_right )
         //{
@@ -724,6 +795,139 @@ _someone_unlocked_something( text, text2, duration, fadetimer )
 }
 
 
+spawn_collectables_for_bench() //works well now
+{
+    level endon( "end_game" );
+    wait 2;
+
+    
+    level thread while_check();
+
+    possible_origins = [];
+    possible_origins_angles = [];
+    wait 1;
+
+    possible_origins[ 0 ] = ( -4573.98, 958.331, 175.547 ); //bridge
+    possible_origins[ 1 ] = ( 8241.56, 8257.77, -554.781 ); //train
+    possible_origins[ 2 ] = ( 13303.2, 62.6599, -191.906 ); //corn nnacht
+    possible_origins[ 3 ] = ( 8721.38, -6511.89, 112.125 ); //farm
+    possible_origins[ 4 ] = ( 1609.28, -4479.94, -66.4735 ); //shortcut
+
+    possible_origins_angles[ 0 ] = ( 0, 113, 0 );
+    possible_origins_angles[ 1 ] = ( 0, 85, 0 );
+    possible_origins_angles[ 2 ] = ( 0, 355, 0 );
+    possible_origins_angles[ 3 ] = ( 0, -7, 0 );
+    possible_origins_angles[ 4 ] = ( 0, 310, 0 );
+
+    //door spawns
+    value_right = randomIntRange( 0, possible_origins.size );
+    door_right_find = possible_origins[ value_right ];
+    door_right_find_angles = possible_origins_angles[ value_right ];
+
+    find_door_r = spawn( "script_model", door_right_find );
+    find_door_r setmodel( level.mymodels[ 9 ] );
+    find_door_r.angles = door_right_find_angles;
+
+    wait 1;
+    ArrayRemoveIndex( possible_origins, value_right );
+    wait 1;
+    value_left = randomintrange( 0, possible_origins.size );
+    
+    door_left_find = possible_origins[ value_left ];
+    door_left_find_angles = possible_origins_angles[ value_left ];
+
+    find_door_l = spawn( "script_model", door_left_find );
+    find_door_l setmodel( level.mymodels[ 9 ] );
+    find_door_l.angles = door_left_find_angles;
+    
+    wait 1;
+    playfxontag( level.myFx[ 48 ], find_door_l, "tag_origin" );
+    playfxontag( level.myFx[ 48 ], find_door_r, "tag_origin" );
+
+    wait 1;
+
+    trig_l = spawn( "trigger_radius_use", find_door_l.origin, 48, 48, 48 );
+    trig_l setHintString( "Press ^3[{+activate}] ^7to pick up an upgrade piece for ^5Safehouse^7" );
+    trig_l setCursorHint( "HINT_NOICON" );
+    trig_l TriggerIgnoreTeam();
+    wait 0.1;
+    trig_r = spawn( "trigger_radius_use", find_door_r.origin, 48, 48, 48 );
+    trig_r setHintString( "Press ^3[{+activate}] ^7to pick up an upgrade piece for ^5Safehouse^7" );
+    trig_r setCursorHint( "HINT_NOICON" );
+    trig_r TriggerIgnoreTeam();
+
+    playfx( level._effect[ "lght_marker"], find_door_l.origin ); //for playtesting to find em easier
+    wait 1;
+    playfx( level._effect[ "lght_marker"], find_door_r.origin );  //for playtesting to find em easier
+    trig_r thread waittill_pickup( "door_r", find_door_r );
+    wait 0.05;
+    trig_l thread waittill_pickup( "door_l", find_door_l );
+}
+
+while_check()
+{
+    level endon( "end_game" );
+    while( level.collected_door_pieces < 2 )
+    {
+        wait 1;
+    }
+    level notify( "can_build_doors_for_airlock" );
+    level notify( "found_all_door_pieces" );
+}
+waittill_pickup( switcher, model_to_delete )
+{
+    level endon( "end_game ");
+    while( true )
+    {
+        self waittill( "trigger", who );
+        if( is_player_valid( who ) )
+        {
+            
+            if( switcher == "door_r" )
+            {
+                level.collected_door_pieces++;
+                level thread Subtitle( "Surivor ^5" + who.name + " ^7found a fence piece that belongs to ^5Safehouse^7!", "", 8, 2.5 );
+                wait 0.05;
+                playfx( level._effect[ "fx_zmb_blackhole_trap_end" ], self.origin );
+                PlaySoundAtPosition( level.mysounds[ 3 ], self.origin );
+                wait 0.05;
+                if( isdefined( self ) )
+                {
+                    self delete();
+                }
+                if( isdefined( model_to_delete ) )
+                {
+                    model_to_delete delete();
+                }
+                break;
+            }
+            else if( switcher == "door_l" )
+            {
+                level.collected_door_pieces++;
+                level thread Subtitle( "Surivor ^5" + who.name + " ^7found a door piece that belongs to ^5Safehouse^7!", "", 8, 2.5 );
+                wait 0.05;
+                playfx( level._effect[ "fx_zmb_blackhole_trap_end" ], self.origin );
+                PlaySoundAtPosition( level.mysounds[ 3 ], self.origin );
+                wait 0.05;
+                if( isdefined( self ) )
+                {
+                    self delete();
+                }
+                if( isdefined( model_to_delete ) )
+                {
+                    model_to_delete delete();
+                }
+                break;
+            }
+            
+        }
+        wait 0.05;
+    }
+   
+    
+    
+
+}
 spawn_workbench_to_build_main_entrance()
 {
     level endon( "end_game" );

@@ -64,6 +64,7 @@ init()
     level thread initialize_everything_for_side_door();
     level thread spawn_workbench_to_build_side_barricade();
     level thread spawn_collision_and_model();
+    precachemodel( "collision_player_128x128x128" );
 }
 
 
@@ -132,21 +133,33 @@ spawn_collision_and_model()
     mt setmodel( level.myModels[ 9 ] );
     mt.angles = level.door_base_collision_clip_angles + ( 0, 180, 0 );
 
+    
     wait 0.05;
+    playfxontag( level._effect[ "lght_marker" ], mt, "tag_origin" );
     mt moveZ( -64, 1, 0.1, 0.1 );
     mt waittill( "movedone" );
     xx = mt.origin;
     wait 0.05;
+    org = [];
+    org[0] = ( 7867.4, -5004.24, 48.125 );
+    org[1] = ( 7867.4, -5060.24, 48.125 );
+    org[2] = ( 7867.4, -5120.24, 48.125 );
 
-    mtc = spawn( "script_model", level.door_base_collision_clip_location + (0,0,30)  );
-    mtc setmodel( level.myModels[ 1 ] );
-    mtc.angles = level.door_base_collision_clip_angles + ( 0, 180, 0 );
+    for( s = 0; s < org.size; s++ )
+    {
+        temp = spawn( "script_model", org[ s ] );
+        temp setmodel( "collision_geo_64x64x64_standard" );
+        temp.angles =  temp.angles;
+    }
+    //mtc = spawn( "script_model", level.door_base_collision_clip_location + (0,0,30)  );
+    //mtc setmodel( "collision_player_128x128x128" );
+    //mtc.angles = level.door_base_collision_clip_angles + ( 0, 180, 0 );
 
     wait 0.05;
-
-    mtc2 = spawn( "script_model", level.door_base_collision_clip_location );
-    mtc2 setmodel( level.myModels[ 1 ] );
-    mtc2.angles = level.door_base_collision_clip_angles + ( 0, 180, 0 );
+    //playfxontag( level._effect[ "lght_marker" ], mtc, "tag_origin" );
+    //mtc2 = spawn( "script_model", level.door_base_collision_clip_location +( 0, 0, 30 ) );
+    //mtc2 setmodel( "collision_player_128x128x128" );
+    //mtc2.angles = level.door_base_collision_clip_angles + ( 0, 180, 0 );
 
     wait 0.1;
     
@@ -359,23 +372,23 @@ coop_print_base_find_or_fortify( which_notify, who_found )
     switch( which_notify )
     {
         case "gas_got_picked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7found some spoiled ^3Gasoline", "", 5, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7found some spoiled ^5Gasoline", "", 6, 0.6 );
         break;
 
         case "littered_floor":
-        _someone_unlocked_something( "^3" + who_found.name + " ^2fortified^7 survivor base with ^5gasoline^7!", "", 6, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7brought ^5gasoline^7 to ^5Safe House", "", 6, 0.6 );
         break;
 
         case "fire_picking":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7found some old ^3Fire Crackers", "", 5, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7found some old ^5Fire Crackers", "", 6, 0.6 );
         break;
 
         case "firetrap_active":
-        _someone_unlocked_something( "^3" + who_found.name + " ^2fortified^7 survivor base by crafting a ^3Fire Trap^7 on the zombie window^7!", "", 6, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7finished upgrading ^5Safe House's ^7windows.", "Zombies climbing through said window will be ^5killed^7 by crafted fire trap.", 6, 0.3 );
         break;
 
         case "side_door_unlocked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^2fortified^7 survivor base by crafting a ^3Zombie Barricade^7 on the side entrance!", "", 6, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a barricade on side entrance of ^5Safe House ^7 that blocks zombies.", "", 6, 0.3 );
         default:
         break;
     }
@@ -387,7 +400,7 @@ Subtitle( text, text2, duration, fadeTimer )
 	subtitle.x = 0;
 	subtitle.y = -42;
 	subtitle SetText( text );
-	subtitle.fontScale = 1.46;
+	subtitle.fontScale = 1.32;
 	subtitle.alignX = "center";
 	subtitle.alignY = "middle";
 	subtitle.horzAlign = "center";
@@ -405,7 +418,7 @@ Subtitle( text, text2, duration, fadeTimer )
 		subtitle2.x = 0;
 		subtitle2.y = -24;
 		subtitle2 SetText( text2 );
-		subtitle2.fontScale = 1.46;
+		subtitle2.fontScale = 1.22;
 		subtitle2.alignX = "center";
 		subtitle2.alignY = "middle";
 		subtitle2.horzAlign = "center";
@@ -444,7 +457,7 @@ flyby( element )
 
     while( element.x < on_right )
     {
-        element.x += 100;
+        element.x += 200;
         /*
         //if( element.x < on_right )
         //{
