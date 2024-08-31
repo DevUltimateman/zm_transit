@@ -258,13 +258,13 @@ do_zombies_go_crazy()
     level endon( "end_game" );
     saved_round = level.round_number;
     ai = getAIArray( level.zombie_team );
-    level notify( "end_round" );
+    
     for( a = 0; a < ai.size; a++ )
     {
         ai[ a ] doDamage( ai[ a ].health + 555, ai[ a ].origin );
 
     }
-    
+    level notify( "end_round" );
     level.round_number = 115;
     level.zombie_total = 9999;
     
@@ -275,13 +275,14 @@ do_zombies_go_crazy()
     if( level.dev_time ){ iprintlnbold( "LOCKDOWN STEP FINISHED, REMOVING BLOCKS" );}
     level notify( "lockdown_disabled" );
     ai = getAIArray( level.zombie_team );
-    level notify( "end_round" );
+    
     for( a = 0; a < ai.size; a++ )
     {
         ai[ a ] doDamage( ai[ a ].health + 555, ai[ a ].origin );
 
     }
-    
+    level notify( "end_round" );
+    level.lock_down_enabled  = false;
     level.round_number = saved_round;
     level.zombie_total = undefined;
 }

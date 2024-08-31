@@ -146,7 +146,7 @@ do_the_door()
     level endon( "end_game" );
 
     level waittill( "main_door_unlocked" );
-
+    level thread square_fx_lights();
     level.right_blocker = spawn( "script_model", ( 8132.66, -5428.57, 48.125 ) );
     level.right_blocker setmodel( "collision_geo_64x64x64_standard" );
     level.right_blocker.angles = ( 0, 180, 0 );
@@ -460,12 +460,15 @@ monitorDoorHealth()
 blast_doors_wide_open()
 {
     level endon( "end_game" );
-    level.col_models[ 0 ] moveto( level.m_collisions[ 0 ] + ( -150, 0, -54 ), 1, 0.2, 0.2 );
-    level.col_models[ 1 ] moveto( level.m_collisions[ 1 ] + ( -150, 0, 0 ), 1, 0.2, 0.2 );        
-    level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 150, 0, -54 ), 1, 0.2, 0.2 );
-    level.col_models[ 3 ] moveto( level.m_collisions[ 3 ] + ( 150, 0, 0 ), 1, 0.2, 0.2 ); 
+    //level.col_models[ 0 ] moveto( level.m_collisions[ 0 ] + ( -150, 0, -54 ), 1, 0.2, 0.2 );
+    //level.col_models[ 1 ] moveto( level.m_collisions[ 1 ] + ( -150, 0, 0 ), 1, 0.2, 0.2 );        
+    //level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 150, 0, -54 ), 1, 0.2, 0.2 );
+    //level.col_models[ 3 ] moveto( level.m_collisions[ 3 ] + ( 150, 0, 0 ), 1, 0.2, 0.2 ); 
     level.main_door_base_left moveto( level.door_base_main_left_location + ( 150, 0, -54 ), 1, 0.2, 0.2 );
-    level.main_door_base_right moveto( level.door_base_main_right_location + ( -150, 0, -54 ), 1, 0.2, 0.2 );    
+    level.main_door_base_right moveto( level.door_base_main_right_location + ( -150, 0, -54 ), 1, 0.2, 0.2 );   
+    level.mid_blocker movez( -200, 0.5, 0, 0 );
+    level.right_blocker movez( -200, 0.5, 0, 0 );
+    level.left_blocker movez( -200, 0.5, 0, 0 ); 
     level.main_door_base_right playsound( level.mysounds[ 8 ] );
     level.main_door_base_left playsound( level.mysounds[ 8 ] );
     level.main_door_base_right waittill( "movedone" );
@@ -481,10 +484,13 @@ blast_doors_wide_close()
     level.main_door_base_right playsound( level.mysounds[ 8 ] );
     level.main_door_base_left playsound( level.mysounds[ 8 ] );
     level.main_door_base_left waittill( "movedone" );
-    level.col_models[ 0 ] moveto( level.m_collisions[ 0 ] + ( 0, 0, -54 ), 0.1, 0, 0 );
-    level.col_models[ 1 ] moveto( level.m_collisions[ 1 ], 0.1, 0, 0 );
-    level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 10, 0, -54 ), 0.1, 0, 0 );
-    level.col_models[ 3 ] moveto( level.m_collisions[ 3 ], 0.1, 0, 0 );
+    //level.col_models[ 0 ] moveto( level.m_collisions[ 0 ] + ( 0, 0, -54 ), 0.1, 0, 0 );
+    //level.col_models[ 1 ] moveto( level.m_collisions[ 1 ], 0.1, 0, 0 );
+    //level.col_models[ 2 ] moveto( level.m_collisions[ 2 ] + ( 10, 0, -54 ), 0.1, 0, 0 );
+    //level.col_models[ 3 ] moveto( level.m_collisions[ 3 ], 0.1, 0, 0 );
+    level.mid_blocker movez( 200, 0.5, 0, 0 );
+    level.right_blocker movez( 200, 0.5, 0, 0 );
+    level.left_blocker movez( 200, 0.5, 0, 0 ); 
     level.main_door_base_right playsound( level.mysounds[ 9 ] );
     level.main_door_base_left playsound( level.mysounds[ 9 ] );
 }
@@ -570,7 +576,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
 
     level.main_door_tr = spawn( "trigger_radius_use", location, 0, 48, 48 );
     level.main_door_tr setCursorHint( "HINT_NOICON" );
-    level.main_door_tr sethintstring( "This upgrade is ^1missing ^7some fence pieces" );    
+    level.main_door_tr sethintstring( "^1[ ^7Workbench ^1requires two broken down fences ^1]" );    
     level.main_door_tr triggerignoreteam();
     wait 0.05;
     i_m = spawn( "script_model", level.main_door_tr.origin );
@@ -634,7 +640,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
             {
                 wait 0.05;
                 level notify( notifier );
-                coop_print_base_find_or_fortify( notifier, me );
+                coop_print_base_notify_trap_main( notifier, me );
                 wait 0.05;
                 if( isdefined( level.main_door_tr ) )
                 {
@@ -662,11 +668,11 @@ monitorAfterWards()
     {
         if( level.door_health_ > 5 )
         {
-            self sethintstring( "Door health: ^3" + level.door_health_ + " ^7/ ^3" + level.door_health_fixed_ );
+            self sethintstring( "^5[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^5]" );
             wait 0.05;
             while( level.door_health_ > 5 )
             {
-                self sethintstring( "Door health: ^3" + level.door_health_ + " ^7/ ^3" + level.door_health_fixed_ );
+                self sethintstring( "^5[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^5]" );
                 wait 1;                         
             }
         }
@@ -677,14 +683,14 @@ monitorAfterWards()
         }
         else if  ( !level.door_needs_repairing )
         {
-            self sethintstring( "Door health: ^3" + level.door_health_ + " ^7/ ^3" + level.door_health_fixed_ );
+            self sethintstring( "^5[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^5]" );
         }
         self waittill( "trigger", who );
         if( level.door_health_ < 5 && level.pieces_added_to_door < 3 )
         {
             if( who.has_bar_piece > 0 )
             {
-                self sethintstring( "You added a barricade piece to the door." );
+                self sethintstring( "^5[ ^7You added a barricade piece to the door ^5]" );
                 level.pieces_added_to_door++;
                 level.players_have_pieces--;
                 wait 1;
@@ -694,7 +700,7 @@ monitorAfterWards()
                 self playlocal_plrsound();
                 if( level.pieces_added_to_door >= 3 )
                 {
-                    self sethintstring( "The door is functional again!" );
+                    self sethintstring( "^5[ The door is functional again ^5]" );
                     level.pieces_added_to_door = 0;
                     level.door_health_ = level.door_health_fixed_;
                     level.door_needs_repairing = false;
@@ -728,32 +734,33 @@ playloop_electricsound()
 }
 
 
-coop_print_base_find_or_fortify( which_notify, who_found )
+coop_print_base_notify_trap_main( which_notify, who_found )
 {
     level endon( "end_game" );
     switch( which_notify )
     {
         case "gas_got_picked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7found some spoiled ^3Gasoline", "", 5, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7found some spoiled ^5Gasoline", "", 6, 0.6 );
         break;
 
         case "littered_floor":
-        _someone_unlocked_something( "^3" + who_found.name + " ^2fortified^7 survivor base with ^5gasoline^7!", "", 6, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7brought ^5gasoline^7 to ^5Safe House", "", 6, 0.6 );
         break;
 
         case "fire_picking":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7found some old ^3Fire Crackers", "", 5, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7found some old ^5Fire Crackers", "", 6, 0.6 );
         break;
 
         case "firetrap_active":
-        _someone_unlocked_something( "^3" + who_found.name + " ^2fortified^7 survivor base by crafting a ^3Fire Trap^7 on the zombie window^7!", "", 6, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7finished upgrading ^5Safe House's ^7window entrance.", "Zombies climbing through said window will be ^5killed^7 by crafted fire trap.", 6, 0.3 );
         break;
 
         case "side_door_unlocked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^2fortified^7 survivor base by crafting a ^3Zombie Barricade^7 on the side entrance!", "", 6, 0.3 );
-        
+        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a barricade on side entrance of ^5Safe House ^7that blocks zombies.", "", 6, 0.3 );
+        break;
         case "main_door_unlocked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^2fortified^7 survivor base by crafting a ^3Zombie Barricade^7 on the main entrance!", "Keep an eye on the barricade's ^2health^7. There might be a time when it needs repairing...", 9, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a moveable door barricade on the main entrance of ^5Safe House.", "Keep an eye on the door's ^2health^7. There might be a time when it needs ^5repairing^7...", 9, 0.3 );
+        break;
         default:
         break;
     }
@@ -850,7 +857,28 @@ _someone_unlocked_something( text, text2, duration, fadetimer )
 	level thread Subtitle( text, text2, duration, fadetimer );
 }
 
+square_fx_lights()
+{
+    level endon( "end_game" );
+    //level waittill( "spawn_main_door_square" );
+    squares = [];
+    squares[ 0 ] = ( 8292.12, -5378.92, 48.125 );
+    squares[ 1 ] = ( 8292.12, -5337.67, 48.125 );
+    squares[ 2 ] = ( 8292.12, -5307.34, 48.125 );
+    squares[ 3 ] = ( 8192.12, -5284.94, 48.125 );
+    squares[ 4 ] = ( 8238.31, -5284.12, 48.125 );
+    squares[ 5 ] = ( 8186.74, -5284.12, 48.125 );
+    squares[ 6 ] = ( 8118.62, -5284.12, 48.125 );
+    squares[ 7 ] = ( 8097.09, -5330.5, 48.125 );
 
+    for( s = 0; s < squares; s++ )
+    {
+        playfx( level._effects[ 13 ], squares[ s ] );
+        wait 1;
+        playfx( level._effects[ 18 ], squares[ s ] );
+        wait 0.5;
+    }
+}
 spawn_collectables_for_bench() //works well now
 {
     level endon( "end_game" );
@@ -870,10 +898,10 @@ spawn_collectables_for_bench() //works well now
     possible_origins[ 4 ] = ( 1609.28, -4479.94, -66.4735 ); //shortcut
 
     possible_origins_angles[ 0 ] = ( 0, 113, 0 );
-    possible_origins_angles[ 1 ] = ( 0, 99, 0 );
+    possible_origins_angles[ 1 ] = ( 0, 167, 0 );
     possible_origins_angles[ 2 ] = ( 0, 355, 0 );
     possible_origins_angles[ 3 ] = ( 0, -7, 0 );
-    possible_origins_angles[ 4 ] = ( 0, 310, 0 );
+    possible_origins_angles[ 4 ] = ( 0, 335, 0 );
 
     //door spawns
     value_right = randomIntRange( 0, possible_origins.size );

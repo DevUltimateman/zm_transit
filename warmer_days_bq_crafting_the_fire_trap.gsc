@@ -72,7 +72,7 @@ init()
     
 }
 
-coop_print_base_find_or_fortify( which_notify, who_found )
+coop_print_base_find_or_fortify_fire_trap( which_notify, who_found )
 {
     level endon( "end_game" );
     switch( which_notify )
@@ -90,11 +90,15 @@ coop_print_base_find_or_fortify( which_notify, who_found )
         break;
 
         case "firetrap_active":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7finished upgrading ^5Safe House's ^7windows.", "Zombies climbing through said window will be ^5killed^7 by crafted fire trap.", 6, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7finished upgrading ^5Safe House's ^7window entrance.", "Zombies climbing through said window will be ^5killed^7 by crafted fire trap.", 6, 0.3 );
         break;
 
         case "side_door_unlocked":
-        _someone_unlocked_something( "^5" + who_found.name + "^7crafted a barricade on side entrance of ^5Safe House ^7 that blocks zombies.", "", 6, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a barricade on side entrance of ^5Safe House ^7that blocks zombies.", "", 6, 0.3 );
+        break;
+        case "main_door_unlocked":
+        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a moveable door barricade on the main entrance of ^5Safe House.", "Keep an eye on the door's ^2health^7. There might be a time when it needs ^5repairing^7...", 9, 0.3 );
+        break;
         default:
         break;
     }
@@ -196,9 +200,9 @@ while_gas_hasnt_been_picked()
     level endon( "end_game" );
     while( true )
     {
-        level.tr setHintString( "Workbench requires ^3Gasoline " );
+        level.tr setHintString( "^5[ ^7Workbench requires Gasoline ^5]" );
         level waittill( "fire_picking" );
-        level.tr sethintstring( "Workbench requires ^3Fire Crackers " );
+        level.tr sethintstring( "^5[ ^7Workbench requires Fire Crackers ^5]" );
         break;
     }
 }
@@ -261,7 +265,7 @@ global_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
             if( isdefined( notifier ) && notifier != "" )
             {
                 level notify( notifier );
-                coop_print_base_find_or_fortify( notifier, me );
+                coop_print_base_find_or_fortify_fire_trap( notifier, me );
                 if( isdefined( level.tr ) )
                 {
                     level.tr delete();
@@ -304,7 +308,7 @@ do_everything_for_gas_pickup()
 
     gas_trig = spawn( "trigger_radius_use", level.gas_canister_pick_location, 0, 24, 24 );
     gas_trig setcursorhint( "HINT_NOICON" );
-    gas_trig sethintstring( "Press ^3[{+activate}] ^7 to pick up ^3Gasoline" );
+    gas_trig sethintstring( "^5[ [{+activate}] ^7to pick up Gasoline ^5]" );
     gas_trig triggerignoreteam();
     wait 0.05;
     inv_mod_fx = spawn( "script_model", gas_trig.origin + ( 0, -40, 65) );
@@ -323,7 +327,7 @@ do_everything_for_gas_pickup()
 
     while( true )
     {
-        gas_trig sethintstring( "Hold ^3[{+activate}] ^7 to pick up ^3Gasoline" );
+        gas_trig sethintstring( "^5[ [{+activate}] ^7to pick up Gasoline ^5]" );
         gas_trig waittill( "trigger", presser );
         if( isplayer( presser ) && is_player_valid( presser ) )
         {
@@ -343,7 +347,7 @@ do_everything_for_gas_pickup()
             presser takeWeapon( "zombie_builder_zm" );
             presser.has_picked_up_g = true;
             level notify( "gas_got_picked" );
-            coop_print_base_find_or_fortify( "gas_got_picked", presser );
+            coop_print_base_find_or_fortify_fire_trap( "gas_got_picked", presser );
             gas_trig delete();
             inv_mod_fx delete();
             
@@ -383,7 +387,7 @@ do_everything_for_gas_placedown()
     level waittill( "littered_floor" );
     temp = spawn( "trigger_radius_use", level.gas_pour_location, 0, 48, 48 );
     temp setCursorHint( "HINT_NOICON" );
-    temp setHintString( "Can't start fire without a ^3fire^7!" );
+    temp setHintString( "^5[ ^7Can't start fire without a fire ^5]" );
     temp triggerignoreteam();
 
     level thread global_gas_quest_trigger_spawner( level.gas_fire_pick_location + ( 0, 0, 60 ), "Press ^3[{+activate}]^7 to dig fire crackers.", "", "", "", "fire_picking" );

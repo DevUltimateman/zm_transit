@@ -362,8 +362,10 @@ main_quest_spawn_poisonous_clouds()
     //they then drink the perk bottle to become immune to gas
     
     //level notify( "poisonous_adventure_find_case" ); //
-    level thread applyforplayer();
+    //level thread applyforplayer();
     initial_poisonous_spawns();
+    level waittill( "lockdown_disabled");
+    level thread move_poisonous_clouds_main_quest();
 }
 
 applyforplayer()
@@ -584,18 +586,7 @@ testingg()
 {
     self endon( "disconnect" );
     level endon( "end_game" );
-    level waittill( "forever" );
-    while( true )
-    {
-        self waittill( "weapon_fired", weap );
-        if ( weap == "m1911_zm" )
-        {
-            level thread move_poisonous_clouds_main_quest();
-            wait 1;
-            iprintlnbold( "STARTING CLOUD STEP" );
-            break;
-        }
-    }
+
 }
 
 move_poisonous_clouds_main_quest()
@@ -636,6 +627,8 @@ move_poisonous_clouds_main_quest()
             player.surround_cloud[ i ] = spawn( "script_model", player.origin + ( 0, 0, -1200 ) );
             player.surround_cloud[ i ] setmodel( "tag_origin" );
             player.surround_cloud[ i ].angles = player.angles;
+            player thread do_damage_cloud();
+            player thread do_big_damage_cloud();
             player setclientdvar( "r_fog", true );
             
             wait 0.05;
@@ -663,6 +656,47 @@ move_poisonous_clouds_main_quest()
     level thread level_waittill_continue_mq();
 }
 
+do_damage_cloud()
+{
+    self endon( "stop_damage_clouds" );
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    while( true )
+    {
+        previous_origin = self.origin;
+        wait 2.5;
+        if( distance( self.origin, previous_origin ) < 100 )
+        {
+            self doDamage( 10, self.origin );
+            if( level.dev_time )
+            {
+                iprintln( "did 10 damage to " + self.name + " due to not moving fast enough.." );
+            }
+            wait 2;
+        }
+    }
+}
+
+do_big_damage_cloud() //this does big damage if player does not head to farm
+{
+    self endon( "stop_damage_clouds" );
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    sizes = level.mq_step_poison_clouds_origin_spawn;
+    while( true )
+    {
+        for( i = 0; i < sizes.size; i++ )
+        {
+            if( distance( self.origin, sizes[ i ] ) < 450 )
+            {
+                self doDamage( 30, self.origin );
+                if( level.dev_time ){ iprintln( "did big damage to " + self.name + " coz touching big clouds.." ); }
+                wait 2.5;
+            }
+            wait 0.05;
+        }
+    }
+}
 do_it()
 {
     level endon( "end_game" );
@@ -671,7 +705,7 @@ do_it()
 //disables cloud fxs from player when player arrives to farm
 monitor_arrive_farm()
 {
-
+    level endon( "end_game ");
     self endon( "disconnect" );
     while( true )
     {
@@ -685,6 +719,7 @@ monitor_arrive_farm()
             level.arrived_at_base++;
             
             self notify( "stop_following_clouds" );
+            self notify( "stop_damage_clouds" );
             self.surround_cloud[ 0 ].origin = self.origin + ( 0, 0, -800 );
             self.surround_cloud[ 1 ].origin = self.origin + ( 0, 0, -800 );
             self.surround_cloud[ 2 ].origin = self.origin + ( 0, 0, -800 );

@@ -418,17 +418,20 @@ spawn_drinkable_step()
     playfxontag( level.myFx[ 41 ], spawnable_lighter, "tag_origin" );
     anim_trig = spawn( "trigger_radius_use", origin_lo + ( 0, 0, 0 ), 1, 12, 12 );
     anim_trig setCursorHint( "HINT_NOICON" );
-    anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
+    anim_trig sethintstring( "[ ^5Come back later ^7]" );
     anim_trig TriggerIgnoreTeam();
+    level waittill( "all_suitcases_collected" );
     foreach( playa in level.players )
     {
         playa.has_immunity = false;
         playa.has_immunity_health = 1000;
     }
     wait 0.05;
-
+    
     spawnable_case.angles = ( 0, 180, 90 );
     initial_hit = true;
+    
+    anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
     while( true )
     {
         anim_trig waittill( "trigger", who ); 

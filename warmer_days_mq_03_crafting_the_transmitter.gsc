@@ -101,7 +101,7 @@ transmitter_wait_for_navcard()
     location = ( 7457.21, -431.969, -195.816 );
     navtrig = spawn( "trigger_radius_use", location, 0, 48, 48 );
     navtrig setcursorhint( "HINT_NOICON" );
-    navtrig sethintstring( "Hold ^3[{+activate}] ^7 to apply Navcard to transmitter." );
+    navtrig sethintstring( "^5[ ^3[{+activate}] ^7to apply your ^5navcard^7 to the transmitter ^5]" );
     navtrig triggerignoreteam();
 
     while ( true )
@@ -110,7 +110,7 @@ transmitter_wait_for_navcard()
         if ( isplayer( who ) && is_player_valid( who ) )
         {
             
-            navtrig sethintstring( "Success! ^3Navcard^7 applied to the transmitter." );
+            navtrig sethintstring( "^5[ ^7Success! ^5Navcard^7 applied to the transmitter ^5]" );
             who playsound( "zmb_sq_navcard_success" );
             navtrig playsound( "zmb_sq_navcard_success" );
             level thread play_nav1_success( navtrig.origin );
@@ -119,7 +119,7 @@ transmitter_wait_for_navcard()
             //this notify triggers a thread from: warmer_days_meet_mr_s.gsc to make schruder talk with player
             //and starts the main quest step 4
             level notify( "s_talks_navcard" );
-            navtrig sethintstring( "Transmitter is emitting ^3power...");
+            navtrig sethintstring( "^5[ ^7Transmitter is emitting power ^5]");
             break;
         }
     }

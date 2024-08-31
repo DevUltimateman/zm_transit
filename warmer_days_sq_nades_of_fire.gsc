@@ -455,6 +455,8 @@ firegrenade_player_wait_for_upgrade()
 
     self waittill( "start_step2" );
     wait 4.5;
+    self thread firegrenades_step2();
+    wait 0.1;
     self notify( "_start_sq_nade_step2_for_player" );
     //player hit all the spots, reward the player
     if( level.dev_time ){ iprintlnbold( "Player ^3" + self.name + " ^7 reached part: WHIZZ NEAR BY ZOMBIES with NADES" ); }
@@ -468,11 +470,12 @@ firegrenade_player_wait_for_upgrade()
     
     //wait player to achieve fireblaze nades ( happens after getting 12 near by kills with throwable grenades against zombies. )
     self waittill( "reward_me" ); //custom noti / waittill
-    
+        
     //do the actual thread that rewards the player
     level thread firegrenade_reward_player( self ); //self == the player
     self notify( "stop_grenade_track" ); //custom noti / waittill
 }
+
 
 //give the player that's passed in as an argument firenades
 firegrenade_reward_player( to_who )
@@ -760,7 +763,7 @@ firegrenade_touched( who )
                     //add this trigger to player's claimed nodes    
                     who.hits++;
                     who.hit_list[ i ] = true;
-                    who _someone_unlocked_something_client( "^5Fire Grenades Found", who.hits + " ^5/^7 5", 4, 1 );
+                    who _someone_unlocked_something_client( "Fire Grenades Found", "^5[ ^7" + who.hits + " ^5/^7 5 ^5]", 4, 1 );
                     //who.hits++; //increase player who hit score
                     iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
                     //self notify( "gucci" ); 

@@ -328,7 +328,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
             {
                 wait 0.05;
                 level notify( notifier );
-                coop_print_base_find_or_fortify( notifier, me );
+                coop_print_base_find_or_fortify_door_trap( notifier, me );
                 wait 0.05;
                 if( isdefined( tr ) )
                 {
@@ -366,7 +366,7 @@ playloop_electricsound()
 }
 
 
-coop_print_base_find_or_fortify( which_notify, who_found )
+coop_print_base_find_or_fortify_door_trap( which_notify, who_found )
 {
     level endon( "end_game" );
     switch( which_notify )
@@ -384,11 +384,15 @@ coop_print_base_find_or_fortify( which_notify, who_found )
         break;
 
         case "firetrap_active":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7finished upgrading ^5Safe House's ^7windows.", "Zombies climbing through said window will be ^5killed^7 by crafted fire trap.", 6, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7finished upgrading ^5Safe House's ^7window entrance.", "Zombies climbing through said window will be ^5killed^7 by crafted fire trap.", 6, 0.3 );
         break;
 
         case "side_door_unlocked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a barricade on side entrance of ^5Safe House ^7 that blocks zombies.", "", 6, 0.3 );
+        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a barricade on side entrance of ^5Safe House ^7that blocks zombies.", "", 6, 0.3 );
+        break;
+        case "main_door_unlocked":
+        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a moveable door barricade on the main entrance of ^5Safe House.", "Keep an eye on the door's ^2health^7. There might be a time when it needs ^5repairing^7...", 9, 0.3 );
+        break;
         default:
         break;
     }
