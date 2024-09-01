@@ -58,9 +58,10 @@ init()
 
     level.door_base_collision_clip_location = ( 7875.72, -5052.77, -8.92751 );
     level.door_base_collision_clip_angles = ( 0, 89.8134, 0 );
+    precache_this();
     flag_wait( "initial_blackscreen_passed" );
 
-    
+    level thread collectibs_origins_and_logic();
     level thread initialize_everything_for_side_door();
     level thread spawn_workbench_to_build_side_barricade();
     level thread spawn_collision_and_model();
@@ -114,7 +115,7 @@ initialize_everything_for_side_door()
 {
     level endon( "end_game" );
     wait 20;
-    sglobal_gas_quest_trigger_spawner( level.door_base_side_trigger_location + ( 0,0, 70), "Press ^3[{+activate}] ^7to build zombie barricade", "Zombies are now ^3blocked^7 by this barricade!", level.myfx[ 75 ], level.myfx[ 76 ], "side_door_unlocked" );
+    sglobal_gas_quest_trigger_spawner( level.door_base_side_trigger_location + ( 0,0, 70), "^1[ ^7Workbench requires ^3something that can be collected ^1]", "^1[ ^7Side barricade built ^1]", level.myfx[ 75 ], level.myfx[ 76 ], "side_door_unlocked" );
     
     
 }
@@ -261,6 +262,97 @@ monitorsafetyenter()
     }
 }
 
+collectibs_origins_and_logic()
+{
+    all_possible_locs = [];
+    all_possible_locs[ 0 ] = ( 2306.12, -701.141, -55.875 ); //next to bowlin ally
+    all_possible_locs[ 1 ] = ( 3685.31, 6023.13, -63.875 ); //cabin outside
+    all_possible_locs[ 2 ] = ( 11322.8, 7706.78, -541.607 ); //next to ak74
+    all_possible_locs[ 3 ] = ( 10431.1, 6847.95, -574.742 ); //before powerstation on  right
+    all_possible_locs[ 4 ] = ( 6175.08, -5265.25, -46.005 ); //farm
+    all_possible_locs[ 5 ] = ( -10990.1, -349.192, 192.125 ); //tunnel spot
+    all_possible_locs[ 6 ] = ( -5044.67, -5699.19, -68.8506 ); //left side of dine ( big open area )
+
+    loc_models = [];
+    loc_models[ 0 ] = ( "com_file_cabinets_a_drawer" );
+    loc_models[ 1 ] = ( "p_jun_storage_crate_forest2" );
+    loc_models[ 2 ] = ( "p6_monsoon_crate_01_shell" );
+    loc_models[ 3 ] = ( "p_zom_barrel_02_clean" );
+    loc_models[ 4 ] = ( "com_crate01_farm" );
+    loc_models[ 5 ] = ( "com_debris_engine02" );
+    loc_models[ 6 ] = ( "p_rus_storage_cabinet" );
+
+    loc_angles = [];
+    loc_angles[ 0 ] = ( 0, 45, 0 ); //town
+    loc_angles[ 1 ] = ( 0, 280, 0 ); //cabin
+    loc_angles[ 2 ] = ( 0, 20, 0 ); //next to ak74
+    loc_angles[ 3 ] = ( 0, 140, 0 ); //power
+    loc_angles[ 4 ] = ( 0, 180, 0 ); //farm
+    loc_angles[ 5 ] = ( 0, 270, 0 ); //tunnel
+    loc_angles[ 6 ] = ( 90, 90, 0 ); //diner
+    level.side_barrier_has_been_found = false;
+    level.random_spawn_value = randomIntRange( 0, loc_angles.size ); 
+    wait 0.1;
+    for( i = 0; i < all_possible_locs.size; i++ )
+    {
+        spawn_l = spawn( "script_model", all_possible_locs[ i ] );
+        spawn_l setmodel( loc_models[ i ] );
+        spawn_l.anlges = loc_angles[ i ];
+        spawn_l solid();
+        wait 0.1;
+        col = spawn( "script_model", spawn_l.origin );
+        col setmodel( "collision_geo_64x64x64_standard" );
+        col.angles = col.angles;
+        playfx( level._effects[17], spawn_l.origin );
+        wait 1;
+        trig = spawn( "trigger_radius_use", spawn_l.origin + ( 0, 0, 10 ), 0,120,120 );
+        trig setHintString( "^1[ ^3[{+activate}] ^7to search location for ^5Safe House^7 items ^1] " );
+        trig setCursorHint( "HINT_NOICON" );
+        trig TriggerIgnoreTeam();
+        trig thread do_search_logic( i );
+        trig thread continue_search_logic( i );
+
+    }
+
+}
+
+continue_search_logic( original_value )
+{
+    level endon( "end_game" );
+    level waittill( "change_search_hintstring" );
+    self setHintString( "^1[ ^7This location is currently empty, try coming back later ^1]" );
+    level waittill( "continue_search_logic_for_old_triggers" );
+
+}
+
+do_search_logic( maxss )
+{
+    level endon( "stop_first_search_logic" );
+    self waittill( "trigger", who );
+    if( level.random_spawn_value == maxss && !level.side_barrier_has_been_found )
+    {
+        wait 1;
+        level.side_barried_has_been_found = true;
+        level notify( "change_search_hintstring" );
+        _someone_unlocked_something( "^5" + who.name + " ^7found a piece that allows upgrading ^5Safe House's ^7side entrance to have a zombie barrier!", "", 8, 1 );
+        wait 10;
+        level notify( "stop_first_search_logic" );
+    }
+    else { self setHintString( "^1[ ^7Nothing was found at this location ^1]" );}
+
+}
+precache_this()
+{
+    precachemodel( "p_glo_bucket_metal" );// only works in cabin woods
+
+    precachemodel( "p_rus_storage_cabinet" ); //diner model
+    precachemodel( "com_crate01_farm" ); //farm
+    precachemodel( "p_jun_storage_crate_forest2" ); //cabin
+    precachemodel( "p_glo_trashcan_diner" );
+    precachemodel( "com_file_cabinets_a_drawer" ); //town
+    precachemodel( "p6_monsoon_crate_01_shell" ); //ak74
+    precachemodel( "p_zom_barrel_02_clean" ); //pstation
+}
 sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
 {
     level endon( "end_game" );
@@ -284,6 +376,9 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
         }
     }
     wait 0.05;
+    level waittill( "change_search_hintstring" );
+    tr setHintString( "^1[ ^3[{+activate}] ^7to build ^3Side Entrance Blocker ^5 ]" );
+    wait 1;
     while( true )
     {
         tr waittill( "trigger", me );
@@ -332,7 +427,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
                 wait 0.05;
                 if( isdefined( tr ) )
                 {
-                    tr delete();
+                    //tr delete();
                 }
                 if( isdefined( i_m ) )
                 {

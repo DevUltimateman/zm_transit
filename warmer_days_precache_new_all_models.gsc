@@ -77,7 +77,8 @@ init()
         "p_rus_electricalbox_01",//74
         "p_glo_lights_fluorescent_yellow_on_diner",//75
         "p6_zm_gas_sign_01",//76
-        "p6_zm_gasstation_oilrack"//77
+        "p6_zm_gasstation_oilrack",
+        "zombie_modular_wires_lg"//77
         /*
         "com_powerline_tower_top2_broken2_forest",
         "p_jun_int_table_lg",

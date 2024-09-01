@@ -143,7 +143,7 @@ weapon_mark_1_spawn()
     gunOrigin = ( 8118.79, -4821.86, 100 );
     trigger = spawn( "trigger_radius", gunOrigin, 26, 26, 40 );
     trigger SetCursorHint("HINT_NOICON");
-    trigger setHintString( "^5[ ^3[{+activate}] ^7to upgrade you bullet type! [ ^5Cost^7: ^315 000 ^7]  ^5]" );
+    trigger setHintString( "^1[ ^3[{+activate}] ^7to upgrade you bullet type! [ ^1Cost^7: ^315 000 ^7]  ^1]" );
     //level thread LowerMessage( "Custom Perks", "Hold ^6[{+activate}] ^7to upgrade your ^6bullet type^7 [Cost:^6 20000^7]" );
     //trigger setLowerMessage( trigger, "Custom Perks"  );
 

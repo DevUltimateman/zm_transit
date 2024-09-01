@@ -217,9 +217,10 @@ playerss()
 {
     level endon( "end_game" );
     //flag_wait( "initial_blackscreen_passed" );
-    level thread playloopsound_buried();
+    
     wait 1;
     level waittill( "do_first_rift_walk" );
+    level thread playloopsound_buried();
     level thread level_tell_about_rifts();
     level waittill( "do_it" );
     wait 2;
@@ -323,6 +324,33 @@ spawn_initial_rift_camera_points()
     
 }
 
+level_bring_back_normal_visuals_and_stuff()
+{
+    for( i = 0; i < level.players.size; i++ )
+    {
+        level.players[ i ] CameraSetPosition( level.players[ i ].origin );
+        level.players[ i ] CameraActivate( false );
+        level.players[ i ] show();
+        level.players[ i ] playsound( level.jsn_snd_lst[ 32 ] );
+        level.players[ i ] setMoveSpeedScale( 1 );
+        level.players[ i ] setclientdvar( "r_lighttweaksuncolor", "0.8 0.6 0.5" );
+        level.players[ i ] setclientdvar( "r_lighttweaksunlight", 12  );
+        level.players[ i ] setclientdvar( "r_filmusetweaks", true );
+        level.players[ i ] setclientdvar( "r_lighttweaksundirection",( -155, 63, 0 ) );
+        level.players[ i ] setclientdvar( "r_sky_intensity_factor0", 0.8  );
+        level.players[ i ] setclientdvar( "r_bloomtweaks", 1  );
+        level.players[ i ] setclientdvar( "cg_usecolorcontrol", 1 );
+        level.players[ i ] setclientdvar( "cg_colorscale", "1.2 1 1"  );
+        level.players[ i ] setclientdvar( "sm_sunsamplesizenear", 1.4  );
+        level.players[ i ] setclientdvar( "wind_global_vector", ( 200, 250, 50 )  );
+        level.players[ i ] setclientdvar( "r_fog", 0  );
+        level.players[ i ] setclientdvar( "r_lodbiasrigid", -1000  );
+        level.players[ i ] setclientdvar( "r_lodbiasskinned", -1000 );
+        level.players[ i ] setclientdvar( "cg_fov_default", 90 );
+        level.players[ i ] setclientdvar( "cg_fov", 90 );
+        level.players[ i ] setclientdvar( "vc_fsm", "1 1 1 1" );
+    }
+}
 
 initial_camera_sky_spawn()
 {
@@ -1091,12 +1119,12 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Mike's Diner";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^5[ ^7Come back later ^5]");
+        trig_ setHintString( "^1[ ^7Come back later ^1]");
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^5[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^5]");
+        trig_ setHintString( "^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_diner, level.rift_camera_diner_angles, "3p_cabin_cam" );
     }
@@ -1105,13 +1133,13 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Mike's Diner";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^5[ ^7Come back later ^5]");
+        trig_ setHintString( "^1[ ^7Come back later ^1]");
         
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^5[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^5]");
+        trig_ setHintString( "^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_diner, level.rift_camera_diner_angles, "3p_corn_off_cam" );
     }
@@ -1120,13 +1148,13 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Grandtourissa's Bus Depo";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^5[ ^7Come back later ^5]");
+        trig_ setHintString( "^1[ ^7Come back later ^1]");
         
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^5[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^5]");
+        trig_ setHintString( "^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_bepo, level.rift_camera_bepo_angles, "3p_short_cam" );
     }
@@ -1135,13 +1163,13 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Denny's Happy Cow Farm";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^5[ ^7Come back later ^5]");
+        trig_ setHintString( "^1[ ^7Come back later ^1]");
         
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^5[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^5]");
+        trig_ setHintString( "^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_farm, level.rift_camera_farm_angles, "3p_depo_cam" );
     }
@@ -1150,13 +1178,13 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Nazi Commander Dr. Edward's Main Bunker";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^5[ ^7Come back later ^5]");
+        trig_ setHintString( "^1[ ^7Come back later ^1]");
         
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^5[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^5]");
+        trig_ setHintString("^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_corn, level.rift_camera_corn_angles, "3p_bridge_cam" );
     }
@@ -1166,12 +1194,12 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Dr. Ravenholm's Townhall";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^5[ ^7Come back later ^5]");
+        trig_ setHintString( "^1[ ^7Come back later ^1]");
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^5[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^5]");
+        trig_ setHintString("^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_town, level.rift_camera_town_angles, "3p_corn_cam" );
     }
@@ -1180,12 +1208,12 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Stalinburgh's Power Station";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^5[ ^7Come back later ^5]");
+        trig_ setHintString( "^1[ ^7Come back later ^1]");
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^5[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^5]");
+        trig_ setHintString("^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_pstation, level.rift_camera_pstation_angles, "3p_diner_cam"  );
     }
@@ -1194,13 +1222,13 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Denny's Happy Cow Farm";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^5[ ^7Come back later ^5]");
+        trig_ setHintString( "^1[ ^7Come back later ^1]");
         
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^5[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^5]");
+        trig_ setHintString("^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_farm, level.rift_camera_farm_angles, "3p_town_cam" );
     }
@@ -1230,7 +1258,7 @@ all_fixable_spots_spawn_fixer_logic() //is in use
         fix_trig = spawn( "trigger_radius", level.fixable_spots[ sizer ], 0, 48, 48 );
         fix_trig setCursorHint( "HINT_NOICON" );
         wait 0.05;
-        fix_trig setHintString( "^5[ ^7Try fixing the lamp ^5]" );
+        fix_trig setHintString( "^1[ ^7Try fixing the lamp ^1]" );
         wait 0.05;
         fix_trig_available_fx = spawn( "script_model", level.fixable_spots[ sizer ] + ( 0, 0, -30 ) );
         fix_trig_available_fx setmodel( "tag_origin" );
@@ -1458,7 +1486,7 @@ spawn_rift_computer()
 
     trig_ = spawn( "trigger_radius_use", org, 0, 85, 85 );
     trig_ setCursorHint( "HINT_NOICON" );
-    trig_ setHintString( "^5[ [{+activate}] ^7to restore computer's save point ^5]" );
+    trig_ setHintString( "^1[ [{+activate}] ^7to restore computer's save point ^1]" );
     trig_ TriggerIgnoreTeam();
     wait 0.05;
     playFXOnTag( level.myfx[ 43 ], level.rift_comp, "tag_origin" );
@@ -1523,7 +1551,7 @@ wait_for_access_panel_interact( a_comp_origin )
     
     trig_panel = spawn( "trigger_radius_use", level.access_panel_org, 0, 48, 48 );
     trig_panel setCursorHint( "HINT_NOICON" );
-    trig_panel setHintString( "^5[ ^7Restore computer's save point ^5]" );
+    trig_panel setHintString( "^1[ ^7Restore computer's save point ^1]" );
 
     //trig_panel UseTriggerRequireLookAt();
     trig_panel TriggerIgnoreTeam(); 
@@ -1552,7 +1580,7 @@ wait_for_access_panel_interact( a_comp_origin )
         wait 0.1;
         if( isdefined( who )  && isAlive( who ) )
         {
-            trig_panel setHintString( "^5[ ^7Restarting the computer ^5]" );
+            trig_panel setHintString( "^1[ ^7Restarting the computer ^1]" );
             wait 1.5;
             
             for( x = 0; x < 3; x++ )

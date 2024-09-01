@@ -352,6 +352,22 @@ level_spawns_main_door_stuff()
 //8426.28, -4842.27, 472.34
 //8021.4, -5290.2, 447.812
 
+hover_lamper()
+{
+    level endon( "end_game" );
+    while( isdefined( self ) ) 
+    {
+        self movez( 20, 5, 1, 1 );
+        self waittill( "movedone" );
+        self movez( -20, 5, 1, 1 );
+        self waittill( "movedone" );
+    }
+}
+
+precache_s()
+{
+    precachemodel( "p_lights_lantern_hang_on" );
+}
 base_fxs()
 {
     level endon( "end_game" );
@@ -366,6 +382,11 @@ base_fxs()
     
     for( a = 0; a < curved_lights_origins.size; a++ )
     {
+        light = spawn( "script_model", curved_lights_origins[ a ] );
+        light setmodel( "p_lights_lantern_hang_on" );
+        light.angles = light.angles;
+        wait 0.05;
+        light thread hover_lamper();
         playfx( level._effects[ 13 ], curved_lights_origins[ a ] );
         wait 1;
         playfx( level._effects[ 18 ], curved_lights_origins[ a ] );
@@ -576,7 +597,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
 
     level.main_door_tr = spawn( "trigger_radius_use", location, 0, 48, 48 );
     level.main_door_tr setCursorHint( "HINT_NOICON" );
-    level.main_door_tr sethintstring( "^1[ ^7Workbench ^1requires two broken down fences ^1]" );    
+    level.main_door_tr sethintstring( "^1[ ^7Workbench requires more ^3Fence Pieces^5 ]" );    
     level.main_door_tr triggerignoreteam();
     wait 0.05;
     i_m = spawn( "script_model", level.main_door_tr.origin );
@@ -668,11 +689,11 @@ monitorAfterWards()
     {
         if( level.door_health_ > 5 )
         {
-            self sethintstring( "^5[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^5]" );
+            self sethintstring( "^1[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^1]" );
             wait 0.05;
             while( level.door_health_ > 5 )
             {
-                self sethintstring( "^5[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^5]" );
+                self sethintstring( "^1[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^1]" );
                 wait 1;                         
             }
         }
@@ -683,14 +704,14 @@ monitorAfterWards()
         }
         else if  ( !level.door_needs_repairing )
         {
-            self sethintstring( "^5[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^5]" );
+            self sethintstring( "^1[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^1]" );
         }
         self waittill( "trigger", who );
         if( level.door_health_ < 5 && level.pieces_added_to_door < 3 )
         {
             if( who.has_bar_piece > 0 )
             {
-                self sethintstring( "^5[ ^7You added a barricade piece to the door ^5]" );
+                self sethintstring( "^1[ ^7You added a barricade piece to the door ^1]" );
                 level.pieces_added_to_door++;
                 level.players_have_pieces--;
                 wait 1;
@@ -700,7 +721,7 @@ monitorAfterWards()
                 self playlocal_plrsound();
                 if( level.pieces_added_to_door >= 3 )
                 {
-                    self sethintstring( "^5[ The door is functional again ^5]" );
+                    self sethintstring( "^1[ The door is functional again ^1]" );
                     level.pieces_added_to_door = 0;
                     level.door_health_ = level.door_health_fixed_;
                     level.door_needs_repairing = false;
@@ -901,8 +922,7 @@ spawn_collectables_for_bench() //works well now
     possible_origins_angles[ 1 ] = ( 0, 167, 0 );
     possible_origins_angles[ 2 ] = ( 0, 355, 0 );
     possible_origins_angles[ 3 ] = ( 0, -7, 0 );
-    possible_origins_angles[ 4 ] = ( 0, 335, 0 );
-
+    possible_origins_angles[ 4 ] = ( 0, 265, 0 );
     //door spawns
     value_right = randomIntRange( 0, possible_origins.size );
     door_right_find = possible_origins[ value_right ];

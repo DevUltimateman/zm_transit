@@ -517,10 +517,7 @@ mr_s_outside_locations()
 schruder_talks_everything_part1()
 {
     level endon( "end_game" );
-    foreach( play in level.players )
-    {
-        play playsound( "mus_load_zm_buried" );
-    }
+    level thread playLoopsound_buried();
     meeting_vox01("");
     wait 8;
     meeting_vox02("");
@@ -528,6 +525,7 @@ schruder_talks_everything_part1()
     meeting_vox03("");
     wait 8;
     meeting_vox04("");
+    level notify( "stop_mus_load_bur" );
     wait 8;
     //level notify( "stop_playing_sound" );
     if( level.dev_time ){ iprintln( "STEP 1 TALKS COMPLETED" ); }

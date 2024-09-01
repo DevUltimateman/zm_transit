@@ -321,9 +321,10 @@ spawn_lockdown_blockers()
         block[ s ] delete();
         block_upper[ s ] delete();
     }
-    _someone_unlocked_something( "Seems like ^5Spirit Of Sorrow^7 has gone rogue.", "Be careful out there!", 5, 1 );
-    wait 6;
-    _someone_unlocked_something( "DIALOG LINE PT 2", "DIALOG LINE PT 3", 5, 1 );
+    _someone_unlocked_something( "Seems like ^5Spirit Of Sorrow^7 has gone rogue.", "Be careful out there!", 7, 1 );
+    wait 8;
+    _someone_unlocked_something( "Watch out for those poisonous clouds!!!", "Go to your ^5Safe House^7 fast!", 8, 1 );
+    //level notify( "start_find_suitcase_dialog" );
 }
 
 

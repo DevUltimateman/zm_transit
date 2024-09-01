@@ -188,7 +188,7 @@ moveeverything( suit_case )
 
     trigu = spawn( "trigger_radius_use", suit_case.origin, 48, 48, 48 );
     trigu setCursorHint( "HINT_NOICON" );
-    trigu setHintString( "Press ^3[{+activate}] ^7to pick up ^2Poison^7." );
+    trigu setHintString( "^1[ ^3[{+activate}] ^7to pick up Poison^1]" );
     trigu TriggerIgnoreTeam();
     wait 0.1;
     while( true )
@@ -210,42 +210,55 @@ moveeverything( suit_case )
     
     //THIS SUITCASE STEP STILL IN PLACE?
 }
+playloopsound_buried()
+{
+    level endon( "end_game" );
+    level endon( "stop_mus_load_bur" );
+    while( true )
+    {
+        for( i = 0; i < level.players.size; i++ )
+        {
+            level.players[ i ] playsound( "mus_load_zm_buried" );
+        }
+        wait 40;
+    }
+}
 
 do_first_dialog()
 {
-    /*
-    level waittill( "start_find_suitcase_dialog" );
-    do_dialog_here( "It seems that ^5Spirit Of Sorrow^7 has called in her cloud friends.", "Said clouds are dangerous and you should avoid them at all cost.", 10, 3 );
-    wait 8;
-    do_dialog_here( "We could try crafting ^3immune drink^7 from all the drinks.", "Think that will allow you to travel thru the mist safely...", 8, 2 );
-    wait 6;
-    do_dialog_here( "See if you can locate the ^3mixing suitcase^7 from ^3Bus Depo^7...", "Think I've seen it laying there recently.", 9, 2 );
-    wait 8;
+
     level waittill( "someone_picked_up_poison" );
-    do_dialog_here( "Excellent! You found the ^3mixing suitcase^7...", "We'll need the suitcase in our next step..", 9, 2 );
-    wait 6;
-    do_dialog_here( "The suitcase will teleport on the ground, close to a ^4perk machine^7.", "Look around if you can find one somewhere close in here.", 8, 2 );
-    wait 7;
-    do_dialog_here( "I'll let you figure out what to do next...", "Don't dissapoint me!", 7, 2 );
-    wait 6;
+    level thread playloopsound_buried();
+    wait 2.5;
+    do_dialog_here( "Excellent! You found the ^5mixing container^7..", "You'll need the suitcase in our next step..", 9, 1 );
+    wait 10;
+    do_dialog_here( "The container will teleport on the ground, close to a ^4perk machine^7 once you're close to a one.", "You could test it right now. There should be a perk machine nearby.", 10, 1 );
+    wait 12;
+    do_dialog_here( "I'll let you figure out what to do next..", "Don't dissapoint me!", 7, 1 );
+    level notify( "stop_mus_load_bur" );
+    wait 8;
     level thread are_players_close_to_spawn_suitcase();
     wait 5;
     level waittill( "all_suitcases_collected" );
     wait 0.35;
-    do_dialog_here( "Hahaa, wunderbaar!", "You're quite a sharp shooter.", 8, 2  );
+    level thread playloopsound_buried();
+    wait 1.8;
+    do_dialog_here( "Hahaa, wunderbaar!", "You're quite a sharp shooter.", 8, 1  );
     wait 5;
-    do_dialog_here( "The suitcase is full of combined mixes!", "You could try bringing it to lab...", 9, 2 );
-    wait 6;
-    do_dialog_here( "We might be able to craft the serum now..", "Once you've drank it, you should earn immunity towards those toxic clouds", 10, 3 );
-    */
-    level waittill( "crafting_serum" );
-    //needs a 10 second wait so we dont have overlapping text
+    do_dialog_here( "The container is full of different mixes!", "You could try your luck next at labs...", 9, 1 );
+    level notify( "stop_mus_load_bur" );
     wait 10;
-    do_dialog_here( "Fantastic, you've crafted the potion!", "Feel free to take a zip from it..", 6, 1 );
+    level waittill( "crafting_serum" );
+    wait 1;
+    level thread playloopsound_buried();
+    //needs a 10 second wait so we dont have overlapping text
+    wait 12;
+    do_dialog_here( "Fantastic, you've crafted the potion!", "", 6, 1 );
     wait 7;
-    do_dialog_here( "You should be immune to Element ^3115 ^7clouds now.", "Keep an eye on the immune meter, it tells you if you need a refill of drinks", 8, 1 );
-    wait 9;
-    do_dialog_here( "We are able to continue now", "Do next easter egg step start here", 7, 1 );
+    do_dialog_here( "You should be immune to Element ^5115 Clouds^7 now.", "Keep an eye on the immune meter, it tells you if you need a refill of drinks", 8, 1 );
+    wait 10;
+    level notify( "stop_mus_load_bur" );
+    do_dialog_here( "Brilliant!", "What should we do next?", 7, 1 );
     wait 10;
 }
 spin_me_around_mq_first_time_pick_up() 
@@ -418,7 +431,7 @@ spawn_drinkable_step()
     playfxontag( level.myFx[ 41 ], spawnable_lighter, "tag_origin" );
     anim_trig = spawn( "trigger_radius_use", origin_lo + ( 0, 0, 0 ), 1, 12, 12 );
     anim_trig setCursorHint( "HINT_NOICON" );
-    anim_trig sethintstring( "[ ^5Come back later ^7]" );
+    anim_trig sethintstring( "^1[ ^7Come back later ^1]" );
     anim_trig TriggerIgnoreTeam();
     level waittill( "all_suitcases_collected" );
     foreach( playa in level.players )
