@@ -475,14 +475,14 @@ move_poisonous_clouds_main_quest()
         level.mq_step_poison_cloud_ent[ i ] = spawn( "script_model", level.mq_step_poison_clouds_origin_spawn[ i ] );
         level.mq_step_poison_cloud_ent[ i ] setmodel( "tag_origin" );
         level.mq_step_poison_cloud_ent[ i ].angles = level.mq_step_poison_cloud_ent[ i ].angles;
-        wait randomfloatrange( 0.1, 1 );
+        wait 0.05;;
         playfxontag( level._effects[ 47 ], level.mq_step_poison_cloud_ent[ i ], "tag_origin" );
         level.mq_step_poison_cloud_ent[ i ] thread playlighting();
     }
     
     if( level.dev_time ){ iprintlnbold( "mq_step clouds spawned, waiting to start moving them" ); }
 
-    wait randomfloatrange( 1, 3 );
+    wait randomfloatrange( 1, 2 );
     for( s = 0; s < level.mq_step_poison_cloud_ent.size; s++ )
     {
         level.mq_step_poison_cloud_ent[ s ] thread move_to_farmgoal( s );
@@ -493,9 +493,9 @@ move_poisonous_clouds_main_quest()
     level thread keep_track_of_all_on_farm();
     //spawn on demand cloud fx already on farm
     level thread spawn_static_clouds_on_demand_at( level.poisonous_ground_clouds_origins_farm );
-    wait  randomintrange( 2, 4 );
-    for( s = 0; s < level.players.size; s++ ){ level.players[ s ] thread fade_to_black_on_impact_self_only(); }
+   // for( s = 0; s < level.players.size; s++ ){ level.players[ s ] thread fade_to_black_on_impact_self_only(); }
     wait 3;
+    for( s = 0; s < level.players.size; s++ ){ level.players[ s ] thread fade_to_black_on_impact_self_only(); } 
     foreach( player in level.players )
     {
         for( i = 0; i < 4; i++ )
@@ -558,12 +558,12 @@ do_big_damage_cloud() //this does big damage if player does not head to farm
     self endon( "stop_damage_clouds" );
     self endon( "disconnect" );
     level endon( "end_game" );
-    sizes = level.mq_step_poison_clouds_origin_spawn;
+    sizes = level.mq_step_poison_cloud_ent;
     while( true )
     {
         for( i = 0; i < sizes.size; i++ )
         {
-            if( distance( self.origin, sizes[ i ] ) < 450 )
+            if( distance( self.origin, sizes[ i ].origin ) < 550 )
             {
                 self doDamage( 30, self.origin );
                 if( level.dev_time ){ iprintln( "did big damage to " + self.name + " coz touching big clouds.." ); }

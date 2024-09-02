@@ -763,7 +763,7 @@ firegrenade_touched( who )
                     //add this trigger to player's claimed nodes    
                     who.hits++;
                     who.hit_list[ i ] = true;
-                    who _someone_unlocked_something_client( "Fire Grenades Found", "^1[ ^7" + who.hits + " ^5/^7 5 ^1]", 4, 1 );
+                    who _someone_unlocked_something_client( "Fire Grenades Found", "^1[ ^7" + who.hits + " ^1/^7 5 ^1]", 4, 1 );
                     //who.hits++; //increase player who hit score
                     iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
                     //self notify( "gucci" ); 

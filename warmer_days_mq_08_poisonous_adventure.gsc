@@ -433,6 +433,7 @@ spawn_drinkable_step()
     anim_trig setCursorHint( "HINT_NOICON" );
     anim_trig sethintstring( "^1[ ^7Come back later ^1]" );
     anim_trig TriggerIgnoreTeam();
+    spawnable_case.angles = ( 0, 180, 90 );
     level waittill( "all_suitcases_collected" );
     foreach( playa in level.players )
     {
@@ -441,10 +442,10 @@ spawn_drinkable_step()
     }
     wait 0.05;
     
-    spawnable_case.angles = ( 0, 180, 90 );
+    
     initial_hit = true;
     
-    anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
+    anim_trig sethintstring( "^1[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^1]" );
     while( true )
     {
         anim_trig waittill( "trigger", who ); 
@@ -462,16 +463,16 @@ spawn_drinkable_step()
         
         if( who.has_immunity ) 
         {
-            anim_trig setHintString( "You already have ^3Immunity Drink^7 effects!" );
+            anim_trig setHintString( "^1[ ^7You already have an ^3Immunity Drink^7 effect ^1]" );
             wait 2.5;
-            anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
+            anim_trig sethintstring( "^1[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^1]" );
             wait 2.5;
         }
         if( is_player_valid( who ) )
         {
             if(  isdefined( who.has_immunity ) && !who.has_immunity  )
             {
-                anim_trig setHintString( "Mixing ^3Immunity Drink^7" );
+                anim_trig setHintString( "^1[ Mixing ^3Immunity Drink^7 ^1]" );
                 who.has_immunity = true;
                 if( !isdefined( who.has_immunity_health ) )
                 {
@@ -489,16 +490,16 @@ spawn_drinkable_step()
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_builder_zm" );
                 wait 0.1;
-                anim_trig sethintstring( "^3Immunity Drink ^7is ready to be consumed!" );
+                anim_trig sethintstring( "^^1[ ^3Immunity Drink ^7is ready to be consumed ^1]" );
                 wait 0.05;
                 who giveWeapon( "zombie_perk_bottle_tombstone" );
                 who switchToweapon( "zombie_perk_bottle_tombstone" );
                 wait 2.5;
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_perk_bottle_tombstone" );
-                level thread machine_says(  "Survivor ^3" + who.name + "^7 upgraded their ^5abilities.^7", "Survivor now has ^3Immunity Drink ^7effects.", 4.5, 0.15 );
+                level thread machine_says(  "^1" + who.name + "^7 upgraded their ^1abilities.^7", "Survivor now has an ^3Immunity Drink ^7effect.", 4.5, 0.15 );
                 wait 0.1;
-                anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
+                anim_trig sethintstring( "^1[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^1]" );
             }
             if( who.has_immunity == false && who.has_immunity_health < 50 )
             {
@@ -506,7 +507,7 @@ spawn_drinkable_step()
 
             if( isdefined( who.has_immunity ) && who.has_immunity_health < 100 )
             {
-                anim_trig setHintString( "Mixing ^3Immunity Drink^7" );
+                anim_trig setHintString( "^1[ ^7Mixing ^3Immunity Drink^1 ]" );
                 who playsound( "zmb_sq_navcard_success" );
                 
                 who.has_immunity_health = 1000;
@@ -519,7 +520,7 @@ spawn_drinkable_step()
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_builder_zm" );
                 if( level.dev_time ){ iprintln( "^3 PLAYER HAS IMMUNITY HEALTHA AT ^7" + who.has_immunity_health ); }
-                anim_trig sethintstring( "Press ^3[{+activate}] ^7to take a zip of ^3Immunity Drink" );
+                anim_trig sethintstring( "^1[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^1]" );
                 
                 
             }

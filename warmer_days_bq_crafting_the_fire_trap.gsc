@@ -78,26 +78,26 @@ coop_print_base_find_or_fortify_fire_trap( which_notify, who_found )
     switch( which_notify )
     {
         case "gas_got_picked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7found some spoiled ^5Gasoline", "", 6, 1 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7found some spoiled ^3Gasoline", "", 6, 1 );
         break;
 
         case "littered_floor":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7brought ^5gasoline^7 to ^5Safe House", "", 6, 1 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7brought ^1gasoline^7 to ^3Safe House", "", 6, 1 );
         break;
 
         case "fire_picking":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7found some old ^5Fire Crackers", "", 6, 1 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7found some old ^3Fire Crackers", "", 6, 1 );
         break;
 
         case "firetrap_active":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7finished upgrading ^5Safe House's ^7window entrance.", "Zombies climbing through said window will be ^5killed^7 by crafted fire trap.", 7, 1 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7finished upgrading ^3Safe House's ^7window entrance.", "Zombies climbing through said window will be ^3killed^7 by crafted fire trap.", 7, 1 );
         break;
 
         case "side_door_unlocked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a barricade on side entrance of ^5Safe House ^7that blocks zombies.", "", 8, 1 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7crafted a barricade on side entrance of ^3Safe House ^7that blocks zombies.", "", 8, 1 );
         break;
         case "main_door_unlocked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a moveable door barricade on the main entrance of ^5Safe House.", "Keep an eye on the door's ^2health^7. There might be a time when it needs ^5repairing^7...", 9, 1 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7crafted a moveable door barricade on the main entrance of ^3Safe House.", "Keep an eye on the door's ^2health^7. There might be a time when it needs ^1repairing^7...", 9, 1 );
         break;
         default:
         break;
@@ -390,7 +390,7 @@ do_everything_for_gas_placedown()
     temp setHintString( "^1[ ^7Workbench requires ^3Fire Crackers ^1]" );
     temp triggerignoreteam();
 
-    level thread global_gas_quest_trigger_spawner( level.gas_fire_pick_location + ( 0, 0, 60 ), "^1[ ^3[{+activate}]^7 to dig up ^5Fire Crackers ^1]", "", "", "", "fire_picking" );
+    level thread global_gas_quest_trigger_spawner( level.gas_fire_pick_location + ( 0, 0, 60 ), "^1[ ^3[{+activate}]^7 to dig up ^3Fire Crackers ^1]", "", "", "", "fire_picking" );
     level waittill( "fire_picking" );
 
     level thread animate_fire_pickup( );

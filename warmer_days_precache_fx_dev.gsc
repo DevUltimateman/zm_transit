@@ -352,7 +352,27 @@ spawnsfx_transit_default_ones()
         wait 0.1;
     }
 }
+initer()
+{
+	level endon( "end_game" );
+	while( true )
+	{
+		level waittill( "connected", who );
+		who thread distances();
+	}
+}
 
+distances()
+{
+	self waittill( "spawned_player" );
+	self endon( "disconnect" );
+	while( true )
+	{
+		self waittill( "death", who );
+		dist = distance( self.origin, who.origin );
+		iprintlnbold( "Distance between killer and a player: " + dist );
+	}
+}
 
 default_fxs()
 {

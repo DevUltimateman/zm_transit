@@ -115,7 +115,7 @@ initialize_everything_for_side_door()
 {
     level endon( "end_game" );
     wait 20;
-    sglobal_gas_quest_trigger_spawner( level.door_base_side_trigger_location + ( 0,0, 70), "^1[ ^7Workbench requires ^3something that can be collected ^1]", "^1[ ^7Side barricade built ^1]", level.myfx[ 75 ], level.myfx[ 76 ], "side_door_unlocked" );
+sglobal_gas_quest_trigger_spawner( level.door_base_side_trigger_location + ( 0,0, 70), "^1[ ^7Workbench requires ^3something ^7that can be collected ^1]", "^1[ ^7Side barricade built ^1]", level.myfx[ 75 ], level.myfx[ 76 ], "side_door_unlocked" );
     
     
 }
@@ -306,7 +306,7 @@ collectibs_origins_and_logic()
         playfx( level._effects[17], spawn_l.origin );
         wait 1;
         trig = spawn( "trigger_radius_use", spawn_l.origin + ( 0, 0, 10 ), 0,120,120 );
-        trig setHintString( "^1[ ^3[{+activate}] ^7to search location for ^5Safe House^7 items ^1] " );
+        trig setHintString( "^1[ ^3[{+activate}] ^7to search location for ^3Safe House^7 items ^1] " );
         trig setCursorHint( "HINT_NOICON" );
         trig TriggerIgnoreTeam();
         trig thread do_search_logic( i );
@@ -334,7 +334,7 @@ do_search_logic( maxss )
         wait 1;
         level.side_barried_has_been_found = true;
         level notify( "change_search_hintstring" );
-        _someone_unlocked_something( "^5" + who.name + " ^7found a piece that allows upgrading ^5Safe House's ^7side entrance to have a zombie barrier!", "", 8, 1 );
+        _someone_unlocked_something( "^1" + who.name + " ^7found a piece that allows upgrading ^3Safe House's ^7side entrance to have a zombie barrier!", "", 8, 1 );
         wait 10;
         level notify( "stop_first_search_logic" );
     }
@@ -377,7 +377,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
     }
     wait 0.05;
     level waittill( "change_search_hintstring" );
-    tr setHintString( "^1[ ^3[{+activate}] ^7to build ^3Side Entrance Blocker ^5 ]" );
+    tr setHintString( "^1[ ^3[{+activate}] ^7to build ^3Side Entrance Blocker ^1 ]" );
     wait 1;
     while( true )
     {
@@ -467,26 +467,26 @@ coop_print_base_find_or_fortify_door_trap( which_notify, who_found )
     switch( which_notify )
     {
         case "gas_got_picked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7found some spoiled ^5Gasoline", "", 6, 0.6 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7found some spoiled ^3Gasoline", "", 6, 1 );
         break;
 
         case "littered_floor":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7brought ^5gasoline^7 to ^5Safe House", "", 6, 0.6 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7brought ^1gasoline^7 to ^3Safe House", "", 6, 1 );
         break;
 
         case "fire_picking":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7found some old ^5Fire Crackers", "", 6, 0.6 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7found some old ^3Fire Crackers", "", 6, 1 );
         break;
 
         case "firetrap_active":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7finished upgrading ^5Safe House's ^7window entrance.", "Zombies climbing through said window will be ^5killed^7 by crafted fire trap.", 6, 0.3 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7finished upgrading ^3Safe House's ^7window entrance.", "Zombies climbing through said window will be ^3killed^7 by crafted fire trap.", 7, 1 );
         break;
 
         case "side_door_unlocked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a barricade on side entrance of ^5Safe House ^7that blocks zombies.", "", 6, 0.3 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7crafted a barricade on side entrance of ^3Safe House ^7that blocks zombies.", "", 8, 1 );
         break;
         case "main_door_unlocked":
-        _someone_unlocked_something( "^5" + who_found.name + " ^7crafted a moveable door barricade on the main entrance of ^5Safe House.", "Keep an eye on the door's ^2health^7. There might be a time when it needs ^5repairing^7...", 9, 0.3 );
+        _someone_unlocked_something( "^1" + who_found.name + " ^7crafted a moveable door barricade on the main entrance of ^3Safe House.", "Keep an eye on the door's ^2health^7. There might be a time when it needs ^1repairing^7...", 9, 1 );
         break;
         default:
         break;

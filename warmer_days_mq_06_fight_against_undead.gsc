@@ -139,7 +139,7 @@ spawn_lockdown_enabler( origin )
     //level waittill( "obey_spirit_complete" );
     trig = spawn( "trigger_radius_use", origin, 0, 85, 85 );
     trig setCursorHint( "HINT_NOICON" );
-    trig sethintstring( "Press ^3[{+activate}] ^7 to call ^5Spirit Of Sorrow ^7back! ^7Requires all survivors to be present." );
+    trig sethintstring( "^1[ ^3[{+activate}] ^7 to call ^5Spirit Of Sorrow ^7back! ^7Requires all survivors to be present. ^1]" );
     trig TriggerIgnoreTeam();
     wait 0.1;
 
@@ -264,10 +264,8 @@ do_zombies_go_crazy()
         ai[ a ] doDamage( ai[ a ].health + 555, ai[ a ].origin );
 
     }
-    level notify( "end_round" );
-    level.round_number = 115;
     level.zombie_total = 9999;
-    
+    if( level.dev_time ){ iprintlnbold( "ZOMBIE TOTAL FOR LOCKDOWN = ^4" + level.zombie_total ); }
     //dont make zombies super sprinters here. 
     //have that in the second lockdown later down the quest when players are most likely better equipped
     //to fuck zombies that are super speeedy. 
@@ -281,7 +279,11 @@ do_zombies_go_crazy()
         ai[ a ] doDamage( ai[ a ].health + 555, ai[ a ].origin );
 
     }
-    level notify( "end_round" );
+    foreach( playu in level.players )
+    {
+        playu playsound( level.jsn_snd_lst[ 30 ] );
+    }
+    //level notify( "end_round" );
     level.lock_down_enabled  = false;
     level.round_number = saved_round;
     level.zombie_total = undefined;
