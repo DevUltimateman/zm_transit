@@ -564,7 +564,7 @@ do_show_and_flying( landing_spot )
 {
     level endon( "end_game" );
     self.is_on_ground_now = false;
-    playfx( level.myFx[ 92 ], self.origin );
+    playfx( level.myFx[ 81 ], self.origin ); //paper windy slow
     wait 0.05;
     playfxontag( level.myfx[ 2 ], self, "tag_origin" );
     self moveto( self.origin + ( 40, -10, 55 ), 0.8, 0.2, 0 );

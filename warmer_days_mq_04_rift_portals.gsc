@@ -1113,11 +1113,10 @@ spawn_callable_rift_ride( where, index )
     //TOWN LAMP             >                       FARM LANDING
     //BRIDGE LAMP           >                       CORNFIELD LANDING
 
-
     //index is based on "level.fixable_spots[ index ]
     if( index == 0 ) //cabin woods lamp, LANDING = DINER CAMERA
     {
-        land_loc = "Mike's Diner";
+        land_loc = "Mikey's Diner";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
         trig_ setHintString( "^1[ ^7Come back later ^1]");
         trig_ setCursorHint( "HINT_NOICON" );
@@ -1131,7 +1130,7 @@ spawn_callable_rift_ride( where, index )
         
     if( index == 1 ) //corn to power lamp, LANDING = DINER CAMERA
     {
-        land_loc = "Mike's Diner";
+        land_loc = "Mikey's Diner";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
         trig_ setHintString( "^1[ ^7Come back later ^1]");
         
@@ -1161,7 +1160,7 @@ spawn_callable_rift_ride( where, index )
     
     if( index == 3 ) //bus depo lamp, LANDING = FARM CAMERA
     {
-        land_loc = "Denny's Happy Cow Farm";
+        land_loc = "Denny's Happy Cows Farm";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
         trig_ setHintString( "^1[ ^7Come back later ^1]");
         
@@ -1176,7 +1175,7 @@ spawn_callable_rift_ride( where, index )
      
     if( index == 4 ) //bridge lamp, LANDING = CORNFIELD
     {
-        land_loc = "Nazi Commander Dr. Edward's Main Bunker";
+        land_loc = "Dr. Edward's Bunker";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
         trig_ setHintString( "^1[ ^7Come back later ^1]");
         
@@ -1220,7 +1219,7 @@ spawn_callable_rift_ride( where, index )
     
     if( index == 7 ) //town lamp, LANDING = FARM 
     {
-        land_loc = "Denny's Happy Cow Farm";
+        land_loc = "Denny's Happy Cows Farm";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
         trig_ setHintString( "^1[ ^7Come back later ^1]");
         

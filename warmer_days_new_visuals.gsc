@@ -72,7 +72,7 @@ apply_new_initials()
 lighting_vis()
 {
     self setclientdvar( "r_sky_intensity_factor0", 0.857 );
-    self setclientdvar( "r_skyColorTemp", 6000 );
+    //self setclientdvar( "r_skyColorTemp", 6000 );
     self setclientdvar( "r_skyRotation", 125 );
     self setclientdvar( "r_lightweaksunlight", 12 );
     self setclientdvar( "r_lighttweaksundirection", "-155 63 0" );

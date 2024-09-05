@@ -563,7 +563,7 @@ do_big_damage_cloud() //this does big damage if player does not head to farm
     {
         for( i = 0; i < sizes.size; i++ )
         {
-            if( distance( self.origin, sizes[ i ].origin ) < 550 )
+            if( distance( self.origin, sizes[ i ].origin ) < 250 )
             {
                 self doDamage( 30, self.origin );
                 if( level.dev_time ){ iprintln( "did big damage to " + self.name + " coz touching big clouds.." ); }
