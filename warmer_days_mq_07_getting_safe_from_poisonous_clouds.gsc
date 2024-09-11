@@ -54,22 +54,6 @@ init()
 }
 
 
-initialize_poisonous_step()
-{
-    level endon( "end_game" );
-
-    for( i = 0; i < level.poisonous_clouds_initial_origins.size; i++ )
-    {
-        level.poisonous_clouds[ i ] = spawn( "script_model", level.poisonous_clouds_initial_origins[ i ] );
-        level.poisonous_clouds[ i ] setmodel( "tag_origin" );
-        level.poisonous_clouds[ i ].angles = level.poisonous_clouds[ i ].angles;
-
-        wait 0.05; 
-        playfxontag( level.myfx[ 87 ], level.poisonous_clouds[ i ], "tag_origin" );
-    }
-     
-}
-
 
 
 all_static_poisonous_cloud_locations()
@@ -494,24 +478,36 @@ move_poisonous_clouds_main_quest()
     //spawn on demand cloud fx already on farm
     level thread spawn_static_clouds_on_demand_at( level.poisonous_ground_clouds_origins_farm );
    // for( s = 0; s < level.players.size; s++ ){ level.players[ s ] thread fade_to_black_on_impact_self_only(); }
-    wait 3;
+    wait 1.5;
     for( s = 0; s < level.players.size; s++ ){ level.players[ s ] thread fade_to_black_on_impact_self_only(); } 
+    wait 1.5;
     foreach( player in level.players )
     {
+        player.surround_cloud = [];
         for( i = 0; i < 4; i++ )
         {
-            player.surround_cloud[ i ] = spawn( "script_model", player.origin + ( 0, 0, -1200 ) );
+
+            player.surround_cloud[ i ] = spawn( "script_model", player.origin + ( 0, 0, -10 ) );
             player.surround_cloud[ i ] setmodel( "tag_origin" );
             player.surround_cloud[ i ].angles = player.angles;
-            player thread do_damage_cloud();
-            player thread do_big_damage_cloud();
-            player setclientdvar( "r_fog", true );
-            
             wait 0.05;
             playfxontag( level._effects[ 47 ], player.surround_cloud[ i ], "tag_origin" );
             wait 0.05;
             playfxontag( level.myfx[ 32 ], player.surround_cloud[ i ], "tag_origin" );
+            
         }
+
+        wait 0.05;
+        player thread do_damage_cloud();
+        player thread do_big_damage_cloud();
+        player setclientdvar( "r_fog", true );
+        player setclientdvar( "r_dof_enable", true );
+        player setclientdvar( "r_dof_tweak", true );
+        player setclientdvar( "r_dof_farblur", 10 );
+        player setclientdvar( "r_dof_farstart", 10 );
+        player setclientdvar( "r_dof_farend", 2000 );
+        
+        
         //player.custom_cloud = spawn( "script_model", player.origin );
         //player.custom_cloud setmodel( "tag_origin" );
         //player.custom_cloud.angles = player.angles;
@@ -583,6 +579,7 @@ monitor_arrive_farm()
 {
     level endon( "end_game ");
     self endon( "disconnect" );
+    //self.surround_cloud = [];
     while( true )
     {
         if( distance( self.origin, level.farmcheckpoint_ent[ 0 ].origin  ) < 150  || distance( self.origin, level.farmcheckpoint_ent[ 1 ].origin ) < 150  )
@@ -880,16 +877,16 @@ playloopsound_buried()
 }
 do_guide_blockers_dialog()
 {
-    level thread machine_says( "^5Dr. Schruder: ^7" + "What the hell was that?!", "Are you okay?", 7, 1 );
+    level thread machine_says( "^2Dr. Schruder: ^7" + "What the hell was that?!", "Are you okay?", 7, 1 );
     wait 8;
-    level thread machine_says( "^5Dr. Schruder: ^7" + "^6Spirit Of Sorrow^7 really wants you guys dead..", "I can't let that happen!", 7, 1 );
+    level thread machine_says( "^2Dr. Schruder: ^7" + "^6Spirit Of Sorrow^7 really wants you guys dead..", "I can't let that happen!", 7, 1 );
     wait 8;
-    level thread machine_says( "^5Dr. Schruder: ^7" + "It seems that those clouds went away for now.", "However there is still a heavy mist present", 7, 1 );
+    level thread machine_says( "^2Dr. Schruder: ^7" + "It seems that those clouds went away for now.", "However there is still a heavy mist present", 7, 1 );
     wait 8;
-    level thread machine_says( "^5Dr. Schruder: ^7" + "We need to craft a Immunity Elixir!", "", 5, 1 );
+    level thread machine_says( "^2Dr. Schruder: ^7" + "We need to craft a Immunity Elixir!", "", 5, 1 );
     level notify( "stop_mus_load_bur" );
     wait 8;
-    level thread machine_says( "^5Dr. Schruder: ^7" + "Go locate the mixing container from ^5Bus Depo^7.", "Be fast, I don't know when the clouds strike again!", 7, 1 );
+    level thread machine_says( "^2Dr. Schruder: ^7" + "Go locate the mixing container from ^5Bus Depo^7.", "Be fast, I don't know when the clouds strike again!", 7, 1 );
     
 }
 level_waittill_continue_mq()
@@ -905,6 +902,11 @@ level_waittill_continue_mq()
     level notify( "poisonous_adventure_find_case" );
     wait 1;
     level waittill( "someone_picked_up_poison" );
+    foreach( playe in level.players )
+    {
+        playe setclientdvar( "r_fog", false );
+        playe setclientdvar( "r_dof_tweak", false );
+    }
     if( level.dev_time ) { iprintlnbold( "someone_picked_up_poison_suitcase" ); }
 
     

@@ -332,7 +332,7 @@ debug_bus_pathing()
 debug_near_buses()
 {
     wait 5;
-    iprintlnbold( "LOL LOL LOL WHERES THE LINES " );
+    //iprintlnbold( "LOL LOL LOL WHERES THE LINES " );
     zombie_front_dist = 1200.0;
     zombie_side_dist = self.radius + 50.0;
     zombie_inside_dist = 240.0;

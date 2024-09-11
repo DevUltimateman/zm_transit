@@ -320,7 +320,7 @@ continue_search_logic( original_value )
 {
     level endon( "end_game" );
     level waittill( "change_search_hintstring" );
-    self setHintString( "^3[ ^7Nothing valuable was found, try coming back later ^3]" );
+    self setHintString( "^3[ ^7Something valuable was found. This location might reward you later once more.. ^3]" );
     level waittill( "continue_search_logic_for_old_triggers" );
 
 }
@@ -332,13 +332,17 @@ do_search_logic( maxss )
     if( level.random_spawn_value == maxss && !level.side_barrier_has_been_found )
     {
         wait 0.1;
+        who playsound( "evt_nuke_flash" );
         level.side_barried_has_been_found = true;
         level notify( "change_search_hintstring" );
         _someone_unlocked_something( "^2" + who.name + " ^7found a piece that allows upgrading ^3Safe House's ^7side entrance to have a zombie barrier!", "", 8, 1 );
         wait 10;
         level notify( "stop_first_search_logic" );
     }
-    else { self setHintString( "^3[ ^7Nothing valuable was found, try coming back later ^3]" );}
+    else { 
+        //who playsound( "evt_player_upgrade" );
+        who playsound( "zmb_perks_packa_deny" );
+        self setHintString( "^3[ ^7Nothing valuable was found, try coming back later ^3]" );}
 
 }
 precache_this()
@@ -428,6 +432,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
                 if( isdefined( tr ) )
                 {
                     //tr delete();
+                    tr setHintString( "^2[ ^7Side entrance ^3barricade^7 has been built ^2]");
                 }
                 if( isdefined( i_m ) )
                 {

@@ -818,13 +818,13 @@ fireboots_sound_before_locating( alias, which_active )
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^3Dr. Schruder: ^7" + text, text2, duration, fadetimer );
+	level thread Subtitle( "^2Dr. Schruder: ^7" + text, text2, duration, fadetimer );
 }
 
 _print_someone_found_boot_piece( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle(  text, "^3Dr. Schruder: ^7" + text2, duration, fadetimer );
+	level thread Subtitle(  text, "^2Dr. Schruder: ^7" + text2, duration, fadetimer );
 }
 
 Subtitle( text, text2, duration, fadeTimer )

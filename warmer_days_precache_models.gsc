@@ -49,11 +49,19 @@ init()
     level thread precacheModels();
 
     //level thread ondevs(); //remove from real version
-    level thread printmodel_origin_angles_based_on_player();
+    if( level.dev_time )
+    {
+        level thread printmodel_origin_angles_based_on_player();
+    }
+    //
 
     flag_wait( "initial_blackscreen_passed" );
     wait 3;
-    level thread printmodelorginfo();
+    if( level.dev_time )
+    {
+        //level thread printmodelorginfo();
+    }
+    
 }
 
 ondevs()

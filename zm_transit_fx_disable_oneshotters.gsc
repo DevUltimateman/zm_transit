@@ -47,7 +47,7 @@ init()
 {
 	level.tweakfile = 1;
     flag_wait( "initial_blackscreen_passed" );
-    iprintlnbold( "LOL" );
+    //iprintlnbold( "LOL" );
     //level thread ss();
 	
 	//level thread mainer();

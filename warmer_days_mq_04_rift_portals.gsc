@@ -283,6 +283,10 @@ spawn_initial_rift_camera_points()
     level thread fade_to_black_on_impact();
     for( s = 0; s < level.players.size; s++ )
     {
+        wait 0.05;
+        level.players[ s ] setMoveSpeedScale( 1 );
+        level.players[ s ] freezeControls(true);
+        wait 0.05;
         org = spawn( "script_model", level.players[ s ] geteye() );
         org setmodel( "tag_origin" );
         org.angles = level.players[ s ].angles;
@@ -297,10 +301,10 @@ spawn_initial_rift_camera_points()
         level.players[ s ] hide();
 
         wait 0.05;
-        level.players[ s ] freezeControls(true);
+        
         level.players[ s ] setclientdvar( "r_poisonfx_debug_enable", true );
         org thread attachToLoop();// pass the camera index so we know which to loop
-        wait randomintrange( 4, 5 );
+        wait 6;
         level thread fade_to_black_on_impact();
         for( s = 0; s < level.players.size; s++ )
         {
@@ -310,15 +314,21 @@ spawn_initial_rift_camera_points()
 
             level.players[ s ] CameraSetPosition( level.players[ s ].origin );
             level.players[ s ] CameraActivate( false );
+            level.players[ s ] camerasetlookat();
             level.players[ s ] show();
             level.players[ i ] playsound( level.jsn_snd_lst[ 32 ] );
             level.players[ i ] setMoveSpeedScale( 1 );
             
             wait 0.05;
-            level.players[ s ] freezeControls(false);
+            level.players[ s ] freezeControls( false );
+            level.players[ i ] setMoveSpeedScale( 1 );
         }
         
         level notify( "do_first_rift_walk" );
+        foreach( playa in level.players )
+        {
+            playa setMoveSpeedScale( 1 );
+        }
    
     }
     
@@ -333,11 +343,11 @@ level_bring_back_normal_visuals_and_stuff()
         level.players[ i ] show();
         level.players[ i ] playsound( level.jsn_snd_lst[ 32 ] );
         level.players[ i ] setMoveSpeedScale( 1 );
-        level.players[ i ] setclientdvar( "r_lighttweaksuncolor", "0.8 0.6 0.5" );
+        level.players[ i ] setclientdvar( "r_lighttweaksuncolor", (  0.62, 0.62, 0.36 ) );
         level.players[ i ] setclientdvar( "r_lighttweaksunlight", 12  );
         level.players[ i ] setclientdvar( "r_filmusetweaks", true );
         level.players[ i ] setclientdvar( "r_lighttweaksundirection",( -155, 63, 0 ) );
-        level.players[ i ] setclientdvar( "r_sky_intensity_factor0", 0.8  );
+        level.players[ i ] setclientdvar( "r_sky_intensity_factor0", 1.7  );
         level.players[ i ] setclientdvar( "r_bloomtweaks", 1  );
         level.players[ i ] setclientdvar( "cg_usecolorcontrol", 1 );
         level.players[ i ] setclientdvar( "cg_colorscale", "1.2 1 1"  );
@@ -352,33 +362,7 @@ level_bring_back_normal_visuals_and_stuff()
     }
 }
 
-initial_camera_sky_spawn()
-{
-    level endon( "end_game" );
 
-    level.initial_sky_camera_location = [];
-    level.initial_sky_camera_location[ 0 ] = spawnStruct();
-    level.initial_sky_camera_location[ 1 ] = spawnStruct();
-    level.initial_sky_camera_location[ 2 ] = spawnStruct();
-    level.initial_sky_camera_location[ 3 ] = spawnStruct();
-    level.initial_sky_camera_location[ 4 ] = spawnStruct();
-    level.initial_sky_camera_location[ 5 ] = spawnStruct();
-    level.initial_sky_camera_location[ 6 ] = spawnStruct();
-    level.initial_sky_camera_location[ 7 ] = spawnStruct();
-
-
-    for( i = 0; i < level.initial_sky_camera_location.size; i++ )
-    {
-        level.initial_sky_camera_location[ i ].model = spawn( "script_model", level.sky_camera_location[ i ] );
-        level.initial_sky_camera_location[ i ].model setmodel( "tag_origin" );
-        level.initial_sky_camera_location[ i ].model.angles = level.initial_sky_camera_location[ i ].model.angles;
-        
-        level.initial_sky_camera_location[ i ].active = false;
-        wait 0.05;
-    }
-
-
-}
 
 
 
@@ -505,7 +489,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     rider notify( "stop_lp" );
     wait 0.1;
     rider delete();
-    real_player enableInvulnerability( false );
+    real_player disableInvulnerability();
     real_player.ignoreme = false;
     camera_lookat_model delete();
 }
@@ -695,7 +679,7 @@ new_do_summoning_animation( real_player, cam_loc, cam_ang, which_lamp )
 
     const_wait = 2;
     //real_player thread moveup();
-    real_player enableInvulnerability( true );
+    real_player enableInvulnerability( );
     real_player freezeControls( true );
     cam = spawn( "script_model", int_cam );
     cam setmodel( "tag_origin" );
@@ -905,7 +889,7 @@ fade_to_black_on_impact()
 keep_players_on_loop_timer()
 {
     level endon( "end_game" );
-    wait( randomintrange( 5, 8 ) );
+    wait randomintrange( 5, 8 );
     level.global_looping_in_progress = false;
     
 }
@@ -1118,7 +1102,7 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Mikey's Diner";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^1[ ^7Come back later ^1]");
+        trig_ setHintString( "");
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
@@ -1132,7 +1116,7 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Mikey's Diner";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^1[ ^7Come back later ^1]");
+        trig_ setHintString( "");
         
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
@@ -1147,7 +1131,7 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Grandtourissa's Bus Depo";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^1[ ^7Come back later ^1]");
+        trig_ setHintString( "");
         
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
@@ -1162,7 +1146,7 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Denny's Happy Cows Farm";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^1[ ^7Come back later ^1]");
+        trig_ setHintString( "");
         
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
@@ -1177,7 +1161,7 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Dr. Edward's Bunker";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^1[ ^7Come back later ^1]");
+        trig_ setHintString( "");
         
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
@@ -1193,7 +1177,7 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Dr. Ravenholm's Townhall";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^1[ ^7Come back later ^1]");
+        trig_ setHintString( "");
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
@@ -1207,7 +1191,7 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Stalinburgh's Power Station";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^1[ ^7Come back later ^1]");
+        trig_ setHintString( "");
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
         wait 0.1;
@@ -1221,7 +1205,7 @@ spawn_callable_rift_ride( where, index )
     {
         land_loc = "Denny's Happy Cows Farm";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
-        trig_ setHintString( "^1[ ^7Come back later ^1]");
+        trig_ setHintString( "");
         
         trig_ setCursorHint( "HINT_NOICON" );
         trig_ TriggerIgnoreTeam();
@@ -1535,7 +1519,7 @@ computer_accessed_by_player( playa, a_comp )
     a_comp_origin = a_comp.origin;
     level thread playloopsound_buried();
     wait randomfloatrange( 3.1, 5.2 );
-    _play_schruder_texts( "Excellent stuff!", "Survivor ^5" + playa + " ^7was able to restore signals via ^5Main Frame^7!" , 8, 1 );
+    _play_schruder_texts( "Excellent stuff!", "^2" + playa + " ^7was able to restore signals via ^5Main Frame^7!" , 8, 1 );
     wait 10;
     _play_schruder_texts( "Something's wrong with the computer..", "Access the control panel and restart the computer!", 6, 1 );
     //level notify( "stop_mus_load_bur" );
@@ -1738,6 +1722,7 @@ move_camera_to_teleport()
         cam waittill( "movedone" );
 
         player show();
+        player camerasetposition( player, player.angles );
         player CameraActivate( false );
 
     }
@@ -1757,11 +1742,11 @@ do_malfunction_visuals()
     level endon( "end_game" );
     foreach( plr in level.players )
     {
-        electry = spawn( "script_model", plr getTagOrigin( "j_head" ) );
-        electry setmodel( "tag_origin" );
-        electry enableLinkTo();
-        electry linkto( plr, "j_head" );
-        electry thread delete_after_while();
+        plr.electry = spawn( "script_model", plr getTagOrigin( "j_head" ) );
+        plr.electry setmodel( "tag_origin" );
+        plr.electry enableLinkTo();
+        plr.electry linkto( plr, "j_head" );
+        plr.electry thread delete_after_while();
 
         plr thread fadeForAWhile( 0, 1, 0.5, 0.5, "white" );
         plr setClientDvar( "r_exposureTweak", true );
@@ -1781,13 +1766,17 @@ do_malfunction_visuals()
     {
         pl thread fadeForAWhile( 0, 1, 0.5, 0.5, "white" );
     }
-    wait 0.7;
+    wait 0.5;
     foreach( pls in level.players )
     {
-        pls setclientdvar( "r_exposurevalue", 3 );
+        pls setclientdvar( "r_exposurevalue", 3.3 );
         pls setClientDvar( "r_exposureTweak", false );
-        plr setclientdvar( "cg_colorscale", "2 2 2" );
+        plr setclientdvar( "cg_colorscale", "1 1 1" );
         plr setclientdvar( "cg_colorhue", 0 );
+        if( isdefined( plr.electry ) )
+        {
+            plr.electry unlink();
+        }
     }
 
     
@@ -2031,7 +2020,7 @@ play_crows()
 _play_schruder_texts( subtitle_upper, subtitle_lower, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread SchruderSays( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+	level thread SchruderSays( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
 }
 
 SchruderSays( sub_up, sub_low, duration, fadeTimer )

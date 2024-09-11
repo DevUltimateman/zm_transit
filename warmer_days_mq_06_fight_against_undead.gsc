@@ -47,12 +47,21 @@ init()
     //level.nigth_fight_fx_list = [];
     precachemodel( "p_lights_lantern_hang_on_corn" );
     flag_wait( "initial_blackscreen_passed" );
-    level thread spawn_lockdown_enabler( ( 13832.4, -1273.99, -153.193 ) );
-    level thread spawn_lockdown_blockers();
+    
     level.lock_down_enabled = false;
+    level thread levelwaiter();
+
+
+    
     
 }
 
+levelwaiter()
+{   
+    level waittill( "orb_at_nacht" );
+    level thread spawn_lockdown_enabler( ( 13832.4, -1273.99, -153.193 ) );
+    level thread spawn_lockdown_blockers();
+}
 warm_up_the_fxs()
 {
 
@@ -334,7 +343,7 @@ spawn_lockdown_blockers()
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^3Dr. Schruder: ^7" + text, text2, duration, fadetimer );
+	level thread Subtitle( "^2Dr. Schruder: ^7" + text, text2, duration, fadetimer );
 }
 
 

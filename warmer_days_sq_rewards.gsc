@@ -49,7 +49,7 @@ init()
 
 notiff()
 {
-    iprintlnbold( "TEST" );
+    //iprintlnbold( "TEST" );
 }
 waittill_rewards()
 {

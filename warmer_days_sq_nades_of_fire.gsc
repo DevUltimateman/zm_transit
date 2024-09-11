@@ -49,7 +49,7 @@ init()
     level thread fordev();
 
     //build check for printlines
-    level.dev_time = true;
+    level.dev_time = false;
     
     //fire nade quest, step1 triggers
     level.trigger_to_hit_with_nade = []; 
@@ -111,7 +111,11 @@ quest_firenades_init()
     wait 5;
     
     level.firegrenade_quest_active = true;
-    iprintlnbold( "FIREGUEST ACTIVE: ^3" + level.firegrenade_quest_active );
+    if( level.dev_time )
+    {
+        iprintlnbold( "FIREGUEST ACTIVE: ^3" + level.firegrenade_quest_active );
+    }
+    
 
     /* STEP 1 | STEP 1 | STEP 1 | STEP 1 */
     for( s = 0; s < level.players.size; s++ )
@@ -767,7 +771,8 @@ firegrenade_touched( who )
                     //who.hits++; //increase player who hit score
                     iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
                     //self notify( "gucci" ); 
-                    
+                    playfx( level.myfx[ 78 ], level.trigger_to_hit_with_nade[ i ].origin );
+                    playsoundatposition( "zmb_avogadro_death_short", level.trigger_to_hit_with_nade[ i ].origin );
                     //if no claimed node, notify the black_hole thread to play an fx on notifier + i's value
                     level.trigger_to_hit_with_nade[ i ] notify( "someone_located_" + i );  
                     wait 0.1;
@@ -828,7 +833,7 @@ firegrenade_assign_hitlist_to_connecting_midgame()
 _someone_unlocked_something( subtitle_upper, subtitle_lower, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread SchruderSays( "^3Dr. Schrude: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+	level thread SchruderSays( "^2Dr. Schrude: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
 }
 
 _someone_unlocked_something_client( subtitle_upper, subtitle_lower, duration, fadetimer )

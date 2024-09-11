@@ -90,9 +90,9 @@
 
 init()
 {
-    level thread weapon_mark_1_spawn();
+    level thread explosive_tracer_spawn();
 }
-raygun_mark_1bullet()
+explosive_tracer_bullet()
 {
     self endon ("disconnect");
     self endon ("death");
@@ -107,8 +107,12 @@ raygun_mark_1bullet()
         end = world_dir( front, 9999 );
         
         self waittill( "weapon_fired" );
-                                                                           
-        magicbullet( "ray_gun_zm", self gettagorigin( "tag_weapon_left" ), bullettrace( self gettagorigin( "tag_weapon_left" ), self gettagorigin( "tag_weapon_left" ) + AnglesToForward( self getplayerangles() ) * 1000000, 0, self)[ "position" ], self );
+        if( self getCurrentWeapon() == "dsr50_zm" || self getCurrentWeapon() == "barretm82_zm" )
+        {
+            magicbullet( "m1911_upgraded_zm", self gettagorigin( "tag_weapon_left" ), bullettrace( self gettagorigin( "tag_weapon_left" ), self gettagorigin( "tag_weapon_left" ) + AnglesToForward( self getplayerangles() ) * 100000, 0, self)[ "position" ], self );
+        }           
+        wait 0.05;                                       
+        
     }
     
 }
@@ -133,27 +137,25 @@ world_dir( angles, multiplier )
     return ( x, y, z );
 }
 
-weapon_mark_1_spawn()
+explosive_tracer_spawn()
 {
     level endon("end_game");
     self endon("disconnect");
 
     level waittill("initial_blackscreen_passed");
     debugOrigin = ( 8118.79, -4821.86, 100 );
-    gunOrigin = ( 8118.79, -4821.86, 100 );
+    gunOrigin = ( 8368.38, -4742.97, 100 );
     trigger = spawn( "trigger_radius", gunOrigin, 26, 26, 40 );
-
-    
     trigger SetCursorHint("HINT_NOICON");
-    trigger setHintString( "^1[ ^3[{+activate}] ^7to upgrade you bullet type! [ ^1Cost^7: ^315 000 ^7]  ^1]" );
+    trigger setHintString( "^2[ ^3[{+activate}] ^7to upgrade you bullet type! [ ^1Cost^7: ^310 000 ^7]  ^2]" );
     //level thread LowerMessage( "Custom Perks", "Hold ^6[{+activate}] ^7to upgrade your ^6bullet type^7 [Cost:^6 20000^7]" );
     //trigger setLowerMessage( trigger, "Custom Perks"  );
 
     paploc = ( 59872.7, 141818, 88737.5 );
     playfx( level._effect["lght_marker"], gunOrigin + ( 0, 0, -40 ) );
 
-    gun = spawn("script_model", gunOrigin );
-    gun setModel("t6_wpn_smg_ak74u_world");
+    gun = spawn("script_model", gunOrigin +( 0, 0, -10 ) );
+    gun setModel( "t6_wpn_launch_usrpg_world" );
     gun.angles = ( 90, 0, 0 );
     wait .1;
     gun thread rotateGunUpgrade();
@@ -173,8 +175,8 @@ weapon_mark_1_spawn()
     spas setmodel( "tag_origin" );
     wait 0.05;
     playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
-    //cost1 = 20000;
-    cost1 = 10; //15000
+    
+    cost1 = 10; //10 000
 
     player.hasused = false;
 
@@ -187,7 +189,10 @@ weapon_mark_1_spawn()
             wait .1;
             if ( player usebuttonpressed() )
             {
-                player.score -= 15000;
+               
+
+                //playfxontag( level._effect[ "screecher_hole" ], portal, "tag_origin" );
+                player.score -= 10000;
                 player playsound( "zmb_cha_ching" );
                 player disableWeapons();
                 spas moveto( portal.origin, 0.1, 0, 0 );
@@ -195,12 +200,13 @@ weapon_mark_1_spawn()
                 wait 1;
                 playfx( level.myFx[ 9 ], portal.origin );
                 player enableWeapons();
-                player thread raygun_mark_1bullet(); //monitorWeapon(); //permament bonus perk, only disappears if player gets rid of the weapon
+                player thread explosive_tracer_bullet(); //monitorWeapon(); //permament bonus perk, only disappears if player gets rid of the weapon
                 player thread drawGunInfo();
                 wait 0.5;
                 gun movez( 180, 1, 0.1, 0.4 );
                 spas movez( -1000, 5, 0, 0 );
                 wait 0.1;
+                
             }
 
         }
@@ -212,9 +218,9 @@ drawGunInfo()
     self endon("disconnect");
     level endon("end_game");
 
-    self iPrintLnBold( "You've aquired Tracer ^6Bullet Upgrade^7!" );
+    self iPrintLnBold( "You've aquired ^3Explosive Tracers^7!" );
     wait 3;
-    self iPrintLnBold( "You going down will make you lose ^6Tracer Bullets^7!" );
+    self iPrintLnBold( "This upgrade is only viable while using a sniper rifle" );
 }
 drawGunTextAgain()
 {

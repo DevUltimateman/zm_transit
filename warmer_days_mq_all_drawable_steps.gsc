@@ -90,7 +90,7 @@
 #include maps\mp\zm_transit_lava;
 init()
 {
-    level thread debug_shaderdrawing();
+    //level thread debug_shaderdrawing();
 
     precacheshader( "waypoint_revive_zm" ); //blue circle around quick revie
     precacheshader( "zombies_rank_1" ); //1st main quest start alert

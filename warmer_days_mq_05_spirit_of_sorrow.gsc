@@ -78,7 +78,7 @@ waitflag()
     level waittill( "can_do_spirit_now" );
     level thread monitor_players(); //disabled for now. dont want to go underneath pylon and start follow spirit step while testing other stuff.
     level waittill( "players_obey" ); //all players gathered together underneath the pylon
-    
+    level thread playloop_nuked();
     //step 2
     level thread follow_the_spirit_visuals(); //visual effect for step2
     level thread shoot_orbs(); // shoots orbs from the top of pylon towards the center of it
@@ -89,6 +89,7 @@ waitflag()
     level waittill( "spirit_ready" ); //waiting for all spirit stuff to be initialized
     level thread follow_spirit(); //handles the interaction logic with spirit & players and plays the proper text dialog
     level waittill( "orb_at_nacht" ); //notify once spirit reaches it's end goal
+    level notify( "stop_nuked_sound" );
 
     //step3
     level thread nacht_shooter(); //shoot array of spirits from nacht roof
@@ -96,10 +97,10 @@ waitflag()
     level waittill( "lockdown_disabled" ); //debug to not let this go past
     foreach( play in level.players )
     {
-        play setclientdvar( "r_lighttweaksuncolor", "0.5 0.8 0.9" );
+        play setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.62, 0.36 ));
         play setclientdvar( "r_lighttweaksunlight", 12  );
-        play setclientdvar( "r_lighttweaksundirection",( -45, 210, 0 ) );
-        play setclientdvar( "r_sky_intensity_factor0", 1  );
+        play setclientdvar( "r_lighttweaksundirection",( -155, 63, 0 ) );
+        play setclientdvar( "r_sky_intensity_factor0", 1.7  );
         play setclientdvar( "r_bloomtweaks", 1  );
         play setclientdvar( "cg_usecolorcontrol", 1 );
         play setclientdvar( "cg_colorscale", "1 1 1"  );
@@ -114,6 +115,20 @@ waitflag()
     }
 }
 
+playloop_nuked()
+{
+    level endon( "end_game" );
+    level endon( "stop_nuked_sound" );
+    while( true )
+    {
+        foreach( p in level.players )
+        {
+            p playsound( "mus_load_zm_nuked_patch" );
+            
+        }
+        wait 15;
+    }
+}
 spirit_thunder_locations()
 {
     
@@ -158,20 +173,20 @@ return_spirit_textline( switcher )
     switch( index )
     {
         case 1:
-            u_ = "Well hello! What are you doing on my father's fields?";
-            d_ = "Aha, I'm just joking guys, I'm just joking!"; 
+            u_ = "Well hello! ";
+            d_ = "Fancy seeing you.. Aha, I'm just joking guys, I'm just joking!"; 
             level thread spirit_says( u_, d_, 8, 1 );  
             break;
 
         case 4:
-            u_ = "Fancy catching me?";
-            d_ = "That is if you can, ha!";
+            u_ = "Ever tried catching a spirit?";
+            d_ = "Blah, bet not ha!";
             level thread spirit_says( u_, d_, 3, 0.2 );
             break;
 
         case 5:
-            u_ = "Are you following me?";
-            d_ = "You know it's dark.";
+            u_ = "Missed!?";
+            d_ = "Need glasses?";
             level thread spirit_says( u_, d_, 5, 1 );
             break;
 
@@ -424,6 +439,7 @@ spawn_spirit()
     wait 0.05;
     playFXOnTag( level.myFx[ 2 ], level.o_spirit, "tag_origin" );
     level notify( "spirit_ready" );
+    level.o_spirit playloopsound( "zmb_screecher_portal_loop", 2 );
 }
 
 debug_spirit_locations()

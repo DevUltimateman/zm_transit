@@ -44,7 +44,7 @@ init()
 {
     level thread ondevs();
     precache_myfx();
-	level.dev_time = true;
+	//level.dev_time = true;
 	default_fxs();
 	
 }
@@ -59,7 +59,7 @@ ondevs()
         //player thread spawnsfx();
 
 		//tranzit's default fxs
-		player thread spawnsfx_transit_default_ones();
+		//player thread spawnsfx_transit_default_ones();
 		//only for development
 		//player thread spawn_cloud_on_press();
 		//player thread strapper();

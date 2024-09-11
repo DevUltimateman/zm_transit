@@ -44,7 +44,7 @@ init()
     //level thread applyTreeOnPlayer();
     locations_to_spawn();
     //level thread spawn_all_trees();
-    level thread spawn_all_static_trees();
+    //level thread spawn_all_static_trees();
     precachemodel( "t5_foliage_tree_burnt02" );
     precachemodel( "t5_foliage_tree_burnt03" );
 
@@ -80,9 +80,13 @@ spawn_all_static_trees()
     flag_wait( "initial_blackscreen_passed" );
     for( i = 0; i < level.static_trees.size; i++ )
     {
-        oppa = spawn( "script_model", level.static_trees[ i ] );
-        oppa setmodel( "t5_foliage_tree_burnt03" );
-        oppa.angles = ( randomintrange( 0, 5 ), randomintrange( 0, 360 ), 0 );
+        if( i % 2 == 0 )
+        {
+            oppa = spawn( "script_model", level.static_trees[ i ] );
+            oppa setmodel( "t5_foliage_tree_burnt03" );
+            oppa.angles = ( randomintrange( 0, 5 ), randomintrange( 0, 360 ), 0 );
+        }
+        
         wait 0.05;
     }
 }
@@ -149,190 +153,7 @@ apply_on_spawner()
 locations_to_spawn()
 {
     level endon( "end_game" );
-    level.floating_trees = [];
 
-    //needs less places, otherwise g_spawn error flow when too many things happening at once
-    //bdepo
-    level.floating_trees[ 0 ] = ( -8269.07, 6067.76, -139.209 );
-    level.floating_trees[ 1 ] = ( -8469.26, 7698.16, -139.209 );
-    level.floating_trees[ 2 ] = ( -8221.43, 8158.14, -133.76 );
-    level.floating_trees[ 3 ] = ( -9001.54, 8942.45, 152.955 );
-    level.floating_trees[ 4 ] = ( -8071.91, 8680.39, 247.409 );
-    level.floating_trees[ 5 ] = ( -7771.16, 9309.58, 606.594 );
-    level.floating_trees[ 6 ] = ( -7356.24, 9031.27, 569.133 );
-    level.floating_trees[ 7 ] = ( -8407.85, 9735.42, 749.376 );
-    level.floating_trees[ 8 ] = ( -10031.1, 9369.18, 387.227 );
-    level.floating_trees[ 9 ] = ( -6753.12, 6749.34, -113.008 );
-    level.floating_trees[ 10 ] = ( -6333.09, 7529.61, -127.74 );
-    level.floating_trees[ 11 ] = ( -4913.72, 7388.21, -69.3958 );
-    level.floating_trees[ 12 ] = ( -5608.27, 6397.83, -141.835 );
-    level.floating_trees[ 13 ] = ( -4633.78, 5719.73, 139.213 );
-    level.floating_trees[ 14 ] = ( -5861.36, 3692.97, -64.1865 );
-    level.floating_trees[ 15 ] = ( -6634.9, 3775.8, -139.592 );
-    level.floating_trees[ 16 ] = ( -10061.6, 4601.22, 121.09 );
-    level.floating_trees[ 17 ] = ( -10068, 5077.29, 8.57467 );
-    level.floating_trees[ 18 ] = ( -10156.4, 5798.89, 160.656 );
-    level.floating_trees[ 19 ] = ( -10351.1, 3367.3, 611.242 );
-    level.floating_trees[ 20 ] = ( -9358.84, 2878.58, 612.011 );
-    level.floating_trees[ 21 ] = ( -9776.54, 2816.21, 754.088 );
-    level.floating_trees[ 22 ] = ( -9355.58, 2445.73, 877.36 );
-    level.floating_trees[ 23 ] = ( -8543.43, 2810.54, 488.773 );
-
-
-    //dina
-    level.floating_trees[ 24 ] = ( -7913.04, -7986.27, -7.55958 );
-    level.floating_trees[ 25 ] = ( -7650.2, -8352.88, 2.264784 );
-    level.floating_trees[ 26 ] = ( -8159.26, -9038.71, 99.2543 );
-    level.floating_trees[ 27 ] = ( -7640.58, -9852.76, 238.712 );
-    level.floating_trees[ 28 ] = ( -7607.87, -10553.2, 284.13 );
-    level.floating_trees[ 29 ] = ( -7131.42, -10950.7, 247.826 );
-    level.floating_trees[ 30 ] = ( -7172.12, -7772.01, -13.5853 );
-    level.floating_trees[ 31 ] = ( -7303.13, -7381.19, -6.51702 );
-    level.floating_trees[ 32 ] = ( -6810.04, -7904.33, -86.1504 );
-    level.floating_trees[ 33 ] = ( -6746.66, -8271.98, -134.268 );
-    level.floating_trees[ 34 ] = ( -6387.65, -9488.37, 273.34 );
-    level.floating_trees[ 35 ] = ( -5487.24, -9401.89, 329.899 );
-    level.floating_trees[ 36 ] = ( -5222.9, -10033.8, 594.083 );
-    level.floating_trees[ 37 ] = ( -4372.67, -9793.92, 488.826 );
-    level.floating_trees[ 38 ] = ( -3444.39, -9565.92, 145.4 );
-    level.floating_trees[ 39 ] = ( -2411.44, -10225.4, 416.309 );
-    level.floating_trees[ 40 ] = ( -3102.83, -7529.57, -163.345 );
-    level.floating_trees[ 41 ] = ( -3238.79, -7249.42, -138.832 );
-    level.floating_trees[ 42 ] = ( -3991.07, -5693.92, -128.825 );
-    level.floating_trees[ 43 ] = ( -4072.27, -5093.65, -147.635 );
-    level.floating_trees[ 44 ] = ( -3245.32, -5016.29, -142.504 );
-    level.floating_trees[ 45 ] = ( -2978.83, -3947.26, 90.4425 );
-    level.floating_trees[ 46 ] = ( -5781.78, -4746.02, 8.04597 );
-    level.floating_trees[ 47 ] = ( -6534.8, -4628.91, 292.772 );
-    level.floating_trees[ 48 ] = (  -7762.54, -5643.02, 378.9 );
-    level.floating_trees[ 47 ] = ( -8707.86, -5462.03, 812.681 );
-    level.floating_trees[ 48 ] = ( -8557.25, -4545.6, 1054.42 );
-    level.floating_trees[ 49 ] = ( -9771.11, -7702.08, 562.237 );
-    level.floating_trees[ 50 ] = ( -9087.63, -8391.8, 642.682 );
-
-
-    //farm
-    level.floating_trees[ 51 ] = ( 7159.74, -4814, -126.587 );
-    level.floating_trees[ 52 ] = ( 7530.95, -5242.49, -71.2172 );
-    level.floating_trees[ 53 ] = ( 6778.39, -6981.13, -127.429 );
-    level.floating_trees[ 54 ] = ( 6752.14, -7532.57, -138.735 );
-    level.floating_trees[ 55 ] = ( 9473.78, -5547.91, -39.9044 );
-    level.floating_trees[ 56 ] = ( 10106.4, -5942.17, 9.79631 );
-    level.floating_trees[ 57 ] = ( 10593.5, -5341.64, 74.3158 );
-    level.floating_trees[ 58 ] = ( 11651.1, -6376.87, 291.567 );
-    level.floating_trees[ 59 ] = ( 9765.77, -6776.16, 21.1936 );
-    level.floating_trees[ 60 ] = ( 9229.99, -6992.1, 9.47703 );
-    level.floating_trees[ 61 ] = ( 8678.64, -7092.01, 22.8259 );
-    level.floating_trees[ 62 ] = ( 8351.65, -7349.19, -15.4775 );
-    level.floating_trees[ 63 ] = ( 10052.7, -8164.55, -95.195 );
-    level.floating_trees[ 64 ] = ( 8735.36, -6250.17, 45.4099 );
-    level.floating_trees[ 65 ] = ( 7888.43, -4377.38, -32.6833 );
-    level.floating_trees[ 66 ] = ( 5286.88, -3365.77, 641.571 );
-    level.floating_trees[ 67 ] = ( 5121.24, -4587.63, 177.143 );
-    level.floating_trees[ 68 ] = ( 4896.26, -3897.89, 692.981 );
-    
-    
-    //corn & nacht
-    level.floating_trees[ 69 ] = ( 6639.57, -1934.68, -141.414 );
-    level.floating_trees[ 70 ] = ( 7246.52, -1872.95, -255.657 );
-    level.floating_trees[ 71 ] = ( 8194.06, -1250.48, -266.437 );
-    level.floating_trees[ 72 ] = ( 8428.91, -517.677, -281.2 );
-    level.floating_trees[ 73 ] = ( 8022.89, 407.244, -279.343 );
-    level.floating_trees[ 74 ] = ( 9161.97, -106.811, -274.428 );
-    level.floating_trees[ 75 ] = ( 9488.07, -393.354, -269.562 );
-    level.floating_trees[ 76 ] = ( 9424.54, -1504.13, -297.108 );
-    level.floating_trees[ 77 ] = ( 6564.3, -1356.49, -180.136 );
-    level.floating_trees[ 78 ] = ( 6712.81, -685.594, -280.033 );
-    level.floating_trees[ 79 ] = ( 6364.93, 132.535, -174.975 );
-    level.floating_trees[ 80 ] = ( 5474, 647.067, 578.486 );
-    level.floating_trees[ 81 ] = ( 5473.13, 183.952, 577.225 );
-    level.floating_trees[ 82 ] = ( 5458.85, -730.788, 573.998 );
-    level.floating_trees[ 83 ] = ( 5468.48, -1281.53, 572.1 );
-    level.floating_trees[ 84 ] = ( 11091.9, -1361.82, -295.761 );
-    level.floating_trees[ 85 ] = ( 11447.7, -334.305, -247.31 );
-    level.floating_trees[ 86 ] = ( 11838.1, -774.641, -235.716 );
-    level.floating_trees[ 87 ] = ( 11771.5, -1206.06, -250.492 );
-    level.floating_trees[ 88 ] = ( 10712, -2070.74, -290.992 );
-    level.floating_trees[ 89 ] = ( 11388.4, -2542.83, -245.922 );
-    level.floating_trees[ 90 ] = ( 11935.5, -2382.95, -252.124 );
-    level.floating_trees[ 91 ] = ( 12687.1, -3113.07, 117.744 );
-    level.floating_trees[ 92 ] = ( 13333, -3000.42, 50.1275 );
-    level.floating_trees[ 93 ] = ( 13288.8, -2604.93, -167.164 );
-    level.floating_trees[ 94 ] = ( 13599.5, -1899.49, -291.018 );
-    level.floating_trees[ 95 ] = ( 14327.3, -1657.14, -257.986 );
-    level.floating_trees[ 96 ] = ( 14279.9, -1110.02, -272.541 );
-    level.floating_trees[ 97 ] = ( 14373.2, -868.55, -284.359 );
-    level.floating_trees[ 98 ] = ( 15491.4, -517.364, -195.946 );
-    level.floating_trees[ 99 ] = ( 15762.1, -1447.39, -103.814 );
-    level.floating_trees[ 100 ] = ( 13698, 1032.32, -67.1959 );
-    level.floating_trees[ 101 ] = ( 13341.5, 939.574, -59.131 );
-    level.floating_trees[ 102 ] = ( 12731.2, 618.34, -213.922 );
-    level.floating_trees[ 103 ] = ( 12284.9, 1072.4, -153.024 );
-    level.floating_trees[ 104 ] = ( 11320, 1639.38, 324.95 );
-    level.floating_trees[ 105 ] = ( 9344.48, 1999.88, 518.185 );
-    
-    
-    
-    
-    
-    
-    //pstation
-    level.floating_trees[ 108 ] = ( 7039.54, 3360.64, 154.345 );
-    level.floating_trees[ 109 ] = ( 9335.02, 3272.88, 37.0086 );
-    level.floating_trees[ 110 ] = ( 10009.3, 4249.74, -291.164 );
-    level.floating_trees[ 111 ] = ( 1131.1, 3793.44, -93.6979 );
-    level.floating_trees[ 112 ] = ( 11136.6, 4671.11, -647.44 );
-    level.floating_trees[ 113 ] = ( 11092.7, 5492.73, -643.929 );
-    level.floating_trees[ 114 ] = ( 8926.72, 7017.59, -511.89 );
-    level.floating_trees[ 115 ] = ( 8598.91, 7591.02, -596.066 );
-    level.floating_trees[ 116 ] = ( 8871.52, 7749.27, -510.702 );
-    level.floating_trees[ 117 ] = ( 9264.43, 8279.64, -463.606 );
-    level.floating_trees[ 118 ] = ( 10941.9, 7155.17, -603.433 );
-    level.floating_trees[ 119 ] = ( 11728.7, 7656.83, 468.993 );
-    level.floating_trees[ 120 ] = ( 11952.5, 7266.51, -455.286 );
-    level.floating_trees[ 121 ] = ( 12757.1, 7617.94, -421.543 );
-    level.floating_trees[ 122 ] = ( 12333.2, 8126.68, -489.146 );
-    level.floating_trees[ 123 ] = ( 12011.3, 8722.1, -425.258 );
-    level.floating_trees[ 124 ] = ( 10190.1, 10206.9, -84.8752 );
-    level.floating_trees[ 125 ] = ( 9210.98, 10557.7, -132.766 );
-    level.floating_trees[ 126 ] = ( 7258.81, 10407, 223.724 );
-    level.floating_trees[ 127 ] = ( 6890.15, 9333.21, -216.234 );
-    
-    
-    
-    //cabing & town
-    level.floating_trees[ 128 ] = ( 4942.17, 9142.59, 125.547 );
-    level.floating_trees[ 129 ] = ( 4446.44, 8525.33, 267.505 );
-    level.floating_trees[ 130 ] = ( 3795.13, 7945.53, 130.055 );
-    level.floating_trees[ 131 ] = ( 6999.71, 4710.43, -183.838 );
-    level.floating_trees[ 132 ] = ( 6280.72, 4306.88, 55.3238 );
-    level.floating_trees[ 133 ] = ( 5552.71, 5238.43, -15.2724 );
-    level.floating_trees[ 134 ] = ( 5534.86, 3330.79, 182.364 );
-    level.floating_trees[ 135 ] = ( 5712.76, 3561.38, 95.7106 );
-    level.floating_trees[ 136 ] = ( 5556.77, 3825.66, 11.7298 );
-    level.floating_trees[ 137 ] = ( 5175.1, 2734.85, 441.979 );
-    level.floating_trees[ 138 ] = ( 4580.92, 2192.62, 601.483 );
-    level.floating_trees[ 139 ] = ( 3833.78, 1886.65, 590.434 );
-    level.floating_trees[ 140 ] = ( 3261.85, 1556.55, 570.467 );
-    level.floating_trees[ 141 ] = ( 2235.29, 4698.4, 403.851 );
-    level.floating_trees[ 142 ] = ( 1423.61, 4207.7, 110.54 );
-    level.floating_trees[ 143 ] = ( 876.427, 3941.76, 94.6846 );
-    level.floating_trees[ 144 ] = ( -162.774, 3767.34, 728.58 );
-    level.floating_trees[ 145 ] = ( 682.112, 2326.01, 112.661 );
-    level.floating_trees[ 146 ] = ( 2671.95, 1597.11, -36.8116 );
-    level.floating_trees[ 147 ] = ( 2556.25, -2584.58, 27.6548 );
-    level.floating_trees[ 148 ] = ( 3031.88, -2352.74, -127.367 );
-    level.floating_trees[ 149 ] = ( 952.291, -2499.39, -63.5382 );
-    level.floating_trees[ 150 ] = ( 403.733, -2290.99, -74.0392 );
-    level.floating_trees[ 151 ] = ( -1166.77, 1752.55, 660.604 );
-    level.floating_trees[ 152 ] = ( -466.173, 1722.56, 671.744 );
-    level.floating_trees[ 153 ] = ( -3950.59, -1599.75, -91.8562 );
-    level.floating_trees[ 154 ] = ( -4010.37, 1592.66, 523.236 );
-    level.floating_trees[ 155 ] = ( -2211.3, 1944.37, 816.443 );
-    level.floating_trees[ 156 ] = ( -6213.56, 1514.68, 614.819 );
-    level.floating_trees[ 157 ] = ( -6160.12, 562.196, 573.789 );
-    level.floating_trees[ 158 ] = ( -7079.73, -460.058, 811.167 );
-    level.floating_trees[ 159 ] = ( -6925.77, 2263.05, 594.051 );
 
 
     level.static_trees = [];
@@ -414,7 +235,14 @@ locations_to_spawn()
     level.static_trees[ 67 ] = ( -1489.51, -2003.65, 51.6586 );
     level.static_trees[ 68 ] = ( -4399.43, -127.263, 6.01672 );
     level.static_trees[ 69 ] = ( -8237.71, -6648.89, 24.5325 );
-
-
+    level.static_trees[ 70 ] = ( 10027.5, 104.189, -215.18 );
+    level.static_trees[ 71 ] = ( 9551.81, 1323.06, 123.363 );
+    level.static_trees[ 72 ] = ( 9139.16, 1489.4, 122.207 );
+    level.static_trees[ 73 ] = ( 8904.74, 1992.58, 91.9032 );
+    level.static_trees[ 74 ] = ( 7877.8, -2638.21, -204.958 );
+    level.static_trees[ 75 ] = ( 8309.95, -1823.8, -275.42 );
+    level.static_trees[ 76 ] = ( 10288.2, -2107.87, -430.722 );
+    level.static_trees[ 77 ] = ( 10504.9, -1585.34, -366.226 );
+    level.static_trees[ 78 ] = ( 9163.8, -1916.01, -212.377 );
 
 }

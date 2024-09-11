@@ -581,6 +581,8 @@ letPlayerPickUp()
     while( true )
     {
         p_t waittill( "trigger", who );
+        who playsound( "evt_player_upgrade" );
+        //who playsound( "zmb_perks_packa_deny" );
         p_t setHintString( "You picked up ^3Survivor Base ^7piece!" );
         who.has_bar_piece++;
         self delete();
@@ -643,6 +645,8 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
             {
                 level.main_door_tr setHintString("");
             }
+            me playsound( "evt_player_upgrade" );
+            //who playsound( "zmb_perks_packa_deny" );
             me thread playlocal_plrsound();
             current_w = me getCurrentWeapon();
             me giveWeapon( "zombie_builder_zm" );

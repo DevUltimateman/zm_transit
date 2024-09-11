@@ -403,7 +403,7 @@ meeting_vox01( background_music )
         subtitle_lower = "Please, it's been so long since I've met someone new..";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
     
@@ -420,7 +420,7 @@ meeting_vox02( background_music )
         subtitle_lower = "Fantastic!";
         duration = 6;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -435,7 +435,7 @@ meeting_vox03( background_music )
         subtitle_lower = "Think you can get it turned on by yourself?";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -450,7 +450,7 @@ meeting_vox04( background_music )
         subtitle_lower = "It's the shack at bus depo, you should be able to find it.";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -563,7 +563,7 @@ meeting_vox07( background_music )
         subtitle_lower = "I see you got the power turned on, wunderbaaaar!";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -578,7 +578,7 @@ meeting_vox08( background_music )
         subtitle_lower = "That's what my pea brains say at least.";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -593,7 +593,7 @@ meeting_vox09( background_music )
         subtitle_lower = "Should we start with by getting those cheeky ^5Rift Portals ^7working?";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -608,7 +608,7 @@ meeting_vox10( background_music )
         subtitle_lower = "I believe someone else tried to accomplish said goal before you, so the parts might be scattered around..";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -623,7 +623,7 @@ meeting_vox11( background_music )
         subtitle_lower = "I'll be in touch with you!";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -638,7 +638,7 @@ meeting_vox12( background_music )
         subtitle_lower = "What do you think? Should we get to work?";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -653,7 +653,7 @@ meeting_vox13( background_music )
         subtitle_lower = "I knew that the reader was working when I heard the signal beeping rapidly.";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
 
@@ -667,7 +667,7 @@ meeting_vox14( background_music )
         subtitle_lower = "Can you guys hear me at all? I can't hear none of you.";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
 
@@ -681,7 +681,7 @@ meeting_vox15( background_music )
         subtitle_lower = "Could you try shooting a weapon so that I know that at least you can hear me?";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
         //the function below monitors the time it takes to be able to access shooting part
         //the function also counts and decreases the global variable till there is no time left.
         level thread stop_for_a_second();
@@ -736,7 +736,7 @@ meeting_vox16( background_music )
         subtitle_lower = "You should be good as long as you can hear me and obey my instructions.";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
 
@@ -750,7 +750,7 @@ meeting_vox17( background_music )
         subtitle_lower = "Fixed lamps will allow you to teleport eventually through a ^5Rift Portal";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
 
@@ -764,7 +764,7 @@ meeting_vox18( background_music )
         subtitle_lower = "We should try applying some power to them!";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
 
@@ -778,7 +778,7 @@ meeting_vox19( background_music )
         subtitle_lower = "I'll be in touch with you once those lamps are fixed!";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^5Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
 

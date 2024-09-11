@@ -152,13 +152,25 @@ weaponTracerUpgrade()
 
     gun = spawn("script_model", gunOrigin );
     gun setModel("t6_wpn_smg_ak74u_world");
-    gun.angles = ( 0, 0, 0 );
+    gun.angles = ( 90, 0, 0 );
     wait .1;
     gun thread rotateGunUpgrade();
-    playfxontag(level._effect[ "powerup_on"], gun, "tag_origin" );
+    playfx(level._effect[ "powerup_on"], gunOrigin + ( 0, 0, 10 ) );
     gun playLoopSound( "zmb_spawn_powerup_loop" );
 
-    //cost1 = 20000;
+    portal = spawn( "script_model", gunOrigin + ( 0, 0, -55 ) );
+    portal setmodel("p6_zm_screecher_hole" );
+    portal.angles = ( 0, 180, 0 );
+    wait 0.1;
+    
+    playFXOnTag( level._effect[ "screecher_vortex" ], portal, "tag_origin" );
+    portal playLoopSound( "zmb_screecher_portal_loop", 2 );
+
+    spas = spawn( "script_model", portal.origin + ( 0, 0, -1000 ) );
+    spas.angles = (0,0,0);
+    spas setmodel( "tag_origin" );
+    wait 0.05;
+    playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
     cost1 = 10;
 
     player.hasused = false;
@@ -175,10 +187,17 @@ weaponTracerUpgrade()
                 player.score -= 25000;
                 player playsound( "zmb_cha_ching" );
                 player disableWeapons();
+                spas moveto( portal.origin, 0.1, 0, 0 );
+                gun movez( -180, 1, 0.2, 0.2 );
                 wait 1;
+                playfx( level.myFx[ 9 ], portal.origin );
                 player enableWeapons();
                 player thread raygunmk2Bullet(); //monitorWeapon(); //permament bonus perk, only disappears if player gets rid of the weapon
                 player thread drawGunInfo();
+                wait 0.5;
+                gun movez( 180, 1, 0.1, 0.4 );
+                spas movez( -1000, 5, 0, 0 );
+                wait 0.1;
             }
 
         }
