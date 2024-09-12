@@ -42,7 +42,7 @@
 init()
 {
     //level thread applyTreeOnPlayer();
-    locations_to_spawn();
+    //locations_to_spawn();
     //level thread spawn_all_trees();
     //level thread spawn_all_static_trees();
     precachemodel( "t5_foliage_tree_burnt02" );

@@ -57,9 +57,11 @@ init()
 
     flag_wait( "initial_blackscreen_passed" );
     wait 3;
+    level.dev_time = true;
+    wait 0.05;
     if( level.dev_time )
     {
-        //level thread printmodelorginfo();
+        level thread printmodelorginfo();
     }
     
 }

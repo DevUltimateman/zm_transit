@@ -940,8 +940,11 @@ keep_track_of_progress()
     {
         if( boots_summoned() )
         {
+            if(level.dev_time)
+            {
+                iprintlnbold( "This boot_summoing done, UNLOCKING OTHER LOCATIONS AGAIN" );
+            }
             
-            iprintlnbold( "This boot_summoing done, UNLOCKING OTHER LOCATIONS AGAIN" );
             wait 0.05;
             Earthquake( 0.5, 0.75, self.origin, 1000 );
             self playsound( "zmb_avogadro_death_short" );

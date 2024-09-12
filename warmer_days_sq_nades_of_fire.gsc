@@ -486,7 +486,7 @@ firegrenade_reward_player( to_who )
 {
     level endon( "end_game" );
     to_who thread firegrenades_throw_logic(); //to_who == self player, firegrenade think logic thread()
-
+    to_who.has_up_nades = true;
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
     _someone_unlocked_something( "Haha! How do you like your new nades?", "I hope they'll come to good use.. ^3Wunderbar!", 8, 0.1 );
 }
@@ -746,6 +746,7 @@ firegrenade_has_player_hit_list()
     self.hit_list[ 3 ] = false;
     self.hit_list[ 4 ] = false;
     self.has_picked_up_boots = false;
+    self.has_up_nades = false;
 }
 
 //logic for grenade when looking for a trigger to touch

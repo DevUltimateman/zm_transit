@@ -109,7 +109,7 @@ transmitter_wait_for_navcard()
         navtrig waittill( "trigger", who );
         if ( isplayer( who ) && is_player_valid( who ) )
         {
-            
+            level thread spawn_looping_wire_fx();
             navtrig sethintstring( "^2[ ^7Success! ^3Navcard^7 applied to the transmitter ^2]" );
             who playsound( "zmb_sq_navcard_success" );
             navtrig playsound( "zmb_sq_navcard_success" );
@@ -267,5 +267,54 @@ _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
 	level thread Subtitle( "^2Dr. Schruder: ^7" + text, text2, duration, fadetimer );
+}
+
+
+spawn_looping_wire_fx()
+{
+    level endon( "end_game" );
+    loc = [];
+    wait 0.1;
+    loc[ 0] = ( 7403.49, -355.537, -250.859 );
+    loc[1 ]= ( 7403.49, -355.537, -200.859 );
+    loc[2] = ( 7369.03, -376.481, -101.493 );
+    loc[3] = ( 7362.51, -398.398, -19.2706 );
+    loc[4] = ( 7349.03, -427.933, 59.9438 );
+    loc[5] = ( 7334.27, -450.357, 173.891 );
+    loc[6 ]= ( 7325.85, -459.384, 285.322 );
+    loc[7] = ( 7321.75, -463.883, 474.774 );
+    loc[8] = ( 7322.12, -459.86, 666.975 );
+
+    spawn1 = spawn( "script_model", loc[0] );
+    spawn1 setmodel( "tag_origin" );
+    spawn1.angles = ( 0, 0, 0 );
+
+    spawn2 = spawn( "script_model", loc[0] );
+    spawn2 setmodel( "tag_origin" );
+    spawn2.angles = ( 0, 0, 0 );
+
+    wait 1;
+    playfxontag( level.myfx[ 2 ], spawn1, "tag_origin" );
+    playfxontag( level.myfx[ 2 ], spawn2, "tag_origin" );
+    wait 0.05;
+    playfxontag( level.myFx[ 34 ], spawn1, "tag_origin" );
+    playfxontag( level.myFx[ 34 ], spawn2, "tag_origin" );
+    wait 0.1;
+    spawn1 thread go_cables( loc );
+    wait 3;
+    spawn2 thread go_cables( loc );
+}
+
+go_cables( locations )
+{
+    while( isdefined( self ) )
+    {
+        for( i = 0; i < locations.size; i++ )
+        {
+            self moveto( locations[ i ], randomint( 2, 4 ), 0, 0 );
+            self waittill( "movedone" );
+        }
+        wait 0.1;
+    }
 }
 

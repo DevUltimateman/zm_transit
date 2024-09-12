@@ -56,11 +56,11 @@ init()
     level thread level_power_lines();
     level thread all_floating_objects_around_the_map();
     level thread all_floating_rocks_around_the_map();
-    while( true )
-    {
-        level waittill( "connected", me );
-        //me thread player_spawns();
-    }
+    //while( true )
+    //{
+    //    level waittill( "connected", me );
+    //    //me thread player_spawns();
+    //}
 }
 
 
@@ -121,7 +121,7 @@ all_floating_rocks_around_the_map()
 {
     flag_wait( "initial_blackscreen_passed" );
     locations = [];
-    
+    wait 0.05;
     locations[ 0 ] = ( -5229.73, -9566.76, 1159.11 ); //rock
     locations[ 1 ] = ( -3679.7, -7383.1, 1078.7 ); //rock
     locations[ 2 ] = ( -9552.4, -4960.34, 1012.22 ); //rock
@@ -166,6 +166,7 @@ all_floating_rocks_around_the_map()
     locations[ 41 ] = ( -10858.1, -461.181, 5683.96 );
 
     level.bumps = [];
+    wait 0.1;
     for( s = 0; s < locations.size; s++ )
     {
         level.bumps[ s ] = spawn( "script_model", locations[ s ] + ( 0, 0, 350 ) );
@@ -177,7 +178,7 @@ all_floating_rocks_around_the_map()
         level.bumps[ s ] thread playlighting_playembers();
         level.bumps[ s ] thread hover_rocks();
         level.bumps[ s ] thread spin_rocks();
-        //level.bumps[ s ] thread roll_rocks();
+        wait 0.1;
     }
 }
 
@@ -190,7 +191,7 @@ playlighting_playembers()
     {
         wait 0.05;
         playfxontag( level._effects[72], self, "tag_origin" );
-        wait randomIntRange( 5, 25 );
+        wait randomIntRange( 10, 35 );
     }
     
 }
@@ -213,13 +214,14 @@ hover_rocks()
         if( cols )
         {
             self.origin = self.origin + ( 0, 0, f );
+            wait 0.1;
             self movez( -1050, w, 6, 4 );
             cols = false;
-            wait w;
+            wait w + 0.05;
         }
-        self movez( 1050, w, 6, 4 );
-        wait w;
-        self movez( -1050, w, 6, 4 );
+        self movez( 1050, w, 4, 4 );
+        wait w + 0.05;
+        self movez( -1050, w, 4, 4 );
         wait w;
     }
 }
@@ -228,14 +230,8 @@ spin_rocks()
 {
     level endon( "end_game" );
     defined_rand = randomintrange( 0, 10 );
-    if( defined_rand > 5 )
-    {
-        dir = ( -360 );
-    }
-    else if ( defined_rand <= 5 )
-    {
-        dir = 360;
-    }
+    if( defined_rand > 5 ) { dir = ( -360 ); }
+    else if ( defined_rand <= 5 ) { dir = 360; }
     wait randomFloat( 6 );
     while( isdefined( self ) )
     {
@@ -248,14 +244,8 @@ roll_rocks()
 {
     level endon( "end_game" );
     defined_rand = randomintrange( 0, 10 );
-    if( defined_rand > 5 )
-    {
-        dir = ( -360 );
-    }
-    else if ( defined_rand <= 5 )
-    {
-        dir = 360;
-    }
+    if( defined_rand > 5 ) { dir = ( -360 ); }
+    else if ( defined_rand <= 5 ) { dir = 360; }
     wait randomFloat( 6 );
     while( isdefined( self ) )
     {
@@ -269,7 +259,7 @@ all_floating_objects_around_the_map()
     flag_wait( "initial_blackscreen_passed" );
     locations = [];
     //diner
-
+    wait 0.1;
     locations[ 0 ] = ( -4026.32, -9363.15, 1222.83 ); //car
     locations[ 1 ] = ( -3092.88, -7890.37, 244.974 ); //car
     locations[ 2 ] = ( -6256.67, -4693.42, 1028.65 ); //car
@@ -354,7 +344,7 @@ all_floating_objects_around_the_map()
         wait 0.1;
     }
 
-    for( a = 0; a < 12; a++ )
+    for( a = 0; a < 10; a++ )
     {
         buster = spawn( "script_model", locations[ a ] );
         buster setmodel( "p6_zm_rocks_small_cluster_01" );
@@ -369,21 +359,17 @@ spin_me_fast()
 {
     level endon( "end_game" );
     defined_rand = randomintrange( 0, 10 );
-    if( defined_rand > 5 )
-    {
-        dir = ( -360 );
-    }
-    else if ( defined_rand <= 5 )
-    {
-        dir = 360;
-    }
+    if( defined_rand > 5 ){ dir = ( -360 ); }
+    else if ( defined_rand <= 5 ){ dir = 360; }
     wait randomFloat( 6 );
     while( isdefined( self ) )
     {
-        self rotateYaw( dir, 1.5, 0, 0 );
-        wait 1.5;
+        self rotateYaw( dir, 2.5, 0, 0 );
+        wait 2.5;
     }
 }
+
+
 find_and_moveto()
 {
     level endon( "end_game" );
@@ -391,10 +377,10 @@ find_and_moveto()
     while( isdefined( self ) )
     {
         rnd = randomint( level.bumps.size );
-        rnd_time = randomIntrange( 9, 15 );
-        self moveto( level.bumps[ rnd ].origin, rnd_time, rnd_time / 4, rnd_time / 4  );
+        rnd_time = randomIntrange( 14, 24 );
+        self moveto( level.bumps[ rnd ].origin, rnd_time, 3, 3  );
         //self rotateto( level.bumps[ rnd ], rnd_time );
-        wait rnd_time;
+        wait rnd_time + 0.05;
         if( self.origin != level.bumps[ rnd ].origin )
         {
             self moveto( level.bumps[ rnd ].origin, 1, 0.1, 0.1 );
@@ -410,6 +396,7 @@ find_and_moveto()
             wait 0.4;
            
         }
-         playfx( level._effects[77], self.origin );
+        playfx( level._effects[77], self.origin );
+        wait 0.08;
     }
 }

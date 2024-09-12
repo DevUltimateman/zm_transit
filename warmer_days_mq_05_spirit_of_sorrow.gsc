@@ -39,6 +39,7 @@
 
 init()
 {
+    //level.dev_time = true;
      //can we do a new hover?
     level.spirit_hovers = false;
     //can we move him again?
