@@ -549,6 +549,7 @@ schruder_talks_everything_part2()
     meeting_vox10("");
     wait 8;
     meeting_vox11("");
+    level.not_doable_yet = false;
     wait 8;
     if( level.dev_time ){ iprintln( "STEP 2 TALKS COMPLETED" ); }
 }

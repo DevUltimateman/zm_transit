@@ -53,6 +53,8 @@ init()
     //replacefunc( ::sq_easy_cleanup, ::sidequest_prevent_cleaning );
     level.buildable_built_custom_func = undefined;
     level.sq_clip = undefined;
+    //this turns false from meet_mr_s.gsc when meeting_vox11 has started playing. is to prevent players from completing next step even if navcard gets build before schruder asking for it
+    level.not_doable_yet = true;
     flag_wait( "initial_blackscreen_passed" );
     level thread track_transmitter_progress();
 }
@@ -84,6 +86,11 @@ track_transmitter_progress()
     
     //need to have sq_common built first
     wait_for_buildable( "sq_common" );
+
+    if( level.not_doable_yet )
+    {
+        wait 1;
+    }
     //spawn the transmitter trigger
     level thread transmitter_wait_for_navcard();
 
