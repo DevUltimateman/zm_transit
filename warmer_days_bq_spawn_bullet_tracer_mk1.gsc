@@ -145,7 +145,7 @@ weapon_mark_1_spawn()
 
     
     trigger SetCursorHint("HINT_NOICON");
-    trigger setHintString( "^1[ ^3[{+activate}] ^7to upgrade you bullet type! [ ^1Cost^7: ^315 000 ^7]  ^1]" );
+    trigger setHintString( "^2[ ^3[{+activate}] ^7to upgrade you bullet type! [ ^2Cost^7: ^315 000 ^7]  ^2]" );
     //level thread LowerMessage( "Custom Perks", "Hold ^6[{+activate}] ^7to upgrade your ^6bullet type^7 [Cost:^6 20000^7]" );
     //trigger setLowerMessage( trigger, "Custom Perks"  );
 
@@ -174,7 +174,7 @@ weapon_mark_1_spawn()
     wait 0.05;
     playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
     //cost1 = 20000;
-    cost1 = 10; //15000
+    cost1 = 15000; //15000
 
     player.hasused = false;
 

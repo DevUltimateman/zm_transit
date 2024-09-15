@@ -483,19 +483,17 @@ move_poisonous_clouds_main_quest()
     wait 1.5;
     foreach( player in level.players )
     {
-        player.surround_cloud = [];
-        for( i = 0; i < 4; i++ )
-        {
+        
 
-            player.surround_cloud[ i ] = spawn( "script_model", player.origin + ( 0, 0, -10 ) );
-            player.surround_cloud[ i ] setmodel( "tag_origin" );
-            player.surround_cloud[ i ].angles = player.angles;
+            player.surround_cloud = spawn( "script_model", player.origin + ( 0, 0, -10 ) );
+            player.surround_cloud setmodel( "tag_origin" );
+            player.surround_cloud.angles = player.angles;
             wait 0.05;
-            playfxontag( level._effects[ 47 ], player.surround_cloud[ i ], "tag_origin" );
+            playfxontag( level._effects[ 47 ], player.surround_cloud, "tag_origin" );
             wait 0.05;
-            playfxontag( level.myfx[ 32 ], player.surround_cloud[ i ], "tag_origin" );
+            playfxontag( level.myfx[ 32 ], player.surround_cloud, "tag_origin" );
             
-        }
+        
 
         wait 0.05;
         player thread do_damage_cloud();
@@ -582,7 +580,7 @@ monitor_arrive_farm()
     //self.surround_cloud = [];
     while( true )
     {
-        if( distance( self.origin, level.farmcheckpoint_ent[ 0 ].origin  ) < 150  || distance( self.origin, level.farmcheckpoint_ent[ 1 ].origin ) < 150  )
+        if( distance( self.origin, level.farmcheckpoint_ent[ 0 ].origin  ) < 200  || distance( self.origin, level.farmcheckpoint_ent[ 1 ].origin ) < 200  )
         {
             if( level.dev_time )
             {
@@ -593,10 +591,7 @@ monitor_arrive_farm()
             
             self notify( "stop_following_clouds" );
             self notify( "stop_damage_clouds" );
-            self.surround_cloud[ 0 ].origin = self.origin + ( 0, 0, -800 );
-            self.surround_cloud[ 1 ].origin = self.origin + ( 0, 0, -800 );
-            self.surround_cloud[ 2 ].origin = self.origin + ( 0, 0, -800 );
-            self.surround_cloud[ 3 ].origin = self.origin + ( 0, 0, -800 );
+            self.surround_cloud.origin = self.origin + ( 0, 0, -800 );
             wait 1;
             break;
         }
@@ -972,6 +967,19 @@ level_guide_players_to_depo_blockers()
         temp[ i ].angles = temp[ i ].angles;
         wait 0.05;
         playfxontag( level._effects[ 47 ], temp[ i ], "tag_origin" );
+        if( i < 5 )
+        {
+            romps = spawn( "script_model", temp[ i ].origin );
+            romps setmodel(  "collision_geo_64x64x64_standard" );
+            romps.angles = temp[ i ].angles;
+        }
+
+        if( i > 10 && i < 18 )
+        {
+            romps = spawn( "script_model", temp[ i ].origin );
+            romps setmodel(  "collision_geo_64x64x64_standard" );
+            romps.angles = temp[ i ].angles;
+        }
         wait 0.1;
         playfxontag( level._effects[ 42], temp[ i ], "tag_origin" );
         wait 0.05;
@@ -1150,14 +1158,11 @@ triangle_cloud_follow()
 
     
     wait 2;
-    offset_ = 270;  
+    offset_ = 5;  
     offsetn_ = -270;
     while( true )
     {
-        self.surround_cloud[ 0 ].origin = self.origin + ( offset_, 0, -80 );
-        self.surround_cloud[ 1 ].origin = self.origin + ( offsetn_, 0, -80 );
-        self.surround_cloud[ 2 ].origin = self.origin + ( 0, offset_, -80 );
-        self.surround_cloud[ 3 ].origin = self.origin + ( 0, offsetn_, -80 );
+        self.surround_cloud.origin = self.origin + ( offset_, 0, -80 );
         wait 0.05;
     }
 }

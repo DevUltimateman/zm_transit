@@ -46,6 +46,7 @@ init()
     level.spirit_moves = false;
     //mr_schruder points of interests
     level.spirit_locations = [];
+    level.spirit_step_active = false;
     //tower to mr_schruder ground poi [0]
     level.fxtower = [];
 
@@ -76,7 +77,8 @@ waitflag()
     flag_wait( "initial_blackscreen_passed" );
     
     //step 1
-    level waittill( "can_do_spirit_now" );
+    level waittill( "move_into_spirit_of_sorrow" );
+    level.spirit_step_active = true;
     level thread monitor_players(); //disabled for now. dont want to go underneath pylon and start follow spirit step while testing other stuff.
     level waittill( "players_obey" ); //all players gathered together underneath the pylon
     level thread playloop_nuked();
@@ -96,6 +98,7 @@ waitflag()
     level thread nacht_shooter(); //shoot array of spirits from nacht roof
     
     level waittill( "lockdown_disabled" ); //debug to not let this go past
+    level.spirit_step_active = false;
     foreach( play in level.players )
     {
         play setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.62, 0.36 ));
@@ -127,7 +130,7 @@ playloop_nuked()
             p playsound( "mus_load_zm_nuked_patch" );
             
         }
-        wait 15;
+        wait 20;
     }
 }
 spirit_thunder_locations()
@@ -174,38 +177,38 @@ return_spirit_textline( switcher )
     switch( index )
     {
         case 1:
-            u_ = "Well hello! ";
-            d_ = "Fancy seeing you.. Aha, I'm just joking guys, I'm just joking!"; 
+            u_ = "Hi there! ";
+            d_ = "Fancy seeing you.. Aha, Where did that old fart disappear?!"; 
             level thread spirit_says( u_, d_, 8, 1 );  
             break;
 
         case 4:
-            u_ = "Ever tried catching a spirit?";
-            d_ = "Blah, bet not ha!";
+            u_ = "I couldn't resist the urge to come take a look at Mr. Schruder";
+            d_ = "Blah, I'm just mumbling!";
             level thread spirit_says( u_, d_, 3, 0.2 );
             break;
 
         case 5:
-            u_ = "Missed!?";
-            d_ = "Need glasses?";
+            u_ = "I'm here to make sure that he does not return.";
+            d_ = "You'll be helping me next instead.";
             level thread spirit_says( u_, d_, 5, 1 );
             break;
 
         case 9:
             u_ = "A bit slow, aren't we?";
-            d_ = "Keep it up tho, I admire the hussle, ha!";
+            d_ = "Get following, we got things to do!";
             level thread spirit_says( u_, d_, 8, 1 );
             break;
 
         case 14:
             u_ = "You guys are funny.";
-            d_ = "Don't you have other things to do too?";
+            d_ = "zzzZZzz";
             level thread spirit_says( u_, d_, 5, 1 );
             break;
         
         case 18:
-            u_ = "Ah I'm just messing around with you guys.";
-            d_ = "I should be able to help yall out a bit!";
+            u_ = "Ah I'm just playing around";
+            d_ = "Or am I you fools!";
             level thread spirit_says( u_, d_, 7, 1 );
             break;
 
@@ -237,7 +240,7 @@ follow_spirit()
     level.o_spirit thread hover_orb();
     while( player_is_away() )
     {
-        wait 1;
+        wait 0.2;
     }
     //stop hovering
     level.o_spirit notify( "s_hover" );

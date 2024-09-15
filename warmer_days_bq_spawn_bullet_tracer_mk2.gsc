@@ -143,7 +143,7 @@ weaponTracerUpgrade()
     gunOrigin = ( 8024, -4745.4, 100 );
     trigger = spawn( "trigger_radius", gunOrigin, 26, 26, 40 );
     trigger SetCursorHint("HINT_NOICON");
-    trigger setHintString( "^1[ ^3[{+activate}] ^7to upgrade you bullet type! [ ^5Cost^7: ^320 000 ^7]  ^1]"  );
+    trigger setHintString( "^2[ ^3[{+activate}] ^7to upgrade you bullet type! [ ^2Cost^7: ^330 000 ^7]  ^2]"  );
     //level thread LowerMessage( "Custom Perks", "Hold ^6[{+activate}] ^7to upgrade your ^6bullet type^7 [Cost:^6 20000^7]" );
     //trigger setLowerMessage( trigger, "Custom Perks"  );
 
@@ -171,7 +171,7 @@ weaponTracerUpgrade()
     spas setmodel( "tag_origin" );
     wait 0.05;
     playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
-    cost1 = 10;
+    cost1 = 30000;
 
     player.hasused = false;
 
@@ -184,7 +184,7 @@ weaponTracerUpgrade()
             wait .1;
             if ( player usebuttonpressed() )
             {
-                player.score -= 25000;
+                player.score -= 30000;
                 player playsound( "zmb_cha_ching" );
                 player disableWeapons();
                 spas moveto( portal.origin, 0.1, 0, 0 );

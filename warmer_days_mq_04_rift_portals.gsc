@@ -400,6 +400,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     level endon( "end_game" );
     real_player playSound( "zmb_farm_portal_warp_2d" ); 
     rider thread loop_hovering_sound();
+    real_player setclientdvar( "r_poisonfx_debug_enable", true );
     //scary qiuiet zm nuked ending song
     //"mus_zombie_game_over" good song for upgrade notify or something plays tranzit end song
     //mus_zmb_secret_song works, carry on kevin sher
@@ -408,11 +409,10 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     wait 0.05;
     s = 0;
     real_player.ignoreme = true;
-    wait 1;
-
+    real_player enableInvulnerability();
     load_gump_from = sudo[ sudo.size ];
-    real_player.origin = load_gump_from;
-    real_player setorigin( load_gump_from );
+    real_player.origin = sudo[ sudo.size ];
+    real_player setorigin( sudo[ sudo.size ] );
 
     rider = spawn( "script_model", sudo[ 0 ] );
     rider setmodel( "tag_origin" );
@@ -429,7 +429,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     real_player CameraActivate( true );
 
     real_player setclientdvar( "r_fog", false );
-    real_player setclientdvar( "r_poisonfx_debug_enable", true );
+    
     real_player thread do_rider_visuals();
     wait 0.05;
     
@@ -489,9 +489,11 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     rider notify( "stop_lp" );
     wait 0.1;
     rider delete();
-    real_player disableInvulnerability();
+    
     real_player.ignoreme = false;
     camera_lookat_model delete();
+    wait 2.5;
+    real_player disableInvulnerability();
 }
 
 locate_to_goal_on_own( sudo )
@@ -1030,6 +1032,11 @@ call_summoning_on_player_logic( ride_loc, ride_ang, which_lamp )
     while( isdefined( self ) )
     {
         self waittill( "trigger", player_to_summon );
+        if( level.spirit_step_active )
+        {
+            wait 1;
+            continue;
+        }
         wait 0.1;
         earthquake( 0.25, 10, self.origin, 1050 );
         level thread new_do_summoning_animation( player_to_summon, ride_loc, ride_ang, which_lamp );

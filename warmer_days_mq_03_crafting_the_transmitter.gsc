@@ -103,6 +103,12 @@ transmitter_wait_for_navcard()
     navtrig setcursorhint( "HINT_NOICON" );
     navtrig sethintstring( "^2[ ^3[{+activate}] ^7to apply your ^3navcard^7 to the transmitter ^2]" );
     navtrig triggerignoreteam();
+    wait 0.1;
+    mod = spawn( "script_model", navtrig.origin );
+    mod setmodel( "tag_origin" );
+    mod.angles = mod.angles;
+    wait 1;
+    mod playloopsound( "zmb_screecher_portal_loop", 2 );
 
     while ( true )
     {
@@ -113,7 +119,8 @@ transmitter_wait_for_navcard()
             navtrig sethintstring( "^2[ ^7Success! ^3Navcard^7 applied to the transmitter ^2]" );
             who playsound( "zmb_sq_navcard_success" );
             navtrig playsound( "zmb_sq_navcard_success" );
-            navtrig playLoopSound( "zmb_screecher_portal_loop", 2 );
+
+            navtrig playLoopSound( "zmb_spawn_powerup_loop" );
             level thread play_nav1_success( navtrig.origin );
             //update_sidequest_stats( "navcard_applied_zm_transit" );
             wait 3.2;
@@ -273,23 +280,23 @@ _someone_unlocked_something( text, text2, duration, fadetimer )
 spawn_looping_wire_fx()
 {
     level endon( "end_game" );
-    loc = [];
+    level.cable_loc = [];
     wait 0.1;
-    loc[ 0] = ( 7403.49, -355.537, -250.859 );
-    loc[1 ]= ( 7403.49, -355.537, -200.859 );
-    loc[2] = ( 7369.03, -376.481, -101.493 );
-    loc[3] = ( 7362.51, -398.398, -19.2706 );
-    loc[4] = ( 7349.03, -427.933, 59.9438 );
-    loc[5] = ( 7334.27, -450.357, 173.891 );
-    loc[6 ]= ( 7325.85, -459.384, 285.322 );
-    loc[7] = ( 7321.75, -463.883, 474.774 );
-    loc[8] = ( 7322.12, -459.86, 666.975 );
+    level.cable_loc[ 0] = ( 7403.49, -355.537, -250.859 );
+    level.cable_loc[1 ]= ( 7403.49, -355.537, -200.859 );
+    level.cable_loc[2] = ( 7369.03, -376.481, -101.493 );
+    level.cable_loc[3] = ( 7362.51, -398.398, -19.2706 );
+    level.cable_loc[4] = ( 7349.03, -427.933, 59.9438 );
+    level.cable_loc[5] = ( 7334.27, -450.357, 173.891 );
+    level.cable_loc[6 ]= ( 7325.85, -459.384, 285.322 );
+    level.cable_loc[7] = ( 7321.75, -463.883, 474.774 );
+    level.cable_loc[8] = ( 7322.12, -459.86, 666.975 );
 
-    spawn1 = spawn( "script_model", loc[0] );
+    spawn1 = spawn( "script_model", level.cable_loc[ 0 ] );
     spawn1 setmodel( "tag_origin" );
     spawn1.angles = ( 0, 0, 0 );
 
-    spawn2 = spawn( "script_model", loc[0] );
+    spawn2 = spawn( "script_model", level.cable_loc[ 0 ] );
     spawn2 setmodel( "tag_origin" );
     spawn2.angles = ( 0, 0, 0 );
 
@@ -300,18 +307,19 @@ spawn_looping_wire_fx()
     playfxontag( level.myFx[ 34 ], spawn1, "tag_origin" );
     playfxontag( level.myFx[ 34 ], spawn2, "tag_origin" );
     wait 0.1;
-    spawn1 thread go_cables( loc );
+    spawn1 thread go_cables();
     wait 3;
-    spawn2 thread go_cables( loc );
+    spawn2 thread go_cables();
 }
 
-go_cables( locations )
+go_cables()
 {
+    level endon( "end_game" );
     while( isdefined( self ) )
     {
-        for( i = 0; i < locations.size; i++ )
+        for( i = 0; i <  level.cable_loc.size; i++ )
         {
-            self moveto( locations[ i ], randomint( 2, 4 ), 0, 0 );
+            self moveto(  level.cable_loc[ i ], randomintrange( 2, 4 ), 0, 0 );
             self waittill( "movedone" );
         }
         wait 0.1;

@@ -377,7 +377,7 @@ are_boots_found()
 {
     level endon( "end_game" );
     total = level.boot_triggers.size;
-    if(  level.boots_found >= level.fireboot_locations.size -1 )
+    if(  level.boots_found >= level.fireboot_locations.size  )
     {
         
         if( level.dev_time ) { iprintlnbold( "#### DEV CHECK ##### ^3 ALL BOOTS FOUND" ); }

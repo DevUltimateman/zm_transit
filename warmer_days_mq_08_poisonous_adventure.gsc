@@ -50,7 +50,7 @@
 
 main()
 {
-    replacefunc( ::disable_triggers, ::disable_triggers_custom );
+    //replacefunc( ::disable_triggers, ::disable_triggers_custom );
 }
 
 disable_triggers_custom()
@@ -150,6 +150,7 @@ rise_suitcase()
 
     wait 0.05;
     playfxontag( level.myfx[ 2 ], suitcase, "tag_origin" );
+    suitcase playLoopSound( "zmb_spawn_powerup_loop" );
     while( true )
     {
         trigger waittill( "trigger", someone );
@@ -256,10 +257,16 @@ do_first_dialog()
     do_dialog_here( "Fantastic, you've crafted the potion!", "", 6, 1 );
     wait 7;
     do_dialog_here( "You should be immune to Element ^5115 Clouds^7 now.", "Keep an eye on the immune meter, it tells you if you need a refill of drinks", 8, 1 );
-    wait 10;
+    wait 11;
+    //do_dialog_here( "Brilliant, have you already colleceted your ^3Fire Grenades^7?", "You'll be needing them next.", 7, 1 );
+    
+    
+}
+
+wait_kill()
+{
+    wait 12;
     level notify( "stop_mus_load_bur" );
-    do_dialog_here( "Brilliant!", "What should we do next?", 7, 1 );
-    wait 10;
 }
 spin_me_around_mq_first_time_pick_up() 
 {

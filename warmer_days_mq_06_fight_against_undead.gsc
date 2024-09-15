@@ -165,6 +165,7 @@ spawn_lockdown_enabler( origin )
     //cant stop looped fx thread, make a custom loop thread
     //playloopedfx( testfx, 0.35, lamper.origin );
     lamper thread blink_fx( testfx );
+    lamper playLoopSound( "zmb_spawn_powerup_loop" );
     trig thread wait_players();
     wait 0.05;
     trig thread monitor_player_use();
