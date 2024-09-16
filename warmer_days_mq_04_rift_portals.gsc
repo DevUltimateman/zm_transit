@@ -178,7 +178,7 @@ init()
     level thread make_light_hinters(); //sparking light hints for each lamp post to draw players attention towards spots
     
     level thread test_turn_off_lamps();
-    level thread playerss();
+    //level thread playerss();
 
     wait 5;
     level thread setup_all_rift_use_setup();
@@ -195,7 +195,7 @@ init()
     //skytransition true
     //skyrotation 250
     //skybleed = 1 or 0.8 for day light sky
-    //level thread monitor_dev();
+    level thread monitor_dev();
 
     
 }
@@ -387,18 +387,16 @@ prepare_gump_models( set_models_from, wait_before )
 
 }
 
-playfxtowershooter( here )
-{
-    wait randomfloatrange( 0.3, 0.7 );
-    playfx( level.myfx[ 9 ], here );
-}
-
 
 loop_hovering_sound()
 {
     self endon( "stop_lp" );
     
     self playloopsound( "zmb_screecher_portal_loop", 2 );
+    wait 1;
+    self playLoopSound( "zmb_screecher_portal_loop", 2 );
+    wait 0.1;
+    self playLoopSound( "zmb_screecher_portal_loop", 2 );
     self waittill( "stop_lp" );
     wait 0.2;
     self stopLoopSound();
@@ -517,8 +515,8 @@ self_rotate_yaw()
     level endon( "stop_rotating_this" );
     while( isdefined( self ) )
     {
-        self rotateyaw( 360, 1.5, 0, 0 );
-        wait 1.5;
+        self rotateyaw( 360, 3.5, 0, 0 );
+        wait 3.5;
     }
 }
 locate_to_goal_on_own( sudo )
@@ -558,19 +556,6 @@ do_rider_visuals()
     self setclientdvar( "cg_colorhue", 0 );
     self setclientdvar( "r_exposuretweak", false );
 
-}
-playheresomedarks()
-{
-    level endon( "end_game" );
-    while( true )
-    {
-        playfx( level.myFx[ 90 ], self.origin );
-        wait randomFloatRange( 0.09, 1.2 );
-    }
-}
-all_rift_gump_prepare_locations()
-{
-    
 }
 
 
@@ -1267,7 +1252,7 @@ spawn_callable_rift_ride( where, index )
 
 spawn_on_trig_( trig_ )
 {
-    mods = spawn( "script_model", trig_.origin + ( 0, 0, 15 ) );
+    mods = spawn( "script_model", trig_.origin + ( 0, 0, 115 ) );
     mods setmodel( "tag_origin" );
     mods.angles = mods.angles;
     wait 0.05;
@@ -1973,7 +1958,7 @@ playthisstupidfxontag() //is used now
         {
             break;
         }
-        playfx( level.myFx[ 82 ], level.core_fx_loc );
+        playfx( level.myFx[ 82 ], level.core_fx_loc ); //power rising
         wait randomFloatRange( 2.9, 4.2 );
         
     }
@@ -1991,14 +1976,14 @@ malfunction_time() //is used now
 move_these_around() //is used now
 {
     level endon( "end_game" );
+    playfxontag( level.myFx[ 86 ], self, "tag_origin" );
     while( true )
     {   
-        playfx( level.myFx[ 86 ], self.origin ); 
+         
         new_loc = randomIntRange( 0, level.core_fx_move_to_spots.size );
         self moveto( level.core_fx_move_to_spots[ new_loc ], randomFloatRange( 0.15, 1.4 ), 0, 0 );
         self waittill( "movedone" );
         playfx( level.myFx[ 92 ], self.origin );
-        playFXOnTag( level.myfx[ 86 ], self, "tag_origin" );
         if( level._malfunction_complete )
         {
             self moveTo( level.core_fx_loc, randomFloatRange( 0.5, 1.2 ), 0, 0.35 );

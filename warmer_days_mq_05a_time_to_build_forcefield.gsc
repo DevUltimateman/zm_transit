@@ -763,6 +763,7 @@ do_zombie_souls( which_summoning, idx )
     inv_mover = spawn( "script_model", zm_head );
     inv_mover setmodel( "tag_origin" );
     wait .05;
+    PlaySoundAtPosition(level.jsn_snd_lst[ 42 ], inv_mover.origin );
     inv_mover playLoopSound( "zmb_spawn_powerup_loop" );
     playFXOnTag( level.myfx[ 1 ], inv_mover, "tag_origin" );
     //playfxontag( level._effect[ "fx_fire_fireplace_md" ], inv_mover, "tag_origin" );

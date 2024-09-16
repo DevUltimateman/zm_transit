@@ -1203,9 +1203,7 @@ playlighting()
     while( true )
     {
         playfx( level.myFx[ 92 ], self.origin );
-        wait randomintrange( 3, 6 );
-        playfx( level.myFx[ 94 ], self.origin );
-        wait randomintrange( 2, 5 );
+        wait randomintrange( 7, 16 );
     }
 }
 move_to_farmgoal( value ) //max time to move = 70 seconds from spawn to farm

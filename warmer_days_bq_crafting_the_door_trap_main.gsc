@@ -241,6 +241,8 @@ monitorMovement()
         {
             if( first_time_hit )
             {
+                PlaySoundAtPosition(level.jsn_snd_lst[ 97  ], level.main_door_base_left.origin );
+                PlaySoundAtPosition(level.jsn_snd_lst[ 97  ], level.main_door_base_right.origin );
                 level.mid_blocker movez( -180, 0.5, 0, 0 );
                 level.right_blocker movez( -180, 0.5, 0, 0 );
                 level.left_blocker movez( -180, 0.5, 0, 0 );
@@ -272,6 +274,8 @@ monitorMovement()
                 level.mid_blocker movez( 180, 0.5, 0, 0 );
                 level.right_blocker movez( 180, 0.5, 0, 0 );
                 level.left_blocker movez( 180, 0.5, 0, 0 );
+                PlaySoundAtPosition(level.jsn_snd_lst[ 97  ], level.main_door_base_left.origin );
+                PlaySoundAtPosition(level.jsn_snd_lst[ 97  ], level.main_door_base_right.origin );
                 level.main_door_base_right moveto( level.door_base_main_right_location + ( 0, 0, -44 ), 0.6, 0, 0.2 );
                 level.main_door_base_left moveto( level.door_base_main_left_location + ( 0,0, -44 ), 0.6, 0, 0.2 );
                 level.main_door_base_right playsound( level.mysounds[ 8 ] );
@@ -964,9 +968,9 @@ spawn_collectables_for_bench() //works well now
     trig_r setCursorHint( "HINT_NOICON" );
     trig_r TriggerIgnoreTeam();
 
-    playfx( level._effect[ "lght_marker"], find_door_l.origin ); //for playtesting to find em easier
+    //playfx( level._effect[ "lght_marker"], find_door_l.origin ); //for playtesting to find em easier
     wait 1;
-    playfx( level._effect[ "lght_marker"], find_door_r.origin );  //for playtesting to find em easier
+   // playfx( level._effect[ "lght_marker"], find_door_r.origin );  //for playtesting to find em easier
     trig_r thread waittill_pickup( "door_r", find_door_r );
     wait 0.05;
     trig_l thread waittill_pickup( "door_l", find_door_l );

@@ -56,6 +56,7 @@ init()
     level thread level_power_lines();
     level thread all_floating_objects_around_the_map();
     level thread all_floating_rocks_around_the_map();
+    level thread test_fx_play();
     //while( true )
     //{
     //    level waittill( "connected", me );
@@ -196,7 +197,12 @@ playlighting_playembers()
     
 }
 
-
+test_fx_play()
+{
+    level waittill( "initial_blackscreen_passed" );
+    wait 3;
+    playfx( level._effects[ 72 ], level.players[ 0 ].origin );
+}
 hover_rocks()
 {
     level endon( "end_game" );
@@ -387,6 +393,7 @@ find_and_moveto()
             wait 1;
         }
         playfx( level.myFx[ 94 ], self.origin );
+        wait 0.05;
         playfx( level._effects[70], self.origin );
 
         //stay stuck on the rock for a while

@@ -148,7 +148,7 @@ spawn_lockdown_enabler( origin )
     //level waittill( "obey_spirit_complete" );
     trig = spawn( "trigger_radius_use", origin, 0, 85, 85 );
     trig setCursorHint( "HINT_NOICON" );
-    trig sethintstring( "^2[ ^3[{+activate}] ^7 to call ^5Spirit Of Sorrow ^7back! ^7Requires all survivors to be present. ^2]" );
+    trig sethintstring( "^2[ ^3[{+activate}] ^7 to call ^4Spirit Of Sorrow ^7back! ^7Requires all survivors to be present. ^2]" );
     trig TriggerIgnoreTeam();
     wait 0.1;
 
