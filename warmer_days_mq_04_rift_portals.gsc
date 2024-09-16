@@ -97,7 +97,7 @@ init()
 {
     level.c_points = [];
     level.c_angles = [];
-
+    level.rift_step_active = false;
     level.turbine_to_rift_treshold = 200; //distance in units
     level._malfunction_complete = false; //just a check at power off stage
     level.repaired_rifts = 0; //actually amount of fixed lamps for rift portal
@@ -216,27 +216,32 @@ monitor_dev()
 playerss()
 {
     level endon( "end_game" );
-    //flag_wait( "initial_blackscreen_passed" );
+    //flag_wait( "initial_blackscreen_passed" ); //enable back after debug
     
     wait 1;
-    level waittill( "do_first_rift_walk" );
-    level thread playloopsound_buried();
-    level thread level_tell_about_rifts();
-    level waittill( "do_it" );
+    /*
+    level waittill( "do_first_rift_walk" ); //enable back after debug
+    level thread playloopsound_buried(); //enable back after debug
+    level thread level_tell_about_rifts(); //enable back after debug
+    level waittill( "do_it" ); //enable back after debug
+    
     wait 2;
+    */
     for( i = 0; i < level.players.size; i++ )
     {
         level.players[ i ] thread do_rift_ride( level.rift_camera_diner, level.rift_camera_diner_angles, level.players[ i ] );
         wait 3;
     }
-    level notify( "can_do_spirit_now" );
+    //level notify( "can_do_spirit_now" ); //enable back after debug
 }
 
 level_tell_about_rifts()
 {
     level endon( "end_game" );
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     _play_schruder_texts( "Did you see that???", "The rift tried grab you!", 5, 1 );
     wait 7;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     _play_schruder_texts( "I think that it will try grabbing you once more...", "Think you should get ready..!", 7, 1 );
     wait 9;
     level notify( "do_it" );
@@ -283,55 +288,59 @@ spawn_initial_rift_camera_points()
     level thread fade_to_black_on_impact();
     for( s = 0; s < level.players.size; s++ )
     {
-        wait 0.05;
-        level.players[ s ] setMoveSpeedScale( 1 );
-        level.players[ s ] freezeControls(true);
-        wait 0.05;
-        org = spawn( "script_model", level.players[ s ] geteye() );
-        org setmodel( "tag_origin" );
-        org.angles = level.players[ s ].angles;
-        wait 0.05;
-        playfxontag( level.myfx[ 1 ], org, "tag_origin" );
-        playfx( level.myfx[ 82 ], level.players[ s ].origin );
-        level.players[ s ] playsound( level.jsn_snd_lst[ 30 ] );
-        level.players[ s ] enableInvulnerability();
-        level.players[ s ] camerasetposition( org );
-        level.players[ s ] camerasetlookat();
-        level.players[ s ] cameraactivate( 1 );
-        level.players[ s ] hide();
-
-        wait 0.05;
-        
-        level.players[ s ] setclientdvar( "r_poisonfx_debug_enable", true );
-        org thread attachToLoop();// pass the camera index so we know which to loop
-        wait 6;
-        level thread fade_to_black_on_impact();
-        for( s = 0; s < level.players.size; s++ )
-        {
-            level.players[ s ] playsound( level.jsn_snd_lst[ 30 ] );
-            level.players[ s ] disableInvulnerability();
-            
-
-            level.players[ s ] CameraSetPosition( level.players[ s ].origin );
-            level.players[ s ] CameraActivate( false );
-            level.players[ s ] camerasetlookat();
-            level.players[ s ] show();
-            level.players[ i ] playsound( level.jsn_snd_lst[ 32 ] );
-            level.players[ i ] setMoveSpeedScale( 1 );
-            
-            wait 0.05;
-            level.players[ s ] freezeControls( false );
-            level.players[ i ] setMoveSpeedScale( 1 );
-        }
-        
-        level notify( "do_first_rift_walk" );
-        foreach( playa in level.players )
-        {
-            playa setMoveSpeedScale( 1 );
-        }
+       level.players[ s ] thread do_stuff_for_rift_grab();
    
     }
+    wait 5.8;
+    level thread fade_to_black_on_impact();
+    wait 2;
+    level notify( "do_first_rift_walk" );
     
+}
+
+do_stuff_for_rift_grab()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    wait 0.05;
+        
+    self setclientdvar( "r_poisonfx_debug_enable", true );
+    wait 1;
+    self setMoveSpeedScale( 1 );
+    self freezeControls(true);
+    wait 0.05;
+    org = spawn( "script_model", self geteye() );
+    org setmodel( "tag_origin" );
+    org.angles = self.angles;
+    wait 0.05;
+    playfxontag( level.myfx[ 1 ], org, "tag_origin" );
+    playfx( level.myfx[ 82 ], self.origin );
+    self playsound( level.jsn_snd_lst[ 30 ] );
+    self enableInvulnerability();
+    self camerasetposition( org );
+    self camerasetlookat();
+    self cameraactivate( 1 );
+    self hide();
+    self.ignoreme = true;
+    wait 0.05;
+    org thread attachToLoop();// pass the camera index so we know which to loop
+    wait 6;
+    self playsound( level.jsn_snd_lst[ 30 ] );
+    
+    self CameraSetPosition( self.origin );
+    self CameraActivate( false );
+    self camerasetlookat();
+    self show();
+    self playsound( level.jsn_snd_lst[ 32 ] );
+    self setMoveSpeedScale( 1 );
+    wait 0.05;
+    self freezeControls( false );
+    self setMoveSpeedScale( 1 );
+    self setMoveSpeedScale( 1 );
+    wait 2;
+    self disableInvulnerability(); 
+    self.ignoreme = false;
+        
 }
 
 level_bring_back_normal_visuals_and_stuff()
@@ -350,7 +359,7 @@ level_bring_back_normal_visuals_and_stuff()
         level.players[ i ] setclientdvar( "r_sky_intensity_factor0", 1.7  );
         level.players[ i ] setclientdvar( "r_bloomtweaks", 1  );
         level.players[ i ] setclientdvar( "cg_usecolorcontrol", 1 );
-        level.players[ i ] setclientdvar( "cg_colorscale", "1.2 1 1"  );
+        level.players[ i ] setclientdvar( "cg_colorscale", "1 1 1"  );
         level.players[ i ] setclientdvar( "sm_sunsamplesizenear", 1.4  );
         level.players[ i ] setclientdvar( "wind_global_vector", ( 200, 250, 50 )  );
         level.players[ i ] setclientdvar( "r_fog", 0  );
@@ -388,18 +397,18 @@ playfxtowershooter( here )
 loop_hovering_sound()
 {
     self endon( "stop_lp" );
-    while( true )
-    {
-        self playloopsound( "zmb_screecher_portal_loop", 2 );
-        self waittill( "stop_lp" );
-        wait 0.2;
-    }
+    
+    self playloopsound( "zmb_screecher_portal_loop", 2 );
+    self waittill( "stop_lp" );
+    wait 0.2;
+    self stopLoopSound();
+    
 }
 do_rift_ride( sudo, sudo_angles, real_player  )
 {
     level endon( "end_game" );
     real_player playSound( "zmb_farm_portal_warp_2d" ); 
-    rider thread loop_hovering_sound();
+    real_player thread loop_hovering_sound();
     real_player setclientdvar( "r_poisonfx_debug_enable", true );
     //scary qiuiet zm nuked ending song
     //"mus_zombie_game_over" good song for upgrade notify or something plays tranzit end song
@@ -410,6 +419,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     s = 0;
     real_player.ignoreme = true;
     real_player enableInvulnerability();
+    real_player.ignoreme = true;
     load_gump_from = sudo[ sudo.size ];
     real_player.origin = sudo[ sudo.size ];
     real_player setorigin( sudo[ sudo.size ] );
@@ -447,6 +457,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     wait 0.05;
     real_player CameraSetLookAt();
     real_player hide();
+    rider thread self_rotate_yaw();
     while( s < sudo.size )
     {
         speed = 340;
@@ -454,8 +465,8 @@ do_rift_ride( sudo, sudo_angles, real_player  )
         target_angles = sudo_angles[ s ];
         if( s == 2 ) //update player origin already so we that game can load gump models for camera
         {
-            real_player.origin = rider.origin + ( 0, 0, 20 );
-            real_player setorigin( rider.origin + ( 0, 0, 20 ) );
+            real_player.origin = target_point + ( 0, 0, 20 );
+            real_player setorigin( target_point + ( 0, 0, 20 ) );
         }
         dist = distance( rider.origin, target_point );
         time = dist / speed;
@@ -465,11 +476,15 @@ do_rift_ride( sudo, sudo_angles, real_player  )
         //time = 1;
         //safe offset +90 Z
         rider moveto( target_point + ( 0, 0, 100 ), time, 0, 0 );
-        rider rotateto( target_angles, time, q_time, q_time );
+        
+        
         wait time;
+        
         s++;
     }
-    wait 0.05;
+    rider notify( "stop_rotating_this" );
+    rider rotateto( target_angles, 1, 0.3, 0.2 );
+    wait 1;
     real_player CameraActivate( false );
     //real_player CameraSetPosition( real_player, real_player.angles );
     real_player.origin = rider.origin + ( 0, 0, 40 );
@@ -496,6 +511,16 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     real_player disableInvulnerability();
 }
 
+self_rotate_yaw()
+{
+    level endon( "end_game" );
+    level endon( "stop_rotating_this" );
+    while( isdefined( self ) )
+    {
+        self rotateyaw( 360, 1.5, 0, 0 );
+        wait 1.5;
+    }
+}
 locate_to_goal_on_own( sudo )
 {   
     x = 0;
@@ -681,6 +706,9 @@ new_do_summoning_animation( real_player, cam_loc, cam_ang, which_lamp )
 
     const_wait = 2;
     //real_player thread moveup();
+    playfx( level._effect[ "avogadro_ascend_aerial" ], real_player.origin );
+    wait 0.5;
+    //playfx( level._effect[ "avogadro_ascend_aerial" ], origin_to_reach );
     real_player enableInvulnerability( );
     real_player freezeControls( true );
     cam = spawn( "script_model", int_cam );
@@ -744,6 +772,7 @@ all_sky_camera_locations()
 
     level.rift_camera_farm[ 0 ] = ( 7513.67, -8749.33, -16.2606 );
     level.rift_camera_farm_angles[ 0 ] = ( 0, 76, 0 );
+    /*
     level.rift_camera_farm[ 1 ] = ( 7381.19, -7371.64, 327.608 );
     level.rift_camera_farm_angles[ 1 ] = ( -10, 87, 0 );
     level.rift_camera_farm[ 2 ] = ( 7530.42, -6199.58, 189.101 );
@@ -752,8 +781,9 @@ all_sky_camera_locations()
     level.rift_camera_farm_angles[ 3 ] = ( 0, -90, 0 );
     level.rift_camera_farm[ 4 ] = ( 8393.52, -6084.79, 248.827 );
     level.rift_camera_farm_angles[ 4 ] = ( 0, -159, 0 );
-    level.rift_camera_farm[ 5 ] = ( 8728.97, -6408.69, 112.125 );
-    level.rift_camera_farm_angles[ 5 ] = ( 0, 164, 0 );
+    */
+    level.rift_camera_farm[ 1 ] = ( 8728.97, -6408.69, 112.125 );
+    level.rift_camera_farm_angles[ 1 ] = ( 0, 164, 0 );
 
     //all zombie camera fly by locations for rift portals
     //level.rift_camera_bepo
@@ -768,6 +798,7 @@ all_sky_camera_locations()
     //720, 760, 710
     level.rift_camera_corn[ 0 ] = ( 7411.7, -565.146, 967.805 );
     level.rift_camera_corn_angles[ 0 ] = ( 90, -48, 0 );
+    /*
     level.rift_camera_corn[ 1 ] = ( 7847.56, -1203.34, 172.407 );
     level.rift_camera_corn_angles[ 1 ] = ( 45, -26, 0 );
     level.rift_camera_corn[ 2 ] = ( 9032.97, -1399.6, -163.185 );
@@ -780,11 +811,13 @@ all_sky_camera_locations()
     level.rift_camera_corn_angles[ 5 ] = ( 30, 36, 0 );
     level.rift_camera_corn[ 6 ] = ( 13913.4, -295.204, -163.974 );
     level.rift_camera_corn_angles[ 6 ] = ( 0, 9, 0 );
-    level.rift_camera_corn[ 7 ] = ( 14023.7, -277.411, -179.399 );
-    level.rift_camera_corn_angles[ 7 ] = ( 0, -165, 0 );
+    */
+    level.rift_camera_corn[ 1 ] = ( 14023.7, -277.411, -179.399 );
+    level.rift_camera_corn_angles[ 1 ] = ( 0, -165, 0 );
 
     level.rift_camera_diner[ 0 ] = ( -3016.38, -6001.13, 110.185 );
     level.rift_camera_diner_angles[ 0 ] = ( 0, -140, 0 );
+    /*
     level.rift_camera_diner[ 1 ] = ( -3883.11, -6716.41, 26.8011 );
     level.rift_camera_diner_angles[ 1 ] = ( 0, -147, 0 );
     level.rift_camera_diner[ 2 ] = ( -4709.33, -7071.71, 139.79 );
@@ -795,11 +828,13 @@ all_sky_camera_locations()
     level.rift_camera_diner_angles[ 4 ] = ( 0, 109, 0 );
     level.rift_camera_diner[ 5 ] = ( -6126.05, -5604.38, 89.6978 );
     level.rift_camera_diner_angles[ 5 ] = ( 0, 115, 0 );
-    level.rift_camera_diner[ 6 ] = ( -6229.22, -5538.28, -28.0143 );
-    level.rift_camera_diner_angles[ 6 ] = ( 0, -63, 0 );
+    */
+    level.rift_camera_diner[1 ] = ( -6229.22, -5538.28, -28.0143 );
+    level.rift_camera_diner_angles[ 1] = ( 0, -63, 0 );
 
     level.rift_camera_bepo[ 0 ] = ( -5006.1, 3178.58, 435.471);
     level.rift_camera_bepo_angles[ 0 ] = ( 0, 129, 0 );
+    /*
     level.rift_camera_bepo[ 1 ] = ( -5373.97, 3711.45, 329.286 );
     level.rift_camera_bepo_angles[ 1 ] = ( 0, 132, 0 );
     level.rift_camera_bepo[ 2 ] = ( -6283.11, 4535.83, 3.03169 );
@@ -808,30 +843,35 @@ all_sky_camera_locations()
     level.rift_camera_bepo_angles[ 3 ] = ( 0, 121, 0 );
     level.rift_camera_bepo[ 4 ] = ( -6986.44, 5285.48, 26.1513 );
     level.rift_camera_bepo_angles[ 4 ] = ( 0, 128, 0 );
-    level.rift_camera_bepo[ 5 ] = ( -7122.85, 5451.4, -49.751 );
-    level.rift_camera_bepo_angles[ 5 ] = ( 0, -45, 0 );
+    */
+    level.rift_camera_bepo[ 1] = ( -7122.85, 5451.4, -49.751 );
+    level.rift_camera_bepo_angles[1 ] = ( 0, -45, 0 );
 
     level.rift_camera_town[ 0 ] = ( 1793.47, 1000.2, 165.142 );
     level.rift_camera_town_angles[ 0 ] = ( 0, -118, 0 );
+    /*
     level.rift_camera_town[ 1 ] = ( 1450.35, -13.8936, 11.4322);
     level.rift_camera_town_angles[ 1 ] = ( 0, -102, 0 );
     level.rift_camera_town[ 2 ] = ( 1395.62, -1328.94, 211.589 );
     level.rift_camera_town_angles[ 2 ] = ( 20, -74, 0);
     level.rift_camera_town[ 3 ] = ( 1704.81, -1856.14, 122.428 );
     level.rift_camera_town_angles[ 3 ] = ( 15, 113, 0 );
-    level.rift_camera_town[ 4 ] = ( 1683.26, -1739.04, 36.401 );
-    level.rift_camera_town_angles[ 4 ] = ( 0, 105, 0 );
+    */
+    level.rift_camera_town[ 1 ] = ( 1683.26, -1739.04, 36.401 );
+    level.rift_camera_town_angles[1 ] = ( 0, 105, 0 );
 
     level.rift_camera_pstation[ 0 ] = ( 11638.1, 6156.6, -216.086 );
     level.rift_camera_pstation_angles[ 0 ] = ( 0, 115, 0 );
+    /*
     level.rift_camera_pstation[ 1 ] = ( 11100.6, 6915.07, -139.991 );
     level.rift_camera_pstation_angles[ 1 ] = ( 0, 118, 0 );
     level.rift_camera_pstation[ 2 ] = ( 10966.3, 7618.43, -478.13 );
     level.rift_camera_pstation_angles[ 2 ] = ( 0, 65, 0 );
     level.rift_camera_pstation[ 3 ] = ( 11135.9, 8015.49, -479.178 );
     level.rift_camera_pstation_angles[ 3 ] = ( 0, 50, 0 );
-    level.rift_camera_pstation[ 4 ] = ( 11405.9, 8120.31, -525.913 );
-    level.rift_camera_pstation_angles[ 4 ] = ( 0, -130, 0 );
+    */
+    level.rift_camera_pstation[ 1 ] = ( 11405.9, 8120.31, -525.913 );
+    level.rift_camera_pstation_angles[1 ] = ( 0, -130, 0 );
 
     //ORDER
 
@@ -1114,7 +1154,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
+        trig_ setHintString( "^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_diner, level.rift_camera_diner_angles, "3p_cabin_cam" );
     }
@@ -1129,7 +1169,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
+        trig_ setHintString( "^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_diner, level.rift_camera_diner_angles, "3p_corn_off_cam" );
     }
@@ -1144,7 +1184,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
+        trig_ setHintString( "^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_bepo, level.rift_camera_bepo_angles, "3p_short_cam" );
     }
@@ -1159,7 +1199,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
+        trig_ setHintString( "^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_farm, level.rift_camera_farm_angles, "3p_depo_cam" );
     }
@@ -1174,7 +1214,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
+        trig_ setHintString("^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_corn, level.rift_camera_corn_angles, "3p_bridge_cam" );
     }
@@ -1189,7 +1229,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
+        trig_ setHintString("^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_town, level.rift_camera_town_angles, "3p_corn_cam" );
     }
@@ -1203,7 +1243,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
+        trig_ setHintString("^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_pstation, level.rift_camera_pstation_angles, "3p_diner_cam"  );
     }
@@ -1218,7 +1258,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^1[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^1]");
+        trig_ setHintString("^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_farm, level.rift_camera_farm_angles, "3p_town_cam" );
     }
@@ -1242,6 +1282,7 @@ all_fixable_spots_spawn_fixer_logic() //is in use
 {
     level endon( "end_game" );
     level waittill( "s_talks_navcard" );
+    level.rift_step_active = true;
     size = 0; 
     for( sizer = 0; sizer < level.fixable_spots.size; sizer++ )
     {
@@ -1430,6 +1471,8 @@ keep_track_of_repair_amount() //in use now
         wait 1;
     }
     level thread lamps_fixed_schruder_speaks();
+    //wait 5;
+    //level.rift_step_active = false;
 }
 
 playloopsound_buried()
@@ -1445,25 +1488,35 @@ playloopsound_buried()
         wait 40;
     }
 }
-
+play_nav1_success( this_position )
+{
+    level endon( "end_game" );
+    for( i = 0; i < 5; i++ )
+    {
+        wait 0.1;
+        PlaySoundAtPosition( "zmb_sq_navcard_success", this_position );
+    }
+}
 lamps_fixed_schruder_speaks()
 {
     level endon( "end_game" );
     level thread playloopsound_buried();
    // level waittill( "all_rift_lamps_repaired" );
     wait 4;
-    foreach( g in level.players ){ g playSound( level.jsn_snd_lst[ 20 ] ); }
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     _play_schruder_texts( "Ahh.. Very good!", "It seems that all the lamps are powered now!", 5, 1 );
     wait 7;
-    foreach( g in level.players ){ g playSound( level.jsn_snd_lst[ 20 ] ); }
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     _play_schruder_texts( "Check if the lamps are sending signals to the ^5Main Frame^7.", "The computer should be located somewhere at ^5Power Station^7!", 7, 1 );
     wait 9;
     level notify( "stop_mus_load_bur" );
-    foreach( g in level.players ){ g playSound( level.jsn_snd_lst[ 20 ] ); }
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     _play_schruder_texts( "Quick check at station and we should be done with portals.", "Let's get to it!", 8, 1 );
     wait 9;
     //level notify( "spawn_rift_computer" );
     level thread spawn_rift_computer();
+    wait 1;
+    level.rift_step_active = false;
 }
 
 spawn_rift_computer()
@@ -1476,7 +1529,7 @@ spawn_rift_computer()
 
     trig_ = spawn( "trigger_radius_use", org, 0, 85, 85 );
     trig_ setCursorHint( "HINT_NOICON" );
-    trig_ setHintString( "^1[ [{+activate}] ^7to restore computer's save point ^1]" );
+    trig_ setHintString( "^2[ [{+activate}] ^7to restore computer's save point ^2]" );
     trig_ TriggerIgnoreTeam();
     wait 0.05;
     playFXOnTag( level.myfx[ 43 ], level.rift_comp, "tag_origin" );
@@ -1526,8 +1579,10 @@ computer_accessed_by_player( playa, a_comp )
     a_comp_origin = a_comp.origin;
     level thread playloopsound_buried();
     wait randomfloatrange( 3.1, 5.2 );
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     _play_schruder_texts( "Excellent stuff!", "^2" + playa + " ^7was able to restore signals via ^5Main Frame^7!" , 8, 1 );
     wait 10;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     _play_schruder_texts( "Something's wrong with the computer..", "Access the control panel and restart the computer!", 6, 1 );
     //level notify( "stop_mus_load_bur" );
     wait 7;
@@ -1541,7 +1596,7 @@ wait_for_access_panel_interact( a_comp_origin )
     
     trig_panel = spawn( "trigger_radius_use", level.access_panel_org, 0, 48, 48 );
     trig_panel setCursorHint( "HINT_NOICON" );
-    trig_panel setHintString( "^1[ ^7Restore computer's save point ^1]" );
+    trig_panel setHintString( "^2[ ^7Restore computer's save point ^2]" );
 
     //trig_panel UseTriggerRequireLookAt();
     trig_panel TriggerIgnoreTeam(); 
@@ -1570,7 +1625,7 @@ wait_for_access_panel_interact( a_comp_origin )
         wait 0.1;
         if( isdefined( who )  && isAlive( who ) )
         {
-            trig_panel setHintString( "^1[ ^7Restarting the computer ^1]" );
+            trig_panel setHintString( "^3[ ^7Restarting the computer ^3]" );
             wait 1.5;
             
             for( x = 0; x < 3; x++ )
@@ -1773,10 +1828,10 @@ do_malfunction_visuals()
     {
         pl thread fadeForAWhile( 0, 1, 0.5, 0.5, "white" );
     }
-    wait 0.5;
+    wait 0.1;
     foreach( pls in level.players )
     {
-        pls setclientdvar( "r_exposurevalue", 3.3 );
+        pls setclientdvar( "r_exposurevalue", 3 );
         pls setClientDvar( "r_exposureTweak", false );
         plr setclientdvar( "cg_colorscale", "1 1 1" );
         plr setclientdvar( "cg_colorhue", 0 );

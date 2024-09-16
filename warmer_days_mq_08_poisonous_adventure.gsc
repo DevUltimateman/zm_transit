@@ -189,7 +189,7 @@ moveeverything( suit_case )
 
     trigu = spawn( "trigger_radius_use", suit_case.origin, 48, 48, 48 );
     trigu setCursorHint( "HINT_NOICON" );
-    trigu setHintString( "^1[ ^3[{+activate}] ^7to pick up Poison^1]" );
+    trigu setHintString( "^2[ ^3[{+activate}] ^7to pick up Poison^2]" );
     trigu TriggerIgnoreTeam();
     wait 0.1;
     while( true )
@@ -229,12 +229,16 @@ do_first_dialog()
 {
 
     level waittill( "someone_picked_up_poison" );
+    level.moving_to_depo_active = false;
     level thread playloopsound_buried();
     wait 2.5;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Excellent! You found the ^5mixing container^7..", "You'll need the suitcase in our next step..", 9, 1 );
     wait 10;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "The container will teleport on the ground, close to a ^4perk machine^7 once you're close to a one.", "You could test it right now. There should be a perk machine nearby.", 10, 1 );
     wait 12;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "I'll let you figure out what to do next..", "Don't dissapoint me!", 7, 1 );
     level notify( "stop_mus_load_bur" );
     wait 8;
@@ -244,8 +248,10 @@ do_first_dialog()
     wait 0.35;
     level thread playloopsound_buried();
     wait 1.8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Hahaa, wunderbaar!", "You're quite a sharp shooter.", 8, 1  );
     wait 5;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "The container is full of different mixes!", "You could try your luck next at labs...", 9, 1 );
     level notify( "stop_mus_load_bur" );
     wait 10;
@@ -254,8 +260,10 @@ do_first_dialog()
     level thread playloopsound_buried();
     //needs a 10 second wait so we dont have overlapping text
     wait 12;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Fantastic, you've crafted the potion!", "", 6, 1 );
     wait 7;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "You should be immune to Element ^5115 Clouds^7 now.", "Keep an eye on the immune meter, it tells you if you need a refill of drinks", 8, 1 );
     wait 11;
     //do_dialog_here( "Brilliant, have you already colleceted your ^3Fire Grenades^7?", "You'll be needing them next.", 7, 1 );
@@ -452,7 +460,7 @@ spawn_drinkable_step()
     
     initial_hit = true;
     
-    anim_trig sethintstring( "^1[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^1]" );
+    anim_trig sethintstring( "^2[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^2]" );
     while( true )
     {
         anim_trig waittill( "trigger", who ); 
@@ -470,16 +478,16 @@ spawn_drinkable_step()
         
         if( who.has_immunity ) 
         {
-            anim_trig setHintString( "^1[ ^7You already have an ^3Immunity Drink^7 effect ^1]" );
+            anim_trig setHintString( "^2[ ^7You already have an ^3Immunity Drink^7 effect ^2]" );
             wait 2.5;
-            anim_trig sethintstring( "^1[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^1]" );
+            anim_trig sethintstring( "^2[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^2]" );
             wait 2.5;
         }
         if( is_player_valid( who ) )
         {
             if(  isdefined( who.has_immunity ) && !who.has_immunity  )
             {
-                anim_trig setHintString( "^1[ Mixing ^3Immunity Drink^7 ^1]" );
+                anim_trig setHintString( "^2[ Mixing ^3Immunity Drink^7 ^2]" );
                 who.has_immunity = true;
                 if( !isdefined( who.has_immunity_health ) )
                 {
@@ -497,16 +505,17 @@ spawn_drinkable_step()
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_builder_zm" );
                 wait 0.1;
-                anim_trig sethintstring( "^^1[ ^3Immunity Drink ^7is ready to be consumed ^1]" );
+                anim_trig sethintstring( "^2[ ^3Immunity Drink ^7is ready to be consumed ^2]" );
                 wait 0.05;
                 who giveWeapon( "zombie_perk_bottle_tombstone" );
                 who switchToweapon( "zombie_perk_bottle_tombstone" );
                 wait 2.5;
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_perk_bottle_tombstone" );
-                level thread machine_says(  "^1" + who.name + "^7 upgraded their ^1abilities.^7", "Survivor now has an ^3Immunity Drink ^7effect.", 4.5, 0.15 );
+                foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+                level thread machine_says(  "^2" + who.name + "^7 upgraded their ^2abilities.^7", "Survivor now has an ^3Immunity Drink ^7effect.", 4.5, 0.15 );
                 wait 0.1;
-                anim_trig sethintstring( "^1[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^1]" );
+                anim_trig sethintstring( "^2[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^2]" );
             }
             if( who.has_immunity == false && who.has_immunity_health < 50 )
             {
@@ -514,7 +523,7 @@ spawn_drinkable_step()
 
             if( isdefined( who.has_immunity ) && who.has_immunity_health < 100 )
             {
-                anim_trig setHintString( "^1[ ^7Mixing ^3Immunity Drink^1 ]" );
+                anim_trig setHintString( "^2[ ^7Mixing ^3Immunity Drink^2 ]" );
                 who playsound( "zmb_sq_navcard_success" );
                 
                 who.has_immunity_health = 1000;
@@ -527,7 +536,7 @@ spawn_drinkable_step()
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_builder_zm" );
                 if( level.dev_time ){ iprintln( "^3 PLAYER HAS IMMUNITY HEALTHA AT ^7" + who.has_immunity_health ); }
-                anim_trig sethintstring( "^1[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^1]" );
+                anim_trig sethintstring( "^2[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^2]" );
                 
                 
             }

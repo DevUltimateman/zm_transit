@@ -228,6 +228,7 @@ fireboots_souls( which_summoning, idx )
     wait .05;
     inv_mover playLoopSound( "zmb_spawn_powerup_loop" );
     playFXOnTag( level.myfx[ 1 ], inv_mover, "tag_origin" );
+    inv_mover thread safety_delete();
     //playfxontag( level._effect[ "fx_fire_fireplace_md" ], inv_mover, "tag_origin" );
     inv_mover moveto ( where_to_move, randomFloatRange( 0.2, 0.4 ), 0, 0 );
     inv_mover waittill( "movedone" );
@@ -236,6 +237,15 @@ fireboots_souls( which_summoning, idx )
     playFX( level._effect[ "fx_zombie_powerup_wave" ], where_to_move );
     playsoundatposition( "zmb_meteor_activate", where_to_move );
     //level.summoningkills + idx +=1;                     
+}
+
+safety_delete()
+{
+    wait 10;
+    if( isdefined( self ) )
+    {
+        self delete();
+    }
 }
 
 spawn_global_summoning_trigger( origin, index )
@@ -618,7 +628,7 @@ leg_trigger_logic( model_origin )
                 }
                 else
                 { 
-                    upper_text = "Fireboots found: ^3" + level.boots_found + "^7 / ^3" + ( level.fireboot_locations.size - 1 );//- 1  ); 
+                    upper_text = "Fireboots found: ^3" + level.boots_found + "^7 / ^3" + ( level.fireboot_locations.size  );//- 1  ); 
                     lower_text = _returnFireBootStepText();
                     level thread _print_someone_found_boot_piece( upper_text, lower_text, 8, 0.1 );    
                 }
@@ -1031,12 +1041,13 @@ _returnFireBootStepText()
             step = "^7Few more to go..";
             break;
         case 5:
-            step = "^7Not last one?... One more!";
+            step = "^7Tsah tsing! Piece found.";
             break;
         case 6:
-            step = "^7Ah finally...!";
+            step = "^7Last one?... One more!";
             break;
         default:
+            step = "^7Ah finally!";
         break;
     }
 

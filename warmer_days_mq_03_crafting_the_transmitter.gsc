@@ -55,10 +55,33 @@ init()
     level.sq_clip = undefined;
     //this turns false from meet_mr_s.gsc when meeting_vox11 has started playing. is to prevent players from completing next step even if navcard gets build before schruder asking for it
     level.not_doable_yet = true;
+    level.transmitter_part_done = false;
+    level thread for_connecting_players(); //apply marathon hud for late connecting player in case if players have already initialized with transmitter
     flag_wait( "initial_blackscreen_passed" );
     level thread track_transmitter_progress();
 }
 
+for_connecting_players()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        level waittill( "connected", p );
+        if( level.transmitter_part_done )
+        {
+            p thread apply_jockie_on_spawn();
+        }
+    }
+}
+
+apply_jockie_on_spawn()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    self waittill( "spawned_player" );
+    wait 1;
+    self thread player_reward_marathon();
+}
 sidequest_prevent_cleaning()
 {
     level endon( "end_game" );
@@ -122,6 +145,7 @@ transmitter_wait_for_navcard()
         navtrig waittill( "trigger", who );
         if ( isplayer( who ) && is_player_valid( who ) )
         {
+            level.transmitter_part_done = true;
             level thread spawn_looping_wire_fx();
             navtrig sethintstring( "^2[ ^7Success! ^3Navcard^7 applied to the transmitter ^2]" );
             who playsound( "zmb_sq_navcard_success" );
@@ -135,6 +159,11 @@ transmitter_wait_for_navcard()
             //and starts the main quest step 4
             level notify( "s_talks_navcard" );
             navtrig sethintstring( "^2[ ^7Transmitter is now sending ^3signals^7 to nearby ^3radiophones ^2]");
+            wait 1;
+            foreach( playa in level.players )
+            {
+                playa thread player_reward_marathon();
+            }
             break;
         }
     }
@@ -326,10 +355,161 @@ go_cables()
     {
         for( i = 0; i <  level.cable_loc.size; i++ )
         {
-            self moveto(  level.cable_loc[ i ], randomintrange( 2, 4 ), 0, 0 );
+            self moveto(  level.cable_loc[ i ], 1, 0, 0 );
             self waittill( "movedone" );
         }
         wait 0.1;
     }
 }
 
+player_reward_marathon()
+{
+    
+    level endon( "end_game" );
+    self endon( "disconnect" );
+
+    wait 1;
+    
+    self.talk_marathon = [];
+    r_width = 20;
+    r_height = 20;
+
+    width = 310;
+    height = 16;
+    x = 1.8;
+    r = 1.6;
+    x = 0;
+
+    self.talker_marathon = newClientHudElem( self );
+    self.talker_marathon.x = -40;
+    self.talker_marathon.alignx = "center";
+    self.talker_marathon.aligny = "center";
+    self.talker_marathon.horzalign = "user_center";
+    self.talker_marathon.vertalign = "user_center";
+    self.talker_marathon.alpha = 0;
+    self.talker_marathon.foreground = true;
+    self.talker_marathon.hidewheninmenu = true;
+    self.talker_marathon setshader( "hud_chalk_3", r_width, r_height );
+    self.talker_marathon.color = ( 1, 0.7, 0 );
+    self.talker_marathon.y = -25;
+    s = 0;
+
+    for ( f = 0; f < 2; f++ )
+    {
+        self.talk_marathon[ f ] = newClientHudElem( self );
+        self.talk_marathon[ f ].x = 0;
+        self.talk_marathon[ f ].y = 0;
+        self.talk_marathon[ f ].alignx = "center";
+        self.talk_marathon[ f ].aligny = "center";
+        self.talk_marathon[ f ].horzalign = "user_center";
+        self.talk_marathon[ f ].vertalign = "user_center";
+        self.talk_marathon[ f ].foreground = true;
+        self.talk_marathon[ f ].alpha = 0;
+        self.talk_marathon[ f ].color = ( 1, 1, 1 );
+        self.talk_marathon[ f ].inuse = false;
+        self.talk_marathon[ f ].hidewheninmenu = true;
+        self.talk_marathon[ f ].font = "default";
+    }
+    wait 0.05;
+    self.talk_marathon[ 0 ].y = 10;
+    self.talk_marathon[ 1 ].y = -5;
+   
+
+    self.talk_marathon[ 0 ].fontscale = 1.6;
+    self.talk_marathon[ 1 ].fontscale = 1.3;
+    
+
+    self.talk_marathon[ 0 ] settext( "[ ^3Permament Perk Rewarded^7 ]" );
+    self.talk_marathon[ 1 ] settext( "[ ^3Jockie The Mockie^7 ]" );
+    
+    
+    self.talk_marathon[ 0 ].alpha = 0;
+    self.talk_marathon[ 1 ].alpha = 0;
+
+    f = 2;
+    for ( s = 0; s < self.talk_marathon.size; s++ )
+    {
+        self.talk_marathon[ s ].alpha = 0;
+        self.talk_marathon[ s ] fadeovertime( f );
+        self.talk_marathon[ s ].alpha = 1; //1
+        wait 1.5;
+        f -= 0.25;
+    }
+
+
+    self.talker_marathon.alpha = 0;
+    self.talker_marathon fadeovertime( 1 );
+    self.talker_marathon.alpha = 1;
+   
+    wait 6;
+
+    self.talker_marathon.alpha = 1;
+    self.talker_marathon fadeovertime( 2 );
+    self.talker_marathon.alpha = 0;
+
+    f = 2;
+    for ( s = 0; s < self.talk_marathon.size; s++ )
+    {
+        self.talk_marathon[ s ].alpha = 1;
+        self.talk_marathon[ s ] fadeovertime( f );
+        self.talk_marathon[ s ].alpha = 0;
+        wait 1.5;
+        f -= 0.25;
+    }
+    wait 3;
+    self.talker_marathon.alignx = "left";
+    self.talker_marathon.aligny = "bottom";
+    self.talker_marathon.horzalign = "user_left";
+    self.talker_marathon.vertalign = "user_bottom";
+
+    for( s = 0; s < self.talk_marathon.size; s++ )
+    {
+        self.talk_marathon[ s ].alignx = "left";
+        self.talk_marathon[ s ].aligny = "bottom";
+        self.talk_marathon[ s ].horzalign = "user_left";
+        self.talk_marathon[ s ].vertalign = "user_bottom";
+        wait 0.08;
+    }
+    self.talker_marathon.x = 10;
+    self.talker_marathon.y = -25;
+    self.talk_marathon[ 1 ].x = 25;
+    self.talk_marathon[ 1 ].y = -30;
+
+    self.talker_marathon.alpha = 0;
+    self.talker_marathon fadeovertime( 1.5 );
+    self.talker_marathon.alpha = 1;
+
+    wait 0.05;
+
+    self.talk_marathon[ 1 ].alpha = 0;
+    self.talk_marathon[ 1 ] fadeovertime( 1.5 );
+    self.talk_marathon[ 1 ].alpha = 1;
+
+    wait 1.5;
+
+    self setperk( "specialty_unlimitedsprint" );
+	self setperk( "specialty_fastmantle" );
+    self setClientDvar( "player_backSpeedScale", 1 );
+	self setClientDvar( "player_strafeSpeedScale", 1 );
+	self setClientDvar( "player_sprintStrafeSpeedScale", 1 );
+    self setClientDvar( "g_speed", 210 );
+	self setClientDvar( "dtp_post_move_pause", 0 );
+	self setClientDvar( "dtp_exhaustion_window", 100 );
+	self setClientDvar( "dtp_startup_delay", 100 );
+
+    while( true )
+    {
+        self waittill_any( "death", "remove_static", "disconnect" );
+
+        self.talker_marathon.alpha = 0;
+        self.talk_marathon.alpha = 0;
+        self.talk_marathon.alpha = 0;
+        
+        self waittill( "spawned_player" );
+        self.talker_marathon.alpha = 1;
+        self.talk_marathon.alpha = 1;
+        self.talk_marathon.alpha = 1;
+    }
+    
+
+}

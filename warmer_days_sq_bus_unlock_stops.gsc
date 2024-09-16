@@ -44,7 +44,7 @@
 init()
 {
     //this call initiates all logic
-    level thread after_initial_flag();
+    //level thread after_initial_flag();
 }
 
 after_initial_flag()
@@ -53,6 +53,7 @@ after_initial_flag()
 
     flag_wait( "initial_blackscreen_passed" );
 
+    /*
     //global locations for bus stops
     level.bus_stops_locs = [];
     //global models for bus stops
@@ -77,7 +78,7 @@ after_initial_flag()
 
     //testing node points
     level thread debug_bus_pathing();
-
+    */
 }
 
 spawn_all_stops()

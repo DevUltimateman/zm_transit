@@ -44,6 +44,8 @@ init()
     level.spirit_hovers = false;
     //can we move him again?
     level.spirit_moves = false;
+
+    level.spirit_of_sorrow_step_active = false;
     //mr_schruder points of interests
     level.spirit_locations = [];
     level.spirit_step_active = false;
@@ -78,6 +80,8 @@ waitflag()
     
     //step 1
     level waittill( "move_into_spirit_of_sorrow" );
+    level.rock_summoning_step_active = false;
+    wait 0.05;
     level.spirit_step_active = true;
     level thread monitor_players(); //disabled for now. dont want to go underneath pylon and start follow spirit step while testing other stuff.
     level waittill( "players_obey" ); //all players gathered together underneath the pylon
@@ -179,42 +183,49 @@ return_spirit_textline( switcher )
         case 1:
             u_ = "Hi there! ";
             d_ = "Fancy seeing you.. Aha, Where did that old fart disappear?!"; 
+            foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 8, 1 );  
             break;
 
         case 4:
             u_ = "I couldn't resist the urge to come take a look at Mr. Schruder";
             d_ = "Blah, I'm just mumbling!";
+            foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 3, 0.2 );
             break;
 
         case 5:
             u_ = "I'm here to make sure that he does not return.";
             d_ = "You'll be helping me next instead.";
+            foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 5, 1 );
             break;
 
         case 9:
             u_ = "A bit slow, aren't we?";
             d_ = "Get following, we got things to do!";
+            foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 8, 1 );
             break;
 
         case 14:
             u_ = "You guys are funny.";
             d_ = "zzzZZzz";
+            foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 5, 1 );
             break;
         
         case 18:
             u_ = "Ah I'm just playing around";
             d_ = "Or am I you fools!";
+            foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 7, 1 );
             break;
 
         case 22:
             u_ = "See what I can do!";
             d_ = "Aaaaaarggghh..!";
+            foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 5, 0.3 );
             break;
 
@@ -643,7 +654,9 @@ monitor_players()
     if( level.dev_time ){ iprintlnbold( "PLAYER TOUCHED THE TRIGGER, CONTINUE IN QUEST" ); }
     mods delete();
     cust_trig delete();
+    level.spirit_of_sorrow_step_active = true;
     level notify( "players_obey" );
+    
 }
 
 

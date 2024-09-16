@@ -67,6 +67,7 @@ init()
     //for d bug
     level thread cheat_();
     precache_these();
+    level.rock_summoning_step_active = false;
     level.forest_zones = [];
     level.forest_zones[ 0 ] = ( "zone_trans_2b" );
     level.forest_zones[ 1 ] = ( "zone_trans_2" );
@@ -105,7 +106,9 @@ init()
 
     flag_wait( "initial_blackscreen_passed" );
     level thread level_round_10_speed_change();
-    level waittill( "crafting_serum" );
+    level waittill( "do_it" );
+    level thread rocks_at_town_talk();
+    level thread rocks_at_pylon();
     level thread spawn_generators();
     level thread generators_disappear();
 
@@ -205,22 +208,62 @@ apply_movement_monitor()
     r1 = "super_sprint";
     r2 = "sprint";
     xs = randomInt( 10 );
+    
     if( xs < 7 )
     {
-        pass_to = r1;
-        self set_zombie_run_cycle( r1 );
+        if( level.round_number < 9 )
+        {
+            pass_to = r2;
+            self set_zombie_run_cycle( r2 );
+        }
+        else if( level.round_number >= 9 )
+        {
+            pass_to = r1;
+            self set_zombie_run_cycle( r1 );
+        }
+        
     }
     else if( xs >= 7 )
     {
-        pass_to = r2;
-        self set_zombie_run_cycle( r2 );
+        if( level.round_number < 9 )
+        {
+            pass_to = r2;
+            self set_zombie_run_cycle( r2 );
+        }
+        else if( level.round_number >= 9 )
+        {
+            pass_to = r1;
+            self set_zombie_run_cycle( r1 );
+        }
+        
     }
-    
-    wait 1;
-    if( level.round_number < 10 )
+    wait 0.05;
+    if( level.round_number < 11 )
     {
         return;
     }   
+
+    if( level.spirit_of_sorrow_step_active )
+    {
+        return;
+    }
+
+    if( level.moving_to_depo_active )
+    {
+        return;
+    }
+
+    if( level.rock_summoning_step_active )
+    {
+        return;
+    }
+
+    if( level.rift_step_active )
+    {
+        return;
+    }
+
+
     while( true )
     {
         for( i = 0; i < level.forest_zones.size; i++ )
@@ -571,7 +614,7 @@ wait_death()
         {
             if( isdefined( self ) ) 
             {
-                if( distance( self.origin, level.geness[ 2 ].origin ) < 750 )
+                if( distance( self.origin, level.geness[ 2 ].origin ) < 1050 )
                 {
                     level notify( "r2_kills++" );
                     level.r2_kills++;
@@ -652,6 +695,10 @@ move_cabin_rocks_to_pylon()
     corn_spots[ 2 ] = ( 7523.36, -498.724, -198.807);
     
     Earthquake( 0.5, 4, self.origin, 1000 );
+    PlaySoundAtPosition("zmb_avogadro_death_short", self.origin );
+    wait 0.3;
+    foreach( p in level.players ){ p playsound( "evt_player_upgrade" ); }
+    playfx( level._effect[ "avogadro_ascend_aerial" ], self.origin );
     self moveZ( 3000, 5, 2.5, 0 );
     wait 5;
     self moveto( corn_spots[ 0 ], 4, .1, 2 );
@@ -670,6 +717,10 @@ move_diner_rocks_to_pylon()
     corn_spots[ 2 ] = ( 7523.36, -498.724, -198.807 );
 
     Earthquake( 0.5, 4, self.origin, 1000 );
+    PlaySoundAtPosition("zmb_avogadro_death_short", self.origin );
+    wait 0.3;
+    foreach( p in level.players ){ p playsound( "evt_player_upgrade" ); }
+    playfx( level._effect[ "avogadro_ascend_aerial" ], self.origin );
     self moveZ( 3000, 5, 2.5, 0 );
     wait 5;
     self moveto( corn_spots[ 1 ], 4, .1, 2 );
@@ -688,6 +739,10 @@ move_corn_rocks_to_pylon()
     corn_spots[ 2 ] = ( 7523.36, -498.724, -198.807 );
 
     Earthquake( 0.5, 4, self.origin, 1000 );
+    PlaySoundAtPosition("zmb_avogadro_death_short", self.origin );
+    wait 0.3;
+    foreach( p in level.players ){ p playsound( "evt_player_upgrade" ); }
+    playfx( level._effect[ "avogadro_ascend_aerial" ], self.origin );
     self moveZ( 3000, 5, 2.5, 0 );
     wait 5;
     self moveto( corn_spots[ 2 ], 4, .1, 2 );
@@ -799,17 +854,26 @@ monitor_player_nadecheck_press( gene )
     level endon( "stop_thr" );
     while( true )
     {
-        self waittill( "grenade_fire", my_grenade );
+        self waittill( "weapon_fired" );
         wait 0.1;
-        if( distance( my_grenade.origin, gene.origin ) < 300 )
+        if( distance( self.origin, gene.origin ) < 250 )
         {
-            level.close_to_size++;
-            if( level.close_to_size == level.players.size )
+            if( self getCurrentWeapon() == "jetgun_zm" )
             {
-                if( level.dev_time ){ iprintlnbold( "THIS NADE HIT CLOSE ENOUGH" );}
-                level notify( "gnerators_start_floating" );
-                break;
+                wait 2;
+                if( self isFiring() )
+                {
+                    wait 0.05;
+                    level.close_to_size++;
+                    if( level.close_to_size == level.players.size )
+                    {
+                        if( level.dev_time ){ iprintlnbold( "THIS jetgun HIT CLOSE ENOUGH" );}
+                        level notify( "gnerators_start_floating" );
+                        break;
+                    }
+                }
             }
+            
         }
         wait 2;
         level.close_to_size = 0;
@@ -861,6 +925,7 @@ generators_disappear()
     level.geness[ 1 ] thread move_diner_rocks_to_pylon();
     level.geness[ 2 ] thread move_corn_rocks_to_pylon();
 
+    level.rock_summoning_step_active = true;
     level.land_locs = [];
     level.land_locs[ 0 ] = ( 4088.93, 5662.73, -63.875 ); //cabin
     level.land_locs[ 1 ] = ( -5716.94, -6102.54, -79.3061 ); //diner back forest
@@ -893,13 +958,13 @@ do_killboxes_for_rocks()
 sound_loopers( origin )
 {
     level endon( "end_game" );
-    for( i = 0; i < 12; i++ )
+    for( i = 0; i < 4; i++ )
     {
         foreach( playa in level.players )
         {
             playa playsound( level.jsn_snd_lst[ 81 ] );
         };
-        wait randomFloatRange( 0.1, 0.3 );
+        wait randomFloatRange( 0.05, 0.12 );
     }
 }
 blinkers()
@@ -909,7 +974,7 @@ blinkers()
     {
         playfx( level._effects[ 77 ], self.origin );
         PlaySoundAtPosition(level.jsn_snd_lst[ 32 ], self.origin );
-        wait randomIntRange( 2, 6 );
+        wait randomIntRange( 3, 6 );
     }
 }
 wait_kill()
@@ -923,20 +988,25 @@ rocks_at_town_talk()
 
     level thread playloopsound_buried();
     wait 2;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Seems that lava pit at town's center has risen up few ^3Element 115 rocks..", "^7See if you can teleport them underneath the pylon with your upgraded nades.", 10, 1  );
     level thread wait_kill();
     level notify( "stop_mus_load_bur" );
     level waittill( "gnerators_start_floating" );
     //level thread playloopsound_buried();
     wait 0.6;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Excellent, they're moving!", "Those nades are sooo powerfull ha!", 5, 1 );
     wait 6;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Something's not right, said rocks are not underneath the pylon!", "What did you do? Where did they land?! ^1Find Them!!!^7", 6, 1 );
     wait 7;
     level notify( "stop_mus_load_bur" );
     level waittill( "found_first_rock" );
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "What..! Are the rocks taking souls from zombies upon their death", "Maybe the rocks are gathering their own energy to make themselves move to pylon..", 10, 1 );
     wait 12;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Interesting..! ..aaand ^5wundeeerbar ^7as well!", "Come on, stay slaying! Keep on doing you. ", 7, 1 );
     wait 13;
     level notify( "stop_mus_load_bur" );
@@ -947,6 +1017,7 @@ rocks_at_pylon()
     level waittill( "end_break_check" );
     level thread playloopsound_buried();
     wait 2;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Great, the rocks are at pylon...!", "Let's gather together underneath the pylon!", 7, 1 );
     wait 8;
     level notify( "stop_mus_load_bur" );
@@ -954,17 +1025,21 @@ rocks_at_pylon()
     level waittill( "spawn_schruder" );
     level thread playloopsound_buried();
     wait 1;
-
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "See if I'm able to transform!", "Aaarghh", 5, 1 );
     level thread do_everything_schruder_spawns();
     level waittill( "continue_talking" );
     wait 1;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Ahh finally..! Hello there!", "You've helped me get into my physical form..", 7, 1 );
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "So fantastic, you've been such a help...", "Let me reward you with something..", 7, 1 );
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Haa..! Hope you like it.", "Hold on a second..", 6, 1 );
     wait 7;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Something's coming.. I can hear it!", "Hold tight!", 5, 1 );
     wait 6;
     level notify( "fly_sc_away" );
@@ -999,7 +1074,7 @@ do_everything_schruder_spawns()
     wait 1;
     
     sc = spawn( "script_model", level.geness[ 0 ].origin + ( 0, -150, 150 ) );
-    sc setmodel( "" );
+    sc setmodel( level.automaton.model );
     sc.angles = ( 0, 0,  0 );
     wait 0.06;
     playfx( level._effects[ 77 ], sc.origin );
@@ -1007,7 +1082,7 @@ do_everything_schruder_spawns()
     sc thread hover_sc();
     sc thread rotate_sc();
     level notify( "continue_talking" );
-    wait 28.5;
+    wait 28.5; //this is about the time that schruder stays talking then he disappears
     Earthquake( 5, 4,  sc.origin, 1000 );
     wait 1;
     playfx( level.myfx[ 82 ], sc.origin );

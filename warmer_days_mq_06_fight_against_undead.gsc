@@ -148,7 +148,7 @@ spawn_lockdown_enabler( origin )
     //level waittill( "obey_spirit_complete" );
     trig = spawn( "trigger_radius_use", origin, 0, 85, 85 );
     trig setCursorHint( "HINT_NOICON" );
-    trig sethintstring( "^1[ ^3[{+activate}] ^7 to call ^5Spirit Of Sorrow ^7back! ^7Requires all survivors to be present. ^1]" );
+    trig sethintstring( "^2[ ^3[{+activate}] ^7 to call ^5Spirit Of Sorrow ^7back! ^7Requires all survivors to be present. ^2]" );
     trig TriggerIgnoreTeam();
     wait 0.1;
 
@@ -234,17 +234,21 @@ monitor_player_use()
                 {
                     level.lock_down_enabled = true;
                     if( level.dev_time ) { iprintlnbold( "LOCKDOWN INITIATED" ); }
+                    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+                    _spirit_of_sorrow_sub_text_alt( "You fools!", "Time to pay for your wrong doings..!!", 7, 1 );
                     level notify( "lockdown_enabled" );
+                    level notify( "spawn_blockers_for_lockdown" );
                     level thread playlockdown_song();
-                    
+                    wait 2;
                     PlaySoundAtPosition(level.jsn_snd_lst[ 33 ], loca );
-                    wait 0.1;
+                    wait 1;
                     PlaySoundAtPosition( "zmb_vox_monkey_explode", loca );
 
                     //add lockdown init here
                     Earthquake( 0.18, 10, loca, 2500 );
+                    wait 1;
                     PlaySoundAtPosition( "zmb_vox_monkey_scream", loca );
-                    level notify( "spawn_blockers_for_lockdown" );
+                    
                     level thread do_zombies_go_crazy();
                     playsoundatposition( "vox_zmba_sam_event_magicbox_0", loca );
                     //
@@ -282,6 +286,7 @@ do_zombies_go_crazy()
     wait 48;
     if( level.dev_time ){ iprintlnbold( "LOCKDOWN STEP FINISHED, REMOVING BLOCKS" );}
     level notify( "lockdown_disabled" );
+    level.spirit_of_sorrow_step_active = false;
     ai = getAIArray( level.zombie_team );
     
     for( a = 0; a < ai.size; a++ )
@@ -333,13 +338,30 @@ spawn_lockdown_blockers()
         block[ s ] delete();
         block_upper[ s ] delete();
     }
-    _someone_unlocked_something( "Seems like ^5Spirit Of Sorrow^7 has gone rogue.", "Be careful out there!", 7, 1 );
+    level thread playloopsound_buried();
+    wait 1;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    _someone_unlocked_something( "Seems like ^4Spirit Of Sorrow^7 has gone rogue.", "Be careful out there!", 7, 1 );
     wait 8;
-    _someone_unlocked_something( "Watch out for those poisonous clouds!!!", "Go to your ^5Safe House^7 fast!", 8, 1 );
-    //level notify( "start_find_suitcase_dialog" );
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    _someone_unlocked_something( "Watch out for the poisonous gas!!!", "Get to your ^5Safe House^7 immediately!", 8, 1 );
+    level notify( "stop_mus_load_bur" );
+    
 }
 
-
+playloopsound_buried()
+{
+    level endon( "end_game" );
+    level endon( "stop_mus_load_bur" );
+    while( true )
+    {
+        for( i = 0; i < level.players.size; i++ )
+        {
+            level.players[ i ] playsound( "mus_load_zm_buried" );
+        }
+        wait 40;
+    }
+}
 
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
@@ -347,6 +369,11 @@ _someone_unlocked_something( text, text2, duration, fadetimer )
 	level thread Subtitle( "^2Dr. Schruder: ^7" + text, text2, duration, fadetimer );
 }
 
+_spirit_of_sorrow_sub_text_alt( text, text2, duration, fadetimer )
+{
+    level endon( "end_game" );
+    level thread Subtitle( "^4Spirit Of Sorrow: ^7" + text, text2, duration, fadetimer );
+}
 
 Subtitle( text, text2, duration, fadeTimer )
 {

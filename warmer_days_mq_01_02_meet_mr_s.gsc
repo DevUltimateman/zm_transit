@@ -117,18 +117,14 @@ step3_talk()
         g playsound( "zmb_sq_navcard_success" );
         playfx( level.myFx[ 82 ], g.origin );
     }
+    wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox13( "" );
     wait 8;
-    foreach( g in gets )
-    {
-        g playsound( "zmb_sq_navcard_success" );
-    }
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox14( "" );
     wait 9;
-    foreach( g in gets )
-    {
-        g playsound( "zmb_sq_navcard_success" );
-    }
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox15( "" );
 
     //how much should we wait if someone shoots faster than schruder speaks?
@@ -143,16 +139,16 @@ step3_talk()
         //global timer variable that is decreased by "stop_for_a_second" function
         wait level.wait_time_left_after_someone_shot;
     }
-    foreach( g in gets )
-    {
-        g playsound( "zmb_sq_navcard_success" );
-    }
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox16( "" );
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox17( "" );
     wait 9;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox18( "" );
     wait 9;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox19( "" );
     wait 2;
     level notify( "start_fixing_rift_portals" );
@@ -248,26 +244,26 @@ schruder_model()
     level.mr_s setmodel( level.players[ 0 ].model );
     level.mr_s.angles = level.mr_s.angles;
 
-    level.mr_s_blocker = spawn( "script_model", level.mr_s.origin );
-    level.mr_s_blocker setmodel( "tag_origin" );
-    level.mr_s_blocker setmodel( "collision_player_32x32x128" );
-    level.mr_s_blocker.angles = (0,0,0);
+    //level.mr_s_blocker = spawn( "script_model", level.mr_s.origin );
+    //level.mr_s_blocker setmodel( "tag_origin" );
+    //level.mr_s_blocker setmodel( "collision_player_32x32x128" );
+   // level.mr_s_blocker.angles = (0,0,0);
 
-    tulo = spawn( "script_model", mr_s_location );
+    //tulo = spawn( "script_model", mr_s_location );
+    //wait 0.05;
+    //tulo setmodel( "tag_origin" );
     wait 0.05;
-    tulo setmodel( "tag_origin" );
-    wait 0.05;
-    playfxontag( level.myfx[ 1 ], tulo, "tag_origin" );
-    tulo enableLinkTo();
-    tulo linkTo( level.mr_s, "tag_origin" );
+    //playfxontag( level.myfx[ 1 ], tulo, "tag_origin" );
+    //tulo enableLinkTo();
+    //tulo linkTo( level.mr_s, "tag_origin" );
     //tulo movemeup();
     
     
     wait 1;
 
-    level.mr_s_blocker enableLinkTo();
+    //level.mr_s_blocker enableLinkTo();
   
-    level.mr_s_blocker linkto( level.mr_s );
+    //level.mr_s_blocker linkto( level.mr_s );
 
     level.mr_s thread monitor_first_meetup();
 
@@ -518,12 +514,16 @@ schruder_talks_everything_part1()
 {
     level endon( "end_game" );
     level thread playLoopsound_buried();
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox01("");
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox02("");
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox03("");
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox04("");
     level notify( "stop_mus_load_bur" );
     wait 8;
@@ -540,14 +540,19 @@ schruder_talks_everything_part2()
     {
         play playsound( "mus_load_zm_buried" );
     }
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox07("");
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox08("");
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox09("");
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox10("");
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox11("");
     level.not_doable_yet = false;
     wait 8;

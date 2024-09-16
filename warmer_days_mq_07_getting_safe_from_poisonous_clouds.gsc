@@ -45,6 +45,7 @@ init()
 {
     level thread main_quest_spawn_poisonous_clouds();
     level.arrived_at_base = 0;
+    level.moving_to_depo_active = false;
     all_static_poisonous_cloud_locations();
     flag_wait( "initial_blackscreen_passed" );
     level thread level_cleaner_map_restart();
@@ -225,6 +226,7 @@ main_quest_spawn_poisonous_clouds()
     //level thread applyforplayer();
     initial_poisonous_spawns();
     level waittill( "lockdown_disabled");
+    level.moving_to_depo_active = true;
     level thread move_poisonous_clouds_main_quest();
 }
 
@@ -537,7 +539,7 @@ do_damage_cloud()
         wait 2.5;
         if( distance( self.origin, previous_origin ) < 100 )
         {
-            self doDamage( 10, self.origin );
+            self doDamage( 5, self.origin );
             if( level.dev_time )
             {
                 iprintln( "did 10 damage to " + self.name + " due to not moving fast enough.." );
@@ -552,6 +554,7 @@ do_big_damage_cloud() //this does big damage if player does not head to farm
     self endon( "stop_damage_clouds" );
     self endon( "disconnect" );
     level endon( "end_game" );
+    /*
     sizes = level.mq_step_poison_cloud_ent;
     while( true )
     {
@@ -566,6 +569,7 @@ do_big_damage_cloud() //this does big damage if player does not head to farm
             wait 0.05;
         }
     }
+    */
 }
 do_it()
 {
@@ -593,6 +597,11 @@ monitor_arrive_farm()
             self notify( "stop_damage_clouds" );
             self.surround_cloud.origin = self.origin + ( 0, 0, -800 );
             wait 1;
+            if( isdefined( self.surround_cloud ) )
+            {
+                self.surround_cloud delete();
+            }
+            
             break;
         }
         else { wait 0.2; }
@@ -872,15 +881,20 @@ playloopsound_buried()
 }
 do_guide_blockers_dialog()
 {
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread machine_says( "^2Dr. Schruder: ^7" + "What the hell was that?!", "Are you okay?", 7, 1 );
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread machine_says( "^2Dr. Schruder: ^7" + "^6Spirit Of Sorrow^7 really wants you guys dead..", "I can't let that happen!", 7, 1 );
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread machine_says( "^2Dr. Schruder: ^7" + "It seems that those clouds went away for now.", "However there is still a heavy mist present", 7, 1 );
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread machine_says( "^2Dr. Schruder: ^7" + "We need to craft a Immunity Elixir!", "", 5, 1 );
     level notify( "stop_mus_load_bur" );
     wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread machine_says( "^2Dr. Schruder: ^7" + "Go locate the mixing container from ^5Bus Depo^7.", "Be fast, I don't know when the clouds strike again!", 7, 1 );
     
 }
