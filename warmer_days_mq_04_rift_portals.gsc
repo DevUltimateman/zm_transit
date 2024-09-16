@@ -515,8 +515,8 @@ self_rotate_yaw()
     level endon( "stop_rotating_this" );
     while( isdefined( self ) )
     {
-        self rotateyaw( 360, 3.5, 0, 0 );
-        wait 3.5;
+        self rotateyaw( 360, 4.5, 0, 0 );
+        wait 4.5;
     }
 }
 locate_to_goal_on_own( sudo )

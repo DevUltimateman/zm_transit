@@ -384,7 +384,7 @@ player_reward_marathon()
     self.talker_marathon.x = -40;
     self.talker_marathon.alignx = "center";
     self.talker_marathon.aligny = "center";
-    self.talker_marathon.horzalign = "user_center";
+    self.talker_marathon.horzalign = "user_center"; 
     self.talker_marathon.vertalign = "user_center";
     self.talker_marathon.alpha = 0;
     self.talker_marathon.foreground = true;
