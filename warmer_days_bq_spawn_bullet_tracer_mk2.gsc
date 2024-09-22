@@ -148,7 +148,7 @@ weaponTracerUpgrade()
     //trigger setLowerMessage( trigger, "Custom Perks"  );
 
     paploc = ( 59872.7, 141818, 88737.5 );
-    playfx( level._effect["lght_marker"], gunorigin + ( 0, 0, -40 ) );
+    //playfx( level._effect["lght_marker"], gunorigin + ( 0, 0, -40 ) );
 
     gun = spawn("script_model", gunOrigin );
     gun setModel("t6_wpn_smg_ak74u_world");

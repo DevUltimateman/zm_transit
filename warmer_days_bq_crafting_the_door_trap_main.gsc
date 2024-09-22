@@ -529,16 +529,7 @@ base_has_been_rebuilt()
     return false;
 }
 
-player_has_added_a_piece()
-{
-    level endon( "end_game" );
-    level endon( "all_pieces_added" );
-    while( true )
-    {
 
-        level.pieces_added_to_door++;
-    }
-}
 spawn_rebuildable_pieces()
 {
     spawn_amount = 6;
@@ -547,20 +538,12 @@ spawn_rebuildable_pieces()
         return;
     }
 
+    tempo_array = level.random_base_piece_locations;
     new_spawn_amount = spawn_amount - level.players_have_pieces;
     for( i = 0; i < new_spawn_amount; i++ )
     {
-        x_num = randomintrange( 0, level.random_base_piece_locations.size );
-        if( i > 0 && level.random_base_piece[ i ].origin == level.random_base_piece_locations[ x_num ] )
-        {
-            while( level.random_base_piece[ i - 1 ].origin == level.random_base_piece_locations[ x_num ] )
-            {
-                if( level.dev_time ){ iprintln( "WE ARE WAITING TO GET A PROPER SPAWN PIECE LOCATION" ); }
-                wait 0.05;
-                x_num = randomintrange( 0, level.random_base_piece_locations.size );
-            }
-        }
-        level.random_base_piece[ i ] = spawn( "script_model", level.random_base_piece_locations[ x_num ] );
+        randoms = randomInt( tempo_array.size );
+        level.random_base_piece[ i ] = spawn( "script_model", tempo_array[ randoms ] );
         level.random_base_piece[ i ] setmodel( "p6_wood_plank_rustic01_2x12_96" );
         level.random_base_piece[ i ].angles = ( 0, 0, 0 );
         wait 0.05;
@@ -568,6 +551,8 @@ spawn_rebuildable_pieces()
         wait 0.05;
         level.random_base_piece[ i ] thread letPlayerPickUp();
         wait 0.1;
+        ArrayRemoveIndex( tempo_array, randoms );
+        
     }
 
     if( level.dev_time ){ iprintln( "WE SPAWNED " + level.random_base_piece.size + " amount of barriers to pick up" ); }
@@ -712,7 +697,7 @@ monitorAfterWards()
         }
         else if  ( !level.door_needs_repairing )
         {
-            self sethintstring( "^2[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^2]" );
+            self sethintstring( "^2[ ^7Door health: ^3" + level.door_health_ + " ^7/ ^3" + level.door_health_fixed_ + " ^2]" );
         }
         self waittill( "trigger", who );
         if( level.door_health_ < 5 && level.pieces_added_to_door < 3 )
@@ -721,22 +706,28 @@ monitorAfterWards()
             {
                 self sethintstring( "^2[ ^7You added a barricade piece to the door ^2]" );
                 level.pieces_added_to_door++;
-                level.players_have_pieces--;
-                wait 1;
-                who.has_bar_piece -= 1;
+                if( level.players_have_pieces > 0 )
+                {
+                    level.players_have_pieces--;
+                }
                 
+                if( who.has_bar_pieces > 0 )
+                {
+                    who.has_bar_piece --;
+                }
+                wait 1;
                 //is this a good notify sound?
                 self playlocal_plrsound();
                 if( level.pieces_added_to_door >= 3 )
                 {
-                    self sethintstring( "^2[ The door is functional again ^2]" );
+                    self sethintstring( "^2[ ^7The door is functional again ^2]" );
                     level.pieces_added_to_door = 0;
                     level.door_health_ = level.door_health_fixed_;
                     level.door_needs_repairing = false;
                 }
             }
 
-            else { self sethintstring( "You don't have the required barricade piece." );}
+            else { self sethintstring( "^1[ ^7You don't have the required barricade piece. ^1]" );}
         }
         wait 1.5;
     }

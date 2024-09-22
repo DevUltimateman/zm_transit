@@ -219,20 +219,20 @@ playerss()
     //flag_wait( "initial_blackscreen_passed" ); //enable back after debug
     
     wait 1;
-    /*
+    
     level waittill( "do_first_rift_walk" ); //enable back after debug
     level thread playloopsound_buried(); //enable back after debug
     level thread level_tell_about_rifts(); //enable back after debug
     level waittill( "do_it" ); //enable back after debug
     
     wait 2;
-    */
+    
     for( i = 0; i < level.players.size; i++ )
     {
         level.players[ i ] thread do_rift_ride( level.rift_camera_diner, level.rift_camera_diner_angles, level.players[ i ] );
         wait 3;
     }
-    //level notify( "can_do_spirit_now" ); //enable back after debug
+    level notify( "can_do_spirit_now" ); //enable back after debug
 }
 
 level_tell_about_rifts()

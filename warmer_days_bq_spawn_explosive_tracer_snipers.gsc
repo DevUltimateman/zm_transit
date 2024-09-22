@@ -152,7 +152,7 @@ explosive_tracer_spawn()
     //trigger setLowerMessage( trigger, "Custom Perks"  );
 
     paploc = ( 59872.7, 141818, 88737.5 );
-    playfx( level._effect["lght_marker"], gunOrigin + ( 0, 0, -40 ) );
+    //playfx( level._effect["lght_marker"], gunOrigin + ( 0, 0, -40 ) );
 
     gun = spawn("script_model", gunOrigin +( 0, 0, -10 ) );
     gun setModel( "t6_wpn_launch_usrpg_world" );

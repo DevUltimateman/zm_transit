@@ -399,7 +399,7 @@ meeting_vox01( background_music )
         subtitle_lower = "Please, it's been so long since I've met someone new..";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^8" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
     
@@ -416,7 +416,7 @@ meeting_vox02( background_music )
         subtitle_lower = "Fantastic!";
         duration = 6;
         fadetimer = 1;
-        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^8" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -431,7 +431,7 @@ meeting_vox03( background_music )
         subtitle_lower = "Think you can get it turned on by yourself?";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^8" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
@@ -446,7 +446,7 @@ meeting_vox04( background_music )
         subtitle_lower = "It's the shack at bus depo, you should be able to find it.";
         duration = 7;
         fadetimer = 1;
-        level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+        level thread machine_says( "^2Dr. Schruder: ^8" + subtitle_upper, subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }

@@ -199,10 +199,10 @@ apply_movement_monitor()
     {
         while( !self.completed_emerging_into_playable_area )
         {
-            wait 1;
+            wait 0.5;
         }
     }
-    wait 1;
+    wait 0.2;
     
     temp = false;
     r1 = "super_sprint";
@@ -215,11 +215,13 @@ apply_movement_monitor()
         {
             pass_to = r2;
             self set_zombie_run_cycle( r2 );
+            playfx( level._effects[77], self.origin );
         }
         else if( level.round_number >= 9 )
         {
             pass_to = r1;
             self set_zombie_run_cycle( r1 );
+            playfx( level._effects[77], self.origin );
         }
         
     }
@@ -229,11 +231,13 @@ apply_movement_monitor()
         {
             pass_to = r2;
             self set_zombie_run_cycle( r2 );
+            playfx( level._effects[77], self.origin );
         }
         else if( level.round_number >= 9 )
         {
             pass_to = r1;
             self set_zombie_run_cycle( r1 );
+            playfx( level._effects[77], self.origin );
         }
         
     }
@@ -263,24 +267,50 @@ apply_movement_monitor()
         return;
     }
 
-
+    self_touched = false;
     while( true )
     {
         for( i = 0; i < level.forest_zones.size; i++ )
         {
-            if( self get_current_zone() == level.forest_zones[ i ] ) 
+            if( self get_current_zone() == level.forest_zones[ i ] && !self_touched ) 
             {
-                self set_zombie_run_cycle( "chase_bus" );
-                self.ssprinter = true;
-                while( self isTouching( level.forest_zones[ i ] ) )
+                cur_ = level.forest_zones[ i ];
+                self_touched = true;
+                xx = randomintrange( 0, 100 );
+                if( xx < 85 ) // give players some sorta chance..  all zombies being bus chaser is hella too crazy :D
                 {
-                    wait 1;
+                    self set_zombie_run_cycle( "chase_bus" );
+                    playfx( level._effects[77], self.origin );
+                    self.ssprinter = true;
+                    while( self get_current_zone() == level.forest_zones[ i ]  )
+                    {
+                        wait 1;
+                    }
+                    self set_zombie_run_cycle( pass_to );
+                    playfx( level._effects[77], self.origin );
+                    wait 0.05;
                 }
-                self set_zombie_run_cycle( pass_to );
-                wait 0.05;
+                
             }
         }
         wait 0.1;
+        /*
+        if( self get_current_zone() != cur_ && self_touched )
+        {
+            self_touched = false;
+            playfx( level._effects[ 77 ], self.origin );
+            xo = randomint( 10 );
+            if( xo < 5 )
+            {
+                self set_zombie_run_cycle( "sprint"  );
+            }
+            else 
+            {
+                self set_zombie_run_cycle( "super_sprint" );
+            }
+            
+        }
+        */
     }
 }
 

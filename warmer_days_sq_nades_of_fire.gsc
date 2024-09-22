@@ -768,6 +768,7 @@ firegrenade_touched( who )
                     //add this trigger to player's claimed nodes    
                     who.hits++;
                     who.hit_list[ i ] = true;
+                    wait 0.05;
                     who _someone_unlocked_something_client( "Fire Grenades Found", "^2[ ^7" + who.hits + " ^1/^7 5 ^2]", 4, 1 );
                     //who.hits++; //increase player who hit score
                     iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
@@ -783,6 +784,7 @@ firegrenade_touched( who )
                         who.hit_list[ 3 ] == true &&
                         who.hit_list[ 4 ] == true  )
                     {
+                        wait 1.5;
                         who notify( "start_step2" );
                         break;
                     }

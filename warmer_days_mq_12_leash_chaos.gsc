@@ -137,9 +137,9 @@ create_zombie_escape_spot()
 
 	//escape spot array
 	level._cont_spots = getstructarray("zcon_escape_spot","targetname");	
-    playfx( level._effect[ "lght_marker"], level._cont_spots.origin );
+    //playfx( level._effect[ "lght_marker"], level._cont_spots.origin );
 	level._current_cont_spot = getstruct("zcon_start","script_noteworthy");
-    playfx( level._effect[ "lght_marker"], level._current_cont_spot.origin );
+    //playfx( level._effect[ "lght_marker"], level._current_cont_spot.origin );
 	
 	//wait(5);
 	

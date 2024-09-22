@@ -44,7 +44,7 @@
 init()
 {
     //units
-    how_far_can_i_see = 20000; 
+    how_far_can_i_see = 15000; 
 
     //cull distance
     setCullDist( how_far_can_i_see );
