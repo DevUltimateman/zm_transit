@@ -63,6 +63,7 @@ init()
 {
     //initial amount that touches genes
     level.close_to_size = 0;
+    level.rocks_at_pylon = 0;
     forest_zones(); //global zones for zombie speed up
     //for d bug
     level thread cheat_();
@@ -90,7 +91,7 @@ init()
     level.r0_kills = 0;
     level.r1_kills = 0;
     level.r2_kills = 0;
-    level.required_rock_summoning_kills = 30;
+    level.required_rock_summoning_kills = 25; //25 for release
     level.cabin_summoning = false;
     level.diner_summoning = false;
     level.corn_summoning = false;
@@ -106,7 +107,7 @@ init()
 
     flag_wait( "initial_blackscreen_passed" );
     level thread level_round_10_speed_change();
-    level waittill( "do_it" );
+    level waittill( "do_it" ); //for debugging, enable back later
     level thread rocks_at_town_talk();
     level thread rocks_at_pylon();
     level thread spawn_generators();
@@ -586,6 +587,7 @@ wait_death()
                 {
                     level notify( "r0_kills++" );
                     level.r0_kills++;
+                    
                     if( level.first_time_texter )
                     {
                         level notify( "found_first_rock" );
@@ -598,6 +600,7 @@ wait_death()
                         wait 4;
                         level notify( "cabin_rock_move" );
                         level.cabin_summoning = false;
+                        level.rocks_at_pylon++;
                     }
                     
                 }
@@ -630,6 +633,7 @@ wait_death()
                         wait 4;
                         level notify( "diner_rock_move" );
                         level.diner_summoning = false;
+                        level.rocks_at_pylon++;
                     }
                         
                 }
@@ -660,6 +664,7 @@ wait_death()
                         wait 4;
                         level notify( "corn_rock_move" );
                         level.corn_summoning = false;
+                        level.rocks_at_pylon++;
                     }
                         
                 }
@@ -674,43 +679,12 @@ all_rocks_done()
 {
     level endon( "end_game" );
     level endon( "end_brake_check" );
-    while( true )
-    {
-        if( isDefined( level.cabin_summoning ) && !level.cabing_summoning )
-        {
-            wait 1;
-            continue;
-        }
-
-        if( isDefined( level.diner_summoning ) && !level.diner_summoning )
-        {
-            wait 1;
-            continue;
-        }
-
-        if( isDefined( level.corn_summoning ) && !level.corn_summoning )
-        {
-            wait 1;
-            continue;
-        }
-
-        //all previous passed thru, check one more time to progress
-        if( isDefined( level.cabin_summoning ) && level.cabin_summoning )
-        {
-            if( isDefined( level.diner_summoning ) && level.diner_summoning )
-            {
-                if( isdefined( level.corn_summoning ) && level.corn_summoning ) 
-                {
-                    if( level.dev_time ){ iprintlnbold( "ALL ROCK SOULS COLLECTED###" ); }
-                    level notify( "move_rocks_underneath_pylon" );
-                    wait 1;
-                    level notify( "end_break_check" );
-                    break;
-                }
-            }
-        }
-        wait 1;
-    }
+    while( level.rocks_at_pylon < 3 ){ wait 1; }
+    
+    level notify( "move_rocks_underneath_pylon" );
+    wait 1;
+    level notify( "end_break_check" );
+    if( level.dev_time ){ iprintlnbold( "ALL ROCK SOULS COLLECTED###" ); }
 }
 
 
@@ -725,7 +699,7 @@ move_cabin_rocks_to_pylon()
     corn_spots[ 2 ] = ( 7523.36, -498.724, -198.807);
     
     Earthquake( 0.5, 4, self.origin, 1000 );
-    PlaySoundAtPosition("zmb_avogadro_death_short", self.origin );
+    PlaySoundAtPosition( "zmb_avogadro_death_short", self.origin );
     wait 0.3;
     foreach( p in level.players ){ p playsound( "evt_player_upgrade" ); }
     playfx( level._effect[ "avogadro_ascend_aerial" ], self.origin );
@@ -734,7 +708,6 @@ move_cabin_rocks_to_pylon()
     self moveto( corn_spots[ 0 ], 4, .1, 2 );
     wait 2.5;
     Earthquake( 0.5, 3, corn_spots[ 0 ], 1000 );
-    wait 1.5;
 }
 
 move_diner_rocks_to_pylon()
@@ -756,7 +729,6 @@ move_diner_rocks_to_pylon()
     self moveto( corn_spots[ 1 ], 4, .1, 2 );
     wait 2.5;
     Earthquake( 0.5, 3, corn_spots[ 1 ], 1000 );
-    wait 1.5;
 }
 
 move_corn_rocks_to_pylon()
@@ -778,7 +750,6 @@ move_corn_rocks_to_pylon()
     self moveto( corn_spots[ 2 ], 4, .1, 2 );
     wait 2.5;
     Earthquake( 0.5, 3, corn_spots[ 2 ], 1000 );
-    wait 1.5;
 }
 
 
@@ -892,7 +863,7 @@ monitor_player_nadecheck_press( gene )
             if( self getCurrentWeapon() == "jetgun_zm" )
             {
                 wait 2;
-                if( self isFiring() )
+                if( self isFiring() && self getcurrentweapon() == "jetgun_zm" )
                 {
                     wait 0.05;
                     level.close_to_size++;
@@ -1020,14 +991,14 @@ rocks_at_town_talk()
     level thread playloopsound_buried();
     wait 2;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Seems that lava pit at town's center has risen up few ^3Element 115 rocks..", "^7See if you can teleport them underneath the pylon with your upgraded nades.", 10, 1  );
+    do_dialog_here( "Seems that lava pit at town's center has risen up few ^3Element 115 rocks..", "^7See if you can teleport them to underneath the pylon with something steamy..", 10, 1  );
     level thread wait_kill();
     level notify( "stop_mus_load_bur" );
     level waittill( "gnerators_start_floating" );
     //level thread playloopsound_buried();
     wait 0.6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Excellent, they're moving!", "Those nades are sooo powerfull ha!", 5, 1 );
+    do_dialog_here( "Excellent, they're moving!", "Meet me underneath the pylon!", 5, 1 );
     wait 6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Something's not right, said rocks are not underneath the pylon!", "What did you do? Where did they land?! ^1Find Them!!!^7", 6, 1 );
@@ -1095,7 +1066,7 @@ playloopsound_buried()
 do_everything_schruder_spawns()
 {
     level endon( "end_game" );
-    Earthquake( 5, 4,  level.geness[0].origin, 1000 );
+    Earthquake( .5, 4,  level.geness[0].origin, 1000 );
     wait 1;
     playfx( level.myfx[ 82 ], level.geness[ 0 ].origin );
     wait 0.2;
@@ -1104,7 +1075,7 @@ do_everything_schruder_spawns()
     playfx( level.myfx[ 82 ], level.geness[ 1 ].origin );
     wait 1;
     
-    sc = spawn( "script_model", level.geness[ 0 ].origin + ( 0, -150, 150 ) );
+    sc = spawn( "script_model", ( 7592.53, -449.193, -113.179 ) );
     sc setmodel( level.automaton.model );
     sc.angles = ( 0, 0,  0 );
     wait 0.06;
@@ -1114,7 +1085,7 @@ do_everything_schruder_spawns()
     sc thread rotate_sc();
     level notify( "continue_talking" );
     wait 28.5; //this is about the time that schruder stays talking then he disappears
-    Earthquake( 5, 4,  sc.origin, 1000 );
+    Earthquake( .5, 4,  sc.origin, 1000 );
     wait 1;
     playfx( level.myfx[ 82 ], sc.origin );
     sc movez( 10000, 5, 2.5, 0 );
@@ -1129,9 +1100,9 @@ hover_sc()
     level endon( "stop_sc" );
     while( true )
     {
-        self movez( 100, 1.5, 0.1, 0.5 );
+        self movez( 150, 1.8, 0.1, 0.5 );
         self waittill( "movedone" );
-        self movez( -100, 1.5, 0.1, 0.5 );
+        self movez( -150, 1.8, 0.1, 0.5 );
         self waittill( "movedone" );
 
     }

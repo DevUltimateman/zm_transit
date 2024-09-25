@@ -42,6 +42,7 @@
 
 #include maps\mp\zombies\_zm_craftables;
 
+
 init()
 {   
     //why are we replacefuncing it here on this script file? O=: 
@@ -56,7 +57,7 @@ init()
     level thread schruder_model();
     
     //wait till players discover schruder. 
-    level thread step1_talk();
+    //level thread step1_talk();
 
     //wait till power on and player has returned to schruder
     level thread step2_talk();

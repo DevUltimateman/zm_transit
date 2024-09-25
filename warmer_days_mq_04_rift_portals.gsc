@@ -356,7 +356,7 @@ level_bring_back_normal_visuals_and_stuff()
         level.players[ i ] setclientdvar( "r_lighttweaksunlight", 12  );
         level.players[ i ] setclientdvar( "r_filmusetweaks", true );
         level.players[ i ] setclientdvar( "r_lighttweaksundirection",( -155, 63, 0 ) );
-        level.players[ i ] setclientdvar( "r_sky_intensity_factor0", 1.7  );
+        level.players[ i ] setclientdvar( "r_sky_intensity_factor0", 3  );
         level.players[ i ] setclientdvar( "r_bloomtweaks", 1  );
         level.players[ i ] setclientdvar( "cg_usecolorcontrol", 1 );
         level.players[ i ] setclientdvar( "cg_colorscale", "1 1 1"  );
@@ -1252,11 +1252,11 @@ spawn_callable_rift_ride( where, index )
 
 spawn_on_trig_( trig_ )
 {
-    mods = spawn( "script_model", trig_.origin + ( 0, 0, 115 ) );
+    mods = spawn( "script_model", trig_.origin + ( 0, 0, 125 ) );
     mods setmodel( "tag_origin" );
     mods.angles = mods.angles;
     wait 0.05;
-    playfxontag( level.myfx[ 1 ], mods, "tag_origin" );
+    playfxontag( level.myFx[ 44 ], mods, "tag_origin" );
 }
 initialize_rift_ride_for_caller( who_called, which_target )
 {
@@ -1301,9 +1301,9 @@ make_light_hinters()
         playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
 
         wait 0.13;
-        playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
-        wait 0.17;
-        playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
+        //playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
+        //wait 0.17;
+        //playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
 
         if( level.dev_time ) { iprintlnbold( "SPAWNED A LIGHT HINTER AT: " + level.light_hinters[ i ] ); }
     }
@@ -1404,7 +1404,7 @@ rise_bulb_underneath( value_at, fixable_integer ) //in use now
     playfx( level._effect[ "fx_zmb_tranzit_light_safety_ric" ], self.origin, 0, -90 ); // good
 
     //playfx( level. _effect[ "fx_zmb_tranzit_light_safety_max" ], self.origin, 0, -90 );  //good but doesnt have green light
-    playfx( level._effect[ "fx_zmb_tranzit_light_safety" ], self.origin, -50, -90 ); //boring basic light, this might need to be deleted from gsc and csc to not load in upon power turn on
+   //playfx( level._effect[ "fx_zmb_tranzit_light_safety" ], self.origin, -50, -90 ); //boring basic light, this might need to be deleted from gsc and csc to not load in upon power turn on
     //playfx( level._effect[ "fx_zmb_tranzit_light_safety_off" ], self.origin, 0, -90 ); //just a basic light usually not on. this is before u turn power on
     self playLoopSound(  level.jsn_snd_lst[ 32 ] ); //these are "scary whispers", see if spawning multiple of em makes it a bit louder..
     wait 0.05;
@@ -1581,7 +1581,7 @@ wait_for_access_panel_interact( a_comp_origin )
     
     trig_panel = spawn( "trigger_radius_use", level.access_panel_org, 0, 48, 48 );
     trig_panel setCursorHint( "HINT_NOICON" );
-    trig_panel setHintString( "^2[ ^7Restore computer's save point ^2]" );
+    trig_panel setHintString( "^2[ ^3[{+activate}] ^7Restore computer's save point ^2]" );
 
     //trig_panel UseTriggerRequireLookAt();
     trig_panel TriggerIgnoreTeam(); 
@@ -1610,7 +1610,7 @@ wait_for_access_panel_interact( a_comp_origin )
         wait 0.1;
         if( isdefined( who )  && isAlive( who ) )
         {
-            trig_panel setHintString( "^3[ ^7Restarting the computer ^3]" );
+            trig_panel setHintString( "^3[ ^7Accessing restore point.. ^3]" );
             wait 1.5;
             
             for( x = 0; x < 3; x++ )
@@ -1620,10 +1620,9 @@ wait_for_access_panel_interact( a_comp_origin )
                 wait 0.06;
             }
             wait 1;
-            wait 2.5;
             trig_panel setHintString( "^1[ ^7Critical malfunction ^1]" );
             sfx playsound( level.jsn_snd_lst[ 39 ] );
-            hinter movez( -60, 0.1, 0, 0 );
+            hinter movez( -1260, 0.1, 0, 0 );
             foreach( p in level.players )
             {
                 p playsound( level.jsn_snd_lst[ 39 ]  );
@@ -1632,7 +1631,7 @@ wait_for_access_panel_interact( a_comp_origin )
             wait 0.05;
             PlaySoundAtPosition( level.jsn_snd_lst[ 39 ], sfx.origin + ( 100, 0, 0 ) );
             level notify( "computer_accessed" ); //stop beeping broken computer sfx
-            wait 5;
+            wait 2.5;
             trig_panel playSound( level.jsn_snd_lst[ 27 ] ); //snd evt_nuke_flash
             wait 0.05;
             level notify("stop_mus_load_bur");
@@ -1644,13 +1643,16 @@ wait_for_access_panel_interact( a_comp_origin )
             PlaySoundAtPosition( level.jsn_snd_lst[ 3 ], trig_panel.origin );
             wait 1;
             level thread play_scary_children(); //make some scary noises for the dark part
-            trig_panel setHintString("");
+            trig_panel setHintString("^2[ ^7Rebooting in progress.. ^2] " );
             wait 30;
-            trig_panel delete();
+            trig_panel setHintString("^2[ ^7Rebooting Complete ^2] " );
+            //trig_panel delete();
             hinter delete();
             sfx delete();
             //level thread move_camera_to_teleport();
             level thread spawn_initial_rift_camera_points();
+            wait 3.5;
+            trig_panel delete();
             break;
         }
     }
@@ -1710,6 +1712,31 @@ spawn_initial_rift_portal_on_core()
         playFXOnTag( level._effect[ "screecher_vortex" ], sp, "tag_origin" );
         sp playLoopSound( "zmb_screecher_portal_loop", 2 );
     }
+
+    while( !level._malfunction_complete )
+    {
+        wait 0.1;
+    }
+    Earthquake( 0.5, 8, level._s_spawnpoint[ 1 ].origin, 1000 );
+    for( i = 0; i < level._s_spawnpoint.size; i++ )
+    {
+        playfx( level._effects[ 77 ], level._s_spawnpoint[ i ].origin );
+        wait 0.1;
+        level._s_spawnpoint[ i ] movez( 1000, 10, 3, 0 );
+        level._s_spawnpoint[ i ] thread delete_after_move();
+        wait randomFloatRange( 0.1, 1.2 );
+    }
+
+
+}
+
+delete_after_move()
+{
+    level endon( "end_game" );
+    wait 11;
+    playfx( level._effects[ 77 ], self.origin );
+    wait 0.05;
+    self delete();
 }
 play_scary_children()
 {
@@ -1806,13 +1833,15 @@ do_malfunction_visuals()
     level thread spawn_initial_rift_portal_on_core();
     while( !level._malfunction_complete )
     {
-        wait 1;
+        wait 0.1;
     }
     
+    /* //might be obsolete since it we get the fade twice instead of once
     foreach( pl in level.players )
     {
         pl thread fadeForAWhile( 0, 1, 0.5, 0.5, "white" );
     }
+    */
     wait 0.1;
     foreach( pls in level.players )
     {
@@ -1915,14 +1944,26 @@ malfunction_computers_sparks_fx() //is used now
     level.sparking_computers_locs[ 3 ] = ( 12474.5, 8236.4, -716.03 );
     level.sparking_computers_locs[ 4 ] = ( 12352.6, 8515.76, -686.659 );
     level.sparking_computers_locs[ 5 ] = ( 12321.5, 8511.94, -709.913 );
-
+    mods = [];
 
     for( s = 0; s < level.sparking_computers_locs.size; s++ )
     {
-        playfx( level.myfx[ 44 ], level.sparking_computers_locs[ s ] );
+        mods[ s ] = spawn( "script_model", level.sparking_computers_locs[ s ] );
+        mods[ s ] setmodel( "tag_origin" );
+        mods[ s ].angles = ( 0, 0, 0 );
+        wait 0.05;
+        playfxontag( level.myfx[ 44 ], mods[ s ], "tag_origin" ); 
         wait randomFloatRange( 0.3, 1.1 );
     }
     if( level.dev_time ){ iprintlnbold( "WE SPAWNED SPARKING FX FOR MALFUNC STEP" ); }
+    while( !level.malfunction_complete )
+    {
+        wait 1;
+    }
+    foreach( mod in mods )
+    {
+        mod delete();
+    }
 }
 malfunction_core_fx() //is used now
 {
@@ -1976,7 +2017,7 @@ malfunction_time() //is used now
 move_these_around() //is used now
 {
     level endon( "end_game" );
-    playfxontag( level.myFx[ 86 ], self, "tag_origin" );
+    //playfxontag( level.myFx[ 86 ], self, "tag_origin" );
     while( true )
     {   
          

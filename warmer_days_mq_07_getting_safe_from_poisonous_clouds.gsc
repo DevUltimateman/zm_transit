@@ -168,9 +168,13 @@ all_static_poisonous_cloud_locations()
     level.poisonous_ground_clouds_origins_town[ 17 ] = ( 236.077, 587.612, -17.8841 );
 }
 
-spawn_static_clouds_on_demand_at( location_array )
+spawn_static_clouds_on_demand_at( location_array, waiter )
 {
     level endon( "end_game" );
+    if( isdefined( waiter ) && waiter == 1 )
+    {
+        wait 35;
+    }
     on_demand_cloud = [];
     for( s = 0; s < location_array.size; s++ )
     {
@@ -463,7 +467,7 @@ move_poisonous_clouds_main_quest()
         level.mq_step_poison_cloud_ent[ i ].angles = level.mq_step_poison_cloud_ent[ i ].angles;
         wait 0.05;;
         playfxontag( level._effects[ 47 ], level.mq_step_poison_cloud_ent[ i ], "tag_origin" );
-        level.mq_step_poison_cloud_ent[ i ] thread playlighting();
+        //level.mq_step_poison_cloud_ent[ i ] thread playlighting();
     }
     
     if( level.dev_time ){ iprintlnbold( "mq_step clouds spawned, waiting to start moving them" ); }
@@ -478,7 +482,8 @@ move_poisonous_clouds_main_quest()
     //notify mq to continue once all at base
     level thread keep_track_of_all_on_farm();
     //spawn on demand cloud fx already on farm
-    level thread spawn_static_clouds_on_demand_at( level.poisonous_ground_clouds_origins_farm );
+    gue = 1;
+    level thread spawn_static_clouds_on_demand_at( level.poisonous_ground_clouds_origins_farm, gue );
    // for( s = 0; s < level.players.size; s++ ){ level.players[ s ] thread fade_to_black_on_impact_self_only(); }
     wait 1.5;
     for( s = 0; s < level.players.size; s++ ){ level.players[ s ] thread fade_to_black_on_impact_self_only(); } 
@@ -501,6 +506,7 @@ move_poisonous_clouds_main_quest()
         player thread do_damage_cloud();
         player thread do_big_damage_cloud();
         player setclientdvar( "r_fog", true );
+        player thread waypoint_set_players();
         player setclientdvar( "r_dof_enable", true );
         player setclientdvar( "r_dof_tweak", true );
         player setclientdvar( "r_dof_farblur", 10 );
@@ -526,6 +532,54 @@ move_poisonous_clouds_main_quest()
     }
 
     level thread level_waittill_continue_mq();
+}
+
+waypoint_set_players()
+{
+    level endon( "end_game" );
+    self thread farm_waypoint(); 
+}
+farm_waypoint()
+{
+    locx = ( 8198.16 );
+    locy = ( -5042.4 );
+    locz = ( 48.125 );
+	shader = newClientHudElem( self );
+	shader.x = locx;
+	shader.y = locy;
+	shader.z = locz + 40;
+	shader.alpha = 1;
+	shader.color = ( 1, 1, 1 );
+	shader.hidewheninmenu = 1;
+	shader.fadewhentargeted = 1;
+	shader setShader( "specialty_tombstone_zombies", 3, 3 );
+	shader setWaypoint( 1 );
+    shader thread change_icon();
+    self waittill( "stop_all_shaders" );
+    shader fadeOverTime( 2 );
+    shader.alpha = 0;
+    wait 2.1;
+	shader destroy();
+}
+
+change_icon()
+{
+    level endon( "end_game" );
+    while( isdefined( self ) )
+    {
+        self setshader( "menu_mp_party_ease_icon", 3, 3 );
+        self.color = ( 1, 1, 0 );
+        self setWaypoint( true );
+        wait 0.25;
+        self setshader( "menu_mp_killstreak_select", 3, 3 );
+        self setWaypoint( true );
+        self.color = ( 1, 1, 0 );
+        wait 0.25;
+        self setshader( "specialty_tombstone_zombies", 3, 3 );
+        self setWaypoint( true );
+        self.color = ( 1, 1, 0 );
+        wait 0.25;
+    }
 }
 
 do_damage_cloud()
@@ -596,6 +650,7 @@ monitor_arrive_farm()
             self notify( "stop_following_clouds" );
             self notify( "stop_damage_clouds" );
             self.surround_cloud.origin = self.origin + ( 0, 0, -800 );
+            self notify( "stop_all_shaders" );
             wait 1;
             if( isdefined( self.surround_cloud ) )
             {
@@ -885,15 +940,15 @@ do_guide_blockers_dialog()
     level thread machine_says( "^2Dr. Schruder: ^7" + "What the hell was that?!", "Are you okay?", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^2Dr. Schruder: ^7" + "^6Spirit Of Sorrow^7 really wants you guys dead..", "I can't let that happen!", 7, 1 );
+    level thread machine_says( "^2Dr. Schruder: ^7" + "^6Spirit Of Sorrow^7 really wants to get rid of you guys, huh.", "I can't let that happen!", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^2Dr. Schruder: ^7" + "It seems that those clouds went away for now.", "However there is still a heavy mist present", 7, 1 );
+    level thread machine_says( "^2Dr. Schruder: ^7" + "It seems that the clouds are gone for now.", "However there seems to bea a heavy mist still present", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^2Dr. Schruder: ^7" + "We need to craft a Immunity Elixir!", "", 5, 1 );
+    level thread machine_says( "^2Dr. Schruder: ^7" + "We could craft some sorta ^6elixir drink ^7that allows you to have immunity against those poisonous clouds.. ", "The drink requires multiple ingredients from different ^6soda machines^7!", 10, 1 );
     level notify( "stop_mus_load_bur" );
-    wait 8;
+    wait 12;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread machine_says( "^2Dr. Schruder: ^7" + "Go locate the mixing container from ^5Bus Depo^7.", "Be fast, I don't know when the clouds strike again!", 7, 1 );
     
@@ -903,18 +958,20 @@ level_waittill_continue_mq()
     level waittill( "continue_main_quest_farm" );
     level thread do_guide_blockers_dialog();
     level thread playloopsound_buried();
-    //spawn blockers to guide player 
-    level thread level_guide_players_to_depo_blockers();
+    //spawn blockers to guide player , this shit sucks and dont have time to make it work better.
+    //level thread level_guide_players_to_depo_blockers();
     foreach( p in level.players ) { p setclientdvar( "r_fog", 1 ); p setclientdvar( "r_sky_intensity_factor0", 0.8 ); }
     //clouds have now disappeared and players must pick up suit case
     //this notifies warmer_days_mq_08_poisonous_adventure script function and starts new logic from there
     level notify( "poisonous_adventure_find_case" );
     wait 1;
     level waittill( "someone_picked_up_poison" );
+    
     foreach( playe in level.players )
     {
         playe setclientdvar( "r_fog", false );
         playe setclientdvar( "r_dof_tweak", false );
+        playe setclientdvar( "r_sky_intensity_factor0", 3 );
     }
     if( level.dev_time ) { iprintlnbold( "someone_picked_up_poison_suitcase" ); }
 
@@ -1210,8 +1267,8 @@ move_to_farmgoal( value ) //max time to move = 70 seconds from spawn to farm
 {
     level endon( "end_game" );
 
-    timer = randomintrange( 90, 100 );
-    self moveto( level.mq_clouds_goal[ value ], timer, 5, 30 );
+    timer = randomintrange( 130, 150 );
+    self moveto( level.mq_clouds_goal[ value ], timer, 5, 10 );
     self waittill( "movedone" );
     self thread hover_me_around();
 }

@@ -156,6 +156,7 @@ rise_suitcase()
         trigger waittill( "trigger", someone );
         
             level thread moveeverything( suitcase );
+            level specific_powerup_drop( "nuke", level.players[ 0 ].origin + ( 0, 0, 20 ) );
             level notify( "monitor_suitcases" );
             wait 0.05;
             trigger delete();
@@ -233,13 +234,13 @@ do_first_dialog()
     level thread playloopsound_buried();
     wait 2.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Excellent! You found the ^5mixing container^7..", "You'll need the suitcase in our next step..", 9, 1 );
+    do_dialog_here( "Excellent! You found the ^6mixing container^7..", "You'll need the suitcase in our next step..", 9, 1 );
     wait 10;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "The container will teleport on the ground, close to a ^4perk machine^7 once you're close to a one.", "You could test it right now. There should be a perk machine nearby.", 10, 1 );
+    do_dialog_here( "The container will teleport on the ground, close to a ^6soda machine^7 once you're close to a one.", "You could ^6test ^7it right now. There should be a soda machine nearby..", 10, 1 );
     wait 12;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "I'll let you figure out what to do next..", "Don't dissapoint me!", 7, 1 );
+    do_dialog_here( "I'll let you ^6figure out ^7what to do next..", "Don't dissapoint me!", 7, 1 );
     level notify( "stop_mus_load_bur" );
     wait 8;
     level thread are_players_close_to_spawn_suitcase();
@@ -247,12 +248,12 @@ do_first_dialog()
     level waittill( "all_suitcases_collected" );
     wait 0.35;
     level thread playloopsound_buried();
-    wait 1.8;
+    wait 2.8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Hahaa, wunderbaar!", "You're quite a sharp shooter.", 8, 1  );
     wait 5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "The container is full of different mixes!", "You could try your luck next at labs...", 9, 1 );
+    do_dialog_here( "The container is now full of different sodas!", "You could try your luck next at ^6labs^7..", 9, 1 );
     level notify( "stop_mus_load_bur" );
     wait 10;
     level waittill( "crafting_serum" );
@@ -264,8 +265,28 @@ do_first_dialog()
     do_dialog_here( "Fantastic, you've crafted the potion!", "", 6, 1 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "You should be immune to Element ^5115 Clouds^7 now.", "Keep an eye on the immune meter, it tells you if you need a refill of drinks", 8, 1 );
+    do_dialog_here( "You should now be ^6immune ^7to those toxic clouds now..", "Are you feeling safe to step outside now..?", 8, 1 );
     wait 11;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    do_dialog_here( "Hahaa you know what, I'm just teasing you now.. ", "Sometimes I like to have my fun too!", 8, 1 );
+    wait 11;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    do_dialog_here( "I am so proud of you.. we should ^6celebrate^7 a bit..", "Meet me at the ^6bar^7!", 8, 1 ); 
+    level notify( "wait_for_bar_meetup" );
+    wait 11;
+
+    //continue from here
+    //continue from here
+    //continue from here
+    //continue from here
+    //continue from here
+    //continue from here
+    //continue from here
+    //continue from here
+    //continue from here
+    //continue from here
+    //continue from here
+    //continue from here
     //do_dialog_here( "Brilliant, have you already colleceted your ^3Fire Grenades^7?", "You'll be needing them next.", 7, 1 );
     
     
@@ -509,9 +530,12 @@ spawn_drinkable_step()
                 wait 0.05;
                 who giveWeapon( "zombie_perk_bottle_tombstone" );
                 who switchToweapon( "zombie_perk_bottle_tombstone" );
-                wait 2.5;
+                wait 2;
+                who playsound( "vox_plr_0_exert_burp_0" );
+                wait 1.5;
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_perk_bottle_tombstone" );
+                who playsound( "evt_bottle_dispense" );
                 foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
                 level thread machine_says(  "^2" + who.name + "^7 upgraded their ^2abilities.^7", "Survivor now has an ^3Immunity Drink ^7effect.", 4.5, 0.15 );
                 wait 0.1;
@@ -795,7 +819,8 @@ spawn_rogue_bottle( location )
         mq_trigger_shot waittill(  "damage", amount, attacker );
         if( isplayer( attacker ) )
         {
-            playfx( level.myFx[ 96 ], mq_trigger_shot.origin );
+            playfx( level.myFx[ 96 ], mq_shooting_bottle.origin );
+            playfxontag( level.myFx[ 94 ], mq_shooting_bottle, "tag_origin");
             PlaySoundAtPosition(level.jsn_snd_lst[ 43 ] , mq_trigger_shot.origin );
             mq_shooting_bottle notify( "stop_hovers" );
             break;
@@ -818,6 +843,7 @@ spawn_rogue_bottle( location )
             }
             level thread add_spark_fx_then_delete( mq_shooting_bottle );
             PlaySoundAtPosition(level.jsn_snd_lst[ 43 ] , mq_trigger_shot.origin );
+            playfxontag( level.myFx[ 94 ], mq_shooting_bottle, "tag_origin");
            // playfx( level.myFx[ 96 ], mq_shooting_bottle.origin );
             playFXOnTag( level.myFx[ 33 ], mq_shooting_bottle, "tag_origin" );
             mq_shooting_bottle notify( "stop_hovers" );
@@ -844,7 +870,7 @@ spawn_rogue_bottle( location )
         level notify( "all_suitcases_collected" );
     }
     
-    playfxontag( level.myFx[ 92 ], mq_shooting_bottle, "tag_origin" );
+   // playfxontag( level.myFx[ 92 ], mq_shooting_bottle, "tag_origin" );
     if( isdefined( mq_trigger_shot ) )
     {
         playfx( level.myFx[ 90 ], mq_trigger_shot.origin );

@@ -120,6 +120,8 @@ explosive_tracer_bullet()
 rotateGunUpgrade()
 {
     level endon("end_game");
+    wait randomintrange( 2, 10 );
+    
     while ( true )
     {
         self rotateyaw( 360, 2, 0, 0 );
@@ -147,19 +149,19 @@ explosive_tracer_spawn()
     gunOrigin = ( 8368.38, -4742.97, 100 );
     trigger = spawn( "trigger_radius", gunOrigin, 26, 26, 40 );
     trigger SetCursorHint("HINT_NOICON");
-    trigger setHintString( "^2[ ^3[{+activate}] ^7to upgrade you bullet type! [ ^2Cost^7: ^37500 ^7]  ^2]" );
+    trigger setHintString( "^2[ ^3[{+activate}] ^7to upgrade you bullet type to ^3Martyr's Explosives^7! ^2Cost^7: ^37500 ^2]" );
     //level thread LowerMessage( "Custom Perks", "Hold ^6[{+activate}] ^7to upgrade your ^6bullet type^7 [Cost:^6 20000^7]" );
     //trigger setLowerMessage( trigger, "Custom Perks"  );
 
     paploc = ( 59872.7, 141818, 88737.5 );
     //playfx( level._effect["lght_marker"], gunOrigin + ( 0, 0, -40 ) );
 
-    gun = spawn("script_model", gunOrigin +( 0, 0, -10 ) );
+    gun = spawn("script_model", gunOrigin +( 0, 0, 8 ) );
     gun setModel( "t6_wpn_launch_usrpg_world" );
-    gun.angles = ( 90, 0, 0 );
+    gun.angles = (  -45, 0, 0 );
     wait .1;
     gun thread rotateGunUpgrade();
-    playfx(level._effect[ "powerup_on"], gunOrigin + ( 0, 0, 10 ) );
+    playfx(level._effect[ "powerup_on"], gunOrigin + ( 0, 0, 3 ) );
     gun playLoopSound( "zmb_spawn_powerup_loop" );
 
     portal = spawn( "script_model", gunOrigin + ( 0, 0, -55 ) );

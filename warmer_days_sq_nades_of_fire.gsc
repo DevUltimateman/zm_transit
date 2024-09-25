@@ -467,7 +467,7 @@ firegrenade_player_wait_for_upgrade()
     
     //the real on screen subtitles for this step
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
-    self _someone_unlocked_something_client( "What!? How did you find all the nades so quickly?", "Silly you, you still have things to do.. ^3Zombie ^7go boom! ", 8, 0.1 );
+    self _someone_unlocked_something_client( "^2Dr. Schruder: ^7What!? How did you find all the nades so quickly?", "Silly you, you still have things to do.. ^3Zombie ^7go boom! ", 8, 0.1 );
 
     //notify the waittill("its_time") to progress into firenade step 2
     self notify( "its_time" ); //custom noti / waittill
@@ -623,12 +623,12 @@ firegrenade_go_poke( grenade_model, who_id )
             temporarily_targeted_zombies[ x ] = zombies[ i ];
             x++;
             //use this mark for level ignore find flesh global
-            temporarily_targeted_zombies[ x ] .marked_to_summon = true;
-            if( isAlive( temporarily_targeted_zombies[ x ]  ) )
-            {
-                temporarily_targeted_zombies[ x ].a.nodeath = true; //all zombies[ i ] inside of isAlive() has been previously coded as self.
-                temporarily_targeted_zombies[ x ]  notify( "killanimscript" );
-            }
+            temporarily_targeted_zombies[ x ].marked_to_summon = true;
+            //if( isAlive( temporarily_targeted_zombies[ x ]  ) )
+            //{
+                //temporarily_targeted_zombies[ x ].a.nodeath = true; //all zombies[ i ] inside of isAlive() has been previously coded as self.
+                //temporarily_targeted_zombies[ x ]  notify( "killanimscript" );
+            //}
             
         }
     }
@@ -664,7 +664,7 @@ firegrenade_go_poke( grenade_model, who_id )
 
     //remove array to free up usage
     array_delete( temporarily_targeted_zombies );
-    //we seem to leave a trail fx hanging on the sky meaning that said fx's entity does not get removed from the world
+    //we seem to leave a trail fx hanging on the sky sometimes meaning that said fx's entity does not get removed from the world from previous logic for some reason
     if( isdefined( grenade_model ) ) { grenade_model delete(); }
 }
 
@@ -686,8 +686,8 @@ find_and_destroy_zombie( zombie_to_kill, orb_from_sky )
         wait .05;
     }
     playfxontag( level.myf[ 68 ], zombie_to_kill, zombie_to_kill getTagOrigin( "j_head" ) );
-    
-    level thread move_fire_below_and_delete( level.myfx[ 70 ], zombie_to_kill.origin );
+    wait 0.1;
+    level thread move_fire_below_and_delete( level.myfx[ 70 ], zombie_to_kill.origin + ( 0, 0, 90 ) );
     zombie_to_kill doDamage( zombie_to_kill.health + 1000, zombie_to_kill.origin );
     zombie_to_kill StartRagdoll();
 
@@ -755,6 +755,7 @@ firegrenade_touched( who )
     self endon( "disconnect" );
     level endon( "end_game" );
     self endon( "gucci" );
+    amount = 0;
     while( isdefined( self ) )
     {
         for( i = 0; i < level.trigger_to_hit_with_nade.size; i++ )
@@ -769,7 +770,15 @@ firegrenade_touched( who )
                     who.hits++;
                     who.hit_list[ i ] = true;
                     wait 0.05;
-                    who _someone_unlocked_something_client( "Fire Grenades Found", "^2[ ^7" + who.hits + " ^1/^7 5 ^2]", 4, 1 );
+                    for( s = 0; s < who.hit_list.size; s++ )
+                    {
+                        if( who.hit_list[ s ] == true )
+                        {
+                            amount++;
+                        }
+                        else { amount = amount; }
+                    }
+                    who _someone_unlocked_something_client( "Fire Grenades Found", "^2[ ^7" + amount + " ^3/^7 5 ^2]", 4, 1 );
                     //who.hits++; //increase player who hit score
                     iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
                     //self notify( "gucci" ); 

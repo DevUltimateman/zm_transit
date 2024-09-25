@@ -340,8 +340,8 @@ spawn_looping_wire_fx()
     playfxontag( level.myfx[ 2 ], spawn1, "tag_origin" );
     playfxontag( level.myfx[ 2 ], spawn2, "tag_origin" );
     wait 0.05;
-    playfxontag( level.myFx[ 34 ], spawn1, "tag_origin" );
-    playfxontag( level.myFx[ 34 ], spawn2, "tag_origin" );
+    //playfxontag( level.myFx[ 34 ], spawn1, "tag_origin" );
+    //playfxontag( level.myFx[ 34 ], spawn2, "tag_origin" );
     wait 0.1;
     spawn1 thread go_cables();
     wait 3;
@@ -355,8 +355,16 @@ go_cables()
     {
         for( i = 0; i <  level.cable_loc.size; i++ )
         {
-            self moveto(  level.cable_loc[ i ], 1, 0, 0 );
+            if( self.origin == level.cable_loc[ level.cable_loc.size ] )
+            {
+                self moveto( level.cable_loc[ i ],  0.05, 0, 0 );
+                self waittill( "movedone" );
+            }
+            else {
+                self moveto(  level.cable_loc[ i ], 1, 0, 0 );
             self waittill( "movedone" );
+            }
+            
         }
         wait 0.1;
     }

@@ -229,6 +229,8 @@ precache_myfx()
 	level.myFx[ 97 ] = loadfx( "maps/zombie/fx_zmb_tranzit_power_on" );
     */
     
+	
+
 	level.myFx[ 82 ] = loadfx( "maps/zombie/fx_zmb_tranzit_power_rising" ); //cool
 	level.myFx[ 83 ] = loadfx( "maps/zombie/fx_zmb_avog_storm" ); //storm clouds above loop
 	level.myFx[ 84 ] = loadfx( "maps/zombie/fx_zmb_avog_storm_low" ); //no work

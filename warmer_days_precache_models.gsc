@@ -51,7 +51,7 @@ init()
     //level thread ondevs(); //remove from real version
     if( level.dev_time )
     {
-        level thread printmodel_origin_angles_based_on_player();
+        //level thread printmodel_origin_angles_based_on_player();
     }
     //
 

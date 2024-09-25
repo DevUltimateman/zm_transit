@@ -40,18 +40,72 @@
 
 main()
 {
-
+    //replacefunc( maps\mp\zombies\_zm_buildables::player_set_buildable_piece, ::c_player_set_buildable_piece );
 }
 
+waypoint_set_players()
+{
+    foreach( p in level.players )
+    {
+        p thread farm_waypoint();
+    }
+}
+farm_waypoint()
+{
+    locx = ( 8198.16 );
+    locy = ( -5042.4 );
+    locz = ( 48.125 );
+	shader = newClientHudElem( self );
+	shader.x = locx;
+	shader.y = locy;
+	shader.z = locz + 40;
+	shader.alpha = 1;
+	shader.color = ( 1, 1, 1 );
+	shader.hidewheninmenu = 1;
+	shader.fadewhentargeted = 1;
+	shader setShader( "specialty_tombstone_zombies", 3, 3 );
+	shader setWaypoint( 1 );
+    shader thread change_icon();
+    self waittill( "stop_all_shaders" );
+    shader fadeOverTime( 2 );
+    shader.alpha = 0;
+    wait 2.1;
+	shader destroy();
+}
+
+change_icon()
+{
+    level endon( "end_game" );
+    while( isdefined( self ) )
+    {
+        self setshader( "menu_mp_party_ease_icon", 3, 3 );
+        self.color = ( 1, 1, 0 );
+        self setWaypoint( true );
+        wait 0.25;
+        self setshader( "menu_mp_killstreak_select", 3, 3 );
+        self setWaypoint( true );
+        self.color = ( 1, 1, 0 );
+        wait 0.25;
+        self setshader( "specialty_tombstone_zombies", 3, 3 );
+        self setWaypoint( true );
+        self.color = ( 1, 1, 0 );
+        wait 0.25;
+    }
+}
 init()
 {
     //flag_wait( "initial_blackscreen_passed" );
+    precacheshader( "menu_mp_party_ease_icon" );
+    precacheshader( "menu_mp_killstreak_select" );
+    precacheshader( "specialty_tombstone_zombies" );
     level thread for_players();
     level thread CustomRoundNumber();
     flag_wait( "start_zombie_round_logic" );
+    //level thread waypoint_set_players(); //tested to work now fully, good for step 7 of main quwst to indicate farm safe location where need to getg
     level notify("end_round_think");
     wait 0.05;
     level thread round_think();
+    //buildbuildable( "dinerhatch", true, false );
 }
 for_players()
 {
@@ -59,7 +113,7 @@ for_players()
     while( true )
     {
         level waittill( "connected", pl );
-        pl thread brute_hud_visibility_off(); //default lua hud stays on too long
+       // pl thread brute_hud_visibility_off(); //default lua hud stays on too long
         pl thread test_firing_increase();
         pl thread score_hud_all();
         pl thread score_hud_all_ammo();
@@ -272,7 +326,7 @@ score_hud_all()
     wait 2;
     self thread update_score();
     wait 4.5;
-    self setclientuivisibilityflag( "hud_visible", 0 );
+    //self setclientuivisibilityflag( "hud_visible", 0 );
     
     //level.fogtime = 9999;
 }
@@ -429,6 +483,7 @@ scores_hud_ammo()
     
     self.weapon_ammo.x = 15;
     self.weapon_ammo.y = -76;
+    self.weapon_ammo.color = ( 0.65, 0.65, 0.65 );
     self.weapon_ammo SetValue(  self getWeaponAmmoClip( self getCurrentWeapon() ) );
     self.weapon_ammo.fontScale = 1.12;
     self.weapon_ammo.alignX = "center";
@@ -500,50 +555,42 @@ update_ammo_hud()
     while( true )
     {
         wait 0.05;
+        if( ammo_clip == ammo )
+        {
+            wait 0.05;
+        }
         weapon = self getCurrentWeapon();
         //self waittill( "weapon_fired" );
         ammo_clip = self getWeaponAmmoClip( weapon );
         ammo_stock = self getWeaponAmmoStock( weapon );
-        if( ammo_clip == ammo )
-        {
-            wait 0.05;
-            continue;
-        }
+        
         if(  ammo_clip < ammo && self getCurrentWeapon() == weapon )
         {
             self.weapon_ammo setvalue( ammo_clip  );
+            self.weapon_ammo.color = ( 0.65, 0.1, 0 );
             self.weapon_ammo_stock setValue( ammo_stock );
-            
             ammo = self getWeaponAmmoClip( weapon );
-            stock = self getWeaponAmmoStock( weapon );
-            if( self.weapon_ammo.color == ( 1, 1, 1 ) )
-            {
-                self thread change_col_ammo_clip_minus();
-            }
             wait 0.05;
+            self.weapon_ammo.color = ( 0.65, 0.65, 0.65 );
         }
         else if( ammo_clip > ammo && self getCurrentWeapon() == weapon )
         {
             self.weapon_ammo setvalue( ammo_clip );
             self.weapon_ammo_stock setValue( ammo_stock );
-            ammo = self getweaponammoclip( weapon );
-            stock = self getWeaponAmmoStock( weapon );
-            if( self.weapon_ammo.color == ( 1, 1, 1 ) )
-            {
-                self thread change_col_ammo_clip_plus();
-            }
+            ammo = self getweaponammoclip( weapon ); 
+            wait 0.05;
+            self.weapon_ammo.color = ( 0.1, 0.65, 0 );
         }
     }
 }
 
 change_col_ammo_clip_plus()
 {
-    self.weapon_ammo.color = ( 0.65, 0.65, 0.65 );
-    self.weapon_ammo fadeOverTime( 0.05 );
+    self.weapon_ammo fadeOverTime( 0.1 );
     //self.weapon_ammo_stock fadeOverTime( 0.15 );
     self.weapon_ammo.color = ( 0.6, 1, 0 );
     //self.weapon_ammo_stock.color = ( 1, 0.4, 0 );
-    wait 0.05;
+    wait 0.1;
     self.weapon_ammo fadeovertime( 0.05 );
     //self.weapon_ammo_stock fadeOverTime( 0.15 );
     wait 0.05;
@@ -554,11 +601,11 @@ change_col_ammo_clip_plus()
 change_col_ammo_clip_minus()
 {
     self.weapon_ammo.color = (0.65, 0.65, 0.65 );
-    self.weapon_ammo fadeOverTime( 0.05 );
+    self.weapon_ammo fadeOverTime( 0.1 );
     //self.weapon_ammo fadeOverTime( 0.15 );
     self.weapon_ammo.color = ( 1, 0.4, 0 );
     //self.weapon_ammo_stock.color = ( 1, 0.4, 0 );
-    wait 0.05;
+    wait 0.1;
     self.weapon_ammo fadeovertime( 0.15 );
     //self.weapon_ammo_stock fadeOverTime( 0.15 );
     wait 0.15;
@@ -609,8 +656,8 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
     level.huddefcon = create_simple_hud();
     level.huddefconline = create_simple_hud();
 
-    level.hud.x = 130;
-    level.hud.y = -120;
+    level.hud.x = 0;
+    level.hud.y = -80;
     level.hudtext.x = 0;
     level.hudtext.y = -120;
 	level.hud.alignx = "center";
@@ -626,12 +673,12 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
     level.hud.fontscale = 3;
 	level.hudtext.fontscale = 3;
 
-	level.hud.color = ( 1, 0.6, 0 );
-	level.hudtext.color = ( 1, 1, 1 );
+	level.hud.color = ( 0.45, 0, 0 );
+	//level.hudtext.color = ( 1, 1, 1 );
 
-    level.hudtext settext("^8Advancing To Defcon ");
+    level.hudtext settext("^9Loading Scenario: ");
 	level.hud settext( level.round_number );
-	level.huddefcon setText( "^9Defcon: " );
+	level.huddefcon setText( "^9Scenario: " );
     level.huddefcon.fontscale = 1.25; 
 	level.huddefcon.alpha = 0;
     
@@ -673,7 +720,6 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
 	level.hudtext fadeovertime( 1 );
     level.hud fadeovertime( 1 );
 	level.hudtext.alpha = 0;
-    level.hud.alpha = 1;
 	level.hud moveovertime( 1 );
 	level.hud.alignx = "center"; 
 	level.hud.aligny = "center";
@@ -683,14 +729,17 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
 	level.hud.y = 200;
 
     
-
+    wait 1.25;
 
     level.hud fadeOverTime( 0.5 );
     level.hud.alpha = 0;
-    wait 0.5;
-    level.hud settext( "^8" + level.round_number );
+    wait 1.5;
+    level.hud.color = ( 0.65, 0.65, 0.65 );
+    level.hud settext(  level.round_number );
     level.hud fadeovertime( 0.5 );
+    
     level.hud.alpha = 1;
+    wait 0.5;
 }
 
 
@@ -787,12 +836,12 @@ flashroundnumber()
 {
 	level.hud fadeovertime( 1 );
 	level.hud.alpha = 0;
-	wait 1; //og 1 
-    level.hud.color = ( 1, 0.6, 0 );
+	wait 1.2; //og 1 
+    level.hud.color = ( 0.45, 0, 0 );
 	level.hud settext(  level.round_number );
 
-    level.hud.x = 130;
-    level.hud.y = -120;
+    level.hud.x = 0;
+    level.hud.y = -80;
     level.hudtext.x = 0;
     level.hudtext.y = -120;
 
@@ -801,20 +850,22 @@ flashroundnumber()
 	level.hudtext fadeovertime( 1.5 );
     level.hud.alpha = 1;
 	level.hudtext.alpha = 1; //1;
-	wait 3;
+	wait 5;
 	level.hudtext fadeovertime( 1 );
 	level.hudtext.alpha = 0;
-	wait 1;
+	wait 1.1;
 	level.hud moveovertime( 1 );
 	level.hud.x = 307.5;
 	level.hud.y = 200;
-    wait 1;
+    wait 2;
     level.hud fadeOverTime( 0.5 );
     level.hud.alpha = 0;
-    wait 0.5;
-    level.hud settext( "^8" + level.round_number );
+    wait 1;
+    level.hud.color = ( 0.65, 0.65, 0.65 );
+    level.hud settext( level.round_number );
     level.hud fadeovertime( 0.5 );
     level.hud.alpha = 1;
+    wait 1;
 }
 
 staticPhaseText()
@@ -852,7 +903,7 @@ round_pause( delay ) //from zm-gsc, might use later
 	}
 	level.countdown_hud = create_counter_hud();
 	level.countdown_hud setvalue( delay );
-	level.countdown_hud.color = ( 1, 1, 1 );
+	level.countdown_hud.color = ( 0.8, 0, 0 );
 	level.countdown_hud.alpha = 1;
     level.countdown_hud.x = 0;
     level.countdown_hud.y = 0;
@@ -878,4 +929,36 @@ round_pause( delay ) //from zm-gsc, might use later
 	level.countdown_hud.alpha = 0;
 	wait 1;
 	level.countdown_hud destroy_hud();
+}
+
+
+
+player_set_buildable_piece( piece, slot )
+{
+    if ( !isdefined( slot ) )
+        slot = 0;
+
+/#
+    if ( isdefined( slot ) && isdefined( piece ) && isdefined( piece.buildable_slot ) )
+        assert( slot == piece.buildable_slot );
+#/
+
+    if ( !isdefined( self.current_buildable_pieces ) )
+        self.current_buildable_pieces = [];
+
+    self.current_buildable_pieces[slot] = piece;
+}
+
+
+c_player_set_buildable_piece( piece, slot )
+{
+    if( !isdefined( slot ) )
+    {
+        slot = 0;
+    }
+    if( !isdefined( self.current_buildable_pieces ) )
+    {
+        self.current_buildable_pieces = [];
+    }
+    self.current_buildable_pieces[ self.current_buildable_pieces[ self.current_buildable_pieces.size ] ] = piece;
 }

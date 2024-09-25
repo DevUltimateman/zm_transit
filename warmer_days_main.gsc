@@ -116,7 +116,7 @@ dev_visuals()
     self setclientdvar( "r_sky_intensity_factor0", 0.8  );
     self setclientdvar( "r_bloomtweaks", 1  );
     self setclientdvar( "cg_usecolorcontrol", 1 );
-    self setclientdvar( "cg_colorscale", "1.2 1 1"  );
+    self setclientdvar( "cg_colorscale", "1 1 1"  );
     self setclientdvar( "sm_sunsamplesizenear", 1.4  );
     self setclientdvar( "wind_global_vector", ( 200, 250, 50 )  );
     self setclientdvar( "r_fog", 0  );
