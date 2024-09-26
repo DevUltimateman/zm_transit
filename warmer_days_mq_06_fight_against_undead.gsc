@@ -148,7 +148,7 @@ spawn_lockdown_enabler( origin )
     //level waittill( "obey_spirit_complete" );
     trig = spawn( "trigger_radius_use", origin, 0, 85, 85 );
     trig setCursorHint( "HINT_NOICON" );
-    trig sethintstring( "^2[ ^3[{+activate}] ^7 to call ^4Spirit Of Sorrow ^7back! ^7Requires all survivors to be present. ^2]" );
+    trig sethintstring( "^9[ ^3[{+activate}] ^8 to call ^4Spirit Of Sorrow ^8back! ^8Requires all survivors to be present. ^9]" );
     trig TriggerIgnoreTeam();
     wait 0.1;
 
@@ -161,6 +161,7 @@ spawn_lockdown_enabler( origin )
     lamper.angles = ( 0, 180, 0 );
 
     wait 0.05;
+    lamper thread lrotateme();
     testfx = level.myfx[ 90 ];
     //cant stop looped fx thread, make a custom loop thread
     //playloopedfx( testfx, 0.35, lamper.origin );
@@ -176,6 +177,16 @@ spawn_lockdown_enabler( origin )
     trig delete();
     lamper delete();
     
+}
+
+lrotateme()
+{
+    level endon( "end_game" );
+    while( isdefined( self ) )
+    {
+        self rotateYaw( 360, 5, 0, 0 );
+        wait 5;
+    }
 }
 
 playlockdown_song()
@@ -341,10 +352,10 @@ spawn_lockdown_blockers()
     level thread playloopsound_buried();
     wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _someone_unlocked_something( "Seems like ^4Spirit Of Sorrow^7 has gone rogue.", "Be careful out there!", 7, 1 );
+    _someone_unlocked_something( "Seems like ^4Spirit Of Sorrow^8 has gone rogue.", "Be careful out there!", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _someone_unlocked_something( "Watch out for the poisonous gas!!!", "Get to your ^5Safe House^7 immediately!", 8, 1 );
+    _someone_unlocked_something( "Watch out for the poisonous gas!!!", "Get to your ^5Safe House^8 immediately!", 8, 1 );
     level notify( "stop_mus_load_bur" );
     
 }
@@ -366,13 +377,13 @@ playloopsound_buried()
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^2Dr. Schruder: ^7" + text, text2, duration, fadetimer );
+	level thread Subtitle( "^9Dr. Schruder: ^8" + text, text2, duration, fadetimer );
 }
 
 _spirit_of_sorrow_sub_text_alt( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-    level thread Subtitle( "^4Spirit Of Sorrow: ^7" + text, text2, duration, fadetimer );
+    level thread Subtitle( "^4Spirit Of Sorrow: ^8" + text, text2, duration, fadetimer );
 }
 
 Subtitle( text, text2, duration, fadeTimer )

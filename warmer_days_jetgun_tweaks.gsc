@@ -43,55 +43,7 @@ main()
     //replacefunc( maps\mp\zombies\_zm_buildables::player_set_buildable_piece, ::c_player_set_buildable_piece );
 }
 
-waypoint_set_players()
-{
-    foreach( p in level.players )
-    {
-        p thread farm_waypoint();
-    }
-}
-farm_waypoint()
-{
-    locx = ( 8198.16 );
-    locy = ( -5042.4 );
-    locz = ( 48.125 );
-	shader = newClientHudElem( self );
-	shader.x = locx;
-	shader.y = locy;
-	shader.z = locz + 40;
-	shader.alpha = 1;
-	shader.color = ( 1, 1, 1 );
-	shader.hidewheninmenu = 1;
-	shader.fadewhentargeted = 1;
-	shader setShader( "specialty_tombstone_zombies", 3, 3 );
-	shader setWaypoint( 1 );
-    shader thread change_icon();
-    self waittill( "stop_all_shaders" );
-    shader fadeOverTime( 2 );
-    shader.alpha = 0;
-    wait 2.1;
-	shader destroy();
-}
 
-change_icon()
-{
-    level endon( "end_game" );
-    while( isdefined( self ) )
-    {
-        self setshader( "menu_mp_party_ease_icon", 3, 3 );
-        self.color = ( 1, 1, 0 );
-        self setWaypoint( true );
-        wait 0.25;
-        self setshader( "menu_mp_killstreak_select", 3, 3 );
-        self setWaypoint( true );
-        self.color = ( 1, 1, 0 );
-        wait 0.25;
-        self setshader( "specialty_tombstone_zombies", 3, 3 );
-        self setWaypoint( true );
-        self.color = ( 1, 1, 0 );
-        wait 0.25;
-    }
-}
 init()
 {
     //flag_wait( "initial_blackscreen_passed" );

@@ -153,7 +153,7 @@ change_speed()
                 }
                 else 
                 { 
-                    iprintln( "zombies ^2" + z[ s ] + "^7 is not touching any safe volumes" ); 
+                    iprintln( "zombies ^9" + z[ s ] + "^7 is not touching any safe volumes" ); 
                 }
             }
         }
@@ -268,6 +268,11 @@ apply_movement_monitor()
         return;
     }
 
+    if( level.lock_down_enabled )
+    {
+        return;
+    }
+
     self_touched = false;
     while( true )
     {
@@ -295,23 +300,6 @@ apply_movement_monitor()
             }
         }
         wait 0.1;
-        /*
-        if( self get_current_zone() != cur_ && self_touched )
-        {
-            self_touched = false;
-            playfx( level._effects[ 77 ], self.origin );
-            xo = randomint( 10 );
-            if( xo < 5 )
-            {
-                self set_zombie_run_cycle( "sprint"  );
-            }
-            else 
-            {
-                self set_zombie_run_cycle( "super_sprint" );
-            }
-            
-        }
-        */
     }
 }
 
@@ -991,7 +979,7 @@ rocks_at_town_talk()
     level thread playloopsound_buried();
     wait 2;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Seems that lava pit at town's center has risen up few ^3Element 115 rocks..", "^7See if you can teleport them to underneath the pylon with something steamy..", 10, 1  );
+    do_dialog_here( "^9Element 115 rocks^8.. Lava at town's center has risen few above the pit.", "^7See if you can teleport them to underneath the pylon with something steamy..", 10, 1  );
     level thread wait_kill();
     level notify( "stop_mus_load_bur" );
     level waittill( "gnerators_start_floating" );
@@ -1158,7 +1146,7 @@ do_dialog_here( sub_up, sub_low, duration, fader )
     subtitle_lower = sub_low;
     durations = duration;
     fadetimer = fader;
-    level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, durations, fadetimer );
+    level thread machine_says( "^9Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, durations, fadetimer );
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )

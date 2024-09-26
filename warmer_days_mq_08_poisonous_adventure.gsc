@@ -190,14 +190,14 @@ moveeverything( suit_case )
 
     trigu = spawn( "trigger_radius_use", suit_case.origin, 48, 48, 48 );
     trigu setCursorHint( "HINT_NOICON" );
-    trigu setHintString( "^2[ ^3[{+activate}] ^7to pick up Poison^2]" );
+    trigu setHintString( "^9[ ^3[{+activate}] ^8to pick up Poison^9]" );
     trigu TriggerIgnoreTeam();
     wait 0.1;
     while( true )
     {
         trigu waittill( "trigger", who );
         who playsound( "zmb_sq_navcard_success" );
-        trigu sethintstring( "^5You ^7picked up ^2Poison^7!" );
+        trigu sethintstring( "^5You ^8picked up ^9Poison^8!" );
         suit_case notify( "stop_spinning" );
         suit_case delete();
         wait 2.5;
@@ -234,13 +234,13 @@ do_first_dialog()
     level thread playloopsound_buried();
     wait 2.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Excellent! You found the ^6mixing container^7..", "You'll need the suitcase in our next step..", 9, 1 );
+    do_dialog_here( "Excellent! You found the ^6mixing container^8..", "You'll need the suitcase in our next step..", 9, 1 );
     wait 10;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "The container will teleport on the ground, close to a ^6soda machine^7 once you're close to a one.", "You could ^6test ^7it right now. There should be a soda machine nearby..", 10, 1 );
+    do_dialog_here( "The container will teleport on the ground, close to a ^6soda machine^8 once you're close to a one.", "You could ^6test ^8it right now. There should be a soda machine nearby..", 10, 1 );
     wait 12;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "I'll let you ^6figure out ^7what to do next..", "Don't dissapoint me!", 7, 1 );
+    do_dialog_here( "I'll let you ^6figure out ^8what to do next..", "Don't dissapoint me!", 7, 1 );
     level notify( "stop_mus_load_bur" );
     wait 8;
     level thread are_players_close_to_spawn_suitcase();
@@ -253,7 +253,7 @@ do_first_dialog()
     do_dialog_here( "Hahaa, wunderbaar!", "You're quite a sharp shooter.", 8, 1  );
     wait 5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "The container is now full of different sodas!", "You could try your luck next at ^6labs^7..", 9, 1 );
+    do_dialog_here( "The container is now full of different sodas!", "You could try your luck next at ^6labs^8..", 9, 1 );
     level notify( "stop_mus_load_bur" );
     wait 10;
     level waittill( "crafting_serum" );
@@ -265,13 +265,13 @@ do_first_dialog()
     do_dialog_here( "Fantastic, you've crafted the potion!", "", 6, 1 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "You should now be ^6immune ^7to those toxic clouds now..", "Are you feeling safe to step outside now..?", 8, 1 );
+    do_dialog_here( "You should now be ^6immune ^8to those toxic clouds now..", "Are you feeling safe to step outside now..?", 8, 1 );
     wait 11;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Hahaa you know what, I'm just teasing you now.. ", "Sometimes I like to have my fun too!", 8, 1 );
     wait 11;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "I am so proud of you.. we should ^6celebrate^7 a bit..", "Meet me at the ^6bar^7!", 8, 1 ); 
+    do_dialog_here( "I am so proud of you.. we should ^6celebrate^8 a bit..", "Meet me at the ^6bar^8!", 8, 1 ); 
     level notify( "wait_for_bar_meetup" );
     wait 11;
 
@@ -287,7 +287,7 @@ do_first_dialog()
     //continue from here
     //continue from here
     //continue from here
-    //do_dialog_here( "Brilliant, have you already colleceted your ^3Fire Grenades^7?", "You'll be needing them next.", 7, 1 );
+    //do_dialog_here( "Brilliant, have you already colleceted your ^3Fire Grenades^8?", "You'll be needing them next.", 7, 1 );
     
     
 }
@@ -360,7 +360,7 @@ are_players_close_to_spawn_suitcase()
                     wait 0.1;
                     level.suitcases_collected++;
                     level.current_suitcase_location = level.suitcase_ground_positions[ s ];
-                    if( level.dev_time ){ iprintlnbold( "^2SUITCASE LOCATED, SPAWNING IT" ); }
+                    if( level.dev_time ){ iprintlnbold( "^9SUITCASE LOCATED, SPAWNING IT" ); }
                     level thread spawn_suitcase_perka( level.suitcase_ground_positions[ s ] );
 
                     wait 0.1;
@@ -467,7 +467,7 @@ spawn_drinkable_step()
     playfxontag( level.myFx[ 41 ], spawnable_lighter, "tag_origin" );
     anim_trig = spawn( "trigger_radius_use", origin_lo + ( 0, 0, 0 ), 1, 12, 12 );
     anim_trig setCursorHint( "HINT_NOICON" );
-    anim_trig sethintstring( "^1[ ^7Come back later ^1]" );
+    anim_trig sethintstring( "^9[ ^8Come back later ^9]" );
     anim_trig TriggerIgnoreTeam();
     spawnable_case.angles = ( 0, 180, 90 );
     level waittill( "all_suitcases_collected" );
@@ -481,7 +481,7 @@ spawn_drinkable_step()
     
     initial_hit = true;
     
-    anim_trig sethintstring( "^2[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^2]" );
+    anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^9Immunity Drink ^9]" );
     while( true )
     {
         anim_trig waittill( "trigger", who ); 
@@ -499,16 +499,16 @@ spawn_drinkable_step()
         
         if( who.has_immunity ) 
         {
-            anim_trig setHintString( "^2[ ^7You already have an ^3Immunity Drink^7 effect ^2]" );
+            anim_trig setHintString( "^9[ ^8You already have an ^9Immunity Drink^8 effect ^9]" );
             wait 2.5;
-            anim_trig sethintstring( "^2[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^2]" );
+            anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^9Immunity Drink ^9]" );
             wait 2.5;
         }
         if( is_player_valid( who ) )
         {
             if(  isdefined( who.has_immunity ) && !who.has_immunity  )
             {
-                anim_trig setHintString( "^2[ Mixing ^3Immunity Drink^7 ^2]" );
+                anim_trig setHintString( "^9[ Mixing ^9Immunity Drink^8 ^9]" );
                 who.has_immunity = true;
                 if( !isdefined( who.has_immunity_health ) )
                 {
@@ -526,7 +526,7 @@ spawn_drinkable_step()
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_builder_zm" );
                 wait 0.1;
-                anim_trig sethintstring( "^2[ ^3Immunity Drink ^7is ready to be consumed ^2]" );
+                anim_trig sethintstring( "^9[ ^9Immunity Drink ^8is ready to be consumed ^9]" );
                 wait 0.05;
                 who giveWeapon( "zombie_perk_bottle_tombstone" );
                 who switchToweapon( "zombie_perk_bottle_tombstone" );
@@ -537,9 +537,9 @@ spawn_drinkable_step()
                 who takeWeapon( "zombie_perk_bottle_tombstone" );
                 who playsound( "evt_bottle_dispense" );
                 foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-                level thread machine_says(  "^2" + who.name + "^7 upgraded their ^2abilities.^7", "Survivor now has an ^3Immunity Drink ^7effect.", 4.5, 0.15 );
+                level thread machine_says(  "^9" + who.name + "^8 upgraded their ^9abilities.^8", "Survivor now has ^9Immunity Drink ^8effects.", 4.5, 0.15 );
                 wait 0.1;
-                anim_trig sethintstring( "^2[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^2]" );
+                anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^9Immunity Drink ^9]" );
             }
             if( who.has_immunity == false && who.has_immunity_health < 50 )
             {
@@ -547,7 +547,7 @@ spawn_drinkable_step()
 
             if( isdefined( who.has_immunity ) && who.has_immunity_health < 100 )
             {
-                anim_trig setHintString( "^2[ ^7Mixing ^3Immunity Drink^2 ]" );
+                anim_trig setHintString( "^9[ ^8Mixing ^9Immunity Drink^9 ]" );
                 who playsound( "zmb_sq_navcard_success" );
                 
                 who.has_immunity_health = 1000;
@@ -559,8 +559,8 @@ spawn_drinkable_step()
                 wait waiter;
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_builder_zm" );
-                if( level.dev_time ){ iprintln( "^3 PLAYER HAS IMMUNITY HEALTHA AT ^7" + who.has_immunity_health ); }
-                anim_trig sethintstring( "^2[ ^3[{+activate}] ^7to take a zip of ^3Immunity Drink ^2]" );
+                if( level.dev_time ){ iprintln( "^3 PLAYER HAS IMMUNITY HEALTHA AT ^8" + who.has_immunity_health ); }
+                anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^9Immunity Drink ^9]" );
                 
                 
             }
@@ -712,7 +712,7 @@ spawn_rogue_bottle( location )
     mq_trigger_shot enablelinkto();
     
     mq_trigger_shot linkto( mq_shooting_bottle );
-    if( level.dev_time ){ iprintln( "TRIGGER ORG: ^1" + mq_trigger_shot.origin + " ^7\nBOTTLE ORG: ^2" + mq_shooting_bottle.origin ); }
+    if( level.dev_time ){ iprintln( "TRIGGER ORG: ^9" + mq_trigger_shot.origin + " ^8\nBOTTLE ORG: ^9" + mq_shooting_bottle.origin ); }
     playfxontag( level.myfx[ 1 ], mq_shooting_bottle, "tag_origin" );
     wait 0.05;
     playfxontag( level.myFx[ 34 ], mq_shooting_bottle, "tag_origin" );
@@ -902,7 +902,7 @@ do_dialog_here( sub_up, sub_low, duration, fader )
     subtitle_lower = sub_low;
     durations = duration;
     fadetimer = fader;
-    level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, durations, fadetimer );
+    level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper, subtitle_lower, durations, fadetimer );
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )

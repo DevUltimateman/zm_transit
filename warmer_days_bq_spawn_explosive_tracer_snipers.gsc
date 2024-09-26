@@ -146,10 +146,10 @@ explosive_tracer_spawn()
 
     level waittill("initial_blackscreen_passed");
     debugOrigin = ( 8118.79, -4821.86, 100 );
-    gunOrigin = ( 8368.38, -4742.97, 100 );
+    gunOrigin = ( 8458.78, -5090.77, 100 ); //8368.38, -4821.86, 100
     trigger = spawn( "trigger_radius", gunOrigin, 26, 26, 40 );
     trigger SetCursorHint("HINT_NOICON");
-    trigger setHintString( "^2[ ^3[{+activate}] ^7to upgrade you bullet type to ^3Martyr's Explosives^7! ^2Cost^7: ^37500 ^2]" );
+    trigger setHintString( "^8[ ^9[{+activate}] ^8to upgrade you bullet type to ^3Martyr's Explosives ^8]\n^8Cost: ^97500" );
     //level thread LowerMessage( "Custom Perks", "Hold ^6[{+activate}] ^7to upgrade your ^6bullet type^7 [Cost:^6 20000^7]" );
     //trigger setLowerMessage( trigger, "Custom Perks"  );
 
@@ -161,14 +161,17 @@ explosive_tracer_spawn()
     gun.angles = (  -45, 0, 0 );
     wait .1;
     gun thread rotateGunUpgrade();
-    playfx(level._effect[ "powerup_on"], gunOrigin + ( 0, 0, 3 ) );
+    //playfx(level._effect[ "powerup_on"], gunOrigin + ( 0, 0, 3 ) );
+    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
+    playfx( level.myFx[ 44 ] , gunorigin + ( 0, 0, -4 ) );
     gun playLoopSound( "zmb_spawn_powerup_loop" );
 
     portal = spawn( "script_model", gunOrigin + ( 0, 0, -55 ) );
     portal setmodel("p6_zm_screecher_hole" );
     portal.angles = ( 0, 180, 0 );
     wait 0.1;
-    
+    playfx( level.myFx[ 44 ] , portal.origin );
+    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
     playFXOnTag( level._effect[ "screecher_vortex" ], portal, "tag_origin" );
     portal playLoopSound( "zmb_screecher_portal_loop", 2 );
 

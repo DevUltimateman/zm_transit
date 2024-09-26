@@ -131,7 +131,7 @@ transmitter_wait_for_navcard()
     location = ( 7457.21, -431.969, -195.816 );
     navtrig = spawn( "trigger_radius_use", location, 0, 48, 48 );
     navtrig setcursorhint( "HINT_NOICON" );
-    navtrig sethintstring( "^2[ ^3[{+activate}] ^7to apply your ^3navcard^7 to the transmitter ^2]" );
+    navtrig sethintstring( "^9[ ^3[{+activate}] ^8to apply your ^9navcard^8 to the transmitter ^9]" );
     navtrig triggerignoreteam();
     wait 0.1;
     mod = spawn( "script_model", navtrig.origin );
@@ -147,7 +147,7 @@ transmitter_wait_for_navcard()
         {
             level.transmitter_part_done = true;
             level thread spawn_looping_wire_fx();
-            navtrig sethintstring( "^2[ ^7Success! ^3Navcard^7 applied to the transmitter ^2]" );
+            navtrig sethintstring( "^9[ ^8Success! ^9Navcard^8 applied to the transmitter ^9]" );
             who playsound( "zmb_sq_navcard_success" );
             navtrig playsound( "zmb_sq_navcard_success" );
 
@@ -158,7 +158,7 @@ transmitter_wait_for_navcard()
             //this notify triggers a thread from: warmer_days_meet_mr_s.gsc to make schruder talk with player
             //and starts the main quest step 4
             level notify( "s_talks_navcard" );
-            navtrig sethintstring( "^2[ ^7Transmitter is now sending ^3signals^7 to nearby ^3radiophones ^2]");
+            navtrig sethintstring( "^9[ ^8Transmitter is now sending ^9signals^8 to nearby ^9radiophones ^9]");
             wait 1;
             foreach( playa in level.players )
             {
@@ -309,7 +309,7 @@ flyby( element )
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^2Dr. Schruder: ^7" + text, text2, duration, fadetimer );
+	level thread Subtitle( "^9Dr. Schruder: ^8" + text, text2, duration, fadetimer );
 }
 
 
@@ -427,8 +427,8 @@ player_reward_marathon()
     self.talk_marathon[ 1 ].fontscale = 1.3;
     
 
-    self.talk_marathon[ 0 ] settext( "[ ^3Permament Perk Rewarded^7 ]" );
-    self.talk_marathon[ 1 ] settext( "[ ^3Jockie The Mockie^7 ]" );
+    self.talk_marathon[ 0 ] settext( "[ ^3Permament Perk Rewarded^8 ]" );
+    self.talk_marathon[ 1 ] settext( "[ ^3Jockie The Mockie^8 ]" );
     
     
     self.talk_marathon[ 0 ].alpha = 0;

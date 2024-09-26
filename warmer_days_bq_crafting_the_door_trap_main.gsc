@@ -320,7 +320,7 @@ level_spawns_main_door_stuff()
 {
     wait 0.1;
     level thread base_fxs();
-    sglobal_gas_quest_trigger_spawner( level.door_base_main_trigger_location, "^2[ ^3[{+activate}] ^7to build a main entrance barricade. ^2]", "^2[ ^3Main Zombie Barricade ^7was built ^2]", level.myfx[ 75 ], level.myfx[ 76 ], "main_door_unlocked" );
+    sglobal_gas_quest_trigger_spawner( level.door_base_main_trigger_location, "^9[ ^3[{+activate}] ^8to build ^3Main Entrance Blocker ^9]", "^9[ ^8Main Entrance Blocker ^8was built ^9]", level.myfx[ 75 ], level.myfx[ 76 ], "main_door_unlocked" );
 }
 
 //10
@@ -448,8 +448,8 @@ monitorDoorHealth()
                     zombie_hits_door = randomIntRange( 5, 25 );
                     playfxontag( level.myfx[ 9 ], zombies_[ i ], "j_elbow_le" );
                     level.door_health_ -= zombie_hits_door;
-                    if( level.dev_time ) { iprintln( "ZOMBIE hit main door and did ^1" + zombie_hits_door + " ^7amount of damage. ") ;
-                    iprintln( "MAIN DOOR HEALTH IS AT: ^3" + level.door_health_ + " ^7/ ^3 750" ); }
+                    if( level.dev_time ) { iprintln( "ZOMBIE hit main door and did ^1" + zombie_hits_door + " ^8amount of damage. ") ;
+                    iprintln( "MAIN DOOR HEALTH IS AT: ^3" + level.door_health_ + " ^8/ ^3 750" ); }
                 }
             }
         }
@@ -564,7 +564,7 @@ letPlayerPickUp()
     wait 0.05;
     p_t = spawn( "trigger_radius_use", self.origin, 48, 48, 48 );
     p_t setCursorHint( "HINT_NOICON" );
-    p_t setHintString( "^2[ ^3[{+activate}] ^7to pick up a repair barricade for ^3Safe House ^2]" );
+    p_t setHintString( "^9[ ^3[{+activate}] ^8to pick up a repair barricade for ^9Safe House ^9]" );
     p_t TriggerIgnoreTeam();
 
     while( true )
@@ -572,7 +572,7 @@ letPlayerPickUp()
         p_t waittill( "trigger", who );
         who playsound( "evt_player_upgrade" );
         //who playsound( "zmb_perks_packa_deny" );
-        p_t setHintString( "You picked up ^3Survivor Base ^7piece!" );
+        p_t setHintString( "^9[ ^8You picked up ^9Safe House ^8upgrade ^9]" );
         who.has_bar_piece++;
         self delete();
         wait 2;
@@ -588,7 +588,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
 
     level.main_door_tr = spawn( "trigger_radius_use", location, 0, 48, 48 );
     level.main_door_tr setCursorHint( "HINT_NOICON" );
-    level.main_door_tr sethintstring( "^2[ ^7Workbench requires more ^3Fence Pieces^2 ]" );    
+    level.main_door_tr sethintstring( "^9[ ^8Workbench requires more ^9Fence Pieces ]" );    
     level.main_door_tr triggerignoreteam();
     wait 0.05;
     i_m = spawn( "script_model", level.main_door_tr.origin );
@@ -682,29 +682,29 @@ monitorAfterWards()
     {
         if( level.door_health_ > 5 )
         {
-            self sethintstring( "^2[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^2]" );
+            self sethintstring( "^9[ ^8Door health: ^9" + level.door_health_ + " ^8/ ^9" + level.door_health_fixed_ + " ^9]" );
             wait 0.05;
             while( level.door_health_ > 5 )
             {
-                self sethintstring( "^2[ ^7Door health: ^5" + level.door_health_ + " ^7/ ^5" + level.door_health_fixed_ + " ^2]" );
+                self sethintstring( "^9[ ^8Door health: ^9" + level.door_health_ + " ^8/ ^9" + level.door_health_fixed_ + " ^9]" );
                 wait 1;                         
             }
         }
         
         if( level.door_needs_repairing )
         {
-            self sethintstring( "^2[ ^3[{+activate}] ^7to repair the door ^2]" );
+            self sethintstring( "^9[ ^3[{+activate}] ^8to repair the door ^9]" );
         }
         else if  ( !level.door_needs_repairing )
         {
-            self sethintstring( "^2[ ^7Door health: ^3" + level.door_health_ + " ^7/ ^3" + level.door_health_fixed_ + " ^2]" );
+            self sethintstring( "^9[ ^8Door health: ^9" + level.door_health_ + " ^8/ ^9" + level.door_health_fixed_ + " ^9]" );
         }
         self waittill( "trigger", who );
         if( level.door_health_ < 5 && level.pieces_added_to_door < 3 )
         {
             if( who.has_bar_piece > 0 )
             {
-                self sethintstring( "^2[ ^7You added a barricade piece to the door ^2]" );
+                self sethintstring( "^9[ ^8You added a barricade piece to the door ^9]" );
                 level.pieces_added_to_door++;
                 if( level.players_have_pieces > 0 )
                 {
@@ -720,14 +720,14 @@ monitorAfterWards()
                 self playlocal_plrsound();
                 if( level.pieces_added_to_door >= 3 )
                 {
-                    self sethintstring( "^2[ ^7The door is functional again ^2]" );
+                    self sethintstring( "^9[ ^8The door is functional again ^9]" );
                     level.pieces_added_to_door = 0;
                     level.door_health_ = level.door_health_fixed_;
                     level.door_needs_repairing = false;
                 }
             }
 
-            else { self sethintstring( "^1[ ^7You don't have the required barricade piece. ^1]" );}
+            else { self sethintstring( "^9[ ^8You don't have the required barricade piece ^9]" );}
         }
         wait 1.5;
     }
@@ -760,26 +760,26 @@ coop_print_base_notify_trap_main( which_notify, who_found )
     switch( which_notify )
     {
         case "gas_got_picked":
-        _someone_unlocked_something( "^2" + who_found.name + " ^7found some spoiled ^3Gasoline", "", 6, 1 );
+        _someone_unlocked_something( "^9" + who_found.name + " ^8found some spoiled ^9Gasoline", "", 6, 1 );
         break;
 
         case "littered_floor":
-        _someone_unlocked_something( "^2" + who_found.name + " ^7brought Gasoline^7 to ^3Safe House", "", 6, 1 );
+        _someone_unlocked_something( "^9" + who_found.name + " ^8brought Gasoline^8 to ^9Safe House", "", 6, 1 );
         break;
 
         case "fire_picking":
-        _someone_unlocked_something( "^2" + who_found.name + " ^7found some old ^3Fire Crackers", "", 6, 1 );
+        _someone_unlocked_something( "^9" + who_found.name + " ^8found some old ^9Fire Crackers", "", 6, 1 );
         break;
 
         case "firetrap_active":
-        _someone_unlocked_something( "^2" + who_found.name + " ^7finished upgrading ^3Safe House's ^7window entrance.", "Zombies climbing through said window will be ^3killed^7 by the crafted fire trap.", 8, 1 );
+        _someone_unlocked_something( "^9" + who_found.name + " ^8finished upgrading ^9Safe House's ^8window entrance.", "Zombies climbing through said window will be ^9killed^8 by the crafted fire trap.", 8, 1 );
         break;
 
         case "side_door_unlocked":
-        _someone_unlocked_something( "^2" + who_found.name + " ^7crafted a barricade on the side entrance of ^3Safe House ^7that blocks zombies.", "", 8, 1 );
+        _someone_unlocked_something( "^9" + who_found.name + " ^8crafted a barricade on the side entrance of ^9Safe House ^8that prevents zombies from entering the barn.", "", 8, 1 );
         break;
         case "main_door_unlocked":
-        _someone_unlocked_something( "^2" + who_found.name + " ^7crafted an air locking door mechanism on the main entrance of ^3Safe House.", "Keep an eye on the door's ^2health^7. There might be a time when it needs ^1repairing^7...", 9, 1 );
+        _someone_unlocked_something( "^9" + who_found.name + " ^8crafted an air locking door mechanism on the main entrance of ^9Safe House^8.", "^8Keep an eye on the door's ^9health^8. There might be a time when it needs ^9repairing^8..", 9, 1 );
         break;
         default:
         break;
@@ -950,12 +950,12 @@ spawn_collectables_for_bench() //works well now
     wait 1;
 
     trig_l = spawn( "trigger_radius_use", find_door_l.origin, 48, 48, 48 );
-    trig_l setHintString( "^2[ ^3[{+activate}] ^7to pick up an upgrade piece for ^3Safe House^2 ]" );
+    trig_l setHintString( "^9 ^3[{+activate}] ^8to pick up an upgrade piece for ^9Safe House ]" );
     trig_l setCursorHint( "HINT_NOICON" );
     trig_l TriggerIgnoreTeam();
     wait 0.1;
     trig_r = spawn( "trigger_radius_use", find_door_r.origin, 48, 48, 48 );
-    trig_r setHintString( "^2[ ^3[{+activate}] ^7to pick up an upgrade piece for ^3Safe House^2 ]" );
+    trig_r setHintString( "^9 ^3[{+activate}] ^8to pick up an upgrade piece for ^9Safe House ]" );
     trig_r setCursorHint( "HINT_NOICON" );
     trig_r TriggerIgnoreTeam();
 
@@ -989,7 +989,7 @@ waittill_pickup( switcher, model_to_delete )
             if( switcher == "door_r" )
             {
                 level.collected_door_pieces++;
-                level thread Subtitle( "^2" + who.name + " ^7found an upgrade piece that belongs to ^3Safe House^7!", "", 8, 2.5 );
+                level thread Subtitle( "^9" + who.name + " ^8found an upgrade piece that belongs to ^9Safe House", "", 8, 2.5 );
                 wait 0.05;
                 playfx( level._effect[ "fx_zmb_blackhole_trap_end" ], self.origin );
                 PlaySoundAtPosition( level.mysounds[ 3 ], self.origin );
@@ -1007,7 +1007,7 @@ waittill_pickup( switcher, model_to_delete )
             else if( switcher == "door_l" )
             {
                 level.collected_door_pieces++;
-                level thread Subtitle( "^2" + who.name + " ^7found a door piece that belongs to ^3Safe House^7!", "", 8, 2.5 );
+                level thread Subtitle( "^9" + who.name + " ^8found an upgrade piece that belongs to ^9Safe House", "", 8, 2.5 );
                 wait 0.05;
                 playfx( level._effect[ "fx_zmb_blackhole_trap_end" ], self.origin );
                 PlaySoundAtPosition( level.mysounds[ 3 ], self.origin );

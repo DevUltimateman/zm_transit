@@ -253,7 +253,7 @@ tell_fog()
     level endon( "end_game" );
     while( true )
     {
-        iprintln( "level fog currently: ^2level.current_fog = ^3" + level.current_fog );
+        iprintln( "level fog currently: ^9level.current_fog = ^3" + level.current_fog );
         wait 1;
     }
 }
@@ -1139,7 +1139,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
+        trig_ setHintString( "^9[ ^3[{+activate}] ^8to teleport yourself to: ^9" + land_loc + " ^9]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_diner, level.rift_camera_diner_angles, "3p_cabin_cam" );
     }
@@ -1154,7 +1154,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
+        trig_ setHintString( "^9[ ^3[{+activate}] ^8to teleport yourself to: ^9" + land_loc + " ^9]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_diner, level.rift_camera_diner_angles, "3p_corn_off_cam" );
     }
@@ -1169,7 +1169,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
+        trig_ setHintString( "^9[ ^3[{+activate}] ^8to teleport yourself to: ^9" + land_loc + " ^9]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_bepo, level.rift_camera_bepo_angles, "3p_short_cam" );
     }
@@ -1184,7 +1184,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString( "^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
+        trig_ setHintString( "^9[ ^3[{+activate}] ^8to teleport yourself to: ^9" + land_loc + " ^9]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_farm, level.rift_camera_farm_angles, "3p_depo_cam" );
     }
@@ -1199,7 +1199,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
+        trig_ setHintString("^9[ ^3[{+activate}] ^8to teleport yourself to: ^9" + land_loc + " ^9]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_corn, level.rift_camera_corn_angles, "3p_bridge_cam" );
     }
@@ -1214,7 +1214,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
+        trig_ setHintString("^9[ ^3[{+activate}] ^8to teleport yourself to: ^9" + land_loc + " ^9]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_town, level.rift_camera_town_angles, "3p_corn_cam" );
     }
@@ -1228,7 +1228,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
+        trig_ setHintString("^9[ ^3[{+activate}] ^8to teleport yourself to: ^9" + land_loc + " ^9]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_pstation, level.rift_camera_pstation_angles, "3p_diner_cam"  );
     }
@@ -1243,7 +1243,7 @@ spawn_callable_rift_ride( where, index )
         trig_ TriggerIgnoreTeam();
         wait 0.1;
         level waittill( "can_do_spirit_now" );
-        trig_ setHintString("^2[ ^3[{+activate}] ^7to teleport yourself to: ^3" + land_loc + " ^2]");
+        trig_ setHintString("^9[ ^3[{+activate}] ^8to teleport yourself to: ^9" + land_loc + " ^9]");
         level thread spawn_on_trig_( trig_ );
         trig_ thread call_summoning_on_player_logic( level.rift_camera_farm, level.rift_camera_farm_angles, "3p_town_cam" );
     }
@@ -1274,7 +1274,7 @@ all_fixable_spots_spawn_fixer_logic() //is in use
         fix_trig = spawn( "trigger_radius", level.fixable_spots[ sizer ], 0, 48, 48 );
         fix_trig setCursorHint( "HINT_NOICON" );
         wait 0.05;
-        fix_trig setHintString( "^1[ ^7Try fixing the lamp ^1]" );
+        fix_trig setHintString( "^9[ ^8Try fixing the lamp ^9]" );
         wait 0.05;
         fix_trig_available_fx = spawn( "script_model", level.fixable_spots[ sizer ] + ( 0, 0, -30 ) );
         fix_trig_available_fx setmodel( "tag_origin" );
@@ -1335,7 +1335,7 @@ monitor_everything( trigger_to_monitor, fixable_spot_integer ) //in use now
                         {
                             wait 1; //wait a second to not instantly notify that its fixed.
                             if( level.dev_time ) { iprintlnbold( "WE JUST REPAIRED A LAMP!!!!"); }
-                            trigger_to_monitor setHintString( "^2[ ^7Lamp got fixed ^2]" );
+                            trigger_to_monitor setHintString( "^9[ ^8Lamp got fixed ^9]" );
                             wait 1.5;
                             level thread just_in_case_apply( locs );
                             
@@ -1436,12 +1436,12 @@ check_which_light_needs_changing( location_of_light )
     {
         if( distance2d( location_of_light.origin, level.light_hinters[ i ].origin ) < 250 )
         {
-            if( level.dev_time ){ iprintlnbold( "WE JUST REMOVED THE LIGHT HINT FROM: ^1" + level.light_hinters[ i ].origin ); }
+            if( level.dev_time ){ iprintlnbold( "WE JUST REMOVED THE LIGHT HINT FROM: ^9" + level.light_hinters[ i ].origin ); }
             PlaySoundAtPosition( level.jsn_snd_lst[ 36 ], location_of_light.origin );
             wait 0.05;
             level.light_hinters[ i ] delete();
         }
-        else{ if( level.dev_time ) { iprintlnbold( "^1COULDN'T FIND LIGHT HINT NEAR THIS SETUP!!!" ); } }
+        else{ if( level.dev_time ) { iprintlnbold( "^9COULDN'T FIND LIGHT HINT NEAR THIS SETUP!!!" ); } }
     }
 }
 
@@ -1492,7 +1492,7 @@ lamps_fixed_schruder_speaks()
     _play_schruder_texts( "Ahh.. Very good!", "It seems that all the lamps are powered now!", 5, 1 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _play_schruder_texts( "Check if the lamps are sending signals to the ^5Main Frame^7.", "The computer should be located somewhere at ^5Power Station^7!", 7, 1 );
+    _play_schruder_texts( "Check if the lamps are sending signals to the ^5Main Frame^8.", "The computer should be located somewhere at ^5Power Station^8!", 7, 1 );
     wait 9;
     level notify( "stop_mus_load_bur" );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
@@ -1514,7 +1514,7 @@ spawn_rift_computer()
 
     trig_ = spawn( "trigger_radius_use", org, 0, 85, 85 );
     trig_ setCursorHint( "HINT_NOICON" );
-    trig_ setHintString( "^2[ [{+activate}] ^7to restore computer's save point ^2]" );
+    trig_ setHintString( "^9[ [{+activate}] ^8to restore computer's save point ^9]" );
     trig_ TriggerIgnoreTeam();
     wait 0.05;
     playFXOnTag( level.myfx[ 43 ], level.rift_comp, "tag_origin" );
@@ -1565,7 +1565,7 @@ computer_accessed_by_player( playa, a_comp )
     level thread playloopsound_buried();
     wait randomfloatrange( 3.1, 5.2 );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _play_schruder_texts( "Excellent stuff!", "^2" + playa + " ^7was able to restore signals via ^5Main Frame^7!" , 8, 1 );
+    _play_schruder_texts( "Excellent stuff!", "^9" + playa + " ^8was able to restore signals via ^5Main Frame^8!" , 8, 1 );
     wait 10;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     _play_schruder_texts( "Something's wrong with the computer..", "Access the control panel and restart the computer!", 6, 1 );
@@ -1581,7 +1581,7 @@ wait_for_access_panel_interact( a_comp_origin )
     
     trig_panel = spawn( "trigger_radius_use", level.access_panel_org, 0, 48, 48 );
     trig_panel setCursorHint( "HINT_NOICON" );
-    trig_panel setHintString( "^2[ ^3[{+activate}] ^7Restore computer's save point ^2]" );
+    trig_panel setHintString( "^9[ ^3[{+activate}] ^8Restore computer's save point ^9]" );
 
     //trig_panel UseTriggerRequireLookAt();
     trig_panel TriggerIgnoreTeam(); 
@@ -1610,7 +1610,7 @@ wait_for_access_panel_interact( a_comp_origin )
         wait 0.1;
         if( isdefined( who )  && isAlive( who ) )
         {
-            trig_panel setHintString( "^3[ ^7Accessing restore point.. ^3]" );
+            trig_panel setHintString( "^9[ ^8Accessing restore point.. ^9]" );
             wait 1.5;
             
             for( x = 0; x < 3; x++ )
@@ -1620,7 +1620,7 @@ wait_for_access_panel_interact( a_comp_origin )
                 wait 0.06;
             }
             wait 1;
-            trig_panel setHintString( "^1[ ^7Critical malfunction ^1]" );
+            trig_panel setHintString( "^9[ ^8Critical malfunction ^9]" );
             sfx playsound( level.jsn_snd_lst[ 39 ] );
             hinter movez( -1260, 0.1, 0, 0 );
             foreach( p in level.players )
@@ -1643,9 +1643,9 @@ wait_for_access_panel_interact( a_comp_origin )
             PlaySoundAtPosition( level.jsn_snd_lst[ 3 ], trig_panel.origin );
             wait 1;
             level thread play_scary_children(); //make some scary noises for the dark part
-            trig_panel setHintString("^2[ ^7Rebooting in progress.. ^2] " );
+            trig_panel setHintString("^9[ ^8Rebooting in progress.. ^9] " );
             wait 30;
-            trig_panel setHintString("^2[ ^7Rebooting Complete ^2] " );
+            trig_panel setHintString("^9[ ^8Rebooting Complete ^9] " );
             //trig_panel delete();
             hinter delete();
             sfx delete();
@@ -2108,7 +2108,7 @@ play_crows()
 _play_schruder_texts( subtitle_upper, subtitle_lower, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread SchruderSays( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, duration, fadetimer );
+	level thread SchruderSays( "^9Dr. Schruder: ^8" + subtitle_upper, subtitle_lower, duration, fadetimer );
 }
 
 SchruderSays( sub_up, sub_low, duration, fadeTimer )

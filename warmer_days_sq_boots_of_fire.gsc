@@ -430,7 +430,7 @@ f_boots1() //fireboot quest step1. Find 8 different fireboots around the map ( j
     wait 8;
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
     //activate this back when the crashing issue is figured out.
-    level thread _someone_unlocked_something( "You've located all the ^3fireboot^7 pieces, conqratulations!", "Quick, catch and summon them before they run away!", 8, 0.5 );
+    level thread _someone_unlocked_something( "You've located all the ^9fireboot^8 pieces, conqratulations!", "Quick, catch and summon them before they run away!", 8, 0.5 );
     wait 8;
     level notify( "fireboots_step1_completed" );
 }
@@ -440,7 +440,7 @@ f_boots3()
     level endon( "end_game" );
 
 
-    level thread _someone_unlocked_something( "Excellent! You've summoned all Fire Bootz!", "They're now yours to keep. Pick them up from ^3labs.", 8, 0.5 );
+    level thread _someone_unlocked_something( "Excellent! You've summoned all Fire Bootz!", "They're now yours to keep. Pick them up from ^9labs.", 8, 0.5 );
     //text up
     text_u = [];
     text_u[ 0 ] = "Excellent stuff!";
@@ -476,7 +476,7 @@ f_boots3()
 
     wait 1;
 
-    trigg setHintString( "Hold ^3[{+activate}]^7 to pick up ^3Lava Shoes^7" );
+    trigg setHintString( "^9[ Hold ^3[{+activate}]^8 to pick up your ^9Lava Shoes ]" );
     trigg setCursorHint( "HINT_NOICON" );
     while( true )
     {
@@ -501,7 +501,7 @@ f_boots3()
             {
                 
 
-                text_d = "Survivor ^3" + user.name + " ^7picked up  ^3Fire Bootz^7";
+                text_d = "^9" + user.name + " ^8picked up  ^9Fire Bootz^8";
                 temporary = randomint( text_u.size );
                 text_upper = text_u[ temporary ];
                 //small poof fx when picking up the boots
@@ -622,13 +622,13 @@ leg_trigger_logic( model_origin )
                 //seperate print function first time dont show the parts found hud text, only schruder
                 if( level.boots_found == 1 )
                 {
-                    upper_text = "^7Ah you've found the first piece of fireboots!";
+                    upper_text = "^8Ah you've found the first piece of fireboots!";
                     lower_text = _returnFireBootStepText();
                     level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
                 }
                 else
                 { 
-                    upper_text = "Fireboots found: ^3" + level.boots_found + "^7 / ^3" + ( level.fireboot_locations.size  );//- 1  ); 
+                    upper_text = "^8Fireboots found: ^9" + level.boots_found + "^8 / ^9" + ( level.fireboot_locations.size  );//- 1  ); 
                     lower_text = _returnFireBootStepText();
                     level thread _print_someone_found_boot_piece( upper_text, lower_text, 8, 0.1 );    
                 }
@@ -669,7 +669,7 @@ picking_up_boots_cooldown_others_timer( time )
 {
     level endon( "end_game" );
 
-    if( level.dev_time ){ iPrintLnBold( "BOOTS PICK UP COOLDOWN ^2ACTIVATED "); }
+    if( level.dev_time ){ iPrintLnBold( "BOOTS PICK UP COOLDOWN ^9ACTIVATED "); }
     level.boots_are_being_picked_up = true;
     
     wait( time );
@@ -785,7 +785,7 @@ fireboots_sound_before_locating( alias, which_active )
                 {
                     wait 0.1;
                     break_thread = true;
-                    if( level.dev_time ) { iprintln( "Distance between boot & " + p.name + " was ^2" + distance_p_object ); }
+                    if( level.dev_time ) { iprintln( "Distance between boot & " + p.name + " was ^9" + distance_p_object ); }
                     someone_located = true;
                     level.summoninglevel_active = true;
                     level.summoning_active[ which_active ] = true;
@@ -828,13 +828,13 @@ fireboots_sound_before_locating( alias, which_active )
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^2Dr. Schruder: ^7" + text, text2, duration, fadetimer );
+	level thread Subtitle( "^9Dr. Schruder: ^8" + text, text2, duration, fadetimer );
 }
 
 _print_someone_found_boot_piece( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle(  text, "^2Dr. Schruder: ^7" + text2, duration, fadetimer );
+	level thread Subtitle(  text, "^9Dr. Schruder: ^8" + text2, duration, fadetimer );
 }
 
 Subtitle( text, text2, duration, fadeTimer )
@@ -1026,28 +1026,28 @@ _returnFireBootStepText()
     switch( boots_found )
     {
         case 0: //apparently we skip this, implement if case in the main thread to include this text
-            step = "^7Ah you've found the first piece of fireboots!";
+            step = "^8Ah you've found the first piece of fireboots!";
             break;
         case 1:
-            step = "^7These fireboots will help you eventually travel through lava safely.";
+            step = "^8These fireboots will help you eventually travel through lava safely.";
             break;
         case 2:
-            step = "^7Where might the other fireboot pieces be located at..?";
+            step = "^8Where might the other fireboot pieces be located at..?";
             break;
         case 3:
-            step = "^7Oh, look another piece!";
+            step = "^8Oh, look another piece!";
             break;
         case 4:
-            step = "^7Few more to go..";
+            step = "^8Few more to go..";
             break;
         case 5:
-            step = "^7Tsah tsing! Piece found.";
+            step = "^8Tsah tsing! Piece found.";
             break;
         case 6:
-            step = "^7Last one?... One more!";
+            step = "^8Last one?... One more!";
             break;
         default:
-            step = "^7Ah finally!";
+            step = "^8Ah finally!";
         break;
     }
 

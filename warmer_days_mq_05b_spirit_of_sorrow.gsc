@@ -58,7 +58,7 @@ init()
     //locations for thunderfx during spirit
     level.thunder_s_loc = [];
     //entities during thunder spirit
-    level.thunderplayer = [];
+    //level.thunderplayer = [];
     //nacht fx locs
     level.nacht_power_fx_event = [];
     //wait till initial blackscreen, then execute thread
@@ -141,23 +141,24 @@ spirit_thunder_locations()
 {
     
     level.thunder_s_loc[ 0 ] = ( 7945.49, -419.728, 7468.53 );
+    thunders = [];
     wait 0.05;
     for( i = 0; i < level.thunder_s_loc.size; i++ )
     {
-        level.thunderplayer[ i ] = spawn( "script_model", level.thunder_s_loc[ i ] );
-        level.thunderplayer[ i ] setmodel( "tag_origin" );
+        thunders[ i ] = spawn( "script_model", level.thunder_s_loc[ i ] );
+        thunders[ i ] setmodel( "tag_origin" );
         wait 0.05;
     }
 
-    for( s = 0; s < level.thunderplayer.size; s++ )
+    for( s = 0; s < thunders.size; s++ )
     {
-        playfxontag( level.myFx[ 83 ], level.thunderplayer[ s ], "tag_origin" );
-        level.thunderplayer[ s ] thread spin_me();
+        playfxontag( level.myFx[ 83 ], thunders[ s ], "tag_origin" );
+        thunders[ s ] thread spin_me();
         wait 0.05;
     }
     level waittill( "destroy_clouds" );
     wait 0.1;
-    foreach( isser in level.thunderplayer )
+    foreach( isser in thunders )
     {
         isser delete();
     }
@@ -181,50 +182,50 @@ return_spirit_textline( switcher )
     switch( index )
     {
         case 1:
-            u_ = "Hi there! ";
-            d_ = "Fancy seeing you.. Aha, Where did that old fart disappear?!"; 
+            u_ = "^8Hi there! ";
+            d_ = "^8Where did that old fart go..?!"; 
             foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 8, 1 );  
             break;
 
         case 4:
-            u_ = "I couldn't resist the urge to come take a look at Mr. Schruder";
-            d_ = "Blah, I'm just mumbling!";
+            u_ = "^8What are you doing here anyways?!";
+            d_ = "^8Now listen up.";
             foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 3, 0.2 );
             break;
 
         case 5:
-            u_ = "I'm here to make sure that he does not return.";
-            d_ = "You'll be helping me next instead.";
+            u_ = "^8I'm here to make sure that Dr. Schruder does not return.";
+            d_ = "^8From now on you'll be helping me.";
             foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 5, 1 );
             break;
 
         case 9:
-            u_ = "A bit slow, aren't we?";
-            d_ = "Get following, we got things to do!";
+            u_ = "^8A bit slow, aren't we?";
+            d_ = "^8Get following, we got things to do!";
             foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 8, 1 );
             break;
 
         case 14:
-            u_ = "You guys are funny.";
-            d_ = "zzzZZzz";
+            u_ = "^8You know..";
+            d_ = "^8You're slower than you look!";
             foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 5, 1 );
             break;
         
         case 18:
-            u_ = "Ah I'm just playing around";
-            d_ = "Or am I you fools!";
+            u_ = "^8Ah I'm just playing around";
+            d_ = "^8Ooo, don't cancel me!";
             foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 7, 1 );
             break;
 
         case 22:
-            u_ = "See what I can do!";
-            d_ = "Aaaaaarggghh..!";
+            u_ = "^8See what I can do!";
+            d_ = "^8Aaaaaarggghh..!";
             foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 5, 0.3 );
             break;
@@ -641,7 +642,7 @@ monitor_players()
     
     //playfx( level._effect[ "lght_marker" ], mods.origin );
     cust_trig = spawn( "trigger_radius", loc, 48, 48, 48 );
-    cust_trig setHintString( "Requires more ^3survivors ^3to be present!" );
+    cust_trig setHintString( "^8Requires more ^9survivors ^8to be present!" );
     cust_trig setCursorHint( "HINT_NOICON" );
     
     //all players must stand in the sq common area before we proceed.

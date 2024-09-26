@@ -147,7 +147,7 @@ weapon_mark_1_spawn()
 
     
     trigger SetCursorHint("HINT_NOICON");
-    trigger setHintString( "^2[ ^3[{+activate}] ^7to upgrade you bullet type to ^6Plasma Rings^7! ^2Cost^7: ^615 000 ^2]" );
+    trigger setHintString( "^8[ ^9[{+activate}] ^8to upgrade you bullet type to ^2Ala-Hoopin ^8]\n^8Cost: ^915 000" );
     //level thread LowerMessage( "Custom Perks", "Hold ^6[{+activate}] ^7to upgrade your ^6bullet type^7 [Cost:^6 20000^7]" );
     //trigger setLowerMessage( trigger, "Custom Perks"  );
 
@@ -159,14 +159,17 @@ weapon_mark_1_spawn()
     gun.angles = ( -45, 0, 0 );
     wait .1;
     gun thread rotateGunUpgrade();
-    playfx(level._effect[ "powerup_on"], gunOrigin + ( 0, 0, -4 ) );
+    //playfx(level._effect[ "powerup_on"], gunOrigin + ( 0, 0, -4 ) );
+    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
     gun playLoopSound( "zmb_spawn_powerup_loop" );
 
     portal = spawn( "script_model", gunOrigin + ( 0, 0, -55 ) );
     portal setmodel("p6_zm_screecher_hole" );
     portal.angles = ( 0, 180, 0 );
     wait 0.1;
-    
+    playfx( level.myFx[ 44 ] , portal.origin );
+    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
+    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
     playFXOnTag( level._effect[ "screecher_vortex" ], portal, "tag_origin" );
     portal playLoopSound( "zmb_screecher_portal_loop", 2 );
 

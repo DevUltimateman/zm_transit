@@ -292,6 +292,7 @@ cloud_locations()
     additionals_[ 57 ] = ( 3159.41, -451.666, -123.456 );
     additionals_[ 58 ] = ( -5585.7, -510.778, 116.344 );
     additionals_[ 59 ] = ( -5886.36, 872.562, 247.875 );
+    additionals_[ 60 ] = ( -9235.19, 4189.46, 40.0473 );
 
     wait 1;
     for( s = 0; s < additionals_.size; s++ )

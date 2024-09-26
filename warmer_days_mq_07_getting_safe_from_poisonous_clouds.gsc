@@ -820,7 +820,7 @@ print_zone()
 
     while( true )
     {
-        self iprintln( "Im in : ^2" + self get_zone_name() );
+        self iprintln( "Im in : ^9" + self get_zone_name() );
         wait 1.5;
     }
 }
@@ -937,20 +937,20 @@ playloopsound_buried()
 do_guide_blockers_dialog()
 {
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^2Dr. Schruder: ^7" + "What the hell was that?!", "Are you okay?", 7, 1 );
+    level thread machine_says( "^9Dr. Schruder: ^8" + "What the hell was that?!", "Are you okay?", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^2Dr. Schruder: ^7" + "^6Spirit Of Sorrow^7 really wants to get rid of you guys, huh.", "I can't let that happen!", 7, 1 );
+    level thread machine_says( "^9Dr. Schruder: ^8" + "^6Spirit Of Sorrow^8 really wants to get rid of you guys, huh.", "I can't let that happen!", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^2Dr. Schruder: ^7" + "It seems that the clouds are gone for now.", "However there seems to bea a heavy mist still present", 7, 1 );
+    level thread machine_says( "^9Dr. Schruder: ^8" + "It seems that the clouds are gone for now.", "However there seems to bea a heavy mist still present", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^2Dr. Schruder: ^7" + "We could craft some sorta ^6elixir drink ^7that allows you to have immunity against those poisonous clouds.. ", "The drink requires multiple ingredients from different ^6soda machines^7!", 10, 1 );
+    level thread machine_says( "^9Dr. Schruder: ^8" + "We could craft some sorta ^6elixir drink ^8that allows you to have immunity against those poisonous clouds.. ", "The drink requires multiple ingredients from different ^6soda machines^8!", 10, 1 );
     level notify( "stop_mus_load_bur" );
     wait 12;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^2Dr. Schruder: ^7" + "Go locate the mixing container from ^5Bus Depo^7.", "Be fast, I don't know when the clouds strike again!", 7, 1 );
+    level thread machine_says( "^9Dr. Schruder: ^8" + "Go locate the mixing container from ^5Bus Depo^8.", "Be fast, I don't know when the clouds strike again!", 7, 1 );
     
 }
 level_waittill_continue_mq()

@@ -70,7 +70,7 @@ start_drunk_timer()
     level endon( "end_game" );
     //level.drunk_effect = false;
     time_to_beat = level.drunkness_time;
-    if( level.dev_time ){ iprintlnbold( "DRUNKTIME IN SECONDS ^2" + time_to_beat ); }
+    if( level.dev_time ){ iprintlnbold( "DRUNKTIME IN SECONDS ^9" + time_to_beat ); }
     wait 1;
     level.drunk_effect = true;
     for( i = 0; i < time_to_beat; i++ )
@@ -140,7 +140,7 @@ bottles_on_the_counter_logic()
     {
         trig = spawn( "trigger_radius_use", level.get_wasted_bottles[ a ].origin + ( 0, 0, -43 ) , 0, 2, 2 );
         trig setCursorHint( "HINT_NOICON" );
-        trig setHintString( "^2[ ^3[{+activate}] ^7to roll the dice on the drink.^2 ]" );
+        trig setHintString( "^9[ ^3[{+activate}] ^8to roll the dice on the drink.^9 ]" );
         trig TriggerIgnoreTeam();
         trig UseTriggerRequireLookAt();
         trig thread delete_in_case_not_hit();
@@ -196,7 +196,7 @@ wait_for_player_to_gamble()
                 self sethintstring( "" );
                 who thread do_drink_animation();
                 wait 1.5;
-                self setHintString( "^2[ ^7Drink contained ^1poison^7. Survivor's stamina reduced for a certain period of time. ^2]" );
+                self setHintString( "^9[ ^8Drink contained ^1poison^8. Survivor's stamina reduced for a certain period of time. ^9]" );
                 who thread reduce_stamina_for_certain_time();
                 //sfx
                 who playSound( level.jsn_snd_lst[ 91 ] );
@@ -220,7 +220,7 @@ wait_for_player_to_gamble()
                 self sethintstring( "" );
                 who thread do_drink_animation();
                 wait 1.5;
-                self setHintString( "^2[ ^7The drink contained some ^3antidote^7. ^2]" );
+                self setHintString( "^9[ ^8The drink contained some ^9antidote^8. ^9]" );
                 PlaySoundAtPosition(level.jsn_snd_lst[ 4 ], who.origin );
                 level notify( "stop_drinking_logic" );
                 wait 0.1;
@@ -547,13 +547,13 @@ dialogs_for_bar_step()
     level endon( "end_game" );
     //level waittill( "player_at_bar" );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here_too( "Well hello again my friend!", "Glad to see you doing fine..", 7, 1 );
+    do_dialog_here_too( "^8Well hello again my friend!", "^8Glad to see you doing fine..", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here_too( "I wanted to throw a party for your achievements!", "You've been a great help and I've never come across survivors like you guys..", 10, 1 );
+    do_dialog_here_too( "I wanted to throw a party for your achievements!", "^8You've been a great help and I've never come across survivors like you guys..", 10, 1 );
     wait 11;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here_too( "Here, come closer to the counter!", "The drinks are on me.. Feel free to pick any one of em!", 7, 1 );
+    do_dialog_here_too( "^8Here, come closer to the counter!", "^8The drinks are on me.. Feel free to pick any one of em!", 7, 1 );
     level notify( "spawn_drinks" );
     wait 5;
     while( level.players_can_try )
@@ -562,27 +562,27 @@ dialogs_for_bar_step()
     }
     wait 1.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here_too( "Fantastic!", "You drank too much now you cheeky bastard!", 7, 1 );
+    do_dialog_here_too( "^8Fantastic!", "^8You drank too much now you cheeky bastard!", 7, 1 );
     wait 9;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here_too( "I'll be in touch with you once you've sobered up.", "Watch out, you might be a bit stubmly now haha. Bye bye!", 7, 1 );
+    do_dialog_here_too( "^8I'll be in touch with you once you've sobered up.", "^8Watch out, you might be a bit stubmly now haha. Bye bye!", 7, 1 );
 }
 
 notify_on_drinks()
 {
     if( level.drinks_drank == 2 )
     {
-        do_dialog_here_too( "Good old brew..", "How about another one?", 3, 0.1 );
+        do_dialog_here_too( "^8Good old brew..", "^8How about another one?", 3, 0.1 );
     }
 
     if( level.drinks_drank == 3 )
     {
-        do_dialog_here_too( "Few don't seem to cause a problem.", "You're quite good at it!", 4, 0.1 );
+        do_dialog_here_too( "^8Few don't seem to cause a problem.", "^8You're quite good at it!", 4, 0.1 );
     }
 
     if( level.drinks_drank == 5 )
     {
-        do_dialog_here_too( "What?!", "Chugging them down like a champion!", 4, 0.1 );
+        do_dialog_here_too( "^8What?!", "^8Chugging them down like a champion!", 4, 0.1 );
     }
 }
 
@@ -593,7 +593,7 @@ do_dialog_here_too( sub_up, sub_low, duration, fader )
     subtitle_lower = sub_low;
     durations = duration;
     fadetimer = fader;
-    level thread machine_says( "^2Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, durations, fadetimer );
+    level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper, subtitle_lower, durations, fadetimer );
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )
