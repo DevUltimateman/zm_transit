@@ -1161,7 +1161,7 @@ spawn_callable_rift_ride( where, index )
     
     if( index == 2 ) //diner forest lamp, LANDING = BUS DEPOT CAMERA
     {
-        land_loc = "Grandtourissa's Bus Depo";
+        land_loc = "Marissa's Bus Depo";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
         trig_ setHintString( "");
         

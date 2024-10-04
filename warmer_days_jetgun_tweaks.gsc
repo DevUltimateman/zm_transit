@@ -65,11 +65,12 @@ for_players()
     while( true )
     {
         level waittill( "connected", pl );
-       // pl thread brute_hud_visibility_off(); //default lua hud stays on too long
+        pl thread brute_hud_visibility_off(); //default lua hud stays on too long
         pl thread test_firing_increase();
         pl thread score_hud_all();
         pl thread score_hud_all_ammo();
         pl thread play_name_hud_all();
+        pl thread do_location_hud(); 
     }
 }
 
@@ -195,10 +196,287 @@ sort_all_elements_in_group()
 
 }
 
+
+
+zone_name_hud()
+{
+	level endon("intermission");
+	self endon("disconnect");
+
+	wait 0.05;
+
+	prev_player = self;
+	prev_zone_name = "";
+    zone_name = "";
+	while ( true )
+	{
+		//player = self get_current_spectating_player();
+
+		zone = self get_current_zone();
+
+		if ( zone == prev_zone_name )
+		{
+			wait 0.05;
+			continue;
+		}
+
+        if( self.can_change && zone != prev_zone_name  )
+        {
+            self thread change_location();
+            prev_zone_name = self get_current_zone();
+        }
+		wait 0.05;
+	}
+}
+
+change_location()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    self.can_change = false;
+    self.location_hud fadeOverTime( 0.25 );
+    self.location_hud.alpha = 0;
+    wait 1;
+    self.location_hud settext( "^8" + update_location_hud_text( self get_current_zone() ) );
+    self.location_hud fadeovertime( 1 );
+    self.location_hud.alpha = 1;
+    wait 1;
+    self.can_change = true;
+    //update_location_hud_text( which_zone )
+}
+update_location_hud_text( which_zone )
+{
+
+		if (which_zone == "zone_pri")
+		{
+			name = "Marissa's Bus Depo";
+		}
+		else if (which_zone == "zone_pri2")
+		{
+			name = "Marissa's Bus Depo";
+		}
+		else if (which_zone == "zone_station_ext")
+		{
+			name = "Marissa's Bus Depo";
+		}
+		else if (which_zone == "zone_trans_2b")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_trans_2")
+		{
+			name = "Abandoned Tunnels";
+		}
+		else if (which_zone == "zone_amb_tunnel")
+		{
+			name = "Abandoned Tunels";
+		}
+		else if (which_zone == "zone_trans_3")
+		{
+			name = "Abandoned Tunnels";
+		}
+		else if (which_zone == "zone_roadside_west")
+		{
+			name = "Outside Diner";
+		}
+		else if (which_zone == "zone_gas")
+		{
+			name = "Mikey's Gas Station";
+		}
+		else if (which_zone == "zone_roadside_east")
+		{
+			name = "Mikey's Parkdrive";
+		}
+		else if (which_zone == "zone_trans_diner")
+		{
+			name = "Mikey's Diner Yard";
+		}
+		else if (which_zone == "zone_trans_diner2")
+		{
+			name = "Mikey's Parkdrive";
+		}
+		else if (which_zone == "zone_gar")
+		{
+			name = "Mikey's Garage";
+		}
+		else if (which_zone == "zone_din")
+		{
+			name = "Mikey's Diner";
+		}
+		else if (which_zone == "zone_diner_roof")
+		{
+			name = "Mikey's Diner";
+		}
+		else if (which_zone == "zone_trans_4")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_amb_forest")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_trans_10")
+		{
+			name = "Barry's Church";
+		}
+		else if (which_zone == "zone_town_church")
+		{
+			name = "Barry's Church";
+		}
+		else if (which_zone == "zone_trans_5")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_far")
+		{
+			name = "Denny's Happy Cow Farm";
+		}
+		else if (which_zone == "zone_far_ext")
+		{
+			name = "Denny's Happy Cow Farm";
+		}
+		else if (which_zone == "zone_brn")
+		{
+			name = "Denny's Safe House";
+		}
+		else if (which_zone == "zone_farm_house")
+		{
+			name = "Denny's Farmhouse";
+		}
+		else if (which_zone == "zone_trans_6")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_amb_cornfield")
+		{
+			name = "Lost Fields";
+		}
+		else if (which_zone == "zone_cornfield_prototype")
+		{
+			name = "WW2 Outpost";
+		}
+		else if (which_zone == "zone_trans_7")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_trans_pow_ext1")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_pow")
+		{
+			name = "Stalinburgh's Power Station";
+		}
+		else if (which_zone == "zone_prr")
+		{
+			name = "Stalinburgh's Power Station";
+		}
+		else if (which_zone == "zone_pcr")
+		{
+			name = "Stalinburgh's Control Room";
+		}
+		else if (which_zone == "zone_pow_warehouse")
+		{
+			name = "Stalinburgh's Warehouse";
+		}
+		else if (which_zone == "zone_trans_8")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_amb_power2town")
+		{
+			name = "Cabin Crystal Lake";
+		}
+		else if (which_zone == "zone_trans_9")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_town_north")
+		{
+			name = "Dr. Ravenholm's Townhall";
+		}
+		else if (which_zone == "zone_tow")
+		{
+			name = "Dr. Ravenholm's Town Center";
+		}
+		else if (which_zone == "zone_town_east")
+		{
+			name = "Dr. Ravenholm's Townhall";
+		}
+		else if (which_zone == "zone_town_west")
+		{
+			name = "Dr. Ravenholm's Townhall";
+		}
+		else if (which_zone == "zone_town_south")
+		{
+			name = "Dr. Ravenholm's Townhall";
+		}
+		else if (which_zone == "zone_bar")
+		{
+			name = "Dr. Ravenholm's Bar";
+		}
+		else if (which_zone == "zone_town_barber")
+		{
+			name = "Dr. Ravenholm's Bookstore";
+		}
+		else if (which_zone == "zone_ban")
+		{
+			name = "Dr. Ravenholm's Bank";
+		}
+		else if (which_zone == "zone_ban_vault")
+		{
+			name = "Dr. Ravenholm's Bank";
+		}
+		else if (which_zone == "zone_tbu")
+		{
+			name = "Dr. Ravenholm's Unidentified Basement";
+		}
+		else if (which_zone == "zone_trans_11")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_amb_bridge")
+		{
+			name = "";
+		}
+		else if (which_zone == "zone_trans_1")
+		{
+			name = "";
+		}
+
+        else if( which_zone == "" )
+        {
+            name = "Lost Fields";
+        }
+
+		return name;
+
+}
+do_location_hud()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    
+    self.location_hud = newClientHudElem( self );
+    self.location_hud settext( "^8Current Locationss" );
+    self.location_hud.fontscale = 1;
+    self.location_hud.alpha = 0;
+    self.location_hud.x = -395;
+    self.location_hud.y = 195;
+    self.location_hud.alignx = "left";
+    self.location_hud.aligny = "center";
+    self.location_hud.horzalign = "user_center";
+    self.location_hud.vertalign = "user_center";
+
+    self thread zone_name_hud();
+}
+
+
+
 move_all( opt, opt2, opt3, opt4, opt5, opt6, opt7, opt8, opt9 )
 {
     x_num = 360;
-    y_num = 280;
+    y_num = 290;
 
     opt.x = opt.x + x_num;
     opt.y = opt.y + y_num;
@@ -235,11 +513,11 @@ jetgun_value_hud()
     self endon( "disconnect" );
     self.custom_heat = 0;
     
-    self.jetgun_ammo_hud.x = 30;
-    self.jetgun_ammo_hud.y = -62;
+    self.jetgun_ammo_hud.x = 10;
+    self.jetgun_ammo_hud.y = -80;
     self.jetgun_ammo_hud.color = ( 0.65, 0.65, 0.65 );
     self.jetgun_ammo_hud SetValue( self.custom_heat );
-    self.jetgun_ammo_hud.fontScale = 1.22;
+    self.jetgun_ammo_hud.fontScale = 1.52;
     self.jetgun_ammo_hud.alignX = "center";
     self.jetgun_ammo_hud.alignY = "center";
     self.jetgun_ammo_hud.horzAlign = "user_center";
@@ -249,10 +527,10 @@ jetgun_value_hud()
     self.jetgun_ammo_hud fadeovertime( 1 );
     self.jetgun_ammo_hud.alpha = 1;
     
-    self.jetgun_name_hud.x = -2.5;
-    self.jetgun_name_hud.y = -62;
-    self.jetgun_name_hud SetText( "^9Heat value: ^7" );
-    self.jetgun_name_hud.fontScale = 1.22;
+    self.jetgun_name_hud.x = 30;
+    self.jetgun_name_hud.y = -77.5;
+    self.jetgun_name_hud Setshader( "zm_hud_icon_jetgun_gauges", 12, 12 );
+    self.jetgun_name_hud.fontScale = 1.52;
     self.jetgun_name_hud.alignX = "center";
     self.jetgun_name_hud.alignY = "center";
     self.jetgun_name_hud.horzAlign = "user_center";
@@ -278,7 +556,7 @@ score_hud_all()
     wait 2;
     self thread update_score();
     wait 4.5;
-    //self setclientuivisibilityflag( "hud_visible", 0 );
+    self setclientuivisibilityflag( "hud_visible", 0 );
     
     //level.fogtime = 9999;
 }
@@ -305,11 +583,11 @@ scores_hud()
 {
     level endon( "end_game" );
     self endon( "disconnect" );
-    
-    self.real_score_hud.x = 0;
-    self.real_score_hud.y = -90;
+     //x-20,y-134
+    self.real_score_hud.x = -5;
+    self.real_score_hud.y = -118;
     self.real_score_hud SetValue( self.score );
-    self.real_score_hud.fontScale = 1.12;
+    self.real_score_hud.fontScale = 1.72;
     self.real_score_hud.alignX = "center";
     self.real_score_hud.alignY = "center";
     self.real_score_hud.horzAlign = "user_center";
@@ -321,10 +599,10 @@ scores_hud()
     self.real_score_hud.color = ( 1, 0.7, 0 );
 
     
-    self.survivor_points.x = -22.5;
-    self.survivor_points.y = -90;
-    self.survivor_points SetText( "^9$ ^7" );
-    self.survivor_points.fontScale = 1.22;
+    self.survivor_points.x = 27.5;
+    self.survivor_points.y = -115;
+    self.survivor_points SetText( "^9$^7" );
+    self.survivor_points.fontScale = 1.42;
     self.survivor_points.alignX = "center";
     self.survivor_points.alignY = "center";
     self.survivor_points.horzAlign = "user_center";
@@ -433,11 +711,11 @@ scores_hud_ammo()
     level endon( "end_game" );
     self endon( "disconnect" );
     
-    self.weapon_ammo.x = 15;
-    self.weapon_ammo.y = -76;
+    self.weapon_ammo.x = -37.5;
+    self.weapon_ammo.y = -100;
     self.weapon_ammo.color = ( 0.65, 0.65, 0.65 );
     self.weapon_ammo SetValue(  self getWeaponAmmoClip( self getCurrentWeapon() ) );
-    self.weapon_ammo.fontScale = 1.12;
+    self.weapon_ammo.fontScale = 1.82;
     self.weapon_ammo.alignX = "center";
     self.weapon_ammo.alignY = "center";
     self.weapon_ammo.horzAlign = "user_center";
@@ -449,10 +727,10 @@ scores_hud_ammo()
 
 
     
-    self.ammo_slash.x = 25;
-    self.ammo_slash.y = -76;
-    self.ammo_slash SetText( " ^9/ " );
-    self.ammo_slash.fontScale = 1.22;
+    self.ammo_slash.x = -19.5;
+    self.ammo_slash.y = -100;
+    self.ammo_slash SetText( " ^9/  " );
+    self.ammo_slash.fontScale = 1.82;
     self.ammo_slash.alignX = "center";
     self.ammo_slash.alignY = "center";
     self.ammo_slash.horzAlign = "user_center";
@@ -463,10 +741,10 @@ scores_hud_ammo()
     self.ammo_slash.alpha = 1;
 
     
-    self.weapon_ammo_stock.x = 37.5;
-    self.weapon_ammo_stock.y = -76;
+    self.weapon_ammo_stock.x = 2;
+    self.weapon_ammo_stock.y = -100;
     self.weapon_ammo_stock SetValue(  self getWeaponAmmoStock( self getCurrentWeapon() ) );
-    self.weapon_ammo_stock.fontScale = 1.12;
+    self.weapon_ammo_stock.fontScale = 1.82;
     self.weapon_ammo_stock.alignX = "center";
     self.weapon_ammo_stock.alignY = "center";
     self.weapon_ammo_stock.horzAlign = "user_center";
@@ -478,16 +756,17 @@ scores_hud_ammo()
 
 
    
-    self.say_ammo.x = 2.5;
-    self.say_ammo.y = -76;
-    self.say_ammo SetText( "^9Ammo: " );
-    self.say_ammo.fontScale = 1.22;
+    self.say_ammo.x = 32.5 ;
+    self.say_ammo.y = -95;
+    self.say_ammo Setshader( "zm_hud_icon_ammobox", 12, 12 );
+    self.say_ammo.fontScale = 1.62;
     self.say_ammo.alignX = "right";
     self.say_ammo.alignY = "center";
     self.say_ammo.horzAlign = "user_center";
     self.say_ammo.vertAlign = "user_center";
     self.say_ammo.sort = 1;
     self.say_ammo.alpha = 0;
+    self.say_ammo.color = ( 0.9, 0.7, 0 );
     self.say_ammo fadeovertime( 1.5 );
     self.say_ammo.alpha = 1;
 
@@ -581,11 +860,11 @@ name_hud()
 {
     level endon( "end_game" );
     self endon( "disconnect" );
-    
+    //x-20,y-134
     self.playname.x = 0;
-    self.playname.y = -104;
+    self.playname.y = -134; //-104
     self.playname SetText(  self.name );
-    self.playname.fontScale = 1.22;
+    self.playname.fontScale = 1.52;
     self.playname.alignX = "center";
     self.playname.alignY = "center";
     self.playname.horzAlign = "user_center";
@@ -622,7 +901,7 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
 	level.hudtext.horzalign = "user_center";
 	level.hudtext.vertalign = "user_center"; //top
     
-    level.hud.fontscale = 3;
+    level.hud.fontscale = 4.5;
 	level.hudtext.fontscale = 3;
 
 	level.hud.color = ( 0.45, 0, 0 );
@@ -638,18 +917,18 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
 	level.huddefcon.aligny = "center";
 	level.huddefcon.horzalign = "user_center";
 	level.huddefcon.vertalign = "user_center";
-	level.huddefcon.x = 275;
+	level.huddefcon.x = -372.5;
 	level.huddefcon.y = 215;
 
-    level.huddefconline setShader( "white", 1, 50 );
+    level.huddefconline setShader( "white", 100, 1 );
     level.huddefconline.alignx = "center"; 
 	level.huddefconline.aligny = "center";
 	level.huddefconline.horzalign = "user_center";
 	level.huddefconline.vertalign = "user_center";
 	level.huddefconline.alpha = 0;
     
-	level.huddefconline.x = 325;
-	level.huddefconline.y = 180;
+	level.huddefconline.x = -345;
+	level.huddefconline.y = 207.5;
 
     level.huddefconline.color = ( 0.65, 0.5, 0 );
 	level.hudtext.alpha = 0;
@@ -671,14 +950,15 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
 
 	level.hudtext fadeovertime( 1 );
     level.hud fadeovertime( 1 );
+    level.hud.fontscale = 1.92;
 	level.hudtext.alpha = 0;
 	level.hud moveovertime( 1 );
 	level.hud.alignx = "center"; 
 	level.hud.aligny = "center";
 	level.hud.horzalign = "user_center";
 	level.hud.vertalign = "user_center";
-	level.hud.x = 307.5;
-	level.hud.y = 200;
+	level.hud.x = -335;
+	level.hud.y = 210;
 
     
     wait 1.25;
@@ -791,7 +1071,7 @@ flashroundnumber()
 	wait 1.2; //og 1 
     level.hud.color = ( 0.45, 0, 0 );
 	level.hud settext(  level.round_number );
-
+    level.hud.fontscale = 1.92;
     level.hud.x = 0;
     level.hud.y = -80;
     level.hudtext.x = 0;
@@ -807,8 +1087,8 @@ flashroundnumber()
 	level.hudtext.alpha = 0;
 	wait 1.1;
 	level.hud moveovertime( 1 );
-	level.hud.x = 307.5;
-	level.hud.y = 200;
+	level.hud.x = -335;
+	level.hud.y = 210;
     wait 2;
     level.hud fadeOverTime( 0.5 );
     level.hud.alpha = 0;

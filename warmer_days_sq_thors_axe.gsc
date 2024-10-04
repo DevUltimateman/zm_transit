@@ -36,10 +36,20 @@
 
 init()
 {
+    level thread level_play();
     flag_wait( "initial_blackscreen_passed" );
     level thread do_everything_for_axe_logic();
 }
 
+level_play()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        level waittill( "connected", p );
+        p thread print_player_piece();
+    }
+}
 do_everything_for_axe_logic()
 {
     level endon( "end_game" );
@@ -76,5 +86,164 @@ do_everything_for_axe_logic()
         mod delete();
         break;
 
+    }
+}
+
+print_player_piece()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    self waittill( "spawned_player" );
+    self thread do_shader_pickup();
+    wait 10;
+    while( true )
+    {
+        if( !isdefined( self player_get_buildable_piece() ) )
+        {
+            if( self._pickup_shader != "" )
+            {
+                self._pickup_shader fadeovertime( 1  );
+                self._pickup_shader.alpha = 0;
+                wait 1;
+                self._pickup_shader setshader( "" );
+            }
+            wait 0.1;
+        }
+        else
+        {
+            
+            iprintln( "PLAYER HAS PIECE: ^1" +  self player_get_buildable_piece().modelname );
+            self._pickup_shader fadeovertime( 1 );
+            self._pickup_shader.alpha = 1;
+            self._pickup_shader.width = 80;
+            self._pickup_shader.height = 80;
+            self._pickup_shader setshader( return_updated_shader( self player_get_buildable_piece().modelname ), 15, 15 );
+            wait 1;
+        }
+        wait 0.05;
+    }
+}
+
+
+return_updated_shader( get_player_piece )
+{
+    switch( get_player_piece )
+    {
+        case "p6_zm_buildable_turbine_mannequin":
+            return "zm_hud_icon_mannequin";
+        case "p6_zm_buildable_turbine_rudder":
+            return "zm_hud_icon_rudder";
+        case "p6_zm_buildable_turbine_fan":
+            return "zm_hud_icon_fan";
+        case "p6_zm_buildable_battery":
+            return "zm_hud_icon_battery";
+            case "t6_wpn_zmb_shield_dolly":
+            return "zm_hud_icon_dolly";
+            case "t6_wpn_zmb_shield_door":
+            return "zm_hud_icon_cardoor";
+            case "p6_zm_buildable_pswitch_hand":
+            return "zm_hud_icon_arm";
+            case "p6_zm_buildable_pswitch_body":
+            return "zm_hud_icon_panel";
+            case "p6_zm_buildable_pswitch_lever":
+            return "zm_hud_icon_lever";
+            case "p6_zm_buildable_pap_body":
+            return "zm_hud_icon_papbody";
+            case "p6_zm_buildable_pap_table":
+            return "zm_hud_icon_chairleg";
+            case "t6_wpn_lmg_rpd_world":
+            return "zm_hud_icon_turrethead";
+            case "p6_zm_buildable_turret_mower":
+            return "zm_hud_icon_lawnmower";
+            case "p6_zm_buildable_turret_ammo":
+            return "zm_hud_icon_ammobox";
+            case "p6_zm_buildable_etrap_base":
+            return "zm_hud_icon_coil";
+            case "p6_zm_buildable_etrap_tvtube":
+            return  "zm_hud_icon_tvtube";
+            case "p6_zm_buildable_jetgun_wires":
+            return "zm_hud_icon_jetgun_wires";
+            case "p6_zm_buildable_jetgun_engine":
+            return "zm_hud_icon_jetgun_engine";
+            case "p6_zm_buildable_jetgun_guages":
+            return "zm_hud_icon_jetgun_gauges";
+            case "p6_zm_buildable_jetgun_handles":
+            return "zm_hud_icon_jetgun_handles";
+            case "veh_t6_civ_bus_zombie_cow_catcher":
+            return "zm_hud_icon_plow";
+            case "veh_t6_civ_bus_zombie_roof_hatch":
+            return "zm_hud_icon_hatch";
+            case "com_stepladder_large_closed":
+            return "zm_hud_icon_ladder";
+            case "p6_zm_buildable_sq_electric_box":
+            return "zm_hud_icon_sq_powerbox";
+            case "p6_zm_buildable_sq_meteor":
+            return "zm_hud_icon_sq_meteor";
+            case "p6_zm_buildable_sq_scaffolding":
+            return "zm_hud_icon_sq_scafold";
+            case "p6_zm_buildable_sq_transceiver":
+            return "zm_hud_icon_sq_tranceiver";
+        default:
+        return;
+    }
+}
+
+do_shader_pickup()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+
+    r_width = 80;
+    r_height = 80;
+
+    width = 25;
+    height = 25;
+
+    self._pickup_shader = newClientHudElem( self );
+    self._pickup_shader.x = 410;
+    self._pickup_shader.y = 150;
+    self._pickup_shader.alignx = "center";
+    self._pickup_shader.aligny = "center";
+    self._pickup_shader.horzalign = "user_center";
+    self._pickup_shader.vertalign = "user_center";
+    self._pickup_shader.alpha = 0;
+    self._pickup_shader.foreground = true;
+    self._pickup_shader.hidewheninmenu = true;
+    self._pickup_shader setshader( "", 15, 15 );
+    self._pickup_shader.color = ( 1, 0.75, 0 );
+   // self thread update_shader();
+}
+
+update_shader()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    while( true )
+    {
+        shader = self player_get_buildable_piece().modelname;
+        if( self player_get_buildable_piece().modelname != shader )
+        {
+            self._pickup_shader setshader( self player_get_buildable_piece().name );
+            self._pickup_shader fadeovertime( 1.5 );
+            self._pickup_shader.alpha = 1;
+        }
+
+        if( self player_get_buildable_piece().modelname == "" )
+        {
+            if( self._pickup_shader.alpha == 1 )
+            {
+                self._pickup_shader fadeovertime( 1.5 );
+                self._pickup_shader.alpha = 0;
+                wait 1;
+                if( self player_get_buildable_piece().modelname == "" )
+                {
+                    while( self player_get_buildable_piece().modelname == "" )
+                    {
+                        wait 1;
+                    }
+                }
+            }
+        }
+        wait 0.1;
     }
 }
