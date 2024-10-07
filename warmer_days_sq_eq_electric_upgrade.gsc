@@ -92,6 +92,7 @@ init()
 {
     flag_wait( "initial_blackscreen_passed" );
     level thread all_shield_locations();
+    level thread apply_on_spawn_shield_();
 }
 
 all_shield_locations()
@@ -132,6 +133,14 @@ all_shield_locations()
     }
 }
 
+apply_on_spawn_shield_()
+{
+    foreach( p in level.players )
+    {
+        p thread monitor_melee_while_has_shield();
+        p thread shield_variables_on_spawn();
+    }
+}
 monitor_if_player_upgrades( model ) //needs fixing
 {
     level endon( "end_game" );
@@ -141,21 +150,256 @@ monitor_if_player_upgrades( model ) //needs fixing
         {
             if( distance( level.players[ i ].origin, model.origin ) < 100 )
             {
-                if( level.players[ i ] getCurrentWeapon() == "zm_riotshield"  )
+                if( level.players[ i ] getCurrentWeapon() == "riotshield_zm"  )
                 {
                     if(  level.players[ i ] meleeButtonPressed() )
                     {
-                        wait 0.2;
-                        level.players[ i ].has_shield_upgrade = true;
-                        level.players[ i ].has_shield_upgrade_hits = 3;
-                        playfx( level.myFx[ 95 ], model.origin + ( 0, 0, 50 ) );
-                        self setHintString( "^9[ ^8Your shield has been upgraded ^9]" );
-                        wait 2;
+                        if( !level.players[ i ].can_upgrade_shield_again && self.has_shield_upgrade )
+                        {
+                            level.players[ i ] playsound( level.jsn_snd_lst[ 38 ] );
+                            self setHintString( "^9[ ^8Come back next round ^9]" );
+                            wait 2;
+                            self setHintString( "^9[ ^3[{+melee}] ^8 while holding shield to upgrade it! ^9]" );
+                            wait 0.1;
+                        }
+                        else if( level.players[ i ].can_upgrade_shield_again )
+                        {
+                             wait 0.2;
+                            PlaySoundAtPosition(level.jsn_snd_lst[ 70 ], level.players[ i ].origin );
+                            level.players[ i ].has_shield_upgrade = true;
+                            level.players[ i ].has_shield_upgrade_hits = 4;
+                            level.players[ i ].can_upgrade_shield_again = false;
+                            level.players[ i ] thread while_self_has_shield_upgrade();
+                            playfx( level.myFx[ 95 ], model.origin + ( 0, 0, 25 ) );
+                            self setHintString( "^9[ ^8Your shield has been upgraded ^9]" );
+                            wait 2;
+                        }
                     }
                     self setHintString( "^9[ ^3[{+melee}] ^8 while holding shield to upgrade it! ^9]" );
                 }
             }
         }
         wait 0.1;
+    }
+}
+
+shield_variables_on_spawn()
+{
+    self endon( "disconnect" );
+    self.has_shield_upgrade = false;
+    self.can_upgrade_shield_again = true;
+    self.has_shield_upgrade_hits = 0;
+}
+track_round_and_hit()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    max_upgrades = 4;
+    current_round = level.round_number;
+    
+    while( true )
+    {
+        if( level.round_number == current_round )
+        {
+            self.can_upgrade_shield_again = false;
+            while( level.round_number == current_round )
+            {
+                wait 1;
+            }
+
+        }
+        if( level.round_number > current_round )
+        {
+            current_round = level.round_number;
+            self.can_upgrade_shield_again = true;
+            wait 4;
+        }   
+        wait 0.1;
+        
+    }
+}
+while_self_has_shield_upgrade()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    self.custom_shield_fx = spawn( "script_model", self.origin );
+    self.custom_shield_fx setmodel( "tag_origin" );
+    self.custom_shield_fx.angles = self.angles;
+    wait 0.05;
+    playfxontag(  level.myfx[ 2 ],self.custom_shield_fx, "tag_origin" );
+    //self.custom_shield_fx enableLinkTo();
+    //self.custom_shield_fx linkto( self  );
+    wait 0.1;
+    while( true )
+    {
+        if( self getCurrentWeapon() == "riotshield_zm" )
+        {
+            wait 0.1;
+            if( level.dev_time ) 
+            { iprintlnbold( "ENABLING SHIELD FX" ); }
+
+            if( !isdefined( self.custom_shield_fx ) )
+            { 
+                iprintlnbold( "^1SHIELD IS NOT DEFINED ##########" ); 
+            }
+            //self.custom_shield_fx show();
+            self.custom_shield_fx thread track_origin( self );
+            wait 0.1;
+            playfxontag( level.myFx[ 2 ], self.custom_shield_fx, "tag_origin" );
+            while( self getcurrentweapon() == "riotshield_zm" )
+            {
+                wait 1;
+            }
+        }
+        else if( self getcurrentweapon() != "riotshield_zm" )
+        { 
+            if( level.dev_time ) { iprintlnbold( "^1DISABLING SHIELD FX" );}
+            //self.custom_shield_fx hide();
+            //self.custom_shield_fx notify ( "stop_thisser" );
+            wait 0.1;
+            
+            while( self getcurrentweapon() != "riotshield_zm" )
+            {
+                wait 1;
+            }
+            
+        }
+        
+        wait 0.1;
+    }
+
+}
+
+monitor_melee_while_has_shield()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    while( true )
+    {
+        if( self getcurrentweapon() != "riotshield_zm" )
+        {
+            wait 0.1;
+        }
+        else 
+        {
+            if( self getCurrentWeapon() == "riotshield_zm" )
+            {
+                
+                if( self.has_shield_upgrade_hits > 0 )
+                {
+                    while( self getcurrentweapon() == "riotshield_zm" && self.has_shield_upgrade_hits > 0 )
+                    {
+                        if( self meleeButtonPressed() )
+                        {
+                            self.has_shield_upgrade_hits--;
+                            if( self.has_shield_upgrade_hits > 0 )
+                            {
+                                wait 0.125;
+                                self playsound( level.jsn_snd_lst[ 27 ] );
+                                self thread do_shield_upgrade_blast();
+                                if( self.has_shield_upgrade_hits <= 0 )
+                                {
+                                    self.has_shield_upgrade_hits = 0;
+                                }
+                            }
+                            wait 1;
+                        }
+                        else if( self attackButtonPressed() && self getCurrentWeapon() == "riotshield_zm" )
+                        {
+                            wait 1;
+                            if( self getCurrentWeapon() != "riotshield_zm" && self.has_shield_upgrade_hits > 0 )
+                            {
+                                self.has_shield_upgrade_hits--;
+                                if( self.has_shield_upgrade_hits > 0 )
+                                {
+                                    wait 0.125;
+                                    self thread do_shield_upgrade_blast();
+                                    if( self.has_shield_upgrade_hits <= 0 )
+                                    {
+                                        self.has_shield_upgrade_hits = 0;
+                                    }
+                                }
+                                wait 1;
+                            }   
+                            else{ wait 0.05; continue; }
+                        }
+                        else { wait 0.05; }
+                    }
+                }
+            }
+        }
+        wait 0.1;
+    }
+}
+track_origin( whos )
+{
+    self endon( "end_game" );
+    //self endon( "stop_thisser" );
+    while( whos.has_shield_upgrade_hits > 0 )
+    {
+        self.origin = whos getTagOrigin( "tag_weapon_left" );
+        wait 0.05;
+    }
+    wait 1;
+    self.custom_shield_fx.origin = self.custom_shield_fx.origin + ( 0, 0, -200 );
+
+}
+
+stop_thisser_notifier( me )
+{
+    if( me.has_shield_upgrade_hits == 0 )
+    {
+        return true;
+    }
+    return false;
+}
+do_shield_upgrade_blast()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    if( self.has_shield_upgrade &&
+        self.has_shield_upgrade_hits < 0 )
+        {
+            self.has_shield_upgrade_hits = 0;
+            return;
+        }
+    earthquake( 0.25, 1, self.origin, 2500 );
+    playfx( level._effect[ "avogadro_ascend_aerial" ], self.origin );
+    zombas = getAIArray( level.zombie_team );
+    for( i = 0; i < zombas.size; i++ )
+    {
+        if( distance( zombas[ i ].origin, self.origin ) < 250 )
+        {
+            playfx( level.myFx[ 20 ], zombas[ i ].origin + ( 0, 0, 35 ) );
+            wait 0.1;
+            playfx( level.myFx[ 19 ], zombas[i].origin );
+            if( !zombas[ i ].is_fucked )
+            {
+                zombas[ i ] thread do_fuckery( self );
+                zombas[ i ].is_fucked = true;
+            }
+        }
+    }
+}
+
+do_fuckery( who )
+{
+    level endon( "end_game" );
+    playfx( level.myFx[ 96 ], self.origin );
+    for( i = 0; i < 3; i++ )
+    {
+        playfx( level.myFx[ 90 ], self.origin + ( 0, 0, 54 ) );
+        wait 0.05;
+    }
+    who playsound( "wpn_jetgun_effect_plr_start" );
+    wait 0.05;
+    who playSound( "evt_jetgun_zmb_suck" );
+    PlaySoundAtPosition(level.jsn_snd_lst[ 29 ], self.origin );
+    if( isdefined( self ) )
+    {
+        self doDamage( self.health + 100, self.origin );
+        playfx( level.myFx[ 96 ], self.origin );
+        self startRagdoll();
+        self LaunchRagdoll( ( randomintrange( -100, 100 ), randomintrange( -100, 100 ), randomint( 150 ) ) );
     }
 }
