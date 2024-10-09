@@ -847,7 +847,7 @@ global_locations()
 spirit_says( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	Subtitle( text, text2, duration, fadetimer );
+	Subtitle( "^8" + text, "^8" + text2, duration, fadetimer );
 }
 
 Subtitle( text, text2, duration, fadeTimer )
@@ -869,7 +869,7 @@ Subtitle( text, text2, duration, fadeTimer )
 	subtitle = NewHudElem();
 	subtitle.x = 0;
 	subtitle.y = -42;
-	subtitle SetText( "^6Spirit of Sorrow: ^7" + text );
+	subtitle SetText( "^6Spirit of Sorrow: ^7" +"^8" +  text );
 	subtitle.fontScale = 1.32;
 	subtitle.alignX = "center";
 	subtitle.alignY = "middle";//middle

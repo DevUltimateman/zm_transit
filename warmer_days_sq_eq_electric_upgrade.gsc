@@ -137,8 +137,9 @@ apply_on_spawn_shield_()
 {
     foreach( p in level.players )
     {
-        p thread monitor_melee_while_has_shield();
+        //p thread monitor_melee_while_has_shield();
         p thread shield_variables_on_spawn();
+        p thread track_round_and_hit();
     }
 }
 monitor_if_player_upgrades( model ) //needs fixing
@@ -154,7 +155,7 @@ monitor_if_player_upgrades( model ) //needs fixing
                 {
                     if(  level.players[ i ] meleeButtonPressed() )
                     {
-                        if( !level.players[ i ].can_upgrade_shield_again && self.has_shield_upgrade )
+                        if( !level.players[ i ].can_upgrade_shield_again && level.players[ i ].has_shield_upgrade )
                         {
                             level.players[ i ] playsound( level.jsn_snd_lst[ 38 ] );
                             self setHintString( "^9[ ^8Come back next round ^9]" );
@@ -164,18 +165,23 @@ monitor_if_player_upgrades( model ) //needs fixing
                         }
                         else if( level.players[ i ].can_upgrade_shield_again )
                         {
-                             wait 0.2;
-                            PlaySoundAtPosition(level.jsn_snd_lst[ 70 ], level.players[ i ].origin );
-                            level.players[ i ].has_shield_upgrade = true;
+                            wait 0.2;
+                            level.players[ i ] thread monitor_melee_while_has_shield();
+                            level.players[ i ] playsound( level.mysounds[ 3 ] );
+                            if(  !level.players[ i ].has_shield_upgrade )
+                            {
+                                level.players[ i ] thread while_self_has_shield_upgrade();
+                                level.players[ i ].has_shield_upgrade = true;
+                            }
+                            wait 0.05;
                             level.players[ i ].has_shield_upgrade_hits = 4;
                             level.players[ i ].can_upgrade_shield_again = false;
-                            level.players[ i ] thread while_self_has_shield_upgrade();
                             playfx( level.myFx[ 95 ], model.origin + ( 0, 0, 25 ) );
                             self setHintString( "^9[ ^8Your shield has been upgraded ^9]" );
                             wait 2;
                         }
                     }
-                    self setHintString( "^9[ ^3[{+melee}] ^8 while holding shield to upgrade it! ^9]" );
+                    self setHintString( "^9[ ^3[{+melee}] ^8 while holding shield to upgrade it ^9]" );
                 }
             }
         }
@@ -189,39 +195,50 @@ shield_variables_on_spawn()
     self.has_shield_upgrade = false;
     self.can_upgrade_shield_again = true;
     self.has_shield_upgrade_hits = 0;
+    self.is_tracking = false;
 }
 track_round_and_hit()
 {
     self endon( "disconnect" );
     level endon( "end_game" );
+    self waittill( "spawned_player" );
     max_upgrades = 4;
     current_round = level.round_number;
-    
+    //self.is_allowed_lol = false;
+    s_v = 1;
+    ps_v = 0;
     while( true )
     {
         if( level.round_number == current_round )
         {
-            self.can_upgrade_shield_again = false;
-            while( level.round_number == current_round )
+            if( self.can_upgrade_shield_again )
             {
-                wait 1;
+                while( self.can_upgrade_shield_again )
+                {
+                    wait 1;
+                }
             }
-
+            self.can_upgrade_shield_again = false;
+            if( level.round_number == current_round )
+            {
+                while( level.round_number == current_round )
+                {
+                    wait 1;
+                }
+                wait 5;
+                current_round = level.round_number;
+                self.can_upgrade_shield_again = true;
+            }
         }
-        if( level.round_number > current_round )
-        {
-            current_round = level.round_number;
-            self.can_upgrade_shield_again = true;
-            wait 4;
-        }   
-        wait 0.1;
-        
+        else { current_round = level.round_number; wait 5; }
+        wait 0.05;
     }
 }
 while_self_has_shield_upgrade()
 {
     level endon( "end_game" );
     self endon( "disconnect" );
+    self endon( "stop_upgradess" );
     self.custom_shield_fx = spawn( "script_model", self.origin );
     self.custom_shield_fx setmodel( "tag_origin" );
     self.custom_shield_fx.angles = self.angles;
@@ -243,7 +260,11 @@ while_self_has_shield_upgrade()
                 iprintlnbold( "^1SHIELD IS NOT DEFINED ##########" ); 
             }
             //self.custom_shield_fx show();
-            self.custom_shield_fx thread track_origin( self );
+            if( !self.is_tracking )
+            {
+                self.custom_shield_fx thread track_origin( self );
+            }
+            //self.custom_shield_fx thread track_origin( self );
             wait 0.1;
             playfxontag( level.myFx[ 2 ], self.custom_shield_fx, "tag_origin" );
             while( self getcurrentweapon() == "riotshield_zm" )
@@ -321,7 +342,7 @@ monitor_melee_while_has_shield()
                                 }
                                 wait 1;
                             }   
-                            else{ wait 0.05; continue; }
+                            else{ wait 0.05; }
                         }
                         else { wait 0.05; }
                     }
@@ -333,15 +354,28 @@ monitor_melee_while_has_shield()
 }
 track_origin( whos )
 {
-    self endon( "end_game" );
-    //self endon( "stop_thisser" );
+    //self endon( "end_game" );
+    whos endon( "disconnect" );
+    self endon( "sss" );
+    whos.is_tracking = true;
     while( whos.has_shield_upgrade_hits > 0 )
     {
-        self.origin = whos getTagOrigin( "tag_weapon_left" );
+        if( whos getCurrentWeapon() == "riotshield_zm" )
+        {
+            self.origin = whos getTagOrigin( "tag_weapon_left" );
+        }
+        else
+        {
+            self.origin = whos.origin + ( 0, 0, -10000 );
+        }
         wait 0.05;
+        
     }
     wait 1;
-    self.custom_shield_fx.origin = self.custom_shield_fx.origin + ( 0, 0, -200 );
+    self.origin = whos.origin + ( 0, 0, -1200 );
+    wait 0.1;
+    whos.is_tracking = false;
+    self notify( "sss" );
 
 }
 
@@ -400,6 +434,6 @@ do_fuckery( who )
         self doDamage( self.health + 100, self.origin );
         playfx( level.myFx[ 96 ], self.origin );
         self startRagdoll();
-        self LaunchRagdoll( ( randomintrange( -100, 100 ), randomintrange( -100, 100 ), randomint( 150 ) ) );
+        self LaunchRagdoll( ( randomintrange( -250, 250 ), randomintrange( -350, 350 ), randomint( 400 ) ) );
     }
 }

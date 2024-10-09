@@ -196,7 +196,7 @@ wait_for_player_to_gamble()
                 self sethintstring( "" );
                 who thread do_drink_animation();
                 wait 1.5;
-                self setHintString( "^9[ ^8Drink contained ^1poison^8. Survivor's stamina reduced for a certain period of time. ^9]" );
+                self setHintString( "^9[ ^8Drink contained ^1heavy dose of alcohol..^8 Survivor's stamina reduced for a certain period of time. ^9]" );
                 who thread reduce_stamina_for_certain_time();
                 //sfx
                 who playSound( level.jsn_snd_lst[ 91 ] );

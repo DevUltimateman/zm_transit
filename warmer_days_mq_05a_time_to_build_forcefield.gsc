@@ -1146,7 +1146,7 @@ do_dialog_here( sub_up, sub_low, duration, fader )
     subtitle_lower = sub_low;
     durations = duration;
     fadetimer = fader;
-    level thread machine_says( "^9Dr. Schruder: ^7" + subtitle_upper, subtitle_lower, durations, fadetimer );
+    level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper, "^8" + subtitle_lower, durations, fadetimer );
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )

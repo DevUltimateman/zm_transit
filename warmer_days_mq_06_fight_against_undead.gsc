@@ -352,10 +352,10 @@ spawn_lockdown_blockers()
     level thread playloopsound_buried();
     wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _someone_unlocked_something( "Seems like ^4Spirit Of Sorrow^8 has gone rogue.", "Be careful out there!", 7, 1 );
+    _someone_unlocked_something( "^8Seems like ^4Spirit Of Sorrow^8 has gone rogue.", "^8Be careful out there!", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _someone_unlocked_something( "Watch out for the poisonous gas!!!", "Get to your ^5Safe House^8 immediately!", 8, 1 );
+    _someone_unlocked_something( "^8Watch out for the poisonous gas!!!", "^8Get to your ^5Safe House^8 immediately!", 8, 1 );
     level notify( "stop_mus_load_bur" );
     
 }
@@ -377,13 +377,13 @@ playloopsound_buried()
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^9Dr. Schruder: ^8" + text, text2, duration, fadetimer );
+	level thread Subtitle( "^9Dr. Schruder: ^8" + text, "^8" + text2, duration, fadetimer );
 }
 
 _spirit_of_sorrow_sub_text_alt( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-    level thread Subtitle( "^4Spirit Of Sorrow: ^8" + text, text2, duration, fadetimer );
+    level thread Subtitle( "^4Spirit Of Sorrow: ^8" + text, "^8" + text2, duration, fadetimer );
 }
 
 Subtitle( text, text2, duration, fadeTimer )

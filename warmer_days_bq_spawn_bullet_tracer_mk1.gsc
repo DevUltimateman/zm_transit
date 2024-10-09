@@ -143,8 +143,11 @@ weapon_mark_1_spawn()
     level waittill("initial_blackscreen_passed");
     debugOrigin = ( 8118.79, -4821.86, 100 );
     gunOrigin = ( 8118.79, -4821.86, 100 );
-    trigger = spawn( "trigger_radius", gunOrigin, 26, 26, 40 );
-
+    trigger = spawn( "trigger_radius", gunOrigin, 26, 68, 68 );
+    block = spawn( "script_model", gunOrigin );
+    block setmodel("collision_player_64x64x128");
+    block.angles = block.angles;
+    wait 0.05;
     
     trigger SetCursorHint("HINT_NOICON");
     trigger setHintString( "^8[ ^9[{+activate}] ^8to upgrade you bullet type to ^2Ala-Hoopin ^8]\n^8Cost: ^915 000" );

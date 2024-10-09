@@ -48,8 +48,8 @@ init()
     level.moving_to_depo_active = false;
     all_static_poisonous_cloud_locations();
     flag_wait( "initial_blackscreen_passed" );
-    level thread level_cleaner_map_restart();
-    level thread level_cleaner();
+    //&&/level thread level_cleaner_map_restart();
+    //level thread level_cleaner();
     //level thread which_zone_im_in();
     //&&level thread do_it();
 }
@@ -229,7 +229,9 @@ main_quest_spawn_poisonous_clouds()
     //level notify( "poisonous_adventure_find_case" ); //
     //level thread applyforplayer();
     initial_poisonous_spawns();
-    level waittill( "lockdown_disabled");
+    if( level.dev_time ){ iprintlnbold( "HACKING TO CLOUD STEP TO SEE WHATS UP" ); }
+    //level waittill( "lockdown_disabled"); 
+    wait 25;
     level.moving_to_depo_active = true;
     level thread move_poisonous_clouds_main_quest();
 }
@@ -460,23 +462,22 @@ move_poisonous_clouds_main_quest()
     level endon( "end_game" );
     //level waittill( "start_moving_towards_farm" );
     
-    for( i = 0; i < level.mq_step_poison_clouds_origin_spawn.size; i++ )
-    {
-        level.mq_step_poison_cloud_ent[ i ] = spawn( "script_model", level.mq_step_poison_clouds_origin_spawn[ i ] );
-        level.mq_step_poison_cloud_ent[ i ] setmodel( "tag_origin" );
-        level.mq_step_poison_cloud_ent[ i ].angles = level.mq_step_poison_cloud_ent[ i ].angles;
-        wait 0.05;;
-        playfxontag( level._effects[ 47 ], level.mq_step_poison_cloud_ent[ i ], "tag_origin" );
-        //level.mq_step_poison_cloud_ent[ i ] thread playlighting();
-    }
+    //for( i = 0; i < level.mq_step_poison_clouds_origin_spawn.size; i++ )
+    //{
+    //    level.mq_step_poison_cloud_ent[ i ] = spawn( "script_model", level.mq_step_poison_clouds_origin_spawn[ i ] );
+   //     level.mq_step_poison_cloud_ent[ i ] setmodel( "tag_origin" );
+    //    level.mq_step_poison_cloud_ent[ i ].angles = level.mq_step_poison_cloud_ent[ i ].angles;
+   //     wait 0.05;;
+   ////    //level.mq_step_poison_cloud_ent[ i ] thread playlighting();
+   //}
     
     if( level.dev_time ){ iprintlnbold( "mq_step clouds spawned, waiting to start moving them" ); }
 
     wait randomfloatrange( 1, 2 );
-    for( s = 0; s < level.mq_step_poison_cloud_ent.size; s++ )
-    {
-        level.mq_step_poison_cloud_ent[ s ] thread move_to_farmgoal( s );
-    }
+   // for( s = 0; s < level.mq_step_poison_cloud_ent.size; s++ )
+   // {
+  //      level.mq_step_poison_cloud_ent[ s ] thread move_to_farmgoal( s );
+  //  }
     //two checkpoints that can be hit so that game nows whos at farm and whos not
     level thread farm_checkpoints();
     //notify mq to continue once all at base
@@ -492,21 +493,21 @@ move_poisonous_clouds_main_quest()
     {
         
 
-            player.surround_cloud = spawn( "script_model", player.origin + ( 0, 0, -10 ) );
-            player.surround_cloud setmodel( "tag_origin" );
-            player.surround_cloud.angles = player.angles;
+           player.surround_cloud = spawn( "script_model", player.origin + ( 0, 0, -10 ) );
+           player.surround_cloud setmodel( "tag_origin" );
+           player.surround_cloud.angles = player.angles;
             wait 0.05;
-            playfxontag( level._effects[ 47 ], player.surround_cloud, "tag_origin" );
+          playfxontag( level._effects[ 47 ], player.surround_cloud, "tag_origin" );
             wait 0.05;
-            playfxontag( level.myfx[ 32 ], player.surround_cloud, "tag_origin" );
+              playfxontag( level.myfx[ 32 ], player.surround_cloud, "tag_origin" );
             
         
 
         wait 0.05;
         player thread do_damage_cloud();
-        player thread do_big_damage_cloud();
+        //player thread do_big_damage_cloud();
         player setclientdvar( "r_fog", true );
-        player thread waypoint_set_players();
+        player waypoint_set_players();
         player setclientdvar( "r_dof_enable", true );
         player setclientdvar( "r_dof_tweak", true );
         player setclientdvar( "r_dof_farblur", 10 );
@@ -528,7 +529,7 @@ move_poisonous_clouds_main_quest()
         //player.custom_cloud mover( player );
         player thread monitor_arrive_farm();
 
-        
+
     }
 
     level thread level_waittill_continue_mq();
@@ -670,6 +671,7 @@ keep_track_of_all_on_farm()
     {
         wait 1;
     }
+    if( level.dev_time ){ iprintln( "SOMEONE AT BASE!!! ^2######################" );}
     level notify( "everyone_at_base" );
     level notify( "delete_checkpoints" );
     level notify( "continue_main_quest_farm" );
@@ -937,20 +939,20 @@ playloopsound_buried()
 do_guide_blockers_dialog()
 {
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^9Dr. Schruder: ^8" + "What the hell was that?!", "Are you okay?", 7, 1 );
+    level thread machine_says( "^9Dr. Schruder: ^8" + "What the hell was that?!", "^8" + "Are you okay?", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^9Dr. Schruder: ^8" + "^6Spirit Of Sorrow^8 really wants to get rid of you guys, huh.", "I can't let that happen!", 7, 1 );
+    level thread machine_says( "^9Dr. Schruder: ^8" + "^6Spirit Of Sorrow^8 really wants to get rid of you guys, huh.", "^8" + "I can't let that happen!", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^9Dr. Schruder: ^8" + "It seems that the clouds are gone for now.", "However there seems to bea a heavy mist still present", 7, 1 );
+    level thread machine_says( "^9Dr. Schruder: ^8" + "It seems that the clouds are gone for now.","^8" +  "However there seems to bea a heavy mist still present", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^9Dr. Schruder: ^8" + "We could craft some sorta ^6elixir drink ^8that allows you to have immunity against those poisonous clouds.. ", "The drink requires multiple ingredients from different ^6soda machines^8!", 10, 1 );
+    level thread machine_says( "^9Dr. Schruder: ^8" + "We could craft some sorta ^6elixir drink ^8that allows you to have immunity against those poisonous clouds.. ", "^8" + "The drink requires multiple ingredients from different ^6soda machines^8!", 10, 1 );
     level notify( "stop_mus_load_bur" );
     wait 12;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^9Dr. Schruder: ^8" + "Go locate the mixing container from ^5Bus Depo^8.", "Be fast, I don't know when the clouds strike again!", 7, 1 );
+    level thread machine_says( "^9Dr. Schruder: ^8" + "Go locate the mixing container from ^5Bus Depo^8.", "^8" + "Be fast, I don't know when the clouds strike again!", 7, 1 );
     
 }
 level_waittill_continue_mq()

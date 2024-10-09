@@ -458,7 +458,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     rider thread self_rotate_yaw();
     while( s < sudo.size )
     {
-        speed = 340;
+        speed = 540;
         target_point = sudo[ s ];
         target_angles = sudo_angles[ s ];
         if( s == 2 ) //update player origin already so we that game can load gump models for camera
@@ -2108,7 +2108,7 @@ play_crows()
 _play_schruder_texts( subtitle_upper, subtitle_lower, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread SchruderSays( "^9Dr. Schruder: ^8" + subtitle_upper, subtitle_lower, duration, fadetimer );
+	level thread SchruderSays( "^9Dr. Schruder: ^8" + subtitle_upper, "^8" + subtitle_lower, duration, fadetimer );
 }
 
 SchruderSays( sub_up, sub_low, duration, fadeTimer )

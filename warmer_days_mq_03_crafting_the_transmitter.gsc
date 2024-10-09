@@ -309,7 +309,7 @@ flyby( element )
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^9Dr. Schruder: ^8" + text, text2, duration, fadetimer );
+	level thread Subtitle( "^9Dr. Schruder: ^8" + text, "^8" + text2, duration, fadetimer );
 }
 
 

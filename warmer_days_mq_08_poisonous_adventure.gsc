@@ -234,13 +234,13 @@ do_first_dialog()
     level thread playloopsound_buried();
     wait 2.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Excellent! You found the ^6mixing container^8..", "You'll need the suitcase in our next step..", 9, 1 );
+    do_dialog_here( "Excellent! You found the mixing container^8..", "You'll need the suitcase in our next step..", 9, 1 );
     wait 10;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "The container will teleport on the ground, close to a ^6soda machine^8 once you're close to a one.", "You could ^6test ^8it right now. There should be a soda machine nearby..", 10, 1 );
+    do_dialog_here( "The container will teleport on the ground, close to a soda machine^8 once you're close to a one.", "You could ^6test ^8it right now. There should be a soda machine nearby..", 10, 1 );
     wait 12;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "I'll let you ^6figure out ^8what to do next..", "Don't dissapoint me!", 7, 1 );
+    do_dialog_here( "I'll let you figure out ^8what to do next..", "Don't dissapoint me!", 7, 1 );
     level notify( "stop_mus_load_bur" );
     wait 8;
     level thread are_players_close_to_spawn_suitcase();
@@ -369,9 +369,9 @@ are_players_close_to_spawn_suitcase()
                 }
             }
         }
-        if( level.suitcases_collected >= 4 )
+        if( level.suitcases_collected > 4 ) //was >= 4, might have to have it like that, but played the ldialog one pickup too earlyh
         {
-            //level notify( "all_suitcases_collected" );
+            level notify( "all_suitcases_collected" );
             wait 0.1;
             break;
         }
@@ -537,7 +537,7 @@ spawn_drinkable_step()
                 who takeWeapon( "zombie_perk_bottle_tombstone" );
                 who playsound( "evt_bottle_dispense" );
                 foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-                level thread machine_says(  "^9" + who.name + "^8 upgraded their ^9abilities.^8", "Survivor now has ^9Immunity Drink ^8effects.", 4.5, 0.15 );
+                level thread machine_says(  "^9" + who.name + "^8 upgraded their ^9abilities.^8","^8" +  "Survivor now has ^9Immunity Drink ^8effects.", 4.5, 0.15 );
                 wait 0.1;
                 anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^9Immunity Drink ^9]" );
             }
@@ -902,7 +902,7 @@ do_dialog_here( sub_up, sub_low, duration, fader )
     subtitle_lower = sub_low;
     durations = duration;
     fadetimer = fader;
-    level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper, subtitle_lower, durations, fadetimer );
+    level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper, "^8" + subtitle_lower, durations, fadetimer );
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )

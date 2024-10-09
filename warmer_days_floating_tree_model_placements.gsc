@@ -44,15 +44,22 @@ init()
     //level thread applyTreeOnPlayer();
     //locations_to_spawn();
     //level thread spawn_all_trees();
-    //level thread spawn_all_static_trees();
     precachemodel( "t5_foliage_tree_burnt02" );
     precachemodel( "t5_foliage_tree_burnt03" );
+    precachemodel( "t5_foliage_shrubs02" );
+    precachemodel( "collision_player_64x64x128" );
+    precachemodel( "t5_foliage_bush05" );
+    //flag_wait( "initial_blackscreen_passed" );
+    //locations_to_spawn();
+   // level thread all_collidables();
+    //level thread spawn_all_static_trees();
+    
 
 }
 
 spawn_all_trees()
 {
-    flag_wait( "initial_blackscreen_passed" );
+    //flag_wait( "initial_blackscreen_passed" );
     tree_model = "";
     for( i = 0; i < level.floating_trees.size; i++ )
     {
@@ -75,15 +82,88 @@ spawn_all_trees()
     }
 }
 
+all_collidables()
+{
+    //used for custom tree placements to block players from walkiing thru
+    level.tree_cols = [];
+    
+    //bepo
+    level.tree_cols[ 0 ] = ( -8512.96, 4710.26, -39.4402 );
+    level.tree_cols[ 1 ] = ( -8798.46, 4311.55, -4.00721 );
+    level.tree_cols[ 2 ] = ( -9197.8, 4684.45, 26.4656 );
+    level.tree_cols[ 3 ] = ( -9571.25, 3630.49, 144.701 );
+    
+    
+    //diner
+    level.tree_cols[ 4 ] = ( -8470.7, -6593.91, 178.33 );
+    level.tree_cols[ 5 ] = ( -6964.88, -6467.15, 1.49955 );
+    level.tree_cols[ 6 ] = ( -6618.55, -7129.19, -62.1588 );
+    level.tree_cols[ 7 ] = ( -6438.03, -7285.11, -63.875 );
+    level.tree_cols[ 8 ] = ( -6183.24, -6427.42, -39.4731 );
+    level.tree_cols[ 9 ] = ( -5670.99, -6177.26, -66.3917 );
+    level.tree_cols[ 10 ] = ( -6040.17, -5957.49, -53.578 );
+    level.tree_cols[ 11 ] = ( -4214.19, -6681.7, -61.5007 );
+    
+    //farm
+    level.tree_cols[ 12 ] = ( 481.186, -4308.56, -49.8597 );
+    level.tree_cols[ 13 ] = ( 1385.06, -3569.51, -4.84716 );
+    level.tree_cols[ 14 ] = ( 1458.35, -3388.27, 4.79761 );
+    level.tree_cols[ 15 ] = ( 3552.06, -5864.79, -51.8817 );
+    level.tree_cols[ 16 ] = ( 5478.05, -5810.99, -116.984 );
+    level.tree_cols[ 17 ] = ( 6815.8, -5948.31, -63.875 );
+    level.tree_cols[ 18 ] = ( 6827.04, -5483.03, -67.4544 );
+    level.tree_cols[ 19 ] = ( 7720.25, -5873.36, -0.773342 );
+    level.tree_cols[ 20 ] = ( 7720.25, -5873.36, 162.136 );
+    level.tree_cols[ 21 ] = ( 6449.14, -3702.75, -69.2081 );
+    level.tree_cols[ 22 ] = ( 7370.69, -2977.65, -132.282 );
+    level.tree_cols[ 23 ] = ( 7882.43, -2635.1, -205.926 );
+    level.tree_cols[ 24 ] = ( 13287, -395.745, -206.425 );
+    level.tree_cols[ 25 ] = ( 10014.4, 103.917, -213.789 );
+    level.tree_cols[ 26 ] = ( 9146.22, 5473, -518.12 );
+    level.tree_cols[ 27 ] = ( 4842.72, 5047.65, -63.875 );
+    level.tree_cols[ 28 ] = ( 4044.66, 4715.61, -81.3146 );
+    level.tree_cols[ 29 ] = ( 2380.49, 2733.11, -40.6465 );
+    level.tree_cols[ 30 ] = ( -707.734, -783.877, -54.9447 );
+    level.tree_cols[ 31 ] = ( -650.781, 139.982, -54.5304 );
+    level.tree_cols[ 32 ] = ( -4388.15, -131.844, 37.335 );
+    level.tree_cols[ 33 ] = ( -5617.94, 2842.54, 96.4749 );
+    wait 1;
+    for( a = 0; a < level.tree_cols.size; a++ )
+    {
+        block = spawn( "script_model", level.tree_cols[ a ] );
+        block setmodel( "collision_player_64x64x128" );
+        block.angles = block.angles;
+        wait 0.05;
+    }
+    //level.tree_cols[  ] = (  );
+    //level.tree_cols[  ] = (  );
+    //level.tree_cols[  ] = (  );
+    //level.tree_cols[  ] = (  );
+    
+}
 spawn_all_static_trees()
 {
-    flag_wait( "initial_blackscreen_passed" );
+    //flag_wait( "initial_blackscreen_passed" );
     for( i = 0; i < level.static_trees.size; i++ )
     {
-        if( i % 2 == 0 )
+        if( i < level.static_trees.size / 2 )
+        {
+            if( i < 4 ) {
+                oppa = spawn( "script_model", level.static_trees[ i ] );
+                oppa setmodel( "t5_foliage_shrubs02" );
+                oppa.angles = ( randomintrange( 0, 5 ), randomintrange( 0, 360 ), 0 );
+            }
+            else {
+                oppa = spawn( "script_model", level.static_trees[ i ] );
+                oppa setmodel( "t5_foliage_bush05" );
+                oppa.angles = ( randomintrange( 0, 5 ), randomintrange( 0, 360 ), 0 );
+            }
+           
+        }
+        else if( i >= level.static_trees / 2 && i % 2 == 0 )
         {
             oppa = spawn( "script_model", level.static_trees[ i ] );
-            oppa setmodel( "t5_foliage_tree_burnt03" );
+            oppa setmodel( "t5_foliage_bush05" );
             oppa.angles = ( randomintrange( 0, 5 ), randomintrange( 0, 360 ), 0 );
         }
         
@@ -196,11 +276,11 @@ locations_to_spawn()
     level.static_trees[ 33 ] = ( 7302.06, -5142.13, -40.1937 );
     level.static_trees[ 34 ] = ( 7540.29, -4968.44, 17.0612 );
     level.static_trees[ 35 ] = ( 7616.4, -5519.49, -27.9166 );
-    level.static_trees[ 36 ] = ( 7717.45, -5904.63, -14.8379 );
+    level.static_trees[ 36 ] = ( 7717.45, -5904.63, -14.8379 ); ////////////////////////////////////
     level.static_trees[ 37 ] = ( 7240.63, -5890.65, -82.557 );
     level.static_trees[ 38 ] = ( 6445.75, -3717.47, -158.045 );
     level.static_trees[ 39 ] = ( 6914.68, -3583.53, -144.936 );
-    level.static_trees[ 40 ] = ( 7382.69, -2960.31, -204.222 );
+    level.static_trees[ 40 ] = ( 7382.69, -2960.31, -204.222 ); ////////////////////////////////////
 
     level.static_trees[ 41 ] = ( 7865.78, -1823.5, -198.305 );
     level.static_trees[ 42 ] = ( 7454.37, -1082.06, -212.167 );
@@ -239,10 +319,19 @@ locations_to_spawn()
     level.static_trees[ 71 ] = ( 9551.81, 1323.06, 123.363 );
     level.static_trees[ 72 ] = ( 9139.16, 1489.4, 122.207 );
     level.static_trees[ 73 ] = ( 8904.74, 1992.58, 91.9032 );
-    level.static_trees[ 74 ] = ( 7877.8, -2638.21, -204.958 );
+    level.static_trees[ 74 ] = ( 7877.8, -2638.21, -244.958 );
     level.static_trees[ 75 ] = ( 8309.95, -1823.8, -275.42 );
     level.static_trees[ 76 ] = ( 10288.2, -2107.87, -430.722 );
     level.static_trees[ 77 ] = ( 10504.9, -1585.34, -366.226 );
     level.static_trees[ 78 ] = ( 9163.8, -1916.01, -212.377 );
 
+    //THESE ARE DOUBLE MODELS AND OLY THE SECOND ONE SPAWNS, TOO DRUNK TO RE WRITE SO DO THIS GHETTO HACK LOL
+    level.static_trees[ 79 ] = ( 13287, -395.745, -206.425 );
+    level.static_trees[ 80 ] = ( 13287, -395.745, -206.425 );
+
+    level.static_trees[ 81 ] = ( 10583, 7245.93, -568.17 );
+    level.static_trees[ 82 ] = ( 10583, 7245.93, -568.17 );
+
+    level.static_trees[ 83 ] = ( 5603.94, 5876.93, -102.014 );
+    level.static_trees[ 84 ] = ( 5603.94, 5876.93, -102.014);
 }

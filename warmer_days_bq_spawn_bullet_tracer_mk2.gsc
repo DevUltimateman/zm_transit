@@ -142,12 +142,15 @@ weaponTracerUpgrade()
     level waittill("initial_blackscreen_passed");
     debugOrigin = ( 8024, -4745.4, 100 );
     gunOrigin = ( 7971.42, -4695, 100 ); //8024, -4745.4, 100 
-    trigger = spawn( "trigger_radius", gunOrigin, 26, 26, 40 );
+    trigger = spawn( "trigger_radius", gunOrigin, 26, 68, 68 );
     trigger SetCursorHint("HINT_NOICON");
     trigger setHintString( "^8[ ^9[{+activate}] ^8to upgrade you bullet type to ^1Galaxio Beamz ^8]\n^8Cost: ^930 000" );
     //level thread LowerMessage( "Custom Perks", "Hold ^6[{+activate}] ^7to upgrade your ^6bullet type^7 [Cost:^6 20000^7]" );
     //trigger setLowerMessage( trigger, "Custom Perks"  );
-
+    block = spawn( "script_model", gunOrigin );
+    block setmodel( "collision_player_64x64x128" );
+    block.angles = block.angles;
+    wait 0.05;
     paploc = ( 59872.7, 141818, 88737.5 );
     //playfx( level._effect["lght_marker"], gunorigin + ( 0, 0, -40 ) );
 

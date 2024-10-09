@@ -231,7 +231,7 @@ global_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
             playfxontag( fx2, i_m, "tag_origin" );
         }
     }
-    while( !level.gas_been_picked_up && !level.gas_is_the_trigger ) //ghetto hack to prevent playher from triggering
+   while( !level.gas_been_picked_up && !level.gas_is_the_trigger ) //ghetto hack to prevent playher from triggering
     {
         wait 1;
     }
@@ -388,12 +388,14 @@ animate_fire_pickup()
 do_everything_for_gas_placedown()
 {
     level endon( "end_game" );
-
+    //double waittill?? do we trigger it twice before spawning a new trigger or am I drunk as fuck
+    //check tomorrow
+    
     level waittill( "gas_got_picked" );
-    //level waittill( "gas_got_picked" );
+    level waittill( "gas_got_picked" );
     //global_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
-    ///level thread global_gas_quest_trigger_spawner( level.gas_pour_location, "Hold ^3[{+activate}] ^8to pour gasoline on the floor.", "Floor is now littered with ^3Gasoline", level.myfx[ 75 ], level.myfx[ 76 ], "littered_floor" );
-    level waittill( "littered_floor" );
+    level thread global_gas_quest_trigger_spawner( level.gas_pour_location, "Hold ^3[{+activate}] ^8to pour gasoline on the floor.", "Floor is now littered with ^3Gasoline", level.myfx[ 75 ], level.myfx[ 76 ], "littered_floor" );
+    level waittill( "littered_floor" ); 
     temp = spawn( "trigger_radius_use", level.gas_pour_location, 0, 48, 48 );
     temp setCursorHint( "HINT_NOICON" );
     temp setHintString( "^9[ ^8Workbench requires ^9Fire Crackers ^9]" );
