@@ -101,12 +101,17 @@ init()
     level.rock_summoning_stage_active = false;
 
 
-    //level thread change_speed();
-    level thread print_debug_zone();
+    
+    
 
 
     flag_wait( "initial_blackscreen_passed" );
     level thread level_round_10_speed_change();
+    //level thread change_speed();
+    if( level.dev_time && getdvar( "developer_script" ) == 1 )
+    {
+        level thread print_debug_zone();
+    }
     level waittill( "do_it" ); //for debugging, enable back later
     level thread rocks_at_town_talk();
     level thread rocks_at_pylon();
@@ -666,13 +671,17 @@ wait_death()
 all_rocks_done()
 {
     level endon( "end_game" );
-    level endon( "end_brake_check" );
-    while( level.rocks_at_pylon < 3 ){ wait 1; }
-    
+    level endon( "end_brake_check" ); 
+    if( level.rocks_at_pylon < 3 )
+    {
+        while( level.rocks_at_pylon < 3 ){ wait 1; }
+    }
     level notify( "move_rocks_underneath_pylon" );
     wait 1;
-    level notify( "end_break_check" );
+    
     if( level.dev_time ){ iprintlnbold( "ALL ROCK SOULS COLLECTED###" ); }
+    wait 0.1;
+    level notify( "end_break_check" );
 }
 
 
@@ -977,7 +986,7 @@ rocks_at_town_talk()
     level endon( "end_game" );
 
     level thread playloopsound_buried();
-    wait 2;
+    wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "^9Element 115 rocks^8.. Lava at town's center has risen few above the pit.", "^7See if you can teleport them to underneath the pylon with something steamy..", 10, 1  );
     level thread wait_kill();
@@ -986,11 +995,11 @@ rocks_at_town_talk()
     //level thread playloopsound_buried();
     wait 0.6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Excellent, they're moving!", "Meet me underneath the pylon!", 5, 1 );
-    wait 6;
+    do_dialog_here( "Excellent, they're moving!", "Meet me underneath the pylon!", 8, 1 );
+    wait 10;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Something's not right, said rocks are not underneath the pylon!", "What did you do? Where did they land?! ^1Find Them!!!^7", 6, 1 );
-    wait 7;
+    do_dialog_here( "Something's not right, said rocks are not underneath the pylon!", "What did you do? Where did they land?! ^1Find Them!!!^7", 10, 1 );
+    wait 12;
     level notify( "stop_mus_load_bur" );
     level waittill( "found_first_rock" );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
@@ -1056,6 +1065,7 @@ do_everything_schruder_spawns()
     level endon( "end_game" );
     Earthquake( .5, 4,  level.geness[0].origin, 1000 );
     wait 1;
+    PlaySoundAtPosition( level.jsn_snd_lst[ 3 ],  level.geness[0].origin );
     playfx( level.myfx[ 82 ], level.geness[ 0 ].origin );
     wait 0.2;
     playfx( level.myfx[ 82 ], level.geness[ 1 ].origin );
@@ -1063,10 +1073,11 @@ do_everything_schruder_spawns()
     playfx( level.myfx[ 82 ], level.geness[ 1 ].origin );
     wait 1;
     
-    sc = spawn( "script_model", ( 7592.53, -449.193, -113.179 ) );
+    sc = spawn( "script_model", ( 7592.53, -449.193, -133.179 ) );
     sc setmodel( level.automaton.model );
     sc.angles = ( 0, 0,  0 );
     wait 0.06;
+    
     playfx( level._effects[ 77 ], sc.origin );
     playfxontag( level._effect[ "screecher_hole" ], sc, "tag_origin" );
     sc thread hover_sc();
@@ -1076,6 +1087,8 @@ do_everything_schruder_spawns()
     Earthquake( .5, 4,  sc.origin, 1000 );
     wait 1;
     playfx( level.myfx[ 82 ], sc.origin );
+    PlaySoundAtPosition( level.jsn_snd_lst[ 3 ],  level.geness[0].origin );
+    playfx( level.myfx[ 82 ], level.geness[ 0 ].origin );
     sc movez( 10000, 5, 2.5, 0 );
     sc waittill( "movedone" );
     
@@ -1088,9 +1101,9 @@ hover_sc()
     level endon( "stop_sc" );
     while( true )
     {
-        self movez( 150, 1.8, 0.1, 0.5 );
+        self movez( 115, 1.8, 0.1, 0.5 );
         self waittill( "movedone" );
-        self movez( -150, 1.8, 0.1, 0.5 );
+        self movez( -115, 1.8, 0.1, 0.5 );
         self waittill( "movedone" );
 
     }

@@ -121,12 +121,14 @@ do_weapon_change_offsets()
     self endon( "disconnect" );
     wait 1;
     if( level.dev_time ){ iprintlnbold( "DOING OFFSETTER THREAD" ); }
-    //initial spawn m1911 offset
-    self thread while_ads( 0.8, 1.6, -1.8 );
+    
+    self thread while_ads( 0.8, 1.6, -1.8 ); //initial spawn m1911 offset
     wait 2;
     while( true )
     {
         self waittill( "weapon_change", weapon );
+        //self notify( "stop_ads_track" );
+        wait 0.05;
         xw = get_weapon_offsetter_x( weapon );
         xy = get_weapon_offsetter_y( weapon );
         xz = get_weapon_offsetter_z( weapon );
@@ -147,10 +149,32 @@ while_ads( x, y, z )
     while( true )
     {
         //if( !self isOnGround() )
+        if( self isreloading() )
+        {
+            //TRY THIS FAILSAFE
+            self setClientDvar( "cg_gun_x", x );
+            self setclientdvar( "cg_gun_y", y );
+            self setclientdvar( "cg_gun_z", z );
+            wait 0.05;
+            continue;
+        }
+        if( self isreloading() && self adsButtonPressed() )
+        {
+            self setClientDvar( "cg_gun_x", x );
+            self setclientdvar( "cg_gun_y", y );
+            self setclientdvar( "cg_gun_z", z );
+            wait 0.05;
+            continue;
+        }
+        if( self IsSwitchingWeapons() )
+        {
+            wait 0.05;
+            continue;
+        }
         if( self adsButtonPressed() )
         {
             self.is_adsing = true;
-            self setclientdvar( "cg_gun_x", 3 );
+            self setclientdvar( "cg_gun_x", 2.5 );
             self setclientdvar( "cg_gun_y", 0 );
             self setclientdvar( "cg_gun_z", 0 );
             while( self adsButtonPressed() )
@@ -164,6 +188,7 @@ while_ads( x, y, z )
             if( getDvar( "cg_gun_x" ) != x ) { self setclientdvar( "cg_gun_x", x );}// if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); }  }
             if( getDvar( "cg_gun_y" ) != y ) { self setclientdvar( "cg_gun_y", y );}// if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); } }
             if( getDvar( "cg_gun_z" ) != z ) { self setclientdvar( "cg_gun_z", z );} //if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); } }
+            //self.is_adsing = true;
         }
         wait 0.05;
     }

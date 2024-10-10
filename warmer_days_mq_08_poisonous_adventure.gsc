@@ -384,6 +384,9 @@ are_players_close_to_spawn_suitcase()
 spawn_suitcase_perka( location )
 {
     level endon( "end_game" );
+    PlaySoundAtPosition( level.jsn_snd_lst[ 3 ], m_suitcase.origin );
+    earthquake( 0.25, 10, m_suitcase.origin, 1050 );
+    wait 1;
     m_suitcase = spawn( "script_model", location ); 
     m_suitcase setmodel( level.suitcase_rise_model );
     m_suitcase.angles = m_suitcase.angles;
@@ -469,6 +472,7 @@ spawn_drinkable_step()
     anim_trig setCursorHint( "HINT_NOICON" );
     anim_trig sethintstring( "^9[ ^8Come back later ^9]" );
     anim_trig TriggerIgnoreTeam();
+    
     spawnable_case.angles = ( 0, 180, 90 );
     level waittill( "all_suitcases_collected" );
     foreach( playa in level.players )
@@ -837,6 +841,7 @@ spawn_rogue_bottle( location )
         mq_trigger_shot waittill( "damage", amount, attacker );
         if( isplayer( attacker ) )
         {
+            playfx( level.myFx[ 92 ], mq_shooting_bottle.origin );
             if( level.dev_time )
             { 
                 iprintlnbold( "MOVING BOTTLE AGAIN" );
@@ -853,7 +858,7 @@ spawn_rogue_bottle( location )
     }
 
     mq_shooting_bottle moveto( location, 3, 1, 1.5 ); 
-    
+    playfx( level.myFx[ 91 ], mq_shooting_bottle.origin );
     mq_shooting_bottle waittill( "movedone" );
     level thread loop_big_fxs( mq_shooting_bottle.origin );
     mq_shooting_bottle moveto( location + ( 0, 0, 90 ), 2, 0.4, 0.5 );
@@ -863,12 +868,7 @@ spawn_rogue_bottle( location )
     level notify( "bottle_has_been_returned" );
     wait 1;
     playfxontag( level._effect[ "avogadro_ascend_aerial" ], mq_shooting_bottle, "tag_origin" );
-    wait 0.05;
-    if( level.suitcases_collected == 4 )
-    {
-        wait 1;
-        level notify( "all_suitcases_collected" );
-    }
+    
     
    // playfxontag( level.myFx[ 92 ], mq_shooting_bottle, "tag_origin" );
     if( isdefined( mq_trigger_shot ) )
@@ -881,6 +881,12 @@ spawn_rogue_bottle( location )
     {
         playfx( level.myFx[ 90 ], mq_shooting_bottle.origin );
         mq_shooting_bottle delete();
+    }
+    wait 2;
+    if( level.suitcases_collected == 4 )
+    {
+        wait 1;
+        level notify( "all_suitcases_collected" );
     }
     
 

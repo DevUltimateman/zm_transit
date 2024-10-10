@@ -42,26 +42,20 @@
 
 init()
 {
-    //my model list
+    //my model list //"ZMUI_DIFFICULTY_DESC"
     level.myModels = [];
     level.custom_index = 0;
     //my precache models
     level thread precacheModels();
 
     //level thread ondevs(); //remove from real version
-    if( level.dev_time )
-    {
-        //level thread printmodel_origin_angles_based_on_player();
-    }
-    //
-
     flag_wait( "initial_blackscreen_passed" );
     wait 3;
     level.dev_time = true;
     wait 0.05;
     if( level.dev_time )
     {
-        level thread printmodelorginfo();
+        //level thread printmodelorginfo();
     }
     
 }
