@@ -455,7 +455,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     wait 0.05;
     real_player CameraSetLookAt();
     real_player hide();
-    rider thread self_rotate_yaw();
+    //rider thread self_rotate_yaw();
     while( s < sudo.size )
     {
         speed = 540;
@@ -465,6 +465,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
         {
             real_player.origin = target_point + ( 0, 0, 20 );
             real_player setorigin( target_point + ( 0, 0, 20 ) );
+            
         }
         dist = distance( rider.origin, target_point );
         time = dist / speed;
@@ -474,6 +475,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
         //time = 1;
         //safe offset +90 Z
         rider moveto( target_point + ( 0, 0, 100 ), time, 0, 0 );
+        rider rotateTo( target_point, time, 1, 1 );
         
         
         wait time;

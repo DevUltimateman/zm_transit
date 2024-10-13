@@ -56,53 +56,50 @@
 
 init()
 {
-    /*
+    precachemodel( "collision_player_128x128x128" );
+    level.sc_flying_in_progress = false;
+    level.sc_doing_loop = false;
+    level.s_moves_bank = [];
+    level.s_moves_bank_loopable = [];
+    level.s_moves_power = [];
+    level.s_moves_power_loopable = [];
+    level.s_moves_farm = [];
+    level.s_moves_farm_loopable = [];
+    level.s_moves_diner = [];
+    level.s_moves_diner_loopable = [];
     level.power_outtage_active = false;
     level.powerguy_flyer = undefined;
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     level.power_outtage_blocker_diner = ( -3802.2, -7326.63, -59.4137 );
     level.power_outtage_trigger_diner = ( -3538.66, -7302.32, -58.875 );
     level.power_outtage_model_diner = ( -3512.7, -7301.09, -23.8475 );
-
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     level.power_outtage_blocker_farm = ( 8738.65, -5889.86, 51.3286 );
     level.power_outtage_blocker2_farm = ( 8455.99, -5741.28, 50.4498 );
     level.power_outtage_trigger_farm = ( 8790.66, -5652.11, 50.125 );
     level.power_outtage_model_farm = ( 8805.36, -5635.39, 94.6612 );
-
-    
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     level.power_outtage_blocker_power = ( 10631.8, 8576.22, -356.864 );
     level.power_outtage_blocker2_power = ( 10615.9, 8196.6, -407.875 ); //angles( 0, -118, 0 );
     level.power_outtage_blocker3_power = ( 10737.1, 8147, -407.875 );
     level.power_outtage_blocker4_power = ( 10944, 8445.54, -404.394 );
     level.power_outtage_trigger_power = ( 10799.7, 8357.99, -407.87 );
     level.power_outtage_model_power = ( 10773.4, 8356.86, -359.048 );
-
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
     level.power_outtage_trigger_bank = ( 882.342, 258.358, -39.875 );
     level.power_outtage_model_bank = ( 921.818, 259.005, 4.27847 );
     level.power_outtage_blocker_bank = ( 1092.36, 470.258, -39.875 );
     level.power_outtage_blocker2_bank = ( 1031.25, -15.3066, -39.875 ); //an gles ( 0, -41, 0 );
     level.power_outtage_blocker3_bank = ( 631.584, 292.822, -39.9108 );
+    movable_locations();
 
-
-    level.s_moves_bank = [];
-    level.s_moves_bank_loopable = [];
-
-    level.s_moves_power = [];
-    level.s_moves_power_loopable = [];
-
-    level.s_moves_farm = [];
-    level.s_moves_farm_loopable = [];
-
-    level.s_moves_diner = [];
-    level.s_moves_diner_loopable = [];
-
-    */
+    flag_wait( "initial_blackscreen_passed" );
+    wait 0.1;
+    level thread spawn_all_distance_checkers();
+    level thread spawn_all_triggers();
+   
+    level thread spawn_tunnel_stuff();
+    
 }
 
 movable_locations()
@@ -177,17 +174,102 @@ movable_locations()
 }
 
 
+spawn_all_distance_checkers()
+{
+    level endon( "end_game" );
+
+    dst_diner = spawn( "script_model", level.s_moves_diner[ 0 ] );
+    dst_diner setmodel( "tag_origin" );
+    dst_diner.angles = ( 0, 0, 0 );
+    wait 0.05;
+    dst_diner thread monitor_if_close_and_delete( level.s_moves_diner, level.s_moves_diner_loopable );
+    //==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/
+
+
+    dst_farm = spawn( "script_model", level.s_moves_farm[ 0 ] );
+    dst_farm setmodel( "tag_origin" );
+    dst_farm.angles = ( 0, 0, 0 );
+    wait 0.05;
+    dst_farm thread monitor_if_close_and_delete( level.s_moves_farm, level.s_moves_farm_loopable );
+    //==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/
+
+
+    dst_power = spawn( "script_model", level.s_moves_power[ 0 ] );
+    dst_power setmodel( "tag_origin" );
+    dst_power.angles = ( 0, 0, 0 );
+    wait 0.05;
+    dst_power thread monitor_if_close_and_delete( level.s_moves_power, level.s_moves_power_loopable );
+    //==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/
+
+
+    dst_bank = spawn( "script_model", level.s_moves_bank[ 0 ] );
+    dst_bank setmodel( "tag_origin" );
+    dst_bank.angles = ( 0, 0, 0 );
+    wait 0.05;
+    dst_bank thread monitor_if_close_and_delete( level.s_moves_bank, level.s_moves_bank_loopable );
+    //==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/
+}
+
+
+nighttime_preset()
+{
+    self setclientdvar( "r_lighttweaksuncolor", ( 0.1, 0.4, 1 ) );
+    self setclientdvar( "r_sky_intensity_factor0", 0.45 );
+
+}
+
+monitor_if_close_and_delete( which_initial, which_loop )
+{
+    level endon( "end_game" );
+    self endon( "end_game" );
+    while( true )
+    {
+        //p = level.players;
+        for( s = 0; s < level.players.size; s++ )
+        {
+            if( distance( level.players[ s ].origin, self.origin ) < 300 )
+            {
+                if( level.sc_flying_in_progress )
+                {
+                    wait 1;
+                    if( level.dev_time ){ iprintlnbold( "CAN'T START NEW PROCESS BEFORE OTHER FLYING PROCESS IS FINISHED" ); }
+                    continue;
+                }
+                else if( !level.sc_flying_in_progress )
+                {
+                    wait 0.1;
+                    if( level.dev_time ){ iprintlnbold( "STARTING A NEW SCHRUDER FLYING IN PROCESS AND FREEZING OTHER MONITOR LOCATIONS");}
+                    level thread spawn_s_to_do_stuff( which_initial, which_loop );
+                    level.sc_flying_in_progress = true;
+                    wait 1;
+                    self delete();
+                    break;
+                }
+                wait 0.1;
+            }
+            else { wait 0.05; }
+        }
+        wait 0.05;
+        if( !isdefined( self ) )
+        {
+            wait 0.1;
+            if( level.dev_time ){ iprintlnbold( "MONITOR TRIGGER: " + self + " is not defined, breaking out of loop" ); }
+            break;
+        }
+        wait 1;
+    }
+}
 spawn_all_triggers()
 {
     level endon( "end_game" );
 
     power_outtage_trigger_diner = spawn( "trigger_radius_use", level.power_outtage_trigger_diner, 0, 58, 58 );
     power_outtage_trigger_diner setCursorHint( "HINT_NOICON" );
-    power_outtage_trigger_diner setHintString( "^8[ ^9Restore Power ^8]\n^9[ ^8Requires all survivors to press ^3[{+activate}] ^8at the same time here ^9]")
+    power_outtage_trigger_diner setHintString( "^8[ ^9Restore Power ^8]\n^9[ ^8Requires all survivors to press ^3[{+activate}] ^8at the same time here ^9]" );
     power_outtage_trigger_diner TriggerIgnoreTeam();
     notifier_d = spawn( "script_model", level.power_outtage_model_diner );
     notifier_d setModel( "tag_origin" );
-    notifier_d.angles = notifier_d_angles;
+    notifier_d.angles = notifier_d.angles;
     wait 0.05;
     playfxontag( level.myfx[ 2 ], notifier_d, "tag_origin" );
     power_outtage_trigger_diner thread restore_power_on_press( notifier_d );
@@ -195,11 +277,11 @@ spawn_all_triggers()
     //=======================================================================================================================================================//
     power_outtage_trigger_farm = spawn( "trigger_radius_use", level.power_outtage_trigger_farm, 0, 58, 58 );
     power_outtage_trigger_farm  setCursorHint( "HINT_NOICON" );
-    power_outtage_trigger_farm  setHintString( "^8[ ^9Restore Power ^8]\n^9[ ^8Requires all survivors to press ^3[{+activate}] ^8at the same time here ^9]")
+    power_outtage_trigger_farm  setHintString( "^8[ ^9Restore Power ^8]\n^9[ ^8Requires all survivors to press ^3[{+activate}] ^8at the same time here ^9]");
     power_outtage_trigger_farm  TriggerIgnoreTeam();
     notifier_f = spawn( "script_model", level.power_outtage_model_farm );
     notifier_f setModel( "tag_origin" );
-    notifier_f.angles = notifier_f_angles;
+    notifier_f.angles = notifier_f.angles;
     wait 0.05;
     playfxontag( level.myfx[ 2 ], notifier_f, "tag_origin" );
     power_outtage_trigger_farm thread restore_power_on_press( notifier_f );
@@ -207,11 +289,11 @@ spawn_all_triggers()
     //=======================================================================================================================================================//
     power_outtage_trigger_power = spawn( "trigger_radius_use", level.power_outtage_trigger_power, 0, 58, 58 );
     power_outtage_trigger_power setCursorHint( "HINT_NOICON" );
-    power_outtage_trigger_power setHintString( "^8[ ^9Restore Power ^8]\n^9[ ^8Requires all survivors to press ^3[{+activate}] ^8at the same time here ^9]")
+    power_outtage_trigger_power setHintString( "^8[ ^9Restore Power ^8]\n^9[ ^8Requires all survivors to press ^3[{+activate}] ^8at the same time here ^9]");
     power_outtage_trigger_power TriggerIgnoreTeam();
     notifier_p = spawn( "script_model", level.power_outtage_model_power );
     notifier_p setModel( "tag_origin" );
-    notifier_p.angles = notifier_p_angles;
+    notifier_p.angles = notifier_p.angles;
     wait 0.05;
     playfxontag( level.myfx[ 2 ], notifier_p, "tag_origin" );
     power_outtage_trigger_power thread restore_power_on_press( notifier_p );
@@ -219,18 +301,18 @@ spawn_all_triggers()
     //=======================================================================================================================================================//
     power_outtage_trigger_bank = spawn( "trigger_radius_use", level.power_outtage_trigger_bank, 0, 58, 58 );
     power_outtage_trigger_bank setCursorHint( "HINT_NOICON" );
-    power_outtage_trigger_bank setHintString( "^8[ ^9Restore Power ^8]\n^9[ ^8Requires all survivors to press ^3[{+activate}] ^8at the same time here ^9]")
+    power_outtage_trigger_bank setHintString( "^8[ ^9Restore Power ^8]\n^9[ ^8Requires all survivors to press ^3[{+activate}] ^8at the same time here ^9]");
     power_outtage_trigger_bank TriggerIgnoreTeam();
     notifier_b = spawn( "script_model", level.power_outtage_model_bank );
     notifier_b setModel( "tag_origin" );
-    notifier_b.angles = notifier_b_angles;
+    notifier_b.angles = notifier_b.angles;
     wait 0.05;
     playfxontag( level.myfx[ 2 ], notifier_b, "tag_origin" );
     power_outtage_trigger_bank thread restore_power_on_press( notifier_b );
     
 }
 
-restore_power_on_press()
+restore_power_on_press( n )
 {
     level endon( "end_game" );
     self endon( "end_game" );
@@ -241,44 +323,68 @@ restore_power_on_press()
         if( level.sc_doing_loop )
         {
             wait 0.05;
+            self setHintString( "^8[ ^9Doctor Schruder is waiting you at another location ^8]" );
+            wait 3.5;
+            self sethintstring( "^8[ ^9Restore Power ^8]\n^9[ ^8Requires all survivors to press ^3[{+activate}] ^8at the same time here ^9]" );
+            wait 0.05;
             continue;
         }
         else 
         {
-            if( self.origin == level.power_outtage_trigger_diner )
+            if( is_player_valid( who ) )
             {
-                level thread do_power_restoring_lockdown( level.power_outtage_blocker_diner );
-                Earthquake( .5, 4,  sc.origin, 1000 );
-                playfx( level.myfx[ 82 ], sc.origin );
-                wait 0.05;
-                break;
-            }
-
-            else if( self.origin == level.power_outtage_trigger_farm )
-            {
-                level thread do_power_restoring_lockdown( level.power_outtage_blocker_farm );
-                Earthquake( .5, 4,  sc.origin, 1000 );
-                playfx( level.myfx[ 82 ], sc.origin );
-                wait 0.05;
-                break;
-            }
-
-            else if( self.origin == level.power_outtage_trigger_power )
-            {
-                level thread do_power_restoring_lockdown( level.power_outtage_blocker_power );
-                Earthquake( .5, 4,  sc.origin, 1000 );
-                playfx( level.myfx[ 82 ], sc.origin );
-                wait 0.05;
-                break;
-            }
-
-            else if( self.origin == level.power_outtage_trigger_bank )
-            {
-                level thread do_power_restoring_lockdown( level.power_outtage_blocker_bank );
-                Earthquake( .5, 4,  sc.origin, 1000 );
-                playfx( level.myfx[ 82 ], sc.origin );
-                wait 0.05;
-                break;
+                if( self.origin == level.power_outtage_trigger_diner )
+                {
+                    self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
+                    level thread do_power_restoring_lockdown( level.power_outtage_blocker_diner );
+                    Earthquake( .5, 4,  self.origin, 1000 );
+                    playfx( level.myFx[ 9 ], self.origin );
+                    n movez( 150, 0.25, 0.1, 0 );
+                    wait 0.3;
+                    n delete();
+                    wait 1;
+                    self delete();
+                    break;
+                }
+                else if( self.origin == level.power_outtage_trigger_farm )
+                {
+                    self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
+                    level thread do_power_restoring_lockdown( level.power_outtage_blocker_farm );
+                    Earthquake( .5, 4,  self.origin, 1000 );
+                    playfx( level.myFx[ 9 ] , self.origin );
+                    n movez( 150, 0.25, 0.1, 0 );
+                    wait 0.3;
+                    n delete();
+                    wait 1;
+                    self delete();
+                    break;
+                }
+                else if( self.origin == level.power_outtage_trigger_power )
+                {
+                    self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
+                    level thread do_power_restoring_lockdown( level.power_outtage_blocker_power );
+                    Earthquake( .5, 4,  self.origin, 1000 );
+                    playfx( level.myFx[ 9 ] , self.origin );
+                    n movez( 150, 0.25, 0.1, 0 );
+                    wait 0.3;
+                    n delete();
+                    wait 1;
+                    self delete();
+                    break;
+                }
+                else if( self.origin == level.power_outtage_trigger_bank )
+                {
+                    self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
+                    level thread do_power_restoring_lockdown( level.power_outtage_blocker_bank );
+                    Earthquake( .5, 4,  self.origin, 1000 );
+                    playfx( level.myFx[ 9 ], self.origin );
+                    n movez( 150, 0.25, 0.1, 0 );
+                    wait 0.3;
+                    n delete();
+                    wait 1;
+                    self delete();
+                    break;
+                }
             }
         }
         wait 0.05;
@@ -291,31 +397,34 @@ do_power_restoring_lockdown( which_spot )
     level endon( "end_game" );
     if( which_spot == level.power_outtage_blocker_bank )
     {
+        //do everything like this later
         blocker0 = spawn( "script_model", level.power_outtage_blocker_bank );
-        blocker1 = spawn( "script_model", level.power_outtage_blocker2_bank );
-        blocker2 = spawn( "script_model", level.power_outtage_blocker3_bank );
-        
         blocker0 setmodel( "collision_player_128x128x128" );
-        blocker1 setmodel( "collision_player_128x128x128" );
-        blocker2 setmodel( "collision_player_128x128x128" );
-
         blocker0.angles = blocker0.angles;
-        blocker1.angles = blocker0.angles;
-        blocker2.angles = blocker0.angles;
-
-        wait 0.1;
-        playfx( level.myfx[ 77 ], blocker0.origin );
-        playfx( level.myfx[ 77 ], blocker1.origin );
-        playfx( level.myfx[ 77 ], blocker2.origin );
         wait 0.05;
-        playfxontag( level.myFx[ 78 ], blocker0, "tag_origin" );
+        playfxontag( level.myFx[ 78 ], blocker0, "tag_origin" );    
+        wait 0.05;
+        blocker1 = spawn( "script_model", level.power_outtage_blocker2_bank );
+        blocker1 setmodel( "collision_player_128x128x128" );
+        blocker1.angles = blocker0.angles;
+        wait 0.05;
         playfxontag( level.myFx[ 78 ], blocker1, "tag_origin" );
+
+        blocker2 = spawn( "script_model", level.power_outtage_blocker3_bank );
+        blocker2 setmodel( "collision_player_128x128x128" );
+        blocker2.angles = blocker0.angles;
+        wait 0.1;
+        //playfx( level.myfx[ 77 ], blocker0.origin );
+        //playfx( level.myfx[ 77 ], blocker1.origin );
+        //playfx( level.myfx[ 77 ], blocker2.origin );
+        wait 0.05;
+        wait 0.05;
         playfxontag( level.myFx[ 78 ], blocker2, "tag_origin" );
         level.sc_doing_loop = true;
         wait 45;
-        playfx( level.myfx[ 77 ], blocker0.origin );
-        playfx( level.myfx[ 77 ], blocker1.origin );
-        playfx( level.myfx[ 77 ], blocker2.origin );
+        playfx( level.myFx[ 94 ], blocker0.origin );
+        playfx( level.myFx[ 94 ], blocker1.origin );
+        playfx( level.myFx[ 94 ], blocker2.origin );
         blocker0 movez( -5000, 1, 0, 0 );
         blocker1 movez( -5000, 1, 0, 0 );
         blocker2 movez( -5000, 1, 0, 0 );
@@ -324,6 +433,7 @@ do_power_restoring_lockdown( which_spot )
         blocker1 delete();
         blocker2 delete();
         level.sc_doing_loop = false;
+        level.sc_flying_in_progress = false;
     }
     
     else if( which_spot == level.power_outtage_blocker_diner )
@@ -337,40 +447,41 @@ do_power_restoring_lockdown( which_spot )
         playfxontag( level.myFx[ 78 ], blocker0, "tag_origin" );
         level.sc_doing_loop = true;
         wait 45;
-        playfx( level.myfx[ 77 ], blocker0.origin );
+        playfx( level.myFx[ 94 ], blocker0.origin );
         blocker0 movez( -5000, 1, 0, 0 );
         wait 2;
         blocker0 delete();
         level.sc_doing_loop = false;
+        level.sc_flying_in_progress = false;
     }
 
     else if( which_spot == level.power_outtage_blocker_power )
     {
         blocker0 = spawn( "script_model", level.power_outtage_blocker_power );
-        blocker1 = spawn( "script_model", level.power_outtage_blocker2_power );
-        blocker2 = spawn( "script_model", level.power_outtage_blocker3_power );
-        
         blocker0 setmodel( "collision_player_128x128x128" );
-        blocker1 setmodel( "collision_player_128x128x128" );
-        blocker2 setmodel( "collision_player_128x128x128" );
-
         blocker0.angles = blocker0.angles;
-        blocker1.angles = blocker0.angles;
-        blocker2.angles = blocker0.angles;
 
+        blocker1 = spawn( "script_model", level.power_outtage_blocker2_power );
+        blocker1 setmodel( "collision_player_128x128x128" );
+        blocker1.angles = blocker0.angles;
+
+        blocker2 = spawn( "script_model", level.power_outtage_blocker3_power );
+        blocker2 setmodel( "collision_player_128x128x128" );    
+        blocker2.angles = blocker0.angles;
+            
         wait 0.1;
-        playfx( level.myfx[ 77 ], blocker0.origin );
-        playfx( level.myfx[ 77 ], blocker1.origin );
-        playfx( level.myfx[ 77 ], blocker2.origin );
+        playfx( level.myFx[ 94 ], blocker0.origin );
+        playfx( level.myFx[ 94 ], blocker1.origin );
+        playfx( level.myFx[ 94 ], blocker2.origin );
         wait 0.05;
         playfxontag( level.myFx[ 78 ], blocker0, "tag_origin" );
         playfxontag( level.myFx[ 78 ], blocker1, "tag_origin" );
         playfxontag( level.myFx[ 78 ], blocker2, "tag_origin" );
         level.sc_doing_loop = true;
         wait 45;
-        playfx( level.myfx[ 77 ], blocker0.origin );
-        playfx( level.myfx[ 77 ], blocker1.origin );
-        playfx( level.myfx[ 77 ], blocker2.origin );
+        playfx( level.myFx[ 94 ], blocker0.origin );
+        playfx( level.myFx[ 94 ], blocker1.origin );
+        playfx( level.myFx[ 94 ], blocker2.origin );
         blocker0 movez( -5000, 1, 0, 0 );
         blocker1 movez( -5000, 1, 0, 0 );
         blocker2 movez( -5000, 1, 0, 0 );
@@ -379,37 +490,35 @@ do_power_restoring_lockdown( which_spot )
         blocker1 delete();
         blocker2 delete();
         level.sc_doing_loop = false;
+        level.sc_flying_in_progress = false;
     }
 
 
     if( which_spot == level.power_outtage_blocker_farm )
     {
-        blocker0 = spawn( "script_model", level.power_outtage_blocker_power );
-        blocker1 = spawn( "script_model", level.power_outtage_blocker2_farm );
-
-        
+        blocker0 = spawn( "script_model", level.power_outtage_blocker_farm );
         blocker0 setmodel( "collision_player_128x128x128" );
-        blocker1 setmodel( "collision_player_128x128x128" );
-
         blocker0.angles = blocker0.angles;
+        blocker1 = spawn( "script_model", level.power_outtage_blocker2_farm );
+        blocker1 setmodel( "collision_player_128x128x128" );
         blocker1.angles = blocker0.angles;
-
         wait 0.1;
-        playfx( level.myfx[ 77 ], blocker0.origin );
-        playfx( level.myfx[ 77 ], blocker1.origin );
+        playfx( level.myFx[ 94 ], blocker0.origin );
+        playfx( level.myFx[ 94 ], blocker1.origin );
         wait 0.05;
         playfxontag( level.myFx[ 78 ], blocker0, "tag_origin" );
         playfxontag( level.myFx[ 78 ], blocker1, "tag_origin" );
         level.sc_doing_loop = true;
         wait 45;
-        playfx( level.myfx[ 77 ], blocker0.origin );
-        playfx( level.myfx[ 77 ], blocker1.origin );
+        playfx( level.myFx[ 94 ], blocker0.origin );
+        playfx( level.myFx[ 94 ], blocker1.origin );
         blocker0 movez( -5000, 1, 0, 0 );
         blocker1 movez( -5000, 1, 0, 0 );
         wait 2;
         blocker0 delete();
         blocker1 delete();
         level.sc_doing_loop = false;
+        level.sc_flying_in_progress = false;
     }
 
     
@@ -417,13 +526,13 @@ do_power_restoring_lockdown( which_spot )
 spawn_s_to_do_stuff( which_location, which_location_loop )
 {
     level endon( "end_game" );
-
-    sc = spawn( "script_model", which_location[ 0 ] + ( 0, 0, 100 ) );
+    wait 0.1;
+    sc = spawn( "script_model", which_location[ 0 ] + ( 0, 0, 10 ) );
     sc setmodel( level.automaton.model );
-    sc.angles = ( 0, 0,  0 );
-    wait 0.05;
-    
-    playfx( level._effects[ 77 ], sc.origin );
+    sc.angles = ( -10, 0,  0 );
+    wait 0.1;
+    //sc thread move_and_delete();
+    playfx( level.myFx[ 85 ], sc.origin );
     playfxontag( level._effect[ "screecher_hole" ], sc, "tag_origin" );
     Earthquake( .5, 4,  sc.origin, 1000 );
     playfx( level.myfx[ 82 ], sc.origin );
@@ -431,50 +540,62 @@ spawn_s_to_do_stuff( which_location, which_location_loop )
     sc playLoopSound( "zmb_screecher_portal_loop", 2 );
 
     //do_initial_moves
-    
     for( i = 0; i < which_location.size; i++ )
     {
-        sc moveto( which_location[ i ], 4, 1.5, 1 );
-        sc waittill( "movedone" );
+        if( level.dev_time ) { iprintlnbold( "DOCTOR IS MOVING TO NEW INITIAL LOCATION" ); }
+        sc moveto( which_location[ i ], 3, 1, 0.5 );
+        sc rotateTo( which_location[ i ], 3, 0.5, 0.2 );
+        wait 3;
         playfx( level._effects[ 77 ], sc.origin );
         PlaySoundAtPosition( level.jsn_snd_lst[ 3 ], sc.origin );
-        sc rotateTo( level.players[ 0 ], 1.5, 0.5, 0.2 );
-        sc waittill( "rotatedone" );
-        if( level.dev_time{ iprintlnbold( "DOCTOR HAS ROTATED, WAITING FOR PLAYER TO BE CLOSE"); })
-        sc waittill( "can_move_again" );
+        if( level.dev_time ){ iprintlnbold( "DOCTOR HAS ROTATED, WAITING FOR PLAYER TO BE CLOSE"); }
         wait 0.05;
-        if( level.dev_time ) { iprintlnbold( "DOCTOR IS MOVING TO NEW LOCATION" ); }
-
     }
 
     wait 0.05;
     if( level.dev_time ) { iprintlnbold( "DOCTOR IS MOVING TO LOOP LOCATIONS" ); } 
 
-    sc moveto( which_location_loop[ 0 ], 3, 1, 0.2 );
+    sc moveto( which_location_loop[ 0 ] + ( 0, 0, 20 ), 3, 1, 0.2 );
+    playfx( level.myFx[ 85 ], sc.origin );
     sc waittill( "movedone" );
-    while( level.sc_doing_loop )
+    while( level.sc_doing_loop || level.sc_flying_in_progress  )
     {
-        for( a = 0; a which_location_loop.size; a++ )
+        for( a = 0; a < which_location_loop.size; a++ )
         {
+            playfx( level.myFx[ 85 ], sc.origin );
             sc moveto( which_location_loop[ a ], 4.5, randomfloatrange( 0.5, 1 ), randomfloatrange( 0.9, 1.5 ) );
-            sc rotateTo( level.players[ 0 ], 1.5, 0.5, 0.2 );
+            sc rotateTo( which_location_loop[ a ], 1.5, 0.5, 0.2 );
             sc waittill( "movedone" );
-            for( i = 0; i < 6; i++ )
+            if( !level.sc_doing_loop || !level.sc_flying_in_progress  )
             {
-                sc movez( 75, 1.5, 0.25, 0.25 );
-                sc rotateYaw( randomintrange( -150, 150 ), 1, 0.25, 0.25 );
-                sc waittill( "movedone" );
-                sc movez( -75, 1.5, 0.25, 0.25 );
-                sc rotateYaw( randomintrange( -150, 150 ), 1, 0.25, 0.25 );
-                sc waittill( "movedone" );
+                break;
             }
-            playfx( level._effects[ 77 ], sc.origin );
+            for( i = 0; i < 2; i++ )
+            {
+                playfx( level.myFx[ 85 ], sc.origin );
+                sc movez( 25, 1.5, 0.25, 0.25 );
+                sc rotateYaw( randomintrange( -150, 150 ), 1.5, 0.25, 0.25 );
+                sc waittill( "movedone" );
+                if( !level.sc_doing_loop || !level.sc_flying_in_progress  )
+                {
+                    break;
+                }
+                sc movez( -25, 1.5, 0.25, 0.25 );
+                sc rotateYaw( randomintrange( -150, 150 ), 1.5, 0.25, 0.25 );
+                sc waittill( "movedone" );
+                if( !level.sc_doing_loop || !level.sc_flying_in_progress  )
+                {
+                    break;
+                }
+            }
+            playfx( level._effects[ 94 ], sc.origin );
             wait 0.05;
         }
     }
-    playfx( level._effects[ 77 ], sc.origin );
+    playfx( level.myFx[ 85 ], sc.origin );
     sc movez( -10000, 0.2, 0, 0 );
     level.sc_doing_loop = false;
+    level.sc_flying_in_progress = false;
     wait 2;
     sc delete();
 }
@@ -483,24 +604,124 @@ monitor_if_sc_can_move_again()
 {
 
     level endon( "end_game" );
-    self endon( "can_move_again" );
+    self endon( "can_move_agains" );
     while( isdefined( self ) )
     {
-        players = level.players;
-        for( s = 0; s < players.size; s++ )
+        for( s = 0; s <level.players.size; s++ )
         {
-            if( distance( players[ s ].origin, self.origin ) > 150 )
+            if( distance( level.players[ s ].origin, self.origin ) < 150 )
             {
-                wait 1;
-                continue;
-            }
-            else 
-            {
-                self notify( "can_move_again" );
                 wait 0.05;
-                break;
+                self notify( "can_move_again" );
+                self notify( "can_move_agains");
             }
         }
-        wait 0.5;
+        self movez( 25, 1, 0.2, 0.2 );
+        wait 1;
+        self movez( -25, 1, 0.2, 0.2 );
+        wait 1;
     }
+}
+
+
+
+
+
+
+
+spawn_tunnel_stuff()
+{
+    level endon( "end_game" );
+
+    teleporter_location = ( -11773.2, -2499.67, 228.125 );
+    angs = ( 0, -90, 0 );
+
+    //teleporter
+    portal = spawn( "script_model", teleporter_location  );
+    portal setmodel("p6_zm_screecher_hole" );
+    portal.angles = angs;
+    wait 0.1;
+    playfx( level.myFx[ 44 ], portal.origin );
+
+    side_portal = spawn( "script_model", teleporter_location + ( 0, 0, 45 ) );
+    side_portal setmodel( "tag_origin" );
+    side_portal.angles = ( -90, -90, 0 );
+    wait 0.1;
+    playfxontag( level._effect[ "screecher_vortex" ], side_portal, "tag_origin" );
+    //playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
+    //layfxontag( level.myFx[ 26 ], gun, "tag_origin" );
+    playFXOnTag( level._effect[ "screecher_vortex" ], portal, "tag_origin" );
+    portal playLoopSound( "zmb_screecher_portal_loop", 2 );
+
+
+
+
+    //trigger notifier for portal
+    trig = spawn( "trigger_radius_use", portal.origin, 350, 350, 350 );
+    trig setCursorHint( "HINT_NOICON" );
+    trig setHintString( "^9[ ^8All survivors must jump in the ^3Portal ^8at the same time ^9]" );
+    trig TriggerIgnoreTeam();
+
+
+
+}
+spawn_alley_stuff()
+{
+    level endon( "end_game" );
+
+    back_blocker_org = ( 3012.48, 253.542, -55.875 );
+    angs1 = ( 0, 90, 0 ); //might need + 90
+    back_blocker_org2 = ( 3107.26, 171.684, -50.8028 );
+    angs2 = ( 0, 0, 0 ); // might need -90
+    m = level.mymodels[ 9 ];
+
+    side_blocker_org = ( 3265.34, -193.637, -57.1034 );
+    angs3 = ( 0, 0, 0 ); //might need -90
+
+
+    side_blocker_org2 = ( 2913.12, -267.486, -42.0902 );
+    angs4 = ( 0, -90, 0 ); //might need +90
+
+    side_blocker_org3 = ( 2758.58, -259.178, -29.6242 );
+    angs5 = ( 0, -90, 0 ); //^^
+
+    side_blcker_org4 = ( 2644.55, -265.198, -32.6945 );
+    angs6 = ( 0, -90, 0 );
+
+    asf_blocker_org = ( 2685.07, -341.956, -83.7855 );
+    angs7 = ( 0, 0, 0 );
+
+    asf_blocker_org2 = ( 2685.17, -440.571, -81.816 );
+    angs8 = ( 0, 0, 0 );
+
+    asf_blocker_org3 = ( 2685.34, -569.064, -79.2538 );
+    angs9 = ( 0, 0, 0 );
+
+    drop_blocker_org = ( 2572.58, -590.508, -72.5 );
+    angs10 = ( 0, -170, 0 );
+
+    drop_blocker_org2 = ( 2548.96, -488.952, -71.2927 );
+    angs11 = ( 0, -170, 0 );
+
+    bin_blocker_org = ( 2433.66, -80.2144, -55.875 );
+    angs12 = ( 0, 90, 0 );
+
+
+
+    teleporter_origin = ( 2422.57, 159.245, -43.8112 );
+    angs13 = ( 0, -180, 0 );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
