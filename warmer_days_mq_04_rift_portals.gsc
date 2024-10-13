@@ -356,7 +356,7 @@ level_bring_back_normal_visuals_and_stuff()
         level.players[ i ] setclientdvar( "r_lighttweaksunlight", 12  );
         level.players[ i ] setclientdvar( "r_filmusetweaks", true );
         level.players[ i ] setclientdvar( "r_lighttweaksundirection",( -155, 63, 0 ) );
-        level.players[ i ] setclientdvar( "r_sky_intensity_factor0", 3  );
+        level.players[ i ] setclientdvar( "r_sky_intensity_factor0", 1.95 );
         level.players[ i ] setclientdvar( "r_bloomtweaks", 1  );
         level.players[ i ] setclientdvar( "cg_usecolorcontrol", 1 );
         level.players[ i ] setclientdvar( "cg_colorscale", "1 1 1"  );

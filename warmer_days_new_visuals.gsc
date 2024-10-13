@@ -368,6 +368,10 @@ lighting_vis()
    self setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.52, 0.36 ) );
    self setclientdvar( "cg_drawcrosshair", 0 );
 
+   self setclientdvar( "vc_yl", "0.5 0.25 0 1.45" );
+   self setclientdvar( "vc_yh", "0.3 0.1 0 .45" );
+   self setclientdvar( "r_sky_intensity_factor0", 1.95 );
+
    //self thread sky_carousel();
 }
 

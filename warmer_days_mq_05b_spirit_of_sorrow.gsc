@@ -108,7 +108,7 @@ waitflag()
         play setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.62, 0.36 ));
         play setclientdvar( "r_lighttweaksunlight", 12  );
         play setclientdvar( "r_lighttweaksundirection",( -155, 63, 0 ) );
-        play setclientdvar( "r_sky_intensity_factor0", 1.7  );
+        play setclientdvar( "r_sky_intensity_factor0", 1.95 );
         play setclientdvar( "r_bloomtweaks", 1  );
         play setclientdvar( "cg_usecolorcontrol", 1 );
         play setclientdvar( "cg_colorscale", "1 1 1"  );

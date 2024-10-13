@@ -106,7 +106,7 @@ for_joining_players()
         //player thread lerp_from_offset_to_offset();
 
         //apply back soon
-        //player thread on_spawn();
+        player thread on_spawn();
     }
 }
 
@@ -130,7 +130,6 @@ do_weapon_change_offsets()
     {
         self waittill( "weapon_change", weapon );
         //self notify( "stop_ads_track" );
-        wait 0.05;
         xw = get_weapon_offsetter_x( weapon );
         xy = get_weapon_offsetter_y( weapon );
         xz = get_weapon_offsetter_z( weapon );
@@ -190,7 +189,7 @@ while_ads( x, y, z )
             if( getDvar( "cg_gun_x" ) != x ) { self setclientdvar( "cg_gun_x", x );}// if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); }  }
             if( getDvar( "cg_gun_y" ) != y ) { self setclientdvar( "cg_gun_y", y );}// if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); } }
             if( getDvar( "cg_gun_z" ) != z ) { self setclientdvar( "cg_gun_z", z );} //if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); } }
-            //self.is_adsing = true;
+            wait 0.05;
         }
         wait 0.05;
     }
@@ -335,92 +334,95 @@ get_weapon_offsetter_x( weapon_type )
 {
     switch( weapon_type )
     {
+        case "python_zm":
+            return -3.25;
         case "m1911_zm":
-            return 0.8;
+            return -2.4;
 
         case "mp5k_zm":
-            return -0.3;
+            return -2;
         
         case "m14_zm":
-            return -2.3;
+            return -2.8;
 
         case "judge_zm":
-        return 2.5;
+        return -3.35;
 
         case "kard_zm":
-            return -2;
+            return -3.35;
 
-
+        case "m1911_upgraded_zm":
+            return -3.35;
         case "fiveseven_zm":
-            return -0.3;
+            return -3.35;
 
         case "beretta93r_zm":
-            return 1;
+            return -3.35;
 
 
         case "fivesevendw_zm":
-            return -1.4;
+            return -3.35;
 
             case "ak74u_zm":
-            return 1.4;
+            return -2.15;
 
         case "qcw05_zm":
-            return 1;
+            return -3.25;
         case "870mcs_zm":
-            return -.8;
+            return -2.4;
 
         case "rottweil72_zm":
             return -2;
 
         case "saiga12_zm":
-        return -2;
+        return -2.4;
 
         case "srm1216_zm":
-        return -1.1;
+        return -4;
 
         case "saritch_zm":
-        return -0.5;
+        return -2;
         
         case "m16_zm":
-        return -.78;
+        return -2.4;
 
         case "m16_zm_gl":
-        return -.78;
+        return -2.4;
 
         case "xm8_zm":
-        return -1.3;
+        return -2.15;
 
         case "type95_zm":
-        return -1.3;
-
-        case "tar21_zm":
         return -2;
 
+        case "tar21_zm":
+        return -2.7;
+
         case "galil_zm":
-        return -1;
+        return -1.8;
 
         case "fnfal_zm":
-        return -1.5;
+        return -2.2;
 
         case "dsr50_zm":
-        return -1;
+        return -3.6;
         case "barretm82_zm":
-        return -1;
+        return -2.5;
 
         case "rpd_zm":
-        return -2.4;
+        return -4;
 
         case "hamr_zm":
         return -1.2;
 
         case "usrpg_zm":
-        return 0.2;
+        return -1;
 
         case "m32_zm":
         return -2.4;
 
         case "ray_gun_zm":
-        return -3.6;
+        return -5;
 
         case "knife_ballistic_zm":
         return -3;
@@ -429,7 +431,7 @@ get_weapon_offsetter_x( weapon_type )
         return -3;
 
         case "raygun_mark2_zm":
-        return -4;
+        return -6;
 
         //everything else gets a default offset
         default:
@@ -440,71 +442,75 @@ get_weapon_offsetter_y( weapon_type )
 {
     switch( weapon_type )
     {
-
+        case "python_zm":
+            return 1.75;
         case "usrpg_zm":
-        return 0.3;
+        return 1;
         case "rpd_zm":
-        return 1.6;
+        return 2.45;
         case "dsr50_zm":
-        return 1.6;
+        return 1.8;
         case "m1911_zm":
-            return  1.6;
+            return  2.3;
         case "mp5k_zm":
-            return 2.4;
+            return 2.45;
         
         case "m14_zm":
-            return 3;
+            return 3.4;
         
         case "judge_zm":
-        return 0.8;
+        return 1.65;
         case "kard_zm":
-            return 1;    
+            return 1.85;    
 
 
         case "fiveseven_zm":
-            return 2;
+            return 1.55;
+
+        case "m1911_upgraded_zm":
+            return .25;    
         case "beretta93r_zm":
-            return 2;
+            return 1.65;
 
 
         case "fivesevendw_zm":
-            return 1;
+            return .25;
 
         case "ak74u_zm":
-            return -.3;
+            return 2;
 
         case "qcw05_zm":
-            return -1.3;
+            return 2.5;
         case "870mcs_zm":
-            return 1.3;
+            return 2;
         case "rottweil72_zm":
-            return 1.3;
+            return 2.15;
 
         case "saiga12_zm":
-        return .3;
+        return 2.25;
         case "srm1216_zm":
-        return 2;
+        return 2.25;
         case "saritch_zm":
-        return 1;
+        return 1.65;
         case "m16_zm":
-        return 1.8;
+        return 2.1;
         case "m16_zm_gl":
-        return 1.8;
+        return 2.1;
 
         case "xm8_zm":
-        return 1.2;
+        return 2;
 
         case "type95_zm":
-        return 1.2;
+        return 1.75;
 
          case "tar21_zm":
-        return .2;
+        return .8;
         case "galil_zm":
-        return 1.6;
+        return 1.75;
         case "fnfal_zm":
-        return 1.6;
+        return 2;
         case "barretm82_zm":
-        return 1.2;
+        return 1.85;
 
         case "hamr_zm":
         return 1.2;
@@ -513,14 +519,14 @@ get_weapon_offsetter_y( weapon_type )
         return 1.3;
 
         case "ray_gun_zm":
-        return 2.4;
+        return 2;
 
         case "knife_ballistic_zm":
         return 1;
         case "knife_ballistic_bowie_zm":
         return 1;
         case "raygun_mark2_zm":
-        return 3.5;
+        return 3.3;
 
          //everything else gets a default offset
         default:
@@ -531,11 +537,12 @@ get_weapon_offsetter_z( weapon_type )
 {
     switch( weapon_type )
     {
-
+        case "python_zm":
+            return .45;
         case "m32_zm":
         return .5;
         case "usrpg_zm":
-        return 1.3;
+        return -1;
 
         case "hamr_zm":
         return .2;
@@ -544,74 +551,78 @@ get_weapon_offsetter_z( weapon_type )
         case "barretm82_zm":
         return .3;
         case "dsr50_zm":
-        return -.4;
+        return .2;
         case "fnfal_zm":
-        return .4;
+        return .65;
         case "m1911_zm":
-            return -1.8;
+            return -0.3;
         case "mp5k_zm":
-            return -1.3;
+            return 0.75;
         case "m14_zm":
-            return 0.3 ;
+            return 0.7;
 
         case "judge_zm":
-        return -2;
+        return -.75;
         case "kard_zm":
-            return 0.4; 
+            return .85; 
 
     
         case "fiveseven_zm":
-            return -1;
+            return .45;
         case "beretta93r_zm":
-            return -0.1;
+            return .2;
+
+        case "m1911_upgraded_zm":
+            return .9;   
+
 
         case "fivesevendw_zm":
-            return 0.9;
+            return .9;
         case "ak74u_zm":
-            return -.8;
+            return .75;
             case "qcw05_zm":
-            return 1.5;
+            return .75;
 
         case "870mcs_zm":
-            return -.2;
+            return .5;
         case "rottweil72_zm":
-            return .2;
+            return .7;
         case "saiga12_zm":
-        return .3;
+        return .25;
         case "srm1216_zm":
-        return -1;
+        return 1;
 
         case "saritch_zm":
-        return .3;
+        return .65;
         case "m16_zm":
-        return -.4;
+        return .66;
         case "m16_zm_gl":
-        return -.4;
+        return .66;
         case "xm8_zm":
-        return 0.56;
+        return 0.75;
 
         case "type95_zm":
-        return 0.56;
+        return 0.65;
 
         case "tar21_zm":
-        return .56;
+        return .66;
 
         case "galil_zm":
-        return -.2;
+        return .45;
 
 
 
         case "ray_gun_zm":
-        return -1;
+        return .5;
 
         case "knife_ballistic_zm":
-        return 0;
+        return 0.5;
 
         case "knife_ballistic_bowie_zm":
-        return 0;
+        return 0.5;
 
         case "raygun_mark2_zm":
-        return 0.4;
+        return 0.8;
 
          //everything else gets a default offset
         default:

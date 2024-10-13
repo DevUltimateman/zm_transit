@@ -185,10 +185,12 @@ change_zombie_speed10()
         {
             if( isdefined(zo[ s ].has_marked_for_thread ) && zo[ s ].has_marked_for_thread )
             {
+                wait 0.05;
                 continue;
             }
             else 
             {
+                zo[ s ].has_marked_for_thread = true;
                 zo[ s ] thread apply_movement_monitor();
             }
         }
@@ -288,7 +290,7 @@ apply_movement_monitor()
                 cur_ = level.forest_zones[ i ];
                 self_touched = true;
                 xx = randomintrange( 0, 100 );
-                if( xx < 85 ) // give players some sorta chance..  all zombies being bus chaser is hella too crazy :D
+                if( xx < 97 ) // give players some sorta chance..  all zombies being bus chaser is hella too crazy :D
                 {
                     self set_zombie_run_cycle( "chase_bus" );
                     playfx( level._effects[77], self.origin );
@@ -297,12 +299,13 @@ apply_movement_monitor()
                     {
                         wait 1;
                     }
-                    self set_zombie_run_cycle( pass_to );
+                    self set_zombie_run_cycle( "super_sprint" );
                     playfx( level._effects[77], self.origin );
                     wait 0.05;
                 }
                 
             }
+            else{ wait 4; }
         }
         wait 0.1;
     }

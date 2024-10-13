@@ -973,7 +973,7 @@ level_waittill_continue_mq()
     {
         playe setclientdvar( "r_fog", false );
         playe setclientdvar( "r_dof_tweak", false );
-        playe setclientdvar( "r_sky_intensity_factor0", 3 );
+        playe setclientdvar( "r_sky_intensity_factor0", 1.95 );
     }
     if( level.dev_time ) { iprintlnbold( "someone_picked_up_poison_suitcase" ); }
 
