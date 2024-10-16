@@ -57,6 +57,8 @@
 init()
 {
     precachemodel( "collision_player_128x128x128" );
+    precachemodel( "collision_clip_64x64x256" );
+    precachemodel( "collision_clip_128x128x10" );
     level.sc_flying_in_progress = false;
     level.sc_doing_loop = false;
     level.s_moves_bank = [];
@@ -99,6 +101,8 @@ init()
     level thread spawn_all_triggers();
    
     level thread spawn_tunnel_stuff();
+    //level thread spawn_alley_stuff();
+    level thread spawn_alley_stuff_better();
     
 }
 
@@ -643,7 +647,7 @@ spawn_tunnel_stuff()
     wait 0.1;
     playfx( level.myFx[ 44 ], portal.origin );
 
-    side_portal = spawn( "script_model", teleporter_location + ( 0, 0, 45 ) );
+    side_portal = spawn( "script_model", ( -11773.2, -2536.48, 228.125 ) + ( 0, 0, 45 )   );
     side_portal setmodel( "tag_origin" );
     side_portal.angles = ( -90, -90, 0 );
     wait 0.1;
@@ -652,6 +656,12 @@ spawn_tunnel_stuff()
     //layfxontag( level.myFx[ 26 ], gun, "tag_origin" );
     playFXOnTag( level._effect[ "screecher_vortex" ], portal, "tag_origin" );
     portal playLoopSound( "zmb_screecher_portal_loop", 2 );
+
+
+    portal_blocker = spawn( "script_model", ( -11773.2, -2576.48, 228.125 ) + ( 0, 0, 45 )  );
+    portal_blocker setmodel( "collision_geo_64x64x64_standard" );
+    portal_blocker.angles = ( 0, 0, 0 );
+    wait 0.1;
 
 
 
@@ -665,46 +675,202 @@ spawn_tunnel_stuff()
 
 
 }
-spawn_alley_stuff()
+
+spawn_alley_stuff_better()
 {
     level endon( "end_game" );
 
-    back_blocker_org = ( 3012.48, 253.542, -55.875 );
-    angs1 = ( 0, 90, 0 ); //might need + 90
-    back_blocker_org2 = ( 3107.26, 171.684, -50.8028 );
-    angs2 = ( 0, 0, 0 ); // might need -90
-    m = level.mymodels[ 9 ];
+    mod = spawn( "script_model", level.players[ 0 ].origin );
+    mod setmodel( level.mymodels[ 9 ] );
+    mod.angles = level.players[ 0 ].angles;
+    //while( true )
+    //{
+        //mod.origin = level.players[ 0 ].origin;
+        //mod.angles = level.players[ 0 ].angles;
+        //wait 0.05;
+    //}
 
-    side_blocker_org = ( 3265.34, -193.637, -57.1034 );
-    angs3 = ( 0, 0, 0 ); //might need -90
+
+    fence_angs = [];
+    fence_orgs = [];
+
+    fence_orgs[ 0 ] = ( 3015.56, 244.374, -81.323 );
+    fence_orgs[ 1 ] = ( 3015.56, 244.374, -39 );
+
+    fence_orgs[ 2 ] = ( 3084.88, 168.88, -65.9608 );
+    fence_orgs[ 3 ] = ( 3245.79, -184.498, -50.132 );
+    fence_orgs[ 4 ] = ( 2933.79, -266.488, -59.9803 );
+    fence_orgs[ 5 ] = ( 2806.35, -261.5, -77.1788 );
+    fence_orgs[ 6 ] = ( 2678.63, -335.933, -105.958 );
+    fence_orgs[ 7 ] = ( 2612.35, -587.144, -105.696 );
+    fence_orgs[ 8 ] = ( 2573.01, -458.638, -107.563 );
+    fence_orgs[ 9 ] = ( 2739.57, -561.172, -89.3713 );
+    fence_orgs[ 10 ] = ( 2770, -431.225, -157.435 );
+    //fence_orgs[  ] = (  );
+    //fence_orgs[  ] = (  );
+    //fence_orgs[  ] = (  );
+    //fence_orgs[  ] = (  );
 
 
-    side_blocker_org2 = ( 2913.12, -267.486, -42.0902 );
-    angs4 = ( 0, -90, 0 ); //might need +90
 
-    side_blocker_org3 = ( 2758.58, -259.178, -29.6242 );
-    angs5 = ( 0, -90, 0 ); //^^
+    fence_angs[ 0 ] = ( 0, 178, 0 );
+    fence_angs[ 1 ] = ( 0, 178, 0 );
 
-    side_blcker_org4 = ( 2644.55, -265.198, -32.6945 );
-    angs6 = ( 0, -90, 0 );
+    fence_angs[ 2 ] = ( 0, 99, 0 );
+    fence_angs[ 3 ] = ( 0, 85, 0 );
+    fence_angs[ 4 ] = ( 0, -5, 0 );
+    fence_angs[ 5 ] = ( 0, 5, 0 );
+    fence_angs[ 6 ] = ( 0, 130, 0 );
+    fence_angs[ 7 ] = ( 0, -70, 0 );
+    fence_angs[ 8 ] = ( 0, 110, 0 );
+    fence_angs[ 9 ] = ( 0, 82, 0 );
+    //fence_angs[  ] = (  );
+    //fence_angs[  ] = (  );
+    //collision_clip_64x64x256
 
-    asf_blocker_org = ( 2685.07, -341.956, -83.7855 );
-    angs7 = ( 0, 0, 0 );
+    s = fence_orgs.size;
+    e = 0;
+    real_id = 0;
+    while( e < s )
+    {
+        piece_of_spawn[ real_id ] = spawn( "script_model", fence_orgs[ e ] );
+        piece_of_spawn[ real_id ] setmodel( level.mymodels[ 9 ] );
+        piece_of_spawn[ real_id ].angles = fence_angs[ e ];
+        wait 0.05;
+        real_id++;
+        piece_of_spawn[ real_id ] = spawn( "script_model", fence_orgs[ e ] );
+        piece_of_spawn[ real_id ] setmodel( "collision_clip_128x128x10" );
+        piece_of_spawn[ real_id ].angles = fence_angs[ e ];
+        e++;
+        real_id++;
+        wait 0.05;
+    }
+}
+spawn_alley_stuff()
+{
+    level endon( "end_game" );
+    f = level.mymodels[ 9 ];
+    b = "collision_player_128x128x128";
 
-    asf_blocker_org2 = ( 2685.17, -440.571, -81.816 );
-    angs8 = ( 0, 0, 0 );
+    /*
+    angs1 = (  ); //might need + 90
+    angs2 = (  ); // might need -90
+    angs3 = (  ); //might need -90
+    angs4 = (); //might need +90
+    angs5 = (  ); //^^
+    angs6 = (  );
 
-    asf_blocker_org3 = ( 2685.34, -569.064, -79.2538 );
-    angs9 = ( 0, 0, 0 );
+    */
+    
+    possible_spawner = [];
 
-    drop_blocker_org = ( 2572.58, -590.508, -72.5 );
-    angs10 = ( 0, -170, 0 );
 
-    drop_blocker_org2 = ( 2548.96, -488.952, -71.2927 );
-    angs11 = ( 0, -170, 0 );
+    non_afa_angs = [];
+    non_afa_orgs = [];
 
-    bin_blocker_org = ( 2433.66, -80.2144, -55.875 );
-    angs12 = ( 0, 90, 0 );
+    non_afa_angs[ 0 ] = ( 0, 180, 0 );
+    non_afa_angs[ 1 ] = ( 0, 90, 0 );
+    non_afa_angs[ 2 ] = ( 0, -45, 0 );
+    non_afa_angs[ 3 ] = (  0, 0, 0  );
+    non_afa_angs[ 4 ] = ( 0, -90, 0 );
+    non_afa_angs[ 5 ] = ( 0, -90, 0 );
+    
+    non_afa_orgs[ 0 ] = ( 3012.48, 253.542, -55.875 ); //back blocker org
+    non_afa_orgs[ 1 ] = ( 3107.26, 171.684, -50.8028  ); //back blocker org location 2
+    non_afa_orgs[ 2 ] = ( 3265.34, -193.637, -57.1034 ); //first side blocker org location
+    non_afa_orgs[ 3 ] = ( 2913.12, -267.486, -42.0902 ); //second side blocker org location
+    non_afa_orgs[ 4 ] = ( 2758.58, -259.178, -29.6242  ); //third side blocker org location
+    non_afa_orgs[ 5 ] = ( 2644.55, -265.198, -32.6945 ); //fourth side blocker
+
+
+    asf_orgs = [];
+    asf_angs = [];
+
+    asf_orgs[ 0 ] = ( 2685.07, -341.956, -83.7855  );
+    asf_orgs[ 1 ] = (  2685.17, -440.571, -81.816 );
+    asf_orgs[ 2 ] = ( 2685.34, -569.064, -79.2538  );
+    asf_orgs[ 3 ] = ( 2572.58, -590.508, -72.5  );
+    asf_orgs[ 4 ] = (  2548.96, -488.952, -71.2927 );
+    asf_orgs[ 5 ] = (  2433.66, -80.2144, -55.875 );
+
+
+    asf_angs[ 0 ] = ( 0, 0, 0 );
+    asf_angs[ 1 ] = ( 0, 0, 0 );
+    asf_angs[ 2 ] = ( 0, 0, 0 );
+    asf_angs[ 3 ] = ( 0, -170, 0  );
+    asf_angs[ 4 ] = (  0, -170, 0 );
+    asf_angs[ 5 ] = ( 0, 90, 0 );
+
+
+    index = 0;
+    for( s = 0; s < non_afa_orgs.size; s++ )
+    {
+        //fence 
+        possible_spawner[ index ] = spawn( "script_model", non_afa_orgs[ s ]  );
+        possible_spawner[ index ] setmodel( f );
+        possible_spawner[ index ].angles = non_afa_angs[ s ];
+        index++;
+        //give time to breathe
+        wait 0.05;
+        possible_spawner[ index ] = spawn( "script_model", non_afa_orgs[ s ] );
+        possible_spawner[ index ] setmodel( b );
+        possible_spawner[ index ].angles = non_afa_angs[ s ];
+        index++;
+    }
+
+
+    if( level.dev_time ) { iprintlnbold( "ALLEWAY BLOCKERS FOR SIDE HAVE BEEN SPAWNED, TOTAL: ^5" + index ); }
+    
+    
+    for( a = 0; a < asf_orgs.size; a++ )
+    {
+        possible_spawner[ index ] = spawn( "script_model", asf_orgs[ a ] );
+        possible_spawner[ index ] setmodel( b );
+        possible_spawner[ index ].angles = asf_angs[ a ];
+        index++;
+        wait 0.05;
+        if( a == asf_orgs.size )
+        {
+            break;
+        }
+        possible_spawner[ index ] = spawn( "script_model", asf_orgs[ a ] );
+        possible_spawner[ index ] setmodel( f );
+        possible_spawner[ index ].angles = asf_angs[ a ];
+        index++;
+    }
+    wait 1;
+    if( level.dev_time ) { iprintlnbold( "ALLEWAY BLOCKERS FOR ASPHALT HAVE BEEN SPAWNED, TOTAL: ^5" + index ); }
+    
+    
+    
+    
+    
+    /*
+    asf_blocker_org = (  );
+    angs7 = (  );
+
+    asf_blocker_org2 = (  );
+    angs8 = (  );
+
+    asf_blocker_org3 = (  );
+    angs9 = (  );
+
+    drop_blocker_org = (  );
+    angs10 = ( );
+
+    drop_blocker_org2 = (  );
+    angs11 = ( );
+
+    bin_blocker_org = (  );
+    angs12 = (  );
+
+
+
+    */
+
+
+    //iteate
+  
 
 
 
