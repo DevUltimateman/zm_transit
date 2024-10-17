@@ -683,47 +683,60 @@ spawn_alley_stuff_better()
     mod = spawn( "script_model", level.players[ 0 ].origin );
     mod setmodel( level.mymodels[ 9 ] );
     mod.angles = level.players[ 0 ].angles;
-    //while( true )
-    //{
-        //mod.origin = level.players[ 0 ].origin;
-        //mod.angles = level.players[ 0 ].angles;
-        //wait 0.05;
-    //}
-
-
+    /*
+    while( true )
+    {
+        mod.origin = level.players[ 0 ].origin;
+        mod.angles = level.players[ 0 ].angles;
+        wait 0.05;
+    }
+    */
+    
     fence_angs = [];
     fence_orgs = [];
+    block_orgs = [];
 
-    fence_orgs[ 0 ] = ( 3015.56, 244.374, -81.323 );
-    fence_orgs[ 1 ] = ( 3015.56, 244.374, -39 );
+    fence_orgs[ 0 ] = ( 2205.43, -1019.21, -49.9754 );
+    fence_orgs[ 1 ] = ( 2281.93, -1086.66, -49.875 );
 
-    fence_orgs[ 2 ] = ( 3084.88, 168.88, -65.9608 );
-    fence_orgs[ 3 ] = ( 3245.79, -184.498, -50.132 );
-    fence_orgs[ 4 ] = ( 2933.79, -266.488, -59.9803 );
-    fence_orgs[ 5 ] = ( 2806.35, -261.5, -77.1788 );
-    fence_orgs[ 6 ] = ( 2678.63, -335.933, -105.958 );
-    fence_orgs[ 7 ] = ( 2612.35, -587.144, -105.696 );
-    fence_orgs[ 8 ] = ( 2573.01, -458.638, -107.563 );
-    fence_orgs[ 9 ] = ( 2739.57, -561.172, -89.3713 );
-    fence_orgs[ 10 ] = ( 2770, -431.225, -157.435 );
-    //fence_orgs[  ] = (  );
-    //fence_orgs[  ] = (  );
-    //fence_orgs[  ] = (  );
-    //fence_orgs[  ] = (  );
+    fence_orgs[ 2 ] = ( 2314.24, -1210.47, -49.875 );
+    fence_orgs[ 3 ] = ( 2314.34, -1366.61, -49.875 );
+    fence_orgs[ 4 ] = ( 2314.34, -1492.31, -49.875 );
+    fence_orgs[ 5 ] = ( 2361.27, -1481.52, -50.7598 );
+    fence_orgs[ 6 ] = ( 2424.86, -1605.48, -49.875 );
+    fence_orgs[ 7 ] = ( 2520.14, -1650.71, -49.875 );
+    fence_orgs[ 8 ] = ( 2657.55, -1619.49, -49.875 );
+    fence_orgs[ 9 ] = ( 2748.48, -1575.5, -47.875 );
 
 
 
-    fence_angs[ 0 ] = ( 0, 178, 0 );
-    fence_angs[ 1 ] = ( 0, 178, 0 );
 
-    fence_angs[ 2 ] = ( 0, 99, 0 );
-    fence_angs[ 3 ] = ( 0, 85, 0 );
-    fence_angs[ 4 ] = ( 0, -5, 0 );
-    fence_angs[ 5 ] = ( 0, 5, 0 );
-    fence_angs[ 6 ] = ( 0, 130, 0 );
-    fence_angs[ 7 ] = ( 0, -70, 0 );
-    fence_angs[ 8 ] = ( 0, 110, 0 );
-    fence_angs[ 9 ] = ( 0, 82, 0 );
+    block_orgs[ 0 ] = ( 2205.43, -950.21, -49.9754 );
+    block_orgs[ 1 ] = ( 2281.93, -1030.66, -49.875 );
+
+    block_orgs[ 2 ] = ( 2352.24, -1210.47, -49.875 );
+    block_orgs[ 3 ] = ( 2314.34, -1366.61, -49.875 );
+    block_orgs[ 4 ] = ( 2314.34, -1492.31, -49.875 );
+    block_orgs[ 5 ] = ( 2361.27, -1481.52, -50.7598 );
+    block_orgs[ 6 ] = ( 2454.86, -1585.48, -49.875 );
+    block_orgs[ 7 ] = ( 2550.14, -1620.71, -49.875 );
+    block_orgs[ 8 ] = ( 2657.55, -1589.49, -49.875 );
+    block_orgs[ 9 ] = ( 2748.48, -1545.5, -47.875 );
+
+
+
+
+    fence_angs[ 0 ] = ( 0, -180, 0 );
+    fence_angs[ 1 ] = ( 0, 125, 0 );
+
+    fence_angs[ 2 ] = ( 0, 97, 0 );
+    fence_angs[ 3 ] = ( 0, 90, 0 );
+    fence_angs[ 4 ] = ( 0, 90, 0 );
+    fence_angs[ 5 ] = ( 0, 110, 0 );
+    fence_angs[ 6 ] = ( 0, 125, 0 );
+    fence_angs[ 7 ] = ( 0, 177, 0 );
+    fence_angs[ 8 ] = ( 0, -159, 0 );
+    fence_angs[ 9 ] = ( 0, -155, 0 );
     //fence_angs[  ] = (  );
     //fence_angs[  ] = (  );
     //collision_clip_64x64x256
@@ -738,14 +751,179 @@ spawn_alley_stuff_better()
         piece_of_spawn[ real_id ].angles = fence_angs[ e ];
         wait 0.05;
         real_id++;
-        piece_of_spawn[ real_id ] = spawn( "script_model", fence_orgs[ e ] );
-        piece_of_spawn[ real_id ] setmodel( "collision_clip_128x128x10" );
+        piece_of_spawn[ real_id ] = spawn( "script_model", block_orgs[ e ] );
+        piece_of_spawn[ real_id ] setmodel( "collision_player_128x128x128" );
         piece_of_spawn[ real_id ].angles = fence_angs[ e ];
         e++;
         real_id++;
         wait 0.05;
     }
+    
+
+
+    
+    get_teleported_from_tunnel = ( 1855.54, -902.446, -40.0131 );
+    get_teleported_from_tunnel_angs = ( 0, 0, 0 );
+    teleport_from = ( 2093.36, -1150.5, -51.2762 );
+    fx_angs = ( 0, 0, 0);
+    teleport_to = ( 2160.9, -1154.84, -49.875 );
+    teleport_to_angs = ( 0, 10, 0 );
+
+    washer_trigger_org = ( 2049.35, -914.738, -55.375 );
+
+    washers_fx_orgs = [];
+    washers_fx_orgs[ 0 ] = ( 2067.66, -917.076, -18.1618 );
+    washers_fx_orgs[ 1 ] = ( 2067.47, -864.201, -18.2755 );
+    washers_fx_orgs[ 2 ] = ( 2067.57, -817.785, -18.3318 );
+    washers_fx_orgs[ 3 ] = ( 2067.75, -968.983, -18.4758 );
+    washers_fx_orgs[ 4 ] = ( 2067.02, -1018.21, -18.5355 );
+    fx_ags = ( 0, 0, 0 );
+
+    wait 0.2;
+
+    trig_ = spawn( "trigger_radius_use", ( 2049.36, -913.019, -55.375 ), 0, 48, 48 );
+    trig_ setCursorHint( "HINT_NOICON" );
+    trig_ setHintString( "^9[ ^3[{+activate}] ^8to spin ^3Laundry ^9]" );
+    trig_ TriggerIgnoreTeam();
+
+    while( true )
+    {
+        trig_ waittill( "trigger", who );
+        if( !is_player_valid( who ) )
+        {
+            wait 0.05;
+            continue;
+        }
+        else 
+        {
+            trig_ thread washers_( washers_fx_orgs, teleport_from, teleport_to );
+            wait 0.1;
+            trig_ delete();
+            break;
+        }
+    }
+    
+
+
 }
+
+bowlable_step()
+{
+    shootable_origin = ( 2536.14, -1367.14, 164.103 );
+    landing_first = ( 2533.56, -1770.08, 26.1517 );
+    landing_second = ( 2536.4, -1866.77, -34.9271 );
+    landing_pickup = ( 2536.4, -2022.66, -14.3599 );
+
+    fences = [];
+    ang = ( 0, 180, 0 );
+    fences[ 0 ] = ( 2655.78, -1956.29, -51.0492 );
+    fences[ 1 ] = ( 2530, -1956.29, -51.0492 );
+    fences[ 2 ] = ( 2404, -1956.29, -51.0492 );
+    fences[ 3 ] = ( 2284, -1956.29, -51.0492 );
+
+
+    wait 1; 
+    blobs_ = [];
+    for( s = 0; s < fences.size; s++ )
+    {
+        blops_[ s ] = spawn( "script_model", fences[ s ] );
+        blops_ setmodel( level.mymodels[ 9 ] );
+        blops_.angles = ( 0, 180, 0 );
+        wait 0.1;
+    }
+    
+    //next spawn the grenable object then move it to spot
+    //then add trig for player to pick it  up
+    // should be tranceiver or something as model wise..
+    //after that players go under pylon to call help till everything breaks and theyre left to fight end game and not survive.
+    //this is the idea, less than 2 days for release.. 
+    //continue tomorrow
+}
+washers_( all_, jump_from, jump_to )
+{
+    level endon( "end_game " );
+    washers = [];
+    for( i = 0; i < all_.size; i++ )
+    {
+        washers[ i ] = spawn( "script_model", all_[ i ] );
+        washers[ i ] setmodel( "tag_origin" );
+        washers[ i ].angles = ( -90, 0, 0 );
+        wait 0.05;
+    }
+    wait 1;
+    for( s = 0; s < washers.size; s++ )
+    {
+        wait randomFloatRange( 0.4, 1.2 );
+        playfxontag( level._effect[ "screecher_hole" ], washers[ s ], "tag_origin" );
+        washers[ s ] playLoopSound( "zmb_screecher_portal_loop", 2 );
+    }
+    wait 1;
+    Earthquake( .5, 4,  washers[ 0 ].origin, 1000 );
+    for( a = 0; a < washers.size; a++ )
+    {
+        playfxontag( level._effect[ "screecher_vortex" ], washers[ a ], "tag_origin" );
+        wait 0.5;
+    }
+    wait 1;
+    for( u = 0; u < washers.size; u++ )
+    {
+        washers[ u ] moveto( washers[ u ].origin + ( 150, 0, 0 ), 3.5, 0.5, 0 );
+        wait 0.1;
+    }
+    wait 2.5;
+
+    level thread spawn_door_jump( jump_from, jump_to );
+    wait 1;
+    foreach( f in washers )
+    {
+        f delete();
+    }
+}
+
+spawn_door_jump( from_, to )
+{
+    sucker = spawn( "script_model", from_ + ( 15, 0, 45 ) );
+    sucker setmodel( "tag_origin" );
+    sucker.angles = ( -90, 0, 0 );
+    wait 0.1;
+    foreach( p in level.players )
+    {
+        p playsound( level.mysounds[ 3 ] );
+    }
+    wait 0.05;
+    playfxontag( level._effect[ "screecher_vortex" ], sucker, "tag_origin" );
+    sucker playLoopSound( "zmb_screecher_portal_loop", 2 );
+    sucker thread if_close( to );
+}
+
+if_close( to )
+{
+    level endon( "end_game" );
+    while( isdefined( self ) )
+    {
+        for( s = 0; s < level.players.size; s++ )
+        {
+            if( distance( level.players[ s ].origin, self.origin ) < 25 )
+            {
+                wait 0.05;
+                playfx( level.myFx[ 95 ], level.players[ s ] getEye() );
+                wait 0.1;
+                level.players[ s ] setOrigin( to );
+                level.players[ s ].angles = ( 0, 0, 0 );
+            }
+            else 
+            {
+                wait 0.05;
+            }
+        }
+        wait 0.05;
+    }
+}
+
+
+
+
+
 spawn_alley_stuff()
 {
     level endon( "end_game" );
