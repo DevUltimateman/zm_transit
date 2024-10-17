@@ -42,45 +42,282 @@
 
 //#include scripts\zm\zm_transit\warmer_days_quest_firenade;
 
-main()
-{
-	//level thread lets_test_spawn();
-	fuckingfx();
-	
-}
-fuckingfx()
-{
-	level.fx_betas = [];
-	level.fx_betas["meat_marker"] = loadfx("maps/zombie/fx_zmb_meat_marker");
-	level.fx_betas["butterflies"] = loadfx("maps/zombie/fx_zmb_impact_noharm");
-	level.fx_betas["meat_glow"] = loadfx("maps/zombie/fx_zmb_meat_glow");
-	level.fx_betas["meat_glow3p"] = loadfx("maps/zombie/fx_zmb_meat_glow_3p");
-	level.fx_betas["spawn_cloud"] = loadfx("maps/zombie/fx_zmb_race_zombie_spawn_cloud");
-	level.fx_betas["fw_burst"] = loadfx("maps/zombie/fx_zmb_race_fireworks_burst_center");
-	level.fx_betas["fw_impact"] = loadfx("maps/zombie/fx_zmb_race_fireworks_drop_impact");
-	level.fx_betas["fw_drop"] = loadfx("maps/zombie/fx_zmb_race_fireworks_drop_trail");
-	level.fx_betas["fw_trail"] = loadfx("maps/zombie/fx_zmb_race_fireworks_trail");
-	level.fx_betas["fw_trail_cheap"] = loadfx("maps/zombie/fx_zmb_race_fireworks_trail_intro");
-	level.fx_betas["fw_pre_burst"] = loadfx("maps/zombie/fx_zmb_race_fireworks_burst_small");
-	level.fx_betas["meat_bounce"] = loadfx("maps/zombie/fx_zmb_meat_collision_glow");
-}
 init()
 {
-	fuckingfx();
-	
-    flag_wait("initial_blackscreen_passed" );
-	wait 3;
-	//level thread lets_test_spawn();
-    //iprintlnbold( "set_round_and_chaos" );
-    //level thread set_round_and_chaos();
-
-	/*
-    level.turnedmeleeweapon = "zombiemelee_zm";
-    level.turnedmeleeweapon_dw = "zombiemelee_dw";
-    precacheitem( level.turnedmeleeweapon );
-    precacheitem( level.turnedmeleeweapon_dw );
-    */
+	level thread survivors_called_help();
+	level thread debugger();
 }
+
+debugger()
+{
+	flag_wait( "initial_blackscreen_passed" );
+	wait 100;
+	level notify( "chaos_ensues_from_calling_help" );
+}
+survivors_called_help()
+{
+	level endon( "end_game" );
+	level waittill( "chaos_ensues_from_calling_help" );
+	//dialogue schruder says they sorry
+	//but end is coming now
+	//schruder tried to keep you not from calling help by giving u nice things
+	//now game is going to become last stand fuck
+	wait 3;
+	PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
+	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    level thread do_dials( "My friend!", "What have you come done?!", 6, 1 );
+	wait 8;
+	//foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+	level thread do_dials( "I didn't want it to come down to this..", "You've been such a great survivor...", 6, 1 );
+	wait 7;
+	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+	level thread do_dials( "I have to inform you..", "This whole thing has just been a test scenario..", 6, 1 );
+	wait 7;
+	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+	level thread do_dials( "You're part of a ^3test scenario, and so am I.", "Higher ups have controlled this whole thing, the whole time that you and me had cooperated together!", 9, 1 );
+	wait 10;
+	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+	level thread do_dials( "I thought that it wouldn't have to come down to this, ever.", "I hoped that we would fail at some point..", 7, 1 );
+	wait 7;
+	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+	level thread do_dials( "But don't be misinformed. ", "I was always rooting for you..", 6, 1 );
+	wait 7;
+	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+	level thread do_dials( "I will buy you some time, so that you can start running.", "", 4, 1 );
+	wait 5;
+	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+	level thread chaos_begins();
+	level thread do_dials( "At last,", "Goodbye my ^9friend", 4, 1 );
+	wait 5;
+	level notify( "start_chaos" );
+
+}
+
+
+
+chaos_begins()
+{
+
+	level waittilL( "start_chaos" ); 
+	earthquake( .6, 6, level.players[ 0 ].origin, 1000 );
+
+	PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
+	wait 0.1;
+	PlaySoundAtPosition(level.jsn_snd_lst[ 17 ], level.players[ 0 ].origin );
+	foreach( p in level.players )
+	{
+		p playsound( level.jsn_snd_lst[ 30 ] );
+		p setclientdvar( "r_skyColorTemp", 2800 );
+		p setclientdvar( "r_sky_intensity_factor0", 4 );
+		p setclientdvar( "vc_rgbh", "1 0.2 0 0" );
+		p setclientdvar( "vc_yl", "0.3 0.3 0.3 0" );
+		p setclientdvar( "vc_rgbl", "1 0 0 0" );
+		p setclientdvar( "r_exposurevalue", 3.8 );
+	}
+
+	wait 3;
+	if( level.dev_time ){ iprintlnbold( "METEORS START HITTING NOW" ); }
+	level thread meteor_shower_on_player();
+
+}
+
+meteor_shower_on_player()
+{
+	level endon( "end_game" );
+	foreach( playa in level.players )
+	{
+		playa thread follow_meteor_rain();
+	}
+}
+
+follow_meteor_rain()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+
+	meteors = [];
+	meteors[ 0 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	meteors[ 0 ] setmodel( "p6_zm_rocks_medium_05" );
+	meteors[ 0 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
+	wait 0.1;
+	meteors[ 1 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	meteors[ 1 ] setmodel( "p6_zm_rocks_medium_05" );
+	meteors[ 1 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
+	wait 0.1;
+	meteors[ 2 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	meteors[ 2 ] setmodel( "p6_zm_rocks_medium_05" );
+	meteors[ 2 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
+	wait 0.1;
+	meteors[ 3 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	meteors[ 3 ] setmodel( "p6_zm_rocks_medium_05" );
+	meteors[ 3 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
+	wait 0.1;
+	meteors[ 4 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	meteors[ 4 ] setmodel( "p6_zm_rocks_medium_05" );
+	meteors[ 4 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
+	wait 0.1;
+	meteors[ 5 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	meteors[ 5 ] setmodel( "p6_zm_rocks_medium_05" );
+	meteors[ 5 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
+
+	wait 0.1;
+
+	for( i = 0; i < meteors.size; i++ )
+	{
+		meteors[ i ] thread track_and_movetohit_player( self );
+		wait randomFloatRange( 0.5, 3 );
+	}
+	wait 1;
+	if( level.dev_time) { iprintlnbold( "ROCKS ARE TRACKING PLAYER AND ORBITING TO HIT" ); }
+}
+
+track_and_movetohit_player( plr )
+{
+	level endon( "end_game" );
+	while( isdefined( self ) )
+	{
+		//initial sky move
+		i_x = randomintrange( -1000, 1000 );
+		i_y = randomintrange( -1000, 1000 );
+		i_z = randomintrange( 1500, 2000 );
+		self moveto( plr.origin + ( i_x, i_y, i_z ), 1, 0.1, 0 );
+		wait 1;
+		p_x = randomintrange( -450, 450 );
+		p_y = randomintrange( -400, 400 );
+		p_z = randomintrange( -100, -40 );
+		player_spot = plr.origin + ( p_x, p_y, p_z );
+		playfxontag( level.myFx[ 91 ], self, "tag_origin" );
+		self moveto( player_spot, 1.5, 0, 0.1 );
+		self waittill( "movedone" );
+		for( i = 0; i < level.players.size; i++ )
+		{
+			if( distance( level.players[ i ].origin, self.origin ) < 150 )
+			{
+				level.players[ i ] dodamage( level.players[ i ].health + 500, level.players[ i ].origin );
+				
+			}
+			else if( distance( level.players[ i ].origin, self.origin ) < 250 )
+			{
+				level.players[ i ] dodamage( level.players[ i  ].health / 2, level.players[ i ].origin );
+
+			}
+			else{ wait 0.05; }
+		}
+		earthquake( 0.5, 4, self.origin, 1000 );
+		wait 0.5;	
+		self movez( -300, 5, 0.5, 0.5 );
+		self waittill( "movedone" );
+		self setorigin( plr.origin + ( 0, 0, 10000 ) );
+		wait 0.05;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+do_dials( sub_up, sub_low, duration, fader )
+{
+    
+    level thread mac_say( "^9Dr. Schruder: ^8" + sub_up, "^8" + sub_low, duration, fader );
+}
+
+
+playloopsound_buried()
+{
+    level endon( "end_game" );
+    level endon( "stop_mus_load_bur" );
+    while( true )
+    {
+        for( i = 0; i < level.players.size; i++ )
+        {
+            level.players[ i ] playsound( "mus_load_zm_buried" );
+        }
+        wait 40;
+    }
+}
+mac_say( sub_up, sub_low, duration, fadeTimer )
+{
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
+    {
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
+    }
+    level.subtitles_on_so_have_to_wait = true;
+    level.play_schruder_background_sound = true;
+	if( !isdefined( level.subtitle_upper_text ) )
+	{
+		level.subtitle_upper_text = newhudelem();
+	}
+
+	level.subtitle_upper_text.x = 0;
+	level.subtitle_upper_text.y = -42;
+	level.subtitle_upper_text SetText( sub_up );
+	level.subtitle_upper_text.fontScale = 1.32;
+	level.subtitle_upper_text.alignX = "center";
+	level.subtitle_upper_text.alignY = "middle";
+	level.subtitle_upper_text.horzAlign = "center";
+	level.subtitle_upper_text.vertAlign = "bottom";
+	level.subtitle_upper_text.sort = 1;
+    
+
+	level.subtitle_upper_text.alpha = 0; 
+    level.subtitle_upper_text fadeovertime( fadeTimer );
+    level.subtitle_upper_text.alpha = 1;
+    
+    
+    
+	if ( IsDefined( sub_low ) )
+	{
+		if( !isdefined( level.subtitle_lower_text ) )
+		{
+			level.subtitle_lower_text = newhudelem();
+		}
+
+		level.subtitle_lower_text.x = 0;
+		level.subtitle_lower_text.y = -24;
+		level.subtitle_lower_text SetText( sub_low );
+		level.subtitle_lower_text.fontScale = 1.22;
+		level.subtitle_lower_text.alignX = "center";
+		level.subtitle_lower_text.alignY = "middle";
+		level.subtitle_lower_text.horzAlign = "center";
+		level.subtitle_lower_text.vertAlign = "bottom";
+		level.subtitle_lower_text.sort = 1;
+        level.subtitle_lower_text.alpha = 0;
+        level.subtitle_lower_text fadeovertime( fadeTimer );
+        level.subtitle_lower_text.alpha = 1;
+	}
+	
+	wait ( duration );
+    level.play_schruder_background_sound = false;
+    //level thread a_glowby( subtitle );
+    //if( isdefined( subtitle_lower ) )
+    //{
+    //    level thread a_glowby( subtitle_lower );
+    //}
+    
+	level thread flyby( level.subtitle_upper_text );
+    level.subtitle_lower_text fadeovertime( fadeTimer );
+    level.subtitle_upper_text.alpha = 0;
+	//subtitle Destroy();
+	
+	if ( IsDefined( level.subtitle_lower_text ) )
+	{
+		level thread flyby( level.subtitle_lower_text );
+        level.subtitle_lower_text fadeovertime( fadeTimer );
+        level.subtitle_lower_text.alpha = 0;
+	}
+
+	
+    
+}
+
 set_round_and_chaos()
 {
 
@@ -91,7 +328,7 @@ set_round_and_chaos()
         lowerm = "Your time has come you fools!";
         duration = 5;
         fadetime = 1;
-        level thread machine_says( "^3Dr. Schrude: ^7" + upperm, lowerm, duration, fadetime );
+        level thread mac_say( "^3Dr. Schrude: ^7" + upperm, lowerm, duration, fadetime );
     }
 	*/
 	wait(5);
@@ -219,70 +456,16 @@ lets_test_spawn()
 	}
 }
 
-machine_says( sub_up, sub_low, duration, fadeTimer )
-{
-	subtitle_upper = NewHudElem();
-	subtitle_upper.x = 0;
-	subtitle_upper.y = -42;
-	subtitle_upper SetText( sub_up );
-	subtitle_upper.fontScale = 1.32;
-	subtitle_upper.alignX = "center";
-	subtitle_upper.alignY = "middle";
-	subtitle_upper.horzAlign = "center";
-	subtitle_upper.vertAlign = "bottom";
-	subtitle_upper.sort = 1;
-    
-	subtitle_lower = undefined;
-	subtitle_upper.alpha = 0;
-    subtitle_upper fadeovertime( fadeTimer );
-    subtitle_upper.alpha = 1;
-
-	if ( IsDefined( sub_low ) )
-	{
-		subtitle_lower = NewHudelem();
-		subtitle_lower.x = 0;
-		subtitle_lower.y = -24;
-		subtitle_lower SetText( sub_low );
-		subtitle_lower.fontScale = 1.22;
-		subtitle_lower.alignX = "center";
-		subtitle_lower.alignY = "middle";
-		subtitle_lower.horzAlign = "center";
-		subtitle_lower.vertAlign = "bottom";
-		subtitle_lower.sort = 1;
-        subtitle_lower.alpha = 0;
-        subtitle_lower fadeovertime( fadeTimer );
-        subtitle_lower.alpha = 1;
-	}
-	
-	wait ( duration );
-
-	level thread flyby( subtitle_upper ); //might want to add a parameter that lets the top text to fade and bottom text to fly & fade
-    subtitle_upper fadeovertime( fadeTimer );
-    subtitle_upper.alpha = 0;
-	//subtitle destroy_hud();
-	
-	if ( IsDefined( subtitle_lower ) )
-	{
-		level thread flyby( subtitle_lower );
-        subtitle_lower fadeovertime( fadeTimer );
-        subtitle_lower.alpha = 0;
-	}
-    
-}
-
 //this a gay ass hud flyer, still choppy af
 flyby( element )
 {
     level endon( "end_game" );
     x = 0;
     on_right = 640;
-	
-	element.x moveOverTime( 20 );
-	element.x.alpha = 0;
-	wait 0.05;
-    //while( element.x < on_right )
-    //{
-    //    element.x += 100;
+
+    while( element.x < on_right )
+    {
+        element.x += 200;
         /*
         //if( element.x < on_right )
         //{
@@ -295,7 +478,9 @@ flyby( element )
         //    element destroy();
         //}
         */
-    //    wait 0.05;
-    //}
+        wait 0.05;
+    }
     element destroy_hud();
+    //let new huds start drawing if needed
+    level.subtitles_on_so_have_to_wait = false;
 }

@@ -59,6 +59,7 @@ init()
     precachemodel( "collision_player_128x128x128" );
     precachemodel( "collision_clip_64x64x256" );
     precachemodel( "collision_clip_128x128x10" );
+    level.powers_restored = 0;
     level.sc_flying_in_progress = false;
     level.sc_doing_loop = false;
     level.s_moves_bank = [];
@@ -181,7 +182,8 @@ movable_locations()
 spawn_all_distance_checkers()
 {
     level endon( "end_game" );
-
+    level waittill( "power_out_talks_completed" );
+    wait 0.1;
     dst_diner = spawn( "script_model", level.s_moves_diner[ 0 ] );
     dst_diner setmodel( "tag_origin" );
     dst_diner.angles = ( 0, 0, 0 );
@@ -189,7 +191,7 @@ spawn_all_distance_checkers()
     dst_diner thread monitor_if_close_and_delete( level.s_moves_diner, level.s_moves_diner_loopable );
     //==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/
 
-
+    wait 0.1;
     dst_farm = spawn( "script_model", level.s_moves_farm[ 0 ] );
     dst_farm setmodel( "tag_origin" );
     dst_farm.angles = ( 0, 0, 0 );
@@ -197,7 +199,7 @@ spawn_all_distance_checkers()
     dst_farm thread monitor_if_close_and_delete( level.s_moves_farm, level.s_moves_farm_loopable );
     //==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/
 
-
+    wait 0.1;
     dst_power = spawn( "script_model", level.s_moves_power[ 0 ] );
     dst_power setmodel( "tag_origin" );
     dst_power.angles = ( 0, 0, 0 );
@@ -205,7 +207,7 @@ spawn_all_distance_checkers()
     dst_power thread monitor_if_close_and_delete( level.s_moves_power, level.s_moves_power_loopable );
     //==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/==/
 
-
+    wait 0.1;
     dst_bank = spawn( "script_model", level.s_moves_bank[ 0 ] );
     dst_bank setmodel( "tag_origin" );
     dst_bank.angles = ( 0, 0, 0 );
@@ -216,7 +218,8 @@ spawn_all_distance_checkers()
 
 
 nighttime_preset()
-{
+{ 
+    PlaySoundAtPosition(level.jsn_snd_lst[ 49 ], ( 0, 0, 0 ) );
     self setclientdvar( "r_lighttweaksuncolor", ( 0.1, 0.4, 1 ) );
     self setclientdvar( "r_sky_intensity_factor0", 0.45 );
 
@@ -226,6 +229,7 @@ monitor_if_close_and_delete( which_initial, which_loop )
 {
     level endon( "end_game" );
     self endon( "end_game" );
+    //level waittill( "bowl_picked_up" );
     while( true )
     {
         //p = level.players;
@@ -245,6 +249,7 @@ monitor_if_close_and_delete( which_initial, which_loop )
                     if( level.dev_time ){ iprintlnbold( "STARTING A NEW SCHRUDER FLYING IN PROCESS AND FREEZING OTHER MONITOR LOCATIONS");}
                     level thread spawn_s_to_do_stuff( which_initial, which_loop );
                     level.sc_flying_in_progress = true;
+                    level.sc_doing_loop = true;
                     wait 1;
                     self delete();
                     break;
@@ -341,6 +346,10 @@ restore_power_on_press( n )
                 {
                     self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
                     level thread do_power_restoring_lockdown( level.power_outtage_blocker_diner );
+                    level thread power_store_visuals();
+                    level.sc_flying_in_progress = true;
+                    level.sc_doing_loop = true;
+                    level.powers_restored++;
                     Earthquake( .5, 4,  self.origin, 1000 );
                     playfx( level.myFx[ 9 ], self.origin );
                     n movez( 150, 0.25, 0.1, 0 );
@@ -354,6 +363,10 @@ restore_power_on_press( n )
                 {
                     self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
                     level thread do_power_restoring_lockdown( level.power_outtage_blocker_farm );
+                    level thread power_store_visuals();
+                    level.sc_flying_in_progress = true;
+                    level.sc_doing_loop = true;
+                    level.powers_restored++;
                     Earthquake( .5, 4,  self.origin, 1000 );
                     playfx( level.myFx[ 9 ] , self.origin );
                     n movez( 150, 0.25, 0.1, 0 );
@@ -367,6 +380,10 @@ restore_power_on_press( n )
                 {
                     self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
                     level thread do_power_restoring_lockdown( level.power_outtage_blocker_power );
+                    level thread power_store_visuals();
+                    level.sc_flying_in_progress = true;
+                    level.sc_doing_loop = true;
+                    level.powers_restored++;
                     Earthquake( .5, 4,  self.origin, 1000 );
                     playfx( level.myFx[ 9 ] , self.origin );
                     n movez( 150, 0.25, 0.1, 0 );
@@ -380,6 +397,10 @@ restore_power_on_press( n )
                 {
                     self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
                     level thread do_power_restoring_lockdown( level.power_outtage_blocker_bank );
+                    level thread power_store_visuals();
+                    level.sc_flying_in_progress = true;
+                    level.sc_doing_loop = true;
+                    level.powers_restored++;
                     Earthquake( .5, 4,  self.origin, 1000 );
                     playfx( level.myFx[ 9 ], self.origin );
                     n movez( 150, 0.25, 0.1, 0 );
@@ -394,7 +415,34 @@ restore_power_on_press( n )
         wait 0.05;
     }
 }
+daytime_preset()
+{ 
+    //PlaySoundAtPosition(level.jsn_snd_lst[ 49 ], ( 0, 0, 0 ) );
+    self setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.52, 0.36 ) );
+    self setclientdvar( "r_sky_intensity_factor0", 1.95 );
 
+}
+waittill_powers_restored()
+{
+    level endon( "end_game" );
+    while( level.powers_restored < 4 )
+    {
+        wait 1;
+    }
+    wait 48;
+    level notify( "all_powered" );
+    foreach( p in level.players ){   p thread daytime_preset();  }
+    level thread playloopsound_buried();
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    level thread do_dialog_here( "Wondeful!", "Power has been restored!", 5, 1 );
+    wait 6;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    level thread do_dialog_here( "Let's try meeting up again at ^3Pylon^8.", "I'm waiting for you there!", 7, 1 );
+    wait 8;
+    level notify( "stop_mus_load_bur" );
+    level notify( "spawn_mrs_for_final_time" );
+
+}
 do_power_restoring_lockdown( which_spot )
 {
 
@@ -474,13 +522,20 @@ do_power_restoring_lockdown( which_spot )
         blocker2.angles = blocker0.angles;
             
         wait 0.1;
+
+        blocker3 = spawn( "script_model", ( 10948.2, 8446.59, -403.875 ) );
+        blocker3 setmodel( "collision_player_128x128x128" );
+        blocker3.angles = ( 0, 0, 0 );
+        wait 0.1;
         playfx( level.myFx[ 94 ], blocker0.origin );
         playfx( level.myFx[ 94 ], blocker1.origin );
         playfx( level.myFx[ 94 ], blocker2.origin );
+        playfx( level.myfx[ 94 ], blocker3.origin );
         wait 0.05;
         playfxontag( level.myFx[ 78 ], blocker0, "tag_origin" );
         playfxontag( level.myFx[ 78 ], blocker1, "tag_origin" );
         playfxontag( level.myFx[ 78 ], blocker2, "tag_origin" );
+        playfxontag( level.myFx[ 78 ], blocker3, "tag_origin" );
         level.sc_doing_loop = true;
         wait 45;
         playfx( level.myFx[ 94 ], blocker0.origin );
@@ -489,10 +544,12 @@ do_power_restoring_lockdown( which_spot )
         blocker0 movez( -5000, 1, 0, 0 );
         blocker1 movez( -5000, 1, 0, 0 );
         blocker2 movez( -5000, 1, 0, 0 );
+        blocker3 movez( -5000, 1, 0, 0 );
         wait 2;
         blocker0 delete();
         blocker1 delete();
         blocker2 delete();
+        blocker3 delete();
         level.sc_doing_loop = false;
         level.sc_flying_in_progress = false;
     }
@@ -527,6 +584,8 @@ do_power_restoring_lockdown( which_spot )
 
     
 }
+
+
 spawn_s_to_do_stuff( which_location, which_location_loop )
 {
     level endon( "end_game" );
@@ -535,10 +594,19 @@ spawn_s_to_do_stuff( which_location, which_location_loop )
     sc setmodel( level.automaton.model );
     sc.angles = ( -10, 0,  0 );
     wait 0.1;
+    _blocker = spawn( "script_model", sc.origin  );
+    _blocker setmodel( "collision_geo_64x64x64_standard" );
+    _blocker.angles = sc.angles;
+    _blocker enableLinkTo();
+    _blocker linkto( sc );
+    Earthquake( .5, 4,  sc.origin, 1000 );
+    playfxontag( level.myfx[ 2 ], sc, "tag_origin" ); 
+    wait 0.1;
+    playfxontag( level.myFx[ 86 ], sc, "tag_origin" );
     //sc thread move_and_delete();
     playfx( level.myFx[ 85 ], sc.origin );
-    playfxontag( level._effect[ "screecher_hole" ], sc, "tag_origin" );
-    Earthquake( .5, 4,  sc.origin, 1000 );
+    playfxontag( level._effect[ "screecher_vortex" ], sc, "tag_origin" );
+    
     playfx( level.myfx[ 82 ], sc.origin );
     PlaySoundAtPosition( level.jsn_snd_lst[ 3 ], sc.origin );
     sc playLoopSound( "zmb_screecher_portal_loop", 2 );
@@ -547,11 +615,11 @@ spawn_s_to_do_stuff( which_location, which_location_loop )
     for( i = 0; i < which_location.size; i++ )
     {
         if( level.dev_time ) { iprintlnbold( "DOCTOR IS MOVING TO NEW INITIAL LOCATION" ); }
-        sc moveto( which_location[ i ], 3, 1, 0.5 );
-        sc rotateTo( which_location[ i ], 3, 0.5, 0.2 );
-        wait 3;
-        playfx( level._effects[ 77 ], sc.origin );
-        PlaySoundAtPosition( level.jsn_snd_lst[ 3 ], sc.origin );
+        sc moveto( which_location[ i ], 2, 1, 0.5 );
+        sc rotateyaw( randomintrange( -250, 250 ), 2, 1, 0.5 );
+        wait 2;
+        playfx( level.myFx[ 94 ], sc.origin );
+        PlaySoundAtPosition( level.jsn_snd_lst[ 4 ], sc.origin );
         if( level.dev_time ){ iprintlnbold( "DOCTOR HAS ROTATED, WAITING FOR PLAYER TO BE CLOSE"); }
         wait 0.05;
     }
@@ -562,13 +630,27 @@ spawn_s_to_do_stuff( which_location, which_location_loop )
     sc moveto( which_location_loop[ 0 ] + ( 0, 0, 20 ), 3, 1, 0.2 );
     playfx( level.myFx[ 85 ], sc.origin );
     sc waittill( "movedone" );
+    level.sc_doing_loop = false;
+    level.sc_flying_in_progress = false;
+    if( level.sc_doing_loop == false )
+    {
+        while( level.sc_doing_loop == false )
+        {
+            sc movez( 30, 1.5, 0.25, 0.25 );
+            wait 1.5;
+            sc movez( -30, 1.5, 0.25, 0.25 );
+            wait 1.5;
+        }
+    }
+    first_time = true;
     while( level.sc_doing_loop || level.sc_flying_in_progress  )
     {
         for( a = 0; a < which_location_loop.size; a++ )
         {
             playfx( level.myFx[ 85 ], sc.origin );
-            sc moveto( which_location_loop[ a ], 4.5, randomfloatrange( 0.5, 1 ), randomfloatrange( 0.9, 1.5 ) );
-            sc rotateTo( which_location_loop[ a ], 1.5, 0.5, 0.2 );
+            sc moveto( which_location_loop[ a ], 2, randomfloatrange( 0.3, 0.6 ), randomfloatrange( 0.2, 0.4 ) );
+            PlaySoundAtPosition(level.jsn_snd_lst[ 4 ], sc.origin );
+            sc rotateyaw( randomintrange( -250, 250 ), 2, 1, 0.5 );
             sc waittill( "movedone" );
             if( !level.sc_doing_loop || !level.sc_flying_in_progress  )
             {
@@ -576,15 +658,15 @@ spawn_s_to_do_stuff( which_location, which_location_loop )
             }
             for( i = 0; i < 2; i++ )
             {
-                playfx( level.myFx[ 85 ], sc.origin );
-                sc movez( 25, 1.5, 0.25, 0.25 );
+                playfx( level.myFx[ 94 ], sc.origin );
+                sc movez( 35, 1.5, 0.25, 0.25 );
                 sc rotateYaw( randomintrange( -150, 150 ), 1.5, 0.25, 0.25 );
                 sc waittill( "movedone" );
                 if( !level.sc_doing_loop || !level.sc_flying_in_progress  )
                 {
                     break;
                 }
-                sc movez( -25, 1.5, 0.25, 0.25 );
+                sc movez( -35, 1.5, 0.25, 0.25 );
                 sc rotateYaw( randomintrange( -150, 150 ), 1.5, 0.25, 0.25 );
                 sc waittill( "movedone" );
                 if( !level.sc_doing_loop || !level.sc_flying_in_progress  )
@@ -604,6 +686,34 @@ spawn_s_to_do_stuff( which_location, which_location_loop )
     sc delete();
 }
 
+power_store_visuals()
+{
+    level endon( "end_game" );
+    foreach( p in level.players )
+    {
+        p thread fade_to_black_on_impact_self_only();
+    }
+    wait 2;
+    foreach( p in level.players )
+    {
+        p setClientDvar( "cg_colorsaturation", 0 );
+    }
+    while( level.sc_doing_loop )
+    {
+        wait 0.1;
+    }
+    
+    foreach( p in level.players )
+    {
+        p thread fade_to_black_on_impact_self_only();
+    }
+    wait 2;
+    foreach( p in level.players )
+    {
+        p setClientDvar( "cg_colorsaturation", 1 );
+    }
+
+}
 monitor_if_sc_can_move_again()
 {
 
@@ -671,11 +781,48 @@ spawn_tunnel_stuff()
     trig setCursorHint( "HINT_NOICON" );
     trig setHintString( "^9[ ^8All survivors must jump in the ^3Portal ^8at the same time ^9]" );
     trig TriggerIgnoreTeam();
-
-
-
+    one_plus = 0;
+    while( true )
+    {
+        for( s = 0; s < level.players.size; s++ )
+        {
+            if( distance( level.players[ s ].origin, portal.origin ) < 50  && !isdefined( level.players[ s ].has_this ) )
+            {
+                one_plus++;
+            }
+            wait 0.05;
+        }
+        if( one_plus >= level.players.size )
+        {
+            foreach( players in level.players )
+            {
+                players thread fade_to_black_on_impact_self_only();
+                players freezeControls( true );
+                players thread waiting_to_();
+                players.has_this = true;
+            }
+            wait 2;
+            trig delete();
+            portal delete();
+        }
+        wait 0.1;
+        one_plus = 0;
+        wait 0.05;
+    }
 }
 
+waiting_to_()
+{
+    level endon( "end_game" );
+    wait 2;
+    self thread back_in_time_visual_runner();
+    wait 1;
+    get_teleported_from_tunnel = ( 1855.54, -902.446, -40.0131 );
+    get_teleported_from_tunnel_angs = ( 0, 0, 0 );
+    self setorigin( get_teleported_from_tunnel + ( 0, 0, 15 ) );
+    self setPlayerAngles( get_teleported_from_tunnel_angs );
+    self freezeControls( false );
+}
 spawn_alley_stuff_better()
 {
     level endon( "end_game" );
@@ -797,6 +944,8 @@ spawn_alley_stuff_better()
         else 
         {
             trig_ thread washers_( washers_fx_orgs, teleport_from, teleport_to );
+            level notify( "washers_active" );
+            PlaySoundAtPosition(level.jsn_snd_lst[ 30 ],who.origin );
             wait 0.1;
             trig_ delete();
             break;
@@ -809,10 +958,10 @@ spawn_alley_stuff_better()
 
 bowlable_step()
 {
+    level endon( "end_game" );
+
     shootable_origin = ( 2536.14, -1367.14, 164.103 );
-    landing_first = ( 2533.56, -1770.08, 26.1517 );
-    landing_second = ( 2536.4, -1866.77, -34.9271 );
-    landing_pickup = ( 2536.4, -2022.66, -14.3599 );
+    
 
     fences = [];
     ang = ( 0, 180, 0 );
@@ -827,21 +976,539 @@ bowlable_step()
     for( s = 0; s < fences.size; s++ )
     {
         blops_[ s ] = spawn( "script_model", fences[ s ] );
-        blops_ setmodel( level.mymodels[ 9 ] );
-        blops_.angles = ( 0, 180, 0 );
+        blops_[ s ]setmodel( level.mymodels[ 9 ] );
+        blops_[ s ].angles = ( 0, 180, 0 );
         wait 0.1;
     }
     
+    spawn_lighter = spawn( "script_model",  shootable_origin + ( 0, 0, 5 ) );
+    spawn_lighter setmodel( "tag_origin" );
+    spawn_lighter.angles = ( 5, 10, 0 );
+    playfxontag( level.myFx[ 41 ], spawn_lighter, "tag_origin" );
+
+    spawn_lighter thread waittill_someone_blows();
     //next spawn the grenable object then move it to spot
     //then add trig for player to pick it  up
     // should be tranceiver or something as model wise..
     //after that players go under pylon to call help till everything breaks and theyre left to fight end game and not survive.
     //this is the idea, less than 2 days for release.. 
     //continue tomorrow
+
+    level waittill( "bowl_picked_up" );
+    wait 2.5;
+    foreach( b in blops_ )
+    {
+        b delete();
+    }
+
 }
+
+waittill_someone_blows()
+{
+    level endon( "end_game ");
+    self endon( "end_game" );
+
+    d_t = spawn( "trigger_damage", self.origin,  80, 80, 80 );
+    
+    d_t.health = 20;
+    d_t setcandamage( true );
+    playfxontag( level.myFx[ 0 ], self, "tag_origin" );
+    d_t waittill( "damage" ); //don't define attacker so that only nades can hurt it
+    playfx( level.myFx[ 92 ], self.origin );
+    PlaySoundAtPosition(level.jsn_snd_lst[ 29 ], d_t.origin ); 
+    d_t playloopsound( level.mysounds[ 11 ], 2 );
+    self thread start_moving_strike_play();
+    if( level.dev_time ){ iprintlnbold( "^5MOVING TO DO STRIKE PLAY PART" ); }
+    wait 0.05;
+    d_t delete();
+
+}
+
+start_moving_strike_play()
+{
+    self endon( "end_game" );
+    level endon( "end_game" );
+
+    landing_first = ( 2533.56, -1770.08, 26.1517 );
+    landing_second = ( 2536.4, -1866.77, -34.9271 );
+    landing_pickup = ( 2536.4, -2022.66, -14.3599 );
+
+
+    Earthquake( .5, 4,  self.origin, 1000 );
+    self moveto( landing_first, 2.5, 1, 0 );
+    self waittill( "movedone" );
+    self moveto( landing_second, 1.25, 0, 0.5 );
+    self waittill( "movedone" );
+    Earthquake( .1, 4,  self.origin, 1000 );
+    playfxontag( level.myfx[ 2 ], self, "tag_origin" );
+    self moveto( landing_pickup, 0.5, 0, 0.125 );
+    self waittill( "movedone" );
+    if( level.dev_time ){ iprintlnbold( "BOWL CAN BE PICKED UPPP" ); }
+
+    self thread waittill_someone_picks_it();
+}
+
+waittill_someone_picks_it()
+{
+    self endon( "end_game" );
+    level endon( "end_game" );
+    level endon( "stop_this_waittill" );
+    level thread fade_back_to_regular_tranzit();
+    while( true )
+    {
+        for( s = 0; s < level.players.size; s++ )
+        {
+            if( distance( level.players[ s ].origin, self.origin ) < 75 )
+            {
+                wait 0.05;
+                if( level.players[ s ] useButtonPressed() )
+                {
+                    PlaySoundAtPosition(level.mysounds[ 3 ], self.origin );
+                    wait 0.05;
+                    self delete();
+                    level notify( "bowl_picked_up" );
+                    level thread do_meet_at_pylon_text();
+                    wait 0.05;
+                    level notify( "stop_this_waittill" );
+                    break;
+                }
+            }
+            wait 0.05;
+        }
+        wait 0.05;
+    }
+}
+
+do_meet_at_pylon_text()
+{
+    level endon( "end_game" );
+    wait 4.5;
+    //do_dialog_here
+    level thread playloopsound_buried();
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    level thread do_dialog_here( "Fantastic! You received the ^3Tranceiver!", "Let's meet up underneath the pylon.", 8, 1 );
+    wait 10;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    level thread do_dialog_here( "We can call for help once we've applied the ^3Tranceiver ^8to the ^3Pylon^8.", "Be quick, I'll be waiting for you. No hurries tho haha!", 10, 1 );
+    level notify( "stop_mus_load_bur" );
+    wait 12;
+
+    level thread wait_players_at_pylon();
+    //pylon wait player
+    //press pylon
+    //power goes out ( night time )
+    // then go restore at each loc
+
+}
+
+wait_players_at_pylon()
+{
+    level endon( "end_game" );
+    outburst = 0;
+    location = ( 7457.21, -431.969, -195.816 );
+    zone_to_touch = getent( "sq_common_area", "targetname" );
+    ss = spawn( "trigger_radius_use", location, 0, 48, 48 );
+    ss setcursorhint( "HINT_NOICON" );
+    ss sethintstring( "^9[ ^3[{+activate}] ^8to apply your ^3Tranceiver^8 to the transmitter ^9]" );
+    ss triggerignoreteam();
+    wait 0.1;
+    sa = spawn( "script_model", ss.origin + ( 0, 0, 50 ) );
+    sa setmodel( "tag_origin" );
+    sa.angles = ( 5, 10, 0 );
+    
+    wait 1;
+    sa playloopsound( "zmb_screecher_portal_loop", 2 );
+    while( true )
+    {
+        ss waittill( "trigger", who );
+        if( is_player_valid( who ) )
+        {
+            ss sethintstring( "^9[ ^2Tranceiver added ^9]" );
+            PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], sa.origin );
+            playfxontag( level.myFx[ 41 ], sa, "tag_origin" );
+            wait 0.05;
+            PlaySoundAtPosition(level.my_sounds[ 3 ], sa.origin );
+            sa thread rotateit();
+            level thread do_dialog_here( "Awesome!", "Seems like you were able to apply the ^3Tranceiver ^8on the transmitter.", 6, 1 );
+            wait 3;
+            ss sethintstring( "^9[ ^3Call for help ^9]" );
+            break;
+        }
+        wait 0.1;
+    }
+    wait 3;
+    level thread do_dialog_here( "You should try calling some help!", "Feel free to use it, you've done already so much.", 7, 1 );
+    wait 0.1;
+    level thread do_power_out_texts();
+    while( true )
+    {
+        ss waittill( "trigger", who );
+        if( isdefined( ss.is_valid ) && ss.is_valid == false )
+        {
+            break;
+        }
+        if( is_player_valid( who ) )
+        {
+            ss.is_valid = true;
+            ss sethintstring( "^9[ ^3^2Help called ^9]" );
+            playfx( level.myFx[ 87 ], sa.origin );
+            PlaySoundAtPosition(level.jsn_snd_lst[ 29 ], sa.origin ); 
+            wait 3;
+            
+            self playsound( level.mysounds[ 7 ] );
+            PlaySoundAtPosition( level.mysounds[ 4 ], ss.origin );
+            wait 2.5;
+            Earthquake( .5, 4,  ss.origin, 1000 );
+            for( i = 0; i < 4; i++ )
+            {
+                playfx( level.myFx[ 82 ], ss.origin + ( randomint( 25 ), randomint( 25 ), 0 ) );
+                wait randomFloat( 1 );
+            }
+            break;
+        }
+        wait 0.1;
+    }
+    foreach( s in level.players )
+    {
+        playfx( level.myFx[ 91 ], s.origin );
+        wait 0.05;
+        s thread nighttime_preset();
+    }
+    
+    level notify( "power_out" );
+    level thread waittill_powers_restored();
+    ss sethintstring( "^9[ ^1Malfunction, requires ^2re-powering ^9]" );
+    level waittill( "all_powered" );
+    ss sethintstring( "^9[ ^8Booting.. ^9]" );
+    level waittill( "can_be_ended" );
+    ss sethintstring( "^9[ ^8Call help. ^3Requires All Survivors^8 to press ^3[{+activate}] ^^9]");
+
+    wait 1;
+    while( true )
+    {
+        ss waittill( "trigger", who );
+        if( is_player_valid( who ) )
+        {
+            level notify( "chaos_ensues_from_calling_help" );
+            wait 0.1;
+            ss sethintstring( "^9[ ^8Help has been called.. ^9]" );
+            wait 1;
+            break;
+        }
+    }
+    wait 5;
+    ss delete();
+}
+
+do_power_out_texts()
+{
+    level endon( "end_game" );
+    level waittill( "power_out" );
+    wait 1;
+    //level thread playloopsound_buried();
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    do_dialog_here( "Who's this guy speaking on the ^3Tranceiver^8?", "How did it come so dark suddenly?", 8, 1 );
+    wait 25;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    do_dialog_here( "Power seems to be cut out completely!", "We can't try calling help without power..", 7, 1 );
+    wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    do_dialog_here( "Let's try restoring the power at different locations.", "Once you're close to a location, I will come in and help you get there!", 7, 1 );
+    wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    do_dialog_here( "See you soon.", "My friend.", 5, 1 );
+    wait 6;
+   // level notify( "stop_mus_load_bur" );
+    level notify( "power_out_talks_completed" );
+}
+rotateit()
+{
+    level endon(  "end_game" );
+    while( isdefined( self ) )
+    {
+        self rotateyaw( ( 360 ), 2, 0, 0 );
+        wait 2;
+    }
+}
+
+do_dialog_here( sub_up, sub_low, duration, fader )
+{
+    level.subtitle_upper =  sub_up;
+    level.subtitle_lower_text = sub_low;
+    durations = duration;
+    fadetimer = fader;
+    level thread machine_says( "^9Dr. Schruder: ^8" + level.subtitle_upper, "^8" + level.subtitle_lower_text, durations, fadetimer );
+}
+
+
+playloopsound_buried()
+{
+    level endon( "end_game" );
+    level endon( "stop_mus_load_bur" );
+    while( true )
+    {
+        for( i = 0; i < level.players.size; i++ )
+        {
+            level.players[ i ] playsound( "mus_load_zm_buried" );
+        }
+        wait 40;
+    }
+}
+machine_says( sub_up, sub_low, duration, fadeTimer )
+{
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
+    {
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
+    }
+    level.subtitles_on_so_have_to_wait = true;
+    level.play_schruder_background_sound = true;
+	if( !isdefined( level.subtitle_upper_text ) )
+    {
+        level.subtitle_upper_text = newhudelem();
+    }
+	level.subtitle_upper.x = 0;
+	level.subtitle_upper.y = -42;
+	level.subtitle_upper SetText( sub_up );
+	level.subtitle_upper.fontScale = 1.32;
+	level.subtitle_upper.alignX = "center";
+	level.subtitle_upper.alignY = "middle";
+	level.subtitle_upper.horzAlign = "center";
+	level.subtitle_upper.vertAlign = "bottom";
+	level.subtitle_upper.sort = 1;
+    
+	level.subtitle_lower_text = undefined;
+	level.subtitle_upper.alpha = 0;
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 1;
+    
+    
+    
+	if ( IsDefined( sub_low ) )
+	{
+        if( !isdefined( level.subtitle_lower_text ) )
+    {
+        level.subtitle_lower_text = newhudelem();
+    }
+		level.subtitle_lower_text.x = 0;
+		level.subtitle_lower_text.y = -24;
+		level.subtitle_lower_text SetText( sub_low );
+		level.subtitle_lower_text.fontScale = 1.22;
+		level.subtitle_lower_text.alignX = "center";
+		level.subtitle_lower_text.alignY = "middle";
+		level.subtitle_lower_text.horzAlign = "center";
+		level.subtitle_lower_text.vertAlign = "bottom";
+		level.subtitle_lower_text.sort = 1;
+        level.subtitle_lower_text.alpha = 0;
+        level.subtitle_lower_text fadeovertime( fadeTimer );
+        level.subtitle_lower_text.alpha = 1;
+	}
+	
+	wait ( duration );
+    level.play_schruder_background_sound = false;
+    //level thread a_glowby( subtitle );
+    //if( isdefined( level.subtitle_lower_text ) )
+    //{
+    //    level thread a_glowby( level.subtitle_lower_text );
+    //}
+    
+	level thread flyby( level.subtitle_upper );
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 0;
+	//subtitle Destroy();
+	
+	if ( IsDefined( level.subtitle_lower_text ) )
+	{
+		level thread flyby( level.subtitle_lower_text );
+        level.subtitle_lower_text fadeovertime( fadeTimer );
+        level.subtitle_lower_text.alpha = 0;
+	}
+    
+}
+
+//this a gay ass hud flyer, still choppy af
+flyby( element )
+{
+    level endon( "end_game" );
+    x = 0;
+    on_right = 640;
+
+    while( element.x < on_right )
+    {
+        element.x += 200;
+        wait 0.05;
+    }
+    element destroy_hud();
+    //let new huds start drawing if needed
+    level.subtitles_on_so_have_to_wait = false;
+}
+
+
+fade_back_to_regular_tranzit()
+{
+    level endon( "end_game" );
+    level waittill( "bowl_picked_up" );
+    wait 1.5;
+    //do_dialog_here
+
+    PlaySoundAtPosition(level.jsn_snd_lst[ 40 ], level.players[ 0 ].origin );
+    foreach( p in level.players )
+    {
+        p freezeControls( true );
+    }
+    for( s = 0; s < level.players.size; s++ )
+    {
+        level.players[ s ] thread fade_to_black_on_impact_self_only();
+        level.players[ s ] thread normal_time_visuals();
+        level.players[ s ] thread set_origin_and_angles_back();
+    }
+}
+
+normal_time_visuals()
+{
+    wait 1.5;
+    self setclientdvar( "cg_colorsaturation", 1 );
+    self setclientdvar( "vc_rgbh", "0 0 0 0" );
+    self setclientdvar( "r_exposuretweak", 1 );
+    self setclientdvar( "r_exposurevalue", 3 );
+    self setclientdvar( "r_sky_intensity_factor0", 1.85 );
+}
+back_in_time_visual_runner()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    level endon( "bowl_picked_up" );
+    sat_on = 0.35;
+    sat_half = 0.25;
+    sat_qt = 0.05;
+    sat_off = 0;
+    PlaySoundAtPosition(level.jsn_snd_lst[ 27 ], self.origin );
+    wait 0.5;
+    self setclientdvar( "cg_colorsaturation", sat_off );
+    self setclientdvar( "vc_rgbh", "1 1 1 0" );
+    self setclientdvar( "r_exposuretweak", 1 );
+    self setclientdvar( "r_exposurevalue", 4 );
+    self setclientdvar( "r_sky_intensity_factor0", 5 );
+
+    level waittill( "washers_active" );
+    while( true )
+    {
+        x = randomint( 5 );
+        if( x >= 4 )
+        {
+            self setclientdvar( "cg_colorsaturation", sat_half );
+            wait 0.125;
+        }
+        if( x == 3 )
+        {
+            self setclientdvar( "cg_colorsaturation", sat_qt );
+            wait 0.125;
+        }
+        if( x == 2 )
+        {
+            self setclientdvar( "cg_colorsaturation", sat_off );
+            wait 0.125;
+        }
+        if( x == 1 )
+        {
+            self setclientdvar( "cg_colorsaturation", sat_on );
+            wait 0.125;
+        }
+        if( x == 0 )
+        {
+            self setclientdvar( "cg_colorsaturation", sat_off );
+            wait 0.125;
+        }
+        wait randomfloatrange( 0.05, 1.5 );
+    }
+
+}
+set_origin_and_angles_back()
+{
+    wait 1;
+    //self setclientdvar( "cg_colorsaturation", 1 );
+    self thread normal_time_visuals();
+    self setOrigin( ( 1686.3, -230.12, -57.3034 ) + ( randomintrange( -20, 20 ), randomintrange( -20, 20 ), 15 ) );
+    self setPlayerAngles( 0, 125, 0 );
+    self freezeControls( false );
+}
+fade_to_black_on_impact_self_only()
+{
+    level endon( "end_game" );
+    
+    self thread fadeForAWhile( 0.3, 2, 0.5, 0.4, "white" );
+    self playsound( level.jsn_snd_lst[ 29 ] );
+    wait 3;
+    playfx( level.myFx[ 87 ], self.origin );
+    self playsound( level.mysounds[ 7 ] );
+    for( s = 0; s < 4; s++ )
+    {
+        playfx( level.myFx[ 87 ], self.origin );
+        wait 0.25;
+    }
+    
+
+}
+fadeForAWhile( startwait, blackscreenwait, fadeintime, fadeouttime, shadername, n_sort ) //is used now
+{
+    if ( !isdefined( n_sort ) )
+        n_sort = 50;
+
+    wait( startwait );
+
+    if ( !isdefined( self ) )
+        return;
+
+    if ( !isdefined( self.blackscreen ) )
+        self.blackscreen = newclienthudelem( self );
+
+    self.blackscreen.x = 0;
+    self.blackscreen.y = 0;
+    self.blackscreen.horzalign = "fullscreen";
+    self.blackscreen.vertalign = "fullscreen";
+    self.blackscreen.foreground = 0;
+    self.blackscreen.hidewhendead = 0;
+    self.blackscreen.hidewheninmenu = 1;
+    self.blackscreen.sort = n_sort;
+
+    if ( isdefined( shadername ) )
+        self.blackscreen setshader( shadername, 640, 480 );
+    else
+        self.blackscreen setshader( "black", 640, 480 );
+
+    self.blackscreen.alpha = 0;
+
+    if ( fadeintime > 0 )
+        self.blackscreen fadeovertime( fadeintime );
+
+    self.blackscreen.alpha = 1;
+    wait( fadeintime );
+
+    if ( !isdefined( self.blackscreen ) )
+        return;
+
+    wait( blackscreenwait );
+
+    if ( !isdefined( self.blackscreen ) )
+        return;
+
+    if ( fadeouttime > 0 )
+        self.blackscreen fadeovertime( fadeouttime );
+
+    self.blackscreen.alpha = 0;
+    wait( fadeouttime );
+
+    if ( isdefined( self.blackscreen ) )
+    {
+        self.blackscreen destroy_hud();
+        self.blackscreen = undefined;
+    }
+}
+
 washers_( all_, jump_from, jump_to )
 {
     level endon( "end_game " );
+    level thread bowlable_step();
     washers = [];
     for( i = 0; i < all_.size; i++ )
     {
@@ -859,6 +1526,13 @@ washers_( all_, jump_from, jump_to )
     }
     wait 1;
     Earthquake( .5, 4,  washers[ 0 ].origin, 1000 );
+    PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], washers[ 0 ].origin );
+    for( a = 0; a < washers.size; a++ )
+    {
+        playfxontag( level._effect[ "screecher_vortex" ], washers[ a ], "tag_origin" );
+        wait 0.5;
+    }
+    wait 1;
     for( a = 0; a < washers.size; a++ )
     {
         playfxontag( level._effect[ "screecher_vortex" ], washers[ a ], "tag_origin" );
@@ -894,6 +1568,15 @@ spawn_door_jump( from_, to )
     playfxontag( level._effect[ "screecher_vortex" ], sucker, "tag_origin" );
     sucker playLoopSound( "zmb_screecher_portal_loop", 2 );
     sucker thread if_close( to );
+    wait 1.5;
+    playfxontag( level._effect[ "screecher_vortex" ], sucker, "tag_origin" );
+
+
+    level waittill( "bowl_picked_up" );
+    wait 2.5;
+    
+        sucker delete();
+    
 }
 
 if_close( to )
@@ -907,6 +1590,7 @@ if_close( to )
             {
                 wait 0.05;
                 playfx( level.myFx[ 95 ], level.players[ s ] getEye() );
+                PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ s ].origin );
                 wait 0.1;
                 level.players[ s ] setOrigin( to );
                 level.players[ s ].angles = ( 0, 0, 0 );
