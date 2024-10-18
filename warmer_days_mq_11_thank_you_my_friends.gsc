@@ -44,6 +44,7 @@
 init()
 {
     level.keep_perk_reward_on = false;
+    level.perk_purchase_limit = 10;
     precacheitem( "t6_wpn_zmb_blundergat_world" );
     precacheitem( "t6_wpn_zmb_blundergat_armor_world" );
     level thread mr_s_for_final_time();
@@ -54,8 +55,13 @@ init()
     level.power_local_doors_globally = 1;
     flag_wait( "initial_blackscreen_passed" );
     level thread disable_dev_time();
+    wait 5;
+    for( i = 0; i < level.players.size; i++ )
+    {
+        level.players[ i ] thread self_waittill_drink_so_update();
+    }
     //level thread spawn_all_pickable_acidgats(); //for debug
-    level thread do_perks(); //for debug
+    //level thread do_perks(); //for debug
 }
 
 disable_dev_time()
@@ -75,6 +81,42 @@ daytime_preset()
     self setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.52, 0.36 ) );
     self setclientdvar( "r_sky_intensity_factor0", 1.95 );
 
+}
+
+self_waittill_drink_so_update()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    while( true )
+    {
+        self waittill( "perk_bought", perk );
+        if( perk == "specialty_quickrevive" )
+        {
+            self thread perk_drawer( "specialty_quickrevive_zombies" , 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+        }
+        else if( perk == "specialty_fastreload" )
+        {
+            self thread perk_drawer( "specialty_fastreload_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+        }
+        else if ( perk == "specialty_armorvest_upgrade" || perk == "specialty_armorvest" )
+        {
+            self thread perk_drawer( "specialty_juggernaut_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+        }
+        else if( perk == "specialty_rof_upgrade" )
+        {
+            self thread perk_drawer( "specialty_doubletap_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+        }
+        else if ( perk == "specialty_scavenger" )
+        {
+            self thread perk_drawer( "specialty_tombstone_zombies" , 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+        }
+        else if ( perk == "specialty_longersprint_upgrade" )
+        {
+            self thread perk_drawer( "specialty_marathon_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+        }
+        wait 5;
+
+    }
 }
 shoot_bolts()
 {
@@ -233,7 +275,7 @@ perk_drawer( shader, width, height, color, alpha, sort, foreground )
     self.perks_active++;
     perker setshader( shader, width, height );
     perker.color = color;
-    perker.alpha = alpha;
+    perker.alpha = 0;
     perker.sort = sort;
     perker.foreground = foreground;
     perker.hidewheninmenu = 1;
@@ -249,8 +291,24 @@ perk_drawer( shader, width, height, color, alpha, sort, foreground )
     }
     
     perker.y = 170;
+    perker fadeovertime( 0.75 );
+    perker.alpha = alpha;
+    perker thread destroy_if_downed( self );
     
 }
+
+destroy_if_downed( who )
+{
+    level endon( "end_game" );
+    who endon( "disconnect" );  
+    who waittill_any( "fake_death", "death", "player_downed" );
+    self destroy_hud();
+    
+}
+
+//newlighting?
+//r_lighttweak 18
+//r_sky_inte0 2.35
 set_remaining_perks()
 {
 

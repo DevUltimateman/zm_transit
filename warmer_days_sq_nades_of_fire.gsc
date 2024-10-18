@@ -44,10 +44,26 @@
 
 init()
 {
-
+    precachemodel( "c_zom_farmgirl_viewhands" );
+    precachemodel( "c_zom_oldman_viewhands" );
+    precachemodel( "c_zom_engineer_viewhands" );
+    precachemodel( "c_zom_reporter_viewhands" );
+    precachemodel( "c_zom_player_farmgirl_fb" );
+    precachemodel( "c_zom_player_oldman_fb" );
+    precachemodel( "c_zom_player_engineer_fb" );
+    precachemodel( "c_zom_player_reporter_fb" );
+    precachemodel( "c_zom_avagadro_fb" );
+    precachemodel( "c_zom_player_cdc_fb" );
+    precachemodel( "c_zom_player_cia_fb"  );
+    precachemodel( "c_zom_hazmat_viewhands" );
+    precachemodel( "c_zom_suit_viewhands" );
+    //precachemodel
+    //precachemodel
+    //precachemodel
+    //precachemodel
     //disable zombies, enable godm, 50k pts
     level thread fordev();
-
+    level thread make_characters_for_trailer();
     //build check for printlines
     level.dev_time = false;
     
@@ -66,6 +82,51 @@ init()
     
 }
 
+make_characters_for_trailer()
+{
+    level endon( "end_game" );
+    flag_wait( "initial_blackscreen_passed"  );
+    wait 4;
+    chars = [];
+    views = [];
+    chars[ 0 ] = ( "c_zom_player_farmgirl_fb" );
+    chars[ 1 ] = ( "c_zom_player_oldman_fb" );
+    chars[ 2 ] = ( "c_zom_player_engineer_fb" );
+    chars[ 3 ] = ( "c_zom_player_reporter_fb" );
+    //chars[ 4 ] = ( "c_zom_avagadro_fb" );
+    //chars[ 5 ] = ( "c_zom_player_cdc_fb" );
+    //chars[ 6 ] = ( "c_zom_player_cia_fb"  );
+
+    views[ 0 ] = ( "c_zom_farmgirl_viewhands"  ); //self set_player_is_female( 1 );
+    views[ 1 ] = ( "c_zom_oldman_viewhands" );
+    views[ 2 ] = ( "c_zom_engineer_viewhands"  );
+    views[ 3 ] = ( "c_zom_reporter_viewhands" );
+    //views[ 4 ] = ( "c_zom_reporter_viewhands" );
+    //views[ 5 ] = ( "c_zom_hazmat_viewhands" );
+    //views[ 6 ] = ( "c_zom_suit_viewhands" );
+
+    wait 1;
+    s = 0;
+    while( true )
+    {
+        if( level.players[ 0 ] useButtonPressed() && level.players[ 0 ] adsButtonPressed() )
+        {
+            level.players[ 0 ] setmodel( chars[ s ] );
+            level.players[ 0 ] setViewModel( views[ s ] );
+            wait 0.1;
+            s++;
+            if( s > chars.size  )
+            {
+                s = 0;
+            }
+        }
+        else 
+        {
+            wait 0.15;
+        }
+        wait 0.05;
+    }
+}
 
 tm_()
 {
@@ -98,7 +159,7 @@ fordev()
     for( i = 0; i < level.players.size; i++ )
     {
         //level.players[ i ] enableInvulnerability();  
-        //level.players[ i ].score += 50000;
+        level.players[ i ].score += 10000;
         //level.players[ i ] thread firegrenades_step2();
     }
 }

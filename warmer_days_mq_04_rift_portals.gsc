@@ -182,6 +182,8 @@ init()
 
     wait 5;
     level thread setup_all_rift_use_setup();
+
+    level.players[ 0 ] thread do_rift_ride( level.rift_camera_diner, level.rift_camera_diner_angles, level.players[ 0 ] );
     //level thread tell_fog();
 
     //works. need to make it lot better tho.
@@ -455,36 +457,70 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     wait 0.05;
     real_player CameraSetLookAt();
     real_player hide();
-    //rider thread self_rotate_yaw();
-    while( s < sudo.size )
+    real_player enableInvulnerability();
+    
+    for( s = 0; s < level.sky_camera_tower_location.size; s++ )
     {
-        speed = 540;
-        target_point = sudo[ s ];
-        target_angles = sudo_angles[ s ];
-        if( s == 2 ) //update player origin already so we that game can load gump models for camera
+        if( s == level.sky_camera_tower_location.size )
         {
-            real_player.origin = target_point + ( 0, 0, 20 );
-            real_player setorigin( target_point + ( 0, 0, 20 ) );
-            
+            PlaySoundAtPosition(level.jsn_snd_lst[ 29 ], rider.origin );
+            rider moveto( level.sky_camera_tower_location[ s ], 2, 1.5, 0 );
+            rider rotateto( level.sky_camera_tower_location_angles[ s ], 2, 1, .25 );
+            wait 2;
         }
-        dist = distance( rider.origin, target_point );
-        time = dist / speed;
-        q_time = time * 0.25;
-        if ( q_time > 3 )
-            q_time = 3;
-        //time = 1;
-        //safe offset +90 Z
-        rider moveto( target_point + ( 0, 0, 100 ), time, 0, 0 );
-        rider rotateTo( target_point, time, 1, 1 );
+        else 
+        {
+            PlaySoundAtPosition(level.jsn_snd_lst[ 29 ], rider.origin );
+            rider moveto( level.sky_camera_tower_location[ s ], .75, 0, 0 );
+            rider rotateto( level.sky_camera_tower_location_angles[ s ], .75, 0, .25 );
+            wait .75;
+        }
+        PlaySoundAtPosition(level.jsn_snd_lst[ 27 ], rider.origin );
         
-        
-        wait time;
-        
-        s++;
     }
-    rider notify( "stop_rotating_this" );
-    rider rotateto( target_angles, 1, 0.3, 0.2 );
-    wait 1;
+    //rider thread self_rotate_yaw();
+    
+    
+    speed = 580;
+    safe_loc = sudo[ 1 ];
+
+
+
+    target_point = sudo[ 0 ];
+    target_angles = sudo_angles[ 0 ];
+    
+    
+    real_player.origin = safe_loc + ( 0, 0, 20 );
+    real_player setorigin( safe_loc + ( 0, 0, 20 ) );
+        
+    
+    dist = distance( rider.origin, target_point ) / 2;
+    time = dist / speed;
+    q_time = time * 0.25;
+    if ( q_time > 1 )
+        q_time = 1;
+    //time = 1;
+    //safe offset +90 Z
+    PlaySoundAtPosition(level.jsn_snd_lst[ 27 ], rider.origin );
+    level thread riding_fx_snd( rider );
+    
+    rider moveto( target_point + ( 0, 0, 100 ), time, 0, 0 );
+    rider rotateTo( target_angles, time, 0, 0.25 );
+    wait time;
+    s++;
+    target_point_new = sudo[ 1 ];
+    target_angles_new = sudo_angles[ 1 ];
+
+    dist = distance( rider.origin, target_point_new ) / 2;
+    time = dist / speed;
+    q_time = time * 0.25;
+    if ( q_time > 1 )
+        q_time = 1;
+
+    rider moveto( target_point_new, time, 0, .25 );
+    //rider rotateto( target_angles_new, 1, 0.3, 0.2 );
+    rider rotateyaw( 360, time, 0.25, 0.25 );
+    wait time;
     real_player CameraActivate( false );
     //real_player CameraSetPosition( real_player, real_player.angles );
     real_player.origin = rider.origin + ( 0, 0, 40 );
@@ -511,6 +547,27 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     real_player disableInvulnerability();
 }
 
+riding_fx_snd( where )
+{
+    level endon( "end_game" );
+    for( i = 0; i < 24; i++ )
+    {
+        playfx( level._effects[70], where.origin );
+        wait 0.05;
+    }
+    wait 1.5;
+    for( s = 0; s < 14; s++ )
+    {
+        playfx( level._effects[ 70 ], where.origin );
+        wait randomfloatrange( 0.1, 0.35 );
+    }
+    wait 2;
+    while( isdefined( where ) ) 
+    {
+        playfx( level._effects[ 70 ], where.origin );
+        wait randomfloatrange( 0.05, 0.35 );
+    }
+}
 self_rotate_yaw()
 {
     level endon( "end_game" );

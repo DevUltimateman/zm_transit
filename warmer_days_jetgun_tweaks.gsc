@@ -776,6 +776,7 @@ scores_hud_ammo()
     self.weapon_ammo_stock.vertAlign = "user_center";
     self.weapon_ammo_stock.sort = 1;
     self.weapon_ammo_stock.alpha = 0;
+    self.weapon_ammo_stock.color = ( 0.65, 0.65, 0.65 );
     self.weapon_ammo_stock fadeovertime( 1.5 );
     self.weapon_ammo_stock.alpha = 1;
 
