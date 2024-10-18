@@ -183,7 +183,7 @@ init()
     wait 5;
     level thread setup_all_rift_use_setup();
 
-    level.players[ 0 ] thread do_rift_ride( level.rift_camera_diner, level.rift_camera_diner_angles, level.players[ 0 ] );
+    //level.players[ 0 ] thread do_rift_ride( level.rift_camera_diner, level.rift_camera_diner_angles, level.players[ 0 ] );
     //level thread tell_fog();
 
     //works. need to make it lot better tho.

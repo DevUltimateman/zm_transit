@@ -250,7 +250,7 @@ Subtitle( text, text2, duration, fadeTimer )
 
 	if ( IsDefined( text2 ) )
 	{
-		subtitle2 = NewHudelem();
+		subtitle2 = newHudElem();
 		subtitle2.x = 0;
 		subtitle2.y = -24;
 		subtitle2 SetText( text2 );

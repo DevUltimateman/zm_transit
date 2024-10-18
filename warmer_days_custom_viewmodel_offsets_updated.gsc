@@ -94,6 +94,7 @@
 
 init()
 {
+    precacheshader( "hud_status_dead" );
     level thread for_joining_players();
 }
 
@@ -149,6 +150,7 @@ while_ads( x, y, z )
     self.is_adsing = false;
     while( true )
     {
+        wait 0.05;
         //if( !self isOnGround() )
         if( self isreloading() )
         {
@@ -156,7 +158,6 @@ while_ads( x, y, z )
             self setClientDvar( "cg_gun_x", x );
             self setclientdvar( "cg_gun_y", y );
             self setclientdvar( "cg_gun_z", z );
-            wait 0.05;
             continue;
         }
         if( self isreloading() && self adsButtonPressed() )
@@ -164,12 +165,10 @@ while_ads( x, y, z )
             self setClientDvar( "cg_gun_x", x );
             self setclientdvar( "cg_gun_y", y );
             self setclientdvar( "cg_gun_z", z );
-            wait 0.05;
             continue;
         }
         if( self IsSwitchingWeapons() )
         {
-            wait 0.05;
             continue;
         }
         if( self adsButtonPressed() )
@@ -189,9 +188,7 @@ while_ads( x, y, z )
             if( getDvar( "cg_gun_x" ) != x ) { self setclientdvar( "cg_gun_x", x );}// if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); }  }
             if( getDvar( "cg_gun_y" ) != y ) { self setclientdvar( "cg_gun_y", y );}// if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); } }
             if( getDvar( "cg_gun_z" ) != z ) { self setclientdvar( "cg_gun_z", z );} //if( level.dev_time ){ iprintln( "SETTING NEW OFFSET FOR WEAPON" ); } }
-            wait 0.05;
         }
-        wait 0.05;
     }
 }
 lerp_weapon_offsets( x_target, y_target, z_target )
@@ -513,7 +510,7 @@ get_weapon_offsetter_y( weapon_type )
         return 1.85;
 
         case "hamr_zm":
-        return 1.2;
+        return 1.85;
 
         case "m32_zm":
         return 1.3;
@@ -545,7 +542,7 @@ get_weapon_offsetter_z( weapon_type )
         return -1;
 
         case "hamr_zm":
-        return .2;
+        return .3;
         case "rpd_zm":
         return 1;
         case "barretm82_zm":

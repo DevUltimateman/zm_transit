@@ -501,7 +501,7 @@ coop_print_base_find_or_fortify_door_trap( which_notify, who_found )
 
 Subtitle( text, text2, duration, fadeTimer )
 {
-	subtitle = NewHudElem();
+	subtitle = newHudElem();
 	subtitle.x = 0;
 	subtitle.y = -42;
 	subtitle SetText( text );
@@ -519,7 +519,7 @@ Subtitle( text, text2, duration, fadeTimer )
 
 	if ( IsDefined( text2 ) && text2 != "" )
 	{
-		subtitle2 = NewHudelem();
+		subtitle2 = newHudElem();
 		subtitle2.x = 0;
 		subtitle2.y = -24;
 		subtitle2 SetText( text2 );

@@ -51,17 +51,17 @@ init()
     precacheshader( "menu_mp_killstreak_select" );
     precacheshader( "specialty_tombstone_zombies" );
 
-
+    precacheshader( "tactical_gren_reticle" );
     level thread for_players();
-
     
-    level thread CustomRoundNumber();
+    
+    //level thread CustomRoundNumber(); //enable back wheen recording done
     flag_wait( "start_zombie_round_logic" );
     level thread while_forching();
-    //level thread waypoint_set_players(); //tested to work now fully, good for step 7 of main quwst to indicate farm safe location where need to getg
-    level notify("end_round_think");
+    //level thread waypoint_set_players();  //enable back wheen recording done
+    //level notify("end_round_think"); //enable back wheen recording done
     wait 0.05;
-    level thread round_think();
+    //level thread round_think();
     
     flag_wait( "initial_blackscreen_passed" );
     //buildbuildable( "dinerhatch", true, false );
@@ -77,7 +77,7 @@ for_players()
         pl thread score_hud_all();
         pl thread score_hud_all_ammo();
         pl thread play_name_hud_all();
-        pl thread do_location_hud(); 
+        pl thread print_if_i_have_eq_test();
     }
 }
 
@@ -99,6 +99,252 @@ while_forching()
         }
     }
 }
+
+
+print_if_i_have_eq_test()
+{
+    level endon( "end_game ");
+    self endon( "disconnect" );
+    self waittill( "spawned_player" );
+    wait 1;
+    t_1 = "turbine";
+    t_2 = "equip_turbine_zm";
+    t_hud = "turbine_zm_icon";
+
+    j_1 = "jetgun_zm";
+    j_2 = "jetgun";
+    j_hud = "jetgun_zm_icon";
+
+    tu_1 = "equip_turret_zm";
+    tu_2 = "turret";
+    tu_hud = "turret_zm_icon";
+
+    el_1 = "equip_electrictrap_zm";
+    el_2 = "electrictrap";
+    el_hud = "etrap_zm_icon";
+
+    ri_1 = "riotshield_zm";
+    ri_2 = "riotshield";
+    ri_hud = "riotshield_zm_icon";
+
+
+    self.eq_hud_shower = newClientHudElem( self );
+    self.eq_hud_shower.x = 410;
+    self.eq_hud_shower.y = 150;
+    self.eq_hud_shower.alignx = "center";
+    self.eq_hud_shower.aligny = "center";
+    self.eq_hud_shower.horzalign = "user_center";
+    self.eq_hud_shower.vertalign = "user_center";
+    self.eq_hud_shower.alpha = 0;
+    self.eq_hud_shower.foreground = true;
+    self.eq_hud_shower.hidewheninmenu = true;
+    self.eq_hud_shower setshader( "tactical_gren_reticle", 15, 15 );
+    self.eq_hud_shower.color = ( 1, 0.85, 0.65 );
+
+    wait 1;
+    self.eq_actionslot_shower = newclienthudelem( self );
+    self.eq_actionslot_shower.x = 415;
+    self.eq_actionslot_shower.y = 155;
+    self.eq_actionslot_shower.alignx = "center";
+    self.eq_actionslot_shower.aligny = "center";
+    self.eq_actionslot_shower.horzalign = "user_center";
+    self.eq_actionslot_shower.vertalign = "user_center";
+    self.eq_actionslot_shower.alpha = 0;
+    self.eq_actionslot_shower.foreground = false;
+    self.eq_actionslot_shower.hidewheninmenu = true;
+    self.eq_actionslot_shower.fontscale = 1.075;
+    self.eq_actionslot_shower settext( "^9[{+actionslot 1}]" );
+
+
+    self.clays_shade = newClientHudElem( self );
+    self.clays_shade.x = 310;
+    self.clays_shade.y = 215;
+    self.clays_shade.alignx = "center";
+    self.clays_shade.aligny = "center";
+    self.clays_shade.horzalign = "user_center";
+    self.clays_shade.vertalign = "user_center";
+    self.clays_shade.alpha = 0; //turn to 1 on release
+    self.clays_shade.foreground = true;
+    self.clays_shade.hidewheninmenu = true;
+    self.clays_shade setshader( "hud_status_dead", 15, 15 );
+    self.clays_shade.color = ( 1, 0.85, 0.65 );
+
+
+    self.clays = newclienthudelem( self );
+    self.clays.x = 300;
+    self.clays.y = 220;
+    self.clays.alignx = "center";
+    self.clays.aligny = "center";
+    self.clays.horzalign = "user_center";
+    self.clays.vertalign = "user_center";
+    self.clays.alpha = 0;
+    self.clays.foreground = false;
+    self.clays.hidewheninmenu = true;
+    self.clays.fontscale = 1.075;
+    self.clays settext( "^9[{+actionslot 1}]" );
+
+    //self setWeaponAmmoClip("frag_grenade_mp", 2);
+    
+    
+
+    
+    first_ = true;
+    brute = self getWeaponAmmoClip( "frag_grenade_zm" );
+    while( true )
+    {
+        
+        ///&/iprintln( "ACTIONSLOT THAT IS ASSIGNED TO TURBINE: [{+actionslot 1}]" );
+        if( brute < self getWeaponAmmoClip( "frag_grenade_zm" ) || brute > self getWeaponAmmoClip( "frag_grenade_zm" )  )
+        {
+            amount = self getweaponammoclip( "frag_grenade_zm" );
+            self.clays setText( "^3" + amount );
+            self.clays fadeovertime( 0.2 );
+            self.clays.alpha = 0; //turn to 1 on release
+            wait 0.6;
+        }
+        
+        //turbine check
+        if( self hasWeapon( t_1 ) || self hasweapon( t_2 ) )
+        {
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 0;
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_actionslot_shower.alpha = 0;
+            wait 1;
+            
+            
+            self.eq_hud_shower.color = ( 1, 1, 1 );
+            self.eq_hud_shower setShader( t_hud, 18, 18 );
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 1;
+            self.eq_actionslot_shower.alpha = 1;
+            wait 1;
+            while( self hasWeapon( t_1 ) || self hasWeapon( t_2 ) )
+            {
+                wait 1;
+            }
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 0;
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_actionslot_shower.alpha = 0;
+            wait 1;
+            
+        }
+
+        //jet check
+        if( self hasWeapon( j_1 ) || self hasweapon( j_2 ) )
+        {
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 0;
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_actionslot_shower.alpha = 0;
+            wait 1;
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_hud_shower.color = ( 1, 1, 1 );
+            self.eq_hud_shower setShader( j_hud, 18, 18 );
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 1;
+            self.eq_actionslot_shower.alpha = 1;
+            wait 1;
+            while( self hasWeapon( j_1 ) || self hasWeapon( j_2 ) )
+            {
+                wait 1;
+            }
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 0;
+            self.eq_actionslot_shower.alpha = 0;
+            wait 1;
+        }
+
+        //turret check
+        if( self hasWeapon( tu_1 ) || self hasweapon( tu_2 ) )
+        {
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 0;
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_actionslot_shower.alpha = 0;
+            
+            wait 1;
+            self.eq_hud_shower.color = ( 1, 1, 1 );
+            self.eq_hud_shower setShader( tu_hud, 18, 18 );
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 1;
+            self.eq_actionslot_shower.alpha = 1;
+            wait 1;
+            while( self hasWeapon( tu_1 ) || self hasWeapon( tu_2 ) )
+            {
+                wait 1;
+            }
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 0;
+            self.eq_actionslot_shower.alpha = 0;
+            wait 1;
+        }
+
+        //telec check
+        if( self hasWeapon( el_1 ) || self hasweapon( el_2 ) )
+        {
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 0;
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_actionslot_shower.alpha = 0;
+            wait 1;
+            self.eq_hud_shower.color = ( 1, 1, 1 );
+            self.eq_hud_shower setShader( el_hud, 18, 18 );
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 1;
+            self.eq_actionslot_shower.alpha = 1;
+            wait 1;
+            while( self hasWeapon( el_1 ) || self hasWeapon( el_2 ) )
+            {
+                wait 1;
+            }
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 0;
+            self.eq_actionslot_shower.alpha = 0;
+            wait 1;
+        }
+
+        //riot check
+        if( self hasWeapon( ri_1 ) || self hasweapon( ri_2 ) )
+        {
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 0;
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_actionslot_shower.alpha = 0;
+            wait 1;
+            self.eq_hud_shower.color = ( 1, 1, 1 );
+            self.eq_hud_shower setShader( ri_hud, 18, 18 );
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 1;
+            self.eq_actionslot_shower.alpha = 1;
+            wait 1;
+            while( self hasWeapon( ri_1 ) || self hasWeapon( ri_2 ) )
+            {
+                wait 1;
+            }
+            self.eq_hud_shower fadeovertime( 1 );
+            self.eq_actionslot_shower fadeovertime( 1 );
+            self.eq_hud_shower.alpha = 0;
+            self.eq_actionslot_shower.alpha = 0;
+            wait 1;
+        }
+        else 
+        {
+            wait 1;
+        }
+        wait 1;
+    }
+}
+
 test_firing_increase()
 {
     level endon( "end_game" );

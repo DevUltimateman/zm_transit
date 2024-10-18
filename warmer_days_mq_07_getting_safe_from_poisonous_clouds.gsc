@@ -839,7 +839,7 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
-	subtitle_upper = NewHudElem();
+	subtitle_upper = NewClientHudElem();
 	subtitle_upper.x = 0;
 	subtitle_upper.y = -42;
 	subtitle_upper SetText( sub_up );
@@ -859,7 +859,7 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     
 	if ( IsDefined( sub_low ) )
 	{
-		subtitle_lower = NewHudelem();
+		subtitle_lower = NewClientHudelem();
 		subtitle_lower.x = 0;
 		subtitle_lower.y = -24;
 		subtitle_lower SetText( sub_low );

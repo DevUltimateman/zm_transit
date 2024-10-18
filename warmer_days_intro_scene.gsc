@@ -61,7 +61,7 @@ intro_scene()
 do_intro_text()
 {
     flag_wait( "initial_blackscreen_passed" );
-    intro_camera_text = newHudElem();
+    intro_camera_text = newclienthudelem();
 
     intro_camera_text.x = 0;
     intro_camera_text.y = -15;//-22.5;
@@ -77,7 +77,7 @@ do_intro_text()
     intro_camera_text setText( "^3Tranzit ^7Reimagined" );
     
 
-    intro_camera_text_lower = newHudElem();
+    intro_camera_text_lower = newclienthudelem();
 
     intro_camera_text_lower.x = 0;
     intro_camera_text_lower.y = 15;//-22.5;

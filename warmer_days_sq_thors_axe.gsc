@@ -201,7 +201,7 @@ do_shader_pickup()
 
     self._pickup_shader = newClientHudElem( self );
     self._pickup_shader.x = 410;
-    self._pickup_shader.y = 150;
+    self._pickup_shader.y = 170;
     self._pickup_shader.alignx = "center";
     self._pickup_shader.aligny = "center";
     self._pickup_shader.horzalign = "user_center";
@@ -209,8 +209,8 @@ do_shader_pickup()
     self._pickup_shader.alpha = 0;
     self._pickup_shader.foreground = true;
     self._pickup_shader.hidewheninmenu = true;
-    self._pickup_shader setshader( "", 15, 15 );
-    self._pickup_shader.color = ( 1, 0.75, 0 );
+    self._pickup_shader setshader( "", 18, 18 );
+    self._pickup_shader.color = ( 1, 1, 0.75 );
    // self thread update_shader();
 }
 
