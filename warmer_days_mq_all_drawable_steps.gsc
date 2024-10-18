@@ -283,6 +283,7 @@ construct_main_quest_shader_logic()
 
 }
 
+
 debug_shaderdrawing()
 {
     level endon( "end_game" );

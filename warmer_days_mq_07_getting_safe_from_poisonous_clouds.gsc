@@ -48,6 +48,8 @@ init()
     level.moving_to_depo_active = false;
     all_static_poisonous_cloud_locations();
     flag_wait( "initial_blackscreen_passed" );
+    level.subtitle_upper_text = newhudelem();
+    level.subtitle_lower_text = newhudelem();
     //&&/level thread level_cleaner_map_restart();
     //level thread level_cleaner();
     //level thread which_zone_im_in();

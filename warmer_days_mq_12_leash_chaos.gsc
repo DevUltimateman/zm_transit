@@ -45,7 +45,7 @@
 init()
 {
 	level thread survivors_called_help();
-	level thread debugger();
+	//level thread debugger();
 }
 
 debugger()
@@ -64,6 +64,7 @@ survivors_called_help()
 	//now game is going to become last stand fuck
 	wait 3;
 	PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
+	foreacH( s in level.players ){ s playsound( level.jsn_snd_lst[ 62 ] ); }
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dials( "My friend!", "What have you come done?!", 6, 1 );
 	wait 8;
@@ -81,13 +82,14 @@ survivors_called_help()
 	wait 7;
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
 	level thread do_dials( "But don't be misinformed. ", "I was always rooting for you..", 6, 1 );
-	wait 7;
+	wait 8;
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
 	level thread do_dials( "I will buy you some time, so that you can start running.", "", 4, 1 );
-	wait 5;
+	wait 6;
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+	wait 1;
 	level thread chaos_begins();
-	level thread do_dials( "At last,", "Goodbye my ^9friend", 4, 1 );
+	level thread do_dials( "At last,", "Goodbye my ^9friend.", 4, 1 );
 	wait 5;
 	level notify( "start_chaos" );
 
@@ -100,21 +102,24 @@ chaos_begins()
 
 	level waittilL( "start_chaos" ); 
 	earthquake( .6, 6, level.players[ 0 ].origin, 1000 );
-
+	foreach( players in level.players )
+	{
+		players playsound( level.jsn_snd_lst[ 17 ] );
+	}
 	PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
 	wait 0.1;
+	level thread exposure_flash();
 	PlaySoundAtPosition(level.jsn_snd_lst[ 17 ], level.players[ 0 ].origin );
 	foreach( p in level.players )
 	{
 		p playsound( level.jsn_snd_lst[ 30 ] );
-		p setclientdvar( "r_skyColorTemp", 2800 );
+		p setclientdvar( "r_skyColorTemp", 2800 );	
 		p setclientdvar( "r_sky_intensity_factor0", 4 );
 		p setclientdvar( "vc_rgbh", "1 0.2 0 0" );
 		p setclientdvar( "vc_yl", "0.3 0.3 0.3 0" );
 		p setclientdvar( "vc_rgbl", "1 0 0 0" );
-		p setclientdvar( "r_exposurevalue", 3.8 );
+		
 	}
-
 	wait 3;
 	if( level.dev_time ){ iprintlnbold( "METEORS START HITTING NOW" ); }
 	level thread meteor_shower_on_player();
@@ -124,6 +129,7 @@ chaos_begins()
 meteor_shower_on_player()
 {
 	level endon( "end_game" );
+	
 	foreach( playa in level.players )
 	{
 		playa thread follow_meteor_rain();
@@ -136,32 +142,68 @@ follow_meteor_rain()
 	self endon( "disconnect" );
 
 	meteors = [];
+	blocks = [];
 	meteors[ 0 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
 	meteors[ 0 ] setmodel( "p6_zm_rocks_medium_05" );
 	meteors[ 0 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
+	blocks[ 0 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	blocks[ 0 ] setmodel( "collision_player_128x_128x_128x" );
+	blocks[ 0 ].angles = meteors[ 0 ].angles;
+	blocks[ 0 ] enableLinkTo();
+	blocks[ 0 ] linkto( meteors[ 0 ] );
 	wait 0.1;
+	playfxontag( level._effects[ 47 ], meteors[ 0 ], "tag_origin" );
 	meteors[ 1 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
 	meteors[ 1 ] setmodel( "p6_zm_rocks_medium_05" );
 	meteors[ 1 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
 	wait 0.1;
+	blocks[ 1 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	blocks[ 1 ] setmodel( "collision_player_128x_128x_128x" );
+	blocks[ 1 ].angles = meteors[ 1 ].angles;
+	blocks[ 1 ] enableLinkTo();
+	blocks[ 1 ] linkto( meteors[ 1 ] );
+	playfxontag( level._effects[ 47 ], meteors[ 1 ], "tag_origin" );
 	meteors[ 2 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
 	meteors[ 2 ] setmodel( "p6_zm_rocks_medium_05" );
 	meteors[ 2 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
 	wait 0.1;
+	blocks[ 2 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	blocks[ 2 ] setmodel( "collision_player_128x_128x_128x" );
+	blocks[ 2 ].angles = meteors[ 2  ].angles;
+	blocks[ 2 ] enableLinkTo();
+	blocks[ 2 ] linkto( meteors[ 2   ] );
+	playfxontag( level._effects[ 47 ], meteors[ 2 ], "tag_origin" );
 	meteors[ 3 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
 	meteors[ 3 ] setmodel( "p6_zm_rocks_medium_05" );
 	meteors[ 3 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
 	wait 0.1;
+	blocks[ 3 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	blocks[ 3 ] setmodel( "collision_player_128x_128x_128x" );
+	blocks[ 3 ].angles = meteors[ 3 ].angles;
+	blocks[ 3 ] enableLinkTo();
+	blocks[ 3 ] linkto( meteors[3  ] );
+	playfxontag( level._effects[ 47 ], meteors[ 3 ], "tag_origin" );
 	meteors[ 4 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
 	meteors[ 4 ] setmodel( "p6_zm_rocks_medium_05" );
 	meteors[ 4 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
 	wait 0.1;
+	blocks[ 4 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	blocks[ 4 ] setmodel( "collision_player_128x_128x_128x" );
+	blocks[ 4 ].angles = meteors[ 4 ].angles;
+	blocks[ 4 ] enableLinkTo();
+	blocks[ 4 ] linkto( meteors[ 4 ] );
+	playfxontag( level._effects[ 47 ], meteors[ 4 ], "tag_origin" );
 	meteors[ 5 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
 	meteors[ 5 ] setmodel( "p6_zm_rocks_medium_05" );
 	meteors[ 5 ].angles = ( randomintrange( 0, 350 ), randomintrange( 0, 350 ), randomintrange( 0, 350 ) );
-
+	
 	wait 0.1;
-
+	blocks[ 5 ] = spawn( "script_model", self.origin + ( 0, 0, 10000 ) );
+	blocks[ 5 ] setmodel( "collision_player_128x_128x_128x" );
+	blocks[ 5 ].angles = meteors[ 5 ].angles;
+	blocks[ 5 ] enableLinkTo();
+	blocks[ 5 ] linkto( meteors[ 5 ] );
+	playfxontag( level._effects[ 47 ], meteors[ 5 ], "tag_origin" );
 	for( i = 0; i < meteors.size; i++ )
 	{
 		meteors[ i ] thread track_and_movetohit_player( self );
@@ -174,47 +216,113 @@ follow_meteor_rain()
 track_and_movetohit_player( plr )
 {
 	level endon( "end_game" );
+	first_time = true;
 	while( isdefined( self ) )
 	{
 		//initial sky move
-		i_x = randomintrange( -1000, 1000 );
-		i_y = randomintrange( -1000, 1000 );
-		i_z = randomintrange( 1500, 2000 );
-		self moveto( plr.origin + ( i_x, i_y, i_z ), 1, 0.1, 0 );
-		wait 1;
-		p_x = randomintrange( -450, 450 );
-		p_y = randomintrange( -400, 400 );
-		p_z = randomintrange( -100, -40 );
-		player_spot = plr.origin + ( p_x, p_y, p_z );
-		playfxontag( level.myFx[ 91 ], self, "tag_origin" );
-		self moveto( player_spot, 1.5, 0, 0.1 );
-		self waittill( "movedone" );
-		for( i = 0; i < level.players.size; i++ )
+		if( first_time )
 		{
-			if( distance( level.players[ i ].origin, self.origin ) < 150 )
+			i_x = randomintrange( -1000, 1000 );
+			i_y = randomintrange( -1000, 1000 );
+			i_z = randomintrange( 4500, 7000 );
+			self moveto( plr.origin + ( i_x, i_y, i_z ), 1, 0.1, 0 );
+			
+			wait 1;
+			p_x = randomintrange( -450, 450 );
+			p_y = randomintrange( -400, 400 );
+			p_z = randomintrange( -100, -40 );
+			player_spot = plr.origin + ( p_x, p_y, p_z );
+			playfxontag( level.myFx[ 91 ], self, "tag_origin" );
+			self moveto( player_spot, 1.5, 0, 0.1 );
+			PlaySoundAtPosition(level.jsn_snd_lst[ 4 ], self.origin );
+			self waittill( "movedone" );
+			PlaySoundAtPosition(level.jsn_snd_lst[ 2 ], self.origin );
+			for( i = 0; i < level.players.size; i++ )
 			{
-				level.players[ i ] dodamage( level.players[ i ].health + 500, level.players[ i ].origin );
-				
-			}
-			else if( distance( level.players[ i ].origin, self.origin ) < 250 )
-			{
-				level.players[ i ] dodamage( level.players[ i  ].health / 2, level.players[ i ].origin );
+				if( distance( level.players[ i ].origin, self.origin ) < 150 )
+				{
+					level.players[ i ] dodamage( level.players[ i ].health + 500, level.players[ i ].origin );
+					
+				}
+				else if( distance( level.players[ i ].origin, self.origin ) < 250 )
+				{
+					level.players[ i ] dodamage( level.players[ i  ].health / 2, level.players[ i ].origin );
 
+				}
+				else{ wait 0.05; }
 			}
-			else{ wait 0.05; }
+			earthquake( 0.5, 4, self.origin, 1000 );
+			wait 0.5;	
+			self movez( -300, 5, 0.5, 0.5 );
+			PlaySoundAtPosition(level.jsn_snd_lst[ 27 ], self.origin );
+			self waittill( "movedone" );
+			wait 0.1;
+			self.origin = plr.origin + ( 0, 0, 10000 );
+			first_time = false;
 		}
-		earthquake( 0.5, 4, self.origin, 1000 );
-		wait 0.5;	
-		self movez( -300, 5, 0.5, 0.5 );
-		self waittill( "movedone" );
-		self setorigin( plr.origin + ( 0, 0, 10000 ) );
+		else if( !first_time )
+		{
+			i_x = randomintrange( -1000, 1000 );
+			i_y = randomintrange( -1000, 1000 );
+			i_z = randomintrange( 4500, 6000 );
+			self moveto( plr.origin + ( i_x, i_y, i_z ), 1, 0.1, 0 );
+			PlaySoundAtPosition(level.jsn_snd_lst[ 4 ], self.origin );
+			wait 1;
+			p_x = randomintrange( -450, 450 );
+			p_y = randomintrange( -400, 400 );
+			p_z = randomintrange( -100, -40 );
+			player_spot = plr.origin + ( p_x, p_y, p_z );
+			playfxontag( level.myFx[ 91 ], self, "tag_origin" );
+			self moveto( player_spot, 1.5, 0, 0.1 );
+			self waittill( "movedone" );
+			PlaySoundAtPosition(level.jsn_snd_lst[ 2 ], self.origin );
+			for( i = 0; i < level.players.size; i++ )
+			{
+				if( distance( level.players[ i ].origin, self.origin ) < 150 )
+				{
+					level.players[ i ] dodamage( level.players[ i ].health + 500, level.players[ i ].origin );
+					
+				}
+				else if( distance( level.players[ i ].origin, self.origin ) < 250 )
+				{
+					level.players[ i ] dodamage( level.players[ i  ].health / 2, level.players[ i ].origin );
+
+				}
+				else{ wait 0.05; }
+			}
+			earthquake( 0.5, 4, self.origin, 1000 );
+			wait 0.1;	
+			self movez( -300, 5, 0.5, 0.5 );
+			self waittill( "movedone" );
+			wait 0.1;
+			self.origin = plr.origin + ( 0, 0, 10000 );
+		}
 		wait 0.05;
 	}
 }
 
 
 
-
+exposure_flash()
+{
+	foreach( p in level.players )
+	{
+		p setclientdvar( "r_exposurevalue", 2.8 );
+		wait 0.08;
+		p setclientdvar( "r_exposurevalue", 1.8 );
+		wait 0.1;
+		p setclientdvar( "r_exposurevalue", 2.5 );
+		wait 0.05;
+		p setclientdvar( "r_exposurevalue", .8 );
+		wait 0.07;
+		p setclientdvar( "r_exposurevalue", 2.8 );
+		wait 0.1;
+		p setclientdvar( "r_exposurevalue", .4 );
+		wait 0.05;
+		p setclientdvar( "r_exposurevalue", 3 );
+		wait 0.1;
+	}
+}
 
 
 
@@ -251,47 +359,47 @@ mac_say( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
-	if( !isdefined( level.subtitle_upper_text ) )
+	if( !isdefined( subs_up ) )
 	{
-		level.subtitle_upper_text = newhudelem();
+		subs_up = newhudelem();
 	}
 
-	level.subtitle_upper_text.x = 0;
-	level.subtitle_upper_text.y = -42;
-	level.subtitle_upper_text SetText( sub_up );
-	level.subtitle_upper_text.fontScale = 1.32;
-	level.subtitle_upper_text.alignX = "center";
-	level.subtitle_upper_text.alignY = "middle";
-	level.subtitle_upper_text.horzAlign = "center";
-	level.subtitle_upper_text.vertAlign = "bottom";
-	level.subtitle_upper_text.sort = 1;
+	subs_up.x = 0;
+	subs_up.y = -42;
+	subs_up SetText( sub_up );
+	subs_up.fontScale = 1.32;
+	subs_up.alignX = "center";
+	subs_up.alignY = "middle";
+	subs_up.horzAlign = "center";
+	subs_up.vertAlign = "bottom";
+	subs_up.sort = 1;
     
 
-	level.subtitle_upper_text.alpha = 0; 
-    level.subtitle_upper_text fadeovertime( fadeTimer );
-    level.subtitle_upper_text.alpha = 1;
+	subs_up.alpha = 0; 
+    subs_up fadeovertime( fadeTimer );
+    subs_up.alpha = 1;
     
     
     
 	if ( IsDefined( sub_low ) )
 	{
-		if( !isdefined( level.subtitle_lower_text ) )
+		if( !isdefined( subs_low ) )
 		{
-			level.subtitle_lower_text = newhudelem();
+			subs_low = newhudelem();
 		}
 
-		level.subtitle_lower_text.x = 0;
-		level.subtitle_lower_text.y = -24;
-		level.subtitle_lower_text SetText( sub_low );
-		level.subtitle_lower_text.fontScale = 1.22;
-		level.subtitle_lower_text.alignX = "center";
-		level.subtitle_lower_text.alignY = "middle";
-		level.subtitle_lower_text.horzAlign = "center";
-		level.subtitle_lower_text.vertAlign = "bottom";
-		level.subtitle_lower_text.sort = 1;
-        level.subtitle_lower_text.alpha = 0;
-        level.subtitle_lower_text fadeovertime( fadeTimer );
-        level.subtitle_lower_text.alpha = 1;
+		subs_low.x = 0;
+		subs_low.y = -24;
+		subs_low SetText( sub_low );
+		subs_low.fontScale = 1.22;
+		subs_low.alignX = "center";
+		subs_low.alignY = "middle";
+		subs_low.horzAlign = "center";
+		subs_low.vertAlign = "bottom";
+		subs_low.sort = 1;
+        subs_low.alpha = 0;
+        subs_low fadeovertime( fadeTimer );
+        subs_low.alpha = 1;
 	}
 	
 	wait ( duration );
@@ -302,16 +410,16 @@ mac_say( sub_up, sub_low, duration, fadeTimer )
     //    level thread a_glowby( subtitle_lower );
     //}
     
-	level thread flyby( level.subtitle_upper_text );
-    level.subtitle_lower_text fadeovertime( fadeTimer );
-    level.subtitle_upper_text.alpha = 0;
+	level thread flyby( subs_up );
+    subs_low fadeovertime( fadeTimer );
+    subs_up.alpha = 0;
 	//subtitle Destroy();
 	
-	if ( IsDefined( level.subtitle_lower_text ) )
+	if ( IsDefined( subs_low ) )
 	{
-		level thread flyby( level.subtitle_lower_text );
-        level.subtitle_lower_text fadeovertime( fadeTimer );
-        level.subtitle_lower_text.alpha = 0;
+		level thread flyby( subs_low );
+        subs_low fadeovertime( fadeTimer );
+        subs_low.alpha = 0;
 	}
 
 	
@@ -466,21 +574,9 @@ flyby( element )
     while( element.x < on_right )
     {
         element.x += 200;
-        /*
-        //if( element.x < on_right )
-        //{
-            
-            //waitnetworkframe();
-        //    wait 0.01;
-        //}
-        //if( element.x >= on_right )
-        //{
-        //    element destroy();
-        //}
-        */
         wait 0.05;
     }
-    element destroy_hud();
+	element destroy_hud();
     //let new huds start drawing if needed
     level.subtitles_on_so_have_to_wait = false;
 }

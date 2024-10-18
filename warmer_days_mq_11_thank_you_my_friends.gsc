@@ -70,6 +70,7 @@ daytime_preset()
 shoot_bolts()
 {
     level endon( "end_game" );
+    self playLoopSound( "zmb_screecher_portal_loop", 2 );
     playfxontag( level._effect[ "screecher_vortex" ], self, "tag_origin" );
     PlaySoundAtPosition(level.mysounds[ 5 ], self.origin );
     while( isdefined( self ) )
@@ -78,6 +79,7 @@ shoot_bolts()
         spawner setmodel( "tag_origin" );
         spawner.angles = ( 0, 0, 0 );
         
+        spawner thread spark_loop_sound_shoot();
         playfxontag( level.myfx[ 2 ], spawner, "tag_origin" );
         wait 0.05;
         playfxontag( level.myFx[ 92 ], spawner, "tag_origin" );
@@ -98,6 +100,16 @@ shoot_bolts()
 
     }
 }
+
+spark_loop_sound_shoot()
+{
+    for( s = 0; s < 5; s++ )
+    {
+        PlaySoundAtPosition(level.jsn_snd_lst[ 65 ], self.origin );
+        wait 0.125;
+    }
+}
+
 mr_s_for_final_time()
 {
     level waittill( "spawn_mrs_for_final_time" );
@@ -193,6 +205,7 @@ hover_mes()
     level endon( "end_game" );
     while( isdefined( self ) )
     {
+        PlaySoundAtPosition(level.jsn_snd_lst[ 78 ], self.origin );
         x = randomint( 60 );
         y = randomint( 60 );
         z = randomint( 20 );
@@ -272,11 +285,10 @@ are_players_close()
 
 do_dialog_here( sub_up, sub_low, duration, fader )
 {
-    level.subtitle_upper_text =  sub_up;
-    level.subtitle_lower_text = sub_low;
+    
     durations = duration;
     fadetimer = fader;
-    level thread machine_says( "^9Dr. Schruder: ^8" + level.subtitle_upper_text, "^8" + level.subtitle_lower_text, durations, fadetimer );
+    level thread machine_says( "^9Dr. Schruder: ^8" + sub_up, "^8" + sub_low, durations, fadetimer );
 }
 
 
@@ -290,64 +302,64 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
-    if( !isdefined( level.subtitle_upper_text ) )
+    if( !isdefined( subs_up ) )
 	{
-		level.subtitle_upper_text = newhudelem();
+		subs_up = newhudelem();
 	}
-	level.subtitle_upper_text.x = 0;
-	level.subtitle_upper_text.y = -42;
-	level.subtitle_upper_text SetText( sub_up );
-	level.subtitle_upper_text.fontScale = 1.32;
-	level.subtitle_upper_text.alignX = "center";
-	level.subtitle_upper_text.alignY = "middle";
-	level.subtitle_upper_text.horzAlign = "center";
-	level.subtitle_upper_text.vertAlign = "bottom";
-	level.subtitle_upper_text.sort = 1;
+	subs_up.x = 0;
+	subs_up.y = -42;
+	subs_up SetText( sub_up );
+	subs_up.fontScale = 1.32;
+	subs_up.alignX = "center";
+	subs_up.alignY = "middle";
+	subs_up.horzAlign = "center";
+	subs_up.vertAlign = "bottom";
+	subs_up.sort = 1;
     
-	level.subtitle_upper_text.alpha = 0;
-    level.subtitle_upper_text fadeovertime( fadeTimer );
-    level.subtitle_upper_text.alpha = 1;
+	subs_up.alpha = 0;
+    subs_up fadeovertime( fadeTimer );
+    subs_up.alpha = 1;
     
     
     
 	if ( IsDefined( sub_low ) )
 	{
-        if( !isdefined( level.subtitle_lower_text ) )
+        if( !isdefined( subs_low ) )
 		{
-			level.subtitle_lower_text = newhudelem();
+			subs_low = newhudelem();
 		}
-		level.subtitle_lower_text.x = 0;
-		level.subtitle_lower_text.y = -24;
-		level.subtitle_lower_text SetText( sub_low );
-		level.subtitle_lower_text.fontScale = 1.22;
-		level.subtitle_lower_text.alignX = "center";
-		level.subtitle_lower_text.alignY = "middle";
-		level.subtitle_lower_text.horzAlign = "center";
-		level.subtitle_lower_text.vertAlign = "bottom";
-		level.subtitle_lower_text.sort = 1;
-        level.subtitle_lower_text.alpha = 0;
-        level.subtitle_lower_text fadeovertime( fadeTimer );
-        level.subtitle_lower_text.alpha = 1;
+		subs_low.x = 0;
+		subs_low.y = -24;
+		subs_low SetText( sub_low );
+		subs_low.fontScale = 1.22;
+		subs_low.alignX = "center";
+		subs_low.alignY = "middle";
+		subs_low.horzAlign = "center";
+		subs_low.vertAlign = "bottom";
+		subs_low.sort = 1;
+        subs_low.alpha = 0;
+        subs_low fadeovertime( fadeTimer );
+        subs_low.alpha = 1;
 	}
 	
 	wait ( duration );
     level.play_schruder_background_sound = false;
     //level thread a_glowby( subtitle );
-    //if( isdefined( level.subtitle_lower_text ) )
+    //if( isdefined( subs_low ) )
     //{
-    //    level thread a_glowby( level.subtitle_lower_text );
+    //    level thread a_glowby( subs_low );
     //}
     
-	level thread flyby( level.subtitle_upper_text );
-    level.subtitle_upper_text fadeovertime( fadeTimer );
-    level.subtitle_upper_text.alpha = 0;
+	level thread flyby( subs_up );
+    subs_up fadeovertime( fadeTimer );
+    subs_up.alpha = 0;
 	//subtitle Destroy();
 	
-	if ( IsDefined( level.subtitle_lower_text ) )
+	if ( IsDefined( subs_low ) )
 	{
-		level thread flyby( level.subtitle_lower_text );
-        level.subtitle_lower_text fadeovertime( fadeTimer );
-        level.subtitle_lower_text.alpha = 0;
+		level thread flyby( subs_low );
+        subs_low fadeovertime( fadeTimer );
+        subs_low.alpha = 0;
 	}
     
 }

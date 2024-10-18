@@ -234,7 +234,7 @@ do_first_dialog()
     level thread playloopsound_buried();
     wait 2.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Excellent! You found the mixing container^8..", "You'll need the suitcase in our next step..", 9, 1 );
+    do_dialog_here( "Excellent! You've found the mixing container^8..", "You'll need it in our next step..", 9, 1 );
     wait 10;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "The container will teleport on the ground, close to a soda machine^8 once you're close to a one.", "You could ^6test ^8it right now. There should be a soda machine nearby..", 10, 1 );
@@ -273,6 +273,7 @@ do_first_dialog()
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "I am so proud of you.. we should ^6celebrate^8 a bit..", "Meet me at the ^6bar^8!", 8, 1 ); 
     level notify( "wait_for_bar_meetup" );
+    level.step_9_possible = true;
     wait 11;
 
     //continue from here
@@ -904,11 +905,10 @@ loop_big_fxs( here )
 
 do_dialog_here( sub_up, sub_low, duration, fader )
 {
-    level.subtitle_upper_text =  sub_up;
-    level.subtitle_lower_text = sub_low;
+
     durations = duration;
     fadetimer = fader;
-    level thread machine_says( "^9Dr. Schruder: ^8" + level.subtitle_upper_text, "^8" + level.subtitle_lower_text, durations, fadetimer );
+    level thread machine_says( "^9Dr. Schruder: ^8" + sub_up, "^8" + sub_low, durations, fadetimer );
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )
@@ -920,65 +920,64 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
-	if( !isdefined( level.subtitle_upper_text ) )
+	if( !isdefined( subs_up ) )
     {
-        level.subtitle_upper_text = newhudelem();
+        subs_up = newhudelem();
     }
-	level.subtitle_upper_text.x = 0;
-	level.subtitle_upper_text.y = -42;
-	level.subtitle_upper_text SetText( sub_up );
-	level.subtitle_upper_text.fontScale = 1.32;
-	level.subtitle_upper_text.alignX = "center";
-	level.subtitle_upper_text.alignY = "middle";
-	level.subtitle_upper_text.horzAlign = "center";
-	level.subtitle_upper_text.vertAlign = "bottom";
-	level.subtitle_upper_text.sort = 1;
+	subs_up.x = 0;
+	subs_up.y = -42;
+	subs_up SetText( sub_up );
+	subs_up.fontScale = 1.32;
+	subs_up.alignX = "center";
+	subs_up.alignY = "middle";
+	subs_up.horzAlign = "center";
+	subs_up.vertAlign = "bottom";
+	subs_up.sort = 1;
     
-	level.subtitle_lower_text = undefined;
-	level.subtitle_upper_text.alpha = 0;
-    level.subtitle_upper_text fadeovertime( fadeTimer );
-    level.subtitle_upper_text.alpha = 1;
+	subs_up.alpha = 0;
+    subs_up fadeovertime( fadeTimer );
+    subs_up.alpha = 1;
     
     
     
 	if ( IsDefined( sub_low ) )
 	{
-		if( !isdefined( level.subtitle_lower_text ) )
+		if( !isdefined( subs_low ) )
         {
-            level.subtitle_lower_text = newhudelem();
+            subs_low = newhudelem();
         }
-		level.subtitle_lower_text.x = 0;
-		level.subtitle_lower_text.y = -24;
-		level.subtitle_lower_text SetText( sub_low );
-		level.subtitle_lower_text.fontScale = 1.22;
-		level.subtitle_lower_text.alignX = "center";
-		level.subtitle_lower_text.alignY = "middle";
-		level.subtitle_lower_text.horzAlign = "center";
-		level.subtitle_lower_text.vertAlign = "bottom";
-		level.subtitle_lower_text.sort = 1;
-        level.subtitle_lower_text.alpha = 0;
-        level.subtitle_lower_text fadeovertime( fadeTimer );
-        level.subtitle_lower_text.alpha = 1;
+		subs_low.x = 0;
+		subs_low.y = -24;
+		subs_low SetText( sub_low );
+		subs_low.fontScale = 1.22;
+		subs_low.alignX = "center";
+		subs_low.alignY = "middle";
+		subs_low.horzAlign = "center";
+		subs_low.vertAlign = "bottom";
+		subs_low.sort = 1;
+        subs_low.alpha = 0;
+        subs_low fadeovertime( fadeTimer );
+        subs_low.alpha = 1;
 	}
 	
 	wait ( duration );
     level.play_schruder_background_sound = false;
     //level thread a_glowby( subtitle );
-    //if( isdefined( level.subtitle_lower_text ) )
+    //if( isdefined( subs_low ) )
     //{
-    //    level thread a_glowby( level.subtitle_lower_text );
+    //    level thread a_glowby( subs_low );
     //}
     
-	level thread flyby( level.subtitle_upper_text );
-    level.subtitle_upper_text fadeovertime( fadeTimer );
-    level.subtitle_upper_text.alpha = 0;
+	level thread flyby( subs_up );
+    subs_up fadeovertime( fadeTimer );
+    subs_up.alpha = 0;
 	//subtitle Destroy();
 	
-	if ( IsDefined( level.subtitle_lower_text ) )
+	if ( IsDefined( subs_low ) )
 	{
-		level thread flyby( level.subtitle_lower_text );
-        level.subtitle_lower_text fadeovertime( fadeTimer );
-        level.subtitle_lower_text.alpha = 0;
+		level thread flyby( subs_low );
+        subs_low fadeovertime( fadeTimer );
+        subs_low.alpha = 0;
 	}
     
 }

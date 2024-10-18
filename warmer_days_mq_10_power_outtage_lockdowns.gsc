@@ -98,6 +98,8 @@ init()
 
     flag_wait( "initial_blackscreen_passed" );
     wait 0.1;
+    level waittill( "drunk_state_over" );
+    level thread do_dialog_about_tunnel_help();
     level thread spawn_all_distance_checkers();
     level thread spawn_all_triggers();
    
@@ -107,6 +109,30 @@ init()
     
 }
 
+do_dialog_about_tunnel_help()
+{
+    level endon( "end_game" );
+    wait 2.5;
+    foreach( p in level.players ){   p thread daytime_preset();  }
+    level thread playloopsound_buried();
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    level thread do_dialog_here( "Hahaa, you've had your fun ha?", "I think we can move ahead and try finding the ^3Tranceiver^8.", 5, 1 );
+    wait 6;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    level thread do_dialog_here( "The ^3Tranceiver ^8has long been gone, but if we would be able to go back in time...", "Ah! I know a perfect thing.", 7, 1 );
+    wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    level thread do_dialog_here( "Let me spawn a ^3Back In Time Teleporter^8 for you to the tunnels.", "It should be there in a second..", 7, 1 );
+    wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    level thread do_dialog_here( "You could try using it to go back in time..", "I believe that it's possible to find the ^3Tranceiver^8 from the time when it still existed.", 7, 1 );
+    wait 8;
+    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    level thread do_dialog_here( "See if you're able to pick it up,", "once you have located it.", 7, 1 );
+    wait 8;
+    level notify( "stop_mus_load_bur" );
+    
+}
 movable_locations()
 {
     level endon( "end_game" );
@@ -614,6 +640,10 @@ spawn_s_to_do_stuff( which_location, which_location_loop )
     //do_initial_moves
     for( i = 0; i < which_location.size; i++ )
     {
+        if( i == 1 )
+        {
+            playfxontag( level._effect[ "screecher_vortex" ], sc, "tag_origin" );
+        }
         if( level.dev_time ) { iprintlnbold( "DOCTOR IS MOVING TO NEW INITIAL LOCATION" ); }
         sc moveto( which_location[ i ], 2, 1, 0.5 );
         sc rotateyaw( randomintrange( -250, 250 ), 2, 1, 0.5 );
@@ -804,6 +834,8 @@ spawn_tunnel_stuff()
             wait 2;
             trig delete();
             portal delete();
+            portal_blocker delete();
+            side_portal delete();
         }
         wait 0.1;
         one_plus = 0;
@@ -987,6 +1019,8 @@ bowlable_step()
     playfxontag( level.myFx[ 41 ], spawn_lighter, "tag_origin" );
 
     spawn_lighter thread waittill_someone_blows();
+    wait 3;
+    playfxontag( level.myFx[ 41 ], spawn_lighter, "tag_origin" );
     //next spawn the grenable object then move it to spot
     //then add trig for player to pick it  up
     // should be tranceiver or something as model wise..
@@ -1233,11 +1267,7 @@ rotateit()
 
 do_dialog_here( sub_up, sub_low, duration, fader )
 {
-    level.subtitle_upper =  sub_up;
-    level.subtitle_lower_text = sub_low;
-    durations = duration;
-    fadetimer = fader;
-    level thread machine_says( "^9Dr. Schruder: ^8" + level.subtitle_upper, "^8" + level.subtitle_lower_text, durations, fadetimer );
+    level thread machine_says( "^9Dr. Schruder: ^8" + sub_up, "^8" + sub_low, duration, fader );
 }
 
 
@@ -1263,65 +1293,65 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
-	if( !isdefined( level.subtitle_upper_text ) )
+	if( !isdefined( subs_up) )
     {
-        level.subtitle_upper_text = newhudelem();
+        subs_up = newhudelem();
     }
-	level.subtitle_upper.x = 0;
-	level.subtitle_upper.y = -42;
-	level.subtitle_upper SetText( sub_up );
-	level.subtitle_upper.fontScale = 1.32;
-	level.subtitle_upper.alignX = "center";
-	level.subtitle_upper.alignY = "middle";
-	level.subtitle_upper.horzAlign = "center";
-	level.subtitle_upper.vertAlign = "bottom";
-	level.subtitle_upper.sort = 1;
+	subs_up.x = 0;
+	subs_up.y = -42;
+	subs_up SetText( sub_up );
+	subs_up.fontScale = 1.32;
+	subs_up.alignX = "center";
+	subs_up.alignY = "middle";
+	subs_up.horzAlign = "center";
+	subs_up.vertAlign = "bottom";
+	subs_up.sort = 1;
     
-	level.subtitle_lower_text = undefined;
-	level.subtitle_upper.alpha = 0;
-    level.subtitle_upper fadeovertime( fadeTimer );
-    level.subtitle_upper.alpha = 1;
+	subs_low = undefined;
+	subs_up.alpha = 0;
+    subs_up fadeovertime( fadeTimer );
+    subs_up.alpha = 1;
     
     
     
 	if ( IsDefined( sub_low ) )
 	{
-        if( !isdefined( level.subtitle_lower_text ) )
+        if( !isdefined( subs_low ) )
     {
-        level.subtitle_lower_text = newhudelem();
+        subs_low = newhudelem();
     }
-		level.subtitle_lower_text.x = 0;
-		level.subtitle_lower_text.y = -24;
-		level.subtitle_lower_text SetText( sub_low );
-		level.subtitle_lower_text.fontScale = 1.22;
-		level.subtitle_lower_text.alignX = "center";
-		level.subtitle_lower_text.alignY = "middle";
-		level.subtitle_lower_text.horzAlign = "center";
-		level.subtitle_lower_text.vertAlign = "bottom";
-		level.subtitle_lower_text.sort = 1;
-        level.subtitle_lower_text.alpha = 0;
-        level.subtitle_lower_text fadeovertime( fadeTimer );
-        level.subtitle_lower_text.alpha = 1;
+		subs_low.x = 0;
+		subs_low.y = -24;
+		subs_low SetText( sub_low );
+		subs_low.fontScale = 1.22;
+		subs_low.alignX = "center";
+		subs_low.alignY = "middle";
+		subs_low.horzAlign = "center";
+		subs_low.vertAlign = "bottom";
+		subs_low.sort = 1;
+        subs_low.alpha = 0;
+        subs_low fadeovertime( fadeTimer );
+        subs_low.alpha = 1;
 	}
 	
 	wait ( duration );
     level.play_schruder_background_sound = false;
     //level thread a_glowby( subtitle );
-    //if( isdefined( level.subtitle_lower_text ) )
+    //if( isdefined( subs_low ) )
     //{
-    //    level thread a_glowby( level.subtitle_lower_text );
+    //    level thread a_glowby( subs_low );
     //}
     
-	level thread flyby( level.subtitle_upper );
-    level.subtitle_upper fadeovertime( fadeTimer );
-    level.subtitle_upper.alpha = 0;
+	level thread flyby( subs_up );
+    subs_up fadeovertime( fadeTimer );
+    subs_up.alpha = 0;
 	//subtitle Destroy();
 	
-	if ( IsDefined( level.subtitle_lower_text ) )
+	if ( IsDefined( subs_low ) )
 	{
-		level thread flyby( level.subtitle_lower_text );
-        level.subtitle_lower_text fadeovertime( fadeTimer );
-        level.subtitle_lower_text.alpha = 0;
+		level thread flyby( subs_low );
+        subs_low fadeovertime( fadeTimer );
+        subs_low.alpha = 0;
 	}
     
 }

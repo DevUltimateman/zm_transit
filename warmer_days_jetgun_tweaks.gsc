@@ -54,14 +54,14 @@ init()
 
     level thread for_players();
 
-    /*
+    
     level thread CustomRoundNumber();
     flag_wait( "start_zombie_round_logic" );
     //level thread waypoint_set_players(); //tested to work now fully, good for step 7 of main quwst to indicate farm safe location where need to getg
     level notify("end_round_think");
     wait 0.05;
     level thread round_think();
-    */
+    
     flag_wait( "initial_blackscreen_passed" );
     //buildbuildable( "dinerhatch", true, false );
 }
@@ -73,10 +73,10 @@ for_players()
         level waittill( "connected", pl );
         pl thread brute_hud_visibility_off(); //default lua hud stays on too long
         //pl thread test_firing_increase();
-        //pl thread score_hud_all();
-        //pl thread score_hud_all_ammo();
-       //pl thread play_name_hud_all();
-       // pl thread do_location_hud(); 
+        pl thread score_hud_all();
+        pl thread score_hud_all_ammo();
+        pl thread play_name_hud_all();
+        pl thread do_location_hud(); 
     }
 }
 
@@ -96,6 +96,7 @@ test_firing_increase()
     wait 2;
     self thread sort_all_elements_in_group();
     wait 3.5;
+    level.dev_time = false; //for debugging close to release
     //self SetClientUIVisibilityFlag( "hud_visible", false );
     while( true )
     {
