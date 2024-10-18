@@ -41,25 +41,34 @@
 #include maps\mp\zombies\_zm_craftables;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 init()
 {
+    level.keep_perk_reward_on = false;
+    precacheitem( "t6_wpn_zmb_blundergat_world" );
+    precacheitem( "t6_wpn_zmb_blundergat_armor_world" );
     level thread mr_s_for_final_time();
     level.should_stop = false;
+    level.limited_weapons = [];
+    level._limited_equipment = [];
+
+    level.power_local_doors_globally = 1;
+    flag_wait( "initial_blackscreen_passed" );
+    level thread disable_dev_time();
+    //level thread spawn_all_pickable_acidgats(); //for debug
+    level thread do_perks(); //for debug
 }
 
+disable_dev_time()
+{
+    level endon( "end_game" );
+    wait 5;
+    level.dev_time = false;
+}
+do_perks()
+{
+    wait 5;
+    level thread give_all_perks_and_make_permament();
+}
 daytime_preset()
 { 
     //PlaySoundAtPosition(level.jsn_snd_lst[ 49 ], ( 0, 0, 0 ) );
@@ -148,15 +157,18 @@ mr_s_for_final_time()
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "Let me start off by making your soda drink effects permament!", "You'll keep the effects, even when going down!", 6, 1 );
+    level thread give_all_perks_and_make_permament();
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "What about this next thing?..", "Lemme me spawn an ^2Acid Gat ^8 at ^3Nacht ^8for you!", 7, 1 );
+    level thread spawn_all_pickable_acidgats();
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "You can go pick it up whenever you feel like so!", "I heard it's pretty neat..", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "I've also reduced the cost of your ^3Bullet Upgrades^8 at ^9Safe House^8.", "Check the prices and see if they're worthy of your pennies now, ha!", 10, 1 );
+    level thread reduce_bullettracer_costs();
     wait 11;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "I also suggest you doing any remaining quests or chores, if you have any left.", "Anyways my friend..", 7, 1 );
@@ -177,6 +189,314 @@ mr_s_for_final_time()
 
 
 }
+
+give_all_perks_and_make_permament()
+{
+    level.keep_perk_reward_on = true;
+    foreach( players in level.players )
+    {
+        if( isAlive( players ) )
+        {
+            players thread set_remaining_perks();
+        }
+        players thread spawning_again();
+    }
+}
+
+spawning_again()
+{
+    level endon(  "end_game" );
+    self endon( "disconnect" );
+    while( true )
+    {
+        self waittill( "spawned_player" );
+        if( level.keep_perk_reward_on )
+        {
+            self thread set_remaining_perks( );
+        }
+    }
+}
+perk_drawer( shader, width, height, color, alpha, sort, foreground )
+{
+    self endon( "disconnect" );
+    self.perks_hud = [];
+    
+    if ( !isDefined( self.perks_active ) )
+    {
+        self.perks_active = [];
+    }
+    if( self.perks_active.size == 0 )
+    {
+        firstie = true;
+    }
+    perker = newClientHudElem( self );
+    self.perks_active++;
+    perker setshader( shader, width, height );
+    perker.color = color;
+    perker.alpha = alpha;
+    perker.sort = sort;
+    perker.foreground = foreground;
+    perker.hidewheninmenu = 1;
+    perker.horzAlign = "user_left";
+    perker.vertAlign = "user_center";
+    if( firstie )
+    {
+        perker.x = 12.5 + ( self.perks_active.size * 15 );
+    }
+    else 
+    {
+        perker.x = 5.5 + ( self.perks_active.size * 15 );
+    }
+    
+    perker.y = 170;
+    
+}
+set_remaining_perks()
+{
+
+	if( !self hasperk( "specialty_quickrevive" ) )
+	{
+		self playlocalsound( "cac_cmn_beep" );
+		self give_perk( "specialty_quickrevive", 0 );
+        self setperk( "specialty_quickrevive" );
+        self thread perk_drawer( "specialty_quickrevive_zombies" , 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+		wait 1;
+	}
+
+	if ( !self hasperk( "specialty_fastreload" ) )
+	{
+		self playlocalsound( "cac_cmn_beep" );
+		self give_perk( "specialty_fastreload", 0 );
+        self setperk( "specialty_fastreload" );
+        self thread perk_drawer( "specialty_fastreload_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+		wait 1;//"specialty_marathon_zombies"
+	}
+   // "specialty_longersprint_upgrade"
+	if ( !self hasperk( "specialty_armorvest_upgrade") )
+	{
+		self playlocalsound( "cac_cmn_beep" );
+		self give_perk( "specialty_armorvest_upgrade", 0 );
+        self setperk( "specialty_armorvest_upgrade" );
+        self thread perk_drawer( "specialty_juggernaut_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+		wait 1;
+	}
+
+	if ( !self hasperk( "specialty_rof_upgrade" ) )
+	{
+		self playlocalsound( "cac_cmn_beep" );
+		self give_perk( "specialty_rof_upgrade", 0 );
+        self setperk( "specialty_rof_upgrade" );
+        self thread perk_drawer( "specialty_doubletap_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+		wait 1;
+	}
+
+    if( !self hasperk( "specialty_scavenger"  ) )
+    {
+        self playlocalsound( "cac_cmn_beep" );
+		self give_perk( "specialty_scavenger", 0 );
+        self setperk( "specialty_scavenger" );
+        self thread perk_drawer( "specialty_tombstone_zombies" , 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+		wait 1;
+    }
+
+    if( !self hasperk( "specialty_longersprint_upgrade" ) )
+    {
+        self playlocalsound( "cac_cmn_beep" );
+		self give_perk( "specialty_longersprint_upgrade", 0 );
+        self setperk( "specialty_longersprint_upgrade" );
+        self thread perk_drawer( "specialty_marathon_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
+    }
+    //self setperk( "specialty_rof" );
+    //self setperk( "specialty_armorvest" );
+    //self setperk( "specialty_fastreload" );
+    //self setperk( "specialty_quickrevive" );
+	self._retain_perks = true;
+	for ( i = 0; i < 6; i++ )
+	{
+		
+		self playlocalsound( "cac_cmn_beep" );
+		wait 0.08;
+	}
+	wait 1;
+    
+}
+
+spawn_all_pickable_acidgats()
+{
+
+    all_acid_locations = [];
+    all_acid_locations[ 0 ] = ( 13621.5, -1367.02, -188.875 );
+    all_acid_locations[ 1 ] = ( 13667.4, -1569.79, -188.875 );
+    all_acid_locations[ 2 ] = ( 13948.4, -1464.84, -189.639 );
+    all_acid_locations[ 3 ] = ( 13849.5, -1594.37, -171.202 );
+
+    wait 0.05;
+    
+    
+    //level thread LowerMessage( "Custom Perks", "Hold ^6[{+activate}] ^7to upgrade your ^6bullet type^7 [Cost:^6 20000^7]" );
+    //trigger setLowerMessage( trigger, "Custom Perks"  );
+
+    //playfx( level._effect["lght_marker"], gunOrigin + ( 0, 0, -40 ) );
+    guns = [];
+    trigs = [];
+    for( i = 0; i < all_acid_locations.size; i++ )
+    {
+        if( i % 2 == 0 )
+        {
+            guns[ i ] = spawn( "script_model", all_acid_locations[ i ] + ( 0, 0, 75 ) );
+            guns[ i ] setmodel( "t6_wpn_zmb_blundergat_world" );
+            guns[ i ].angles = ( -45, 0, 0 );
+            wait 0.1;
+            guns[ i ] thread rotategunupgrade();
+            playfx(level._effect[ "powerup_on"], guns[ i ].origin );
+            guns[ i ] playloopsound( "zmb_spawn_powerup_loop" );
+            playfxontag( level.myfx[ 26 ], guns[ i ], "tag_origin" );
+            trigs[ i ] = spawn( "trigger_radius_use", all_acid_locations[ i ], 48, 48, 48 );
+            trigs[ i ] SetCursorHint("HINT_NOICON");
+            trigs[ i ] setHintString( "^8[ ^9[{+activate}] ^8to pick up ^2Blunder Splat ^8]" );
+            trigs[ i ] TriggerIgnoreTeam();
+            trigs[ i ].is_activateable = true;
+            playfxontag( level.myFx[ 26 ], guns[ i ], "tag_origin" );
+            wait 0.1;
+            playfx( level.myFx[ 44 ] , all_acid_locations[ i ]);
+            trigs[ i ] thread if_can_activate_splat();
+            trigs[ i ] thread player_takes_one_of_the_splats( "blundersplat_zm" );
+        }
+        else 
+        {
+            guns[ i ] = spawn( "script_model", all_acid_locations[ i ] + ( 0, 0, 75 ) );
+            guns[ i ] setmodel( "t6_wpn_zmb_blundergat_world"  );
+            guns[ i ].angles = ( -45, 0, 0 );
+            playfx(level._effect[ "powerup_on"], guns[ i ].origin );
+            wait 0.1;
+            guns[ i ] thread rotategunupgrade();
+            guns[ i ] playloopsound( "zmb_spawn_powerup_loop" );
+            playfxontag( level.myfx[ 26 ], guns[ i ], "tag_origin" );
+            trigs[ i ] = spawn( "trigger_radius_use", all_acid_locations[ i ], 48, 48, 48 );
+            trigs[ i ] SetCursorHint("HINT_NOICON");
+            trigs[ i ] setHintString( "^8[ ^9[{+activate}] ^8to pick up ^3Blunder Gat ^8]" );
+            trigs[ i ].is_activateable = true;
+            trigs[ i ] TriggerIgnoreTeam();
+            playfxontag( level.myFx[ 26 ], guns[ i ], "tag_origin" );
+            wait 0.1;
+            playfx( level.myFx[ 44 ] , all_acid_locations[ i ]);
+            trigs[ i ] thread if_can_activate_gat();
+            trigs[ i ] thread player_takes_one_of_the_splats( "blundergat_zm" );
+        }
+    }
+    wait .1;
+}
+
+if_can_activate_gat()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        if( !self.is_activateable  )
+        {
+            self setHintString( "^8[ ^9Someone else has this weapon currently. ^8]" );
+            while( !self.is_activateable  )
+            {
+                wait 1;
+            }
+        }
+        
+        else 
+        {
+            if( self.hintstring !=  "^8[ ^9[{+activate}] ^8to pick up ^3Blunder Gat ^8]" )
+            {
+                self setHintString( "^8[ ^9[{+activate}] ^8to pick up ^3Blunder Gat ^8]" );
+            }
+            wait 2;
+        }
+    }
+    
+}
+
+if_can_activate_splat()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        if( !self.is_activateable )
+        {
+            self setHintString( "^8[ ^9Someone else has this weapon currently. ^8]" );
+            while( !self.is_activateable )
+            {
+                wait 1;
+            }
+        }
+       
+        else 
+        {
+            if( self.hintstring !=  "^8[ ^9[{+activate}] ^8to pick up ^9Blunder Splat ^8]" )
+            {
+                self setHintString( "^8[ ^9[{+activate}] ^8to pick up ^9Blunder Splat ^8]" );
+            }
+            wait 2;
+        }
+    }
+    
+}
+
+rotateGunUpgrade()
+{
+    level endon("end_game");
+    wait randomintrange( 2, 10 );
+    while ( true )
+    {
+        self rotateyaw( 360, 2, 0, 0 );
+        //self rotateroll( 360, 2, 0, 0 );
+        //self rotatePitch( 360, 2, 0, 0 );
+        wait 2;
+    }
+}
+
+player_takes_one_of_the_splats( weap )
+{
+    level endon( "end_game" );
+    while ( true )
+    {
+        self waittill( "trigger", players ); //continue from this point tommorow. 9 hours work on this shit today, tired..
+        if ( players useButtonPressed() && !players hasWeapon( weap ) )
+        {
+
+                players playsound( "zmb_cha_ching" );
+                
+                players giveWeapon( weap );
+                players giveMaxAmmo( weap );
+                players switchToWeapon( weap );
+                wait 1;
+                self.is_activateable = false;
+                level thread dont_return_till_this_dont_have_it( players, self );
+            
+
+        }
+    }
+}
+dont_return_till_this_dont_have_it( me, what_trig )
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    while( isDefined( me ) )
+    {
+        if( me hasWeapon( "blundergat_zm" ) || me hasweapon( "blundergat_upgraded_zm" )
+        || me hasWeapon( "blundersplat_zm" ) || me hasWeapon( "blundersplat_upgraded_zm" ) )
+        {
+            wait 1;
+        }
+        else
+        {
+            what_trig.is_activateable = true;
+            break;
+        }
+    }
+}
+reduce_bullettracer_costs()
+{
+
+}
+
 playloopsound_buried()
 {
     level endon( "end_game" );

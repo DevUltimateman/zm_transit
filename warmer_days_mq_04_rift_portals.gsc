@@ -189,7 +189,7 @@ init()
 
     //debugs the camera motion
     
-
+    //level thread spawn_rift_computer();//for debugging 
 
     //for the new sky box we might wanna use different values
     //skytransition true
@@ -207,20 +207,19 @@ monitor_dev()
     {
         if( level.players[ 0 ] usebuttonpressed() && level.players[ 0 ] adsButtonPressed() )
         {
-            level thread playerss();
+            //level thread playerss();
             break;
         }
         wait 0.05;
     }
 }
-playerss()
+playerss_ride()
 {
     level endon( "end_game" );
     //flag_wait( "initial_blackscreen_passed" ); //enable back after debug
     
     wait 1;
-    
-    level waittill( "do_first_rift_walk" ); //enable back after debug
+
     level thread playloopsound_buried(); //enable back after debug
     level thread level_tell_about_rifts(); //enable back after debug
     level waittill( "do_it" ); //enable back after debug
@@ -239,10 +238,10 @@ level_tell_about_rifts()
 {
     level endon( "end_game" );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _play_schruder_texts( "Did you see that???", "The rift tried grab you!", 5, 1 );
+    level thread _play_schruder_texts( "Did you see that???", "The rift tried grab you!", 5, 1 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _play_schruder_texts( "I think that it will try grabbing you once more...", "Think you should get ready..!", 7, 1 );
+    level thread _play_schruder_texts( "I think that it will try grabbing you once more...", "Think you should get ready..!", 7, 1 );
     wait 9;
     level notify( "do_it" );
     level notify( "stop_mus_load_bur" );
@@ -292,9 +291,10 @@ spawn_initial_rift_camera_points()
    
     }
     wait 5.8;
+    level notify( "do_first_rift_walk" );
     level thread fade_to_black_on_impact();
     wait 2;
-    level notify( "do_first_rift_walk" );
+    
     
 }
 
@@ -1518,6 +1518,7 @@ spawn_rift_computer()
     trig_ setCursorHint( "HINT_NOICON" );
     trig_ setHintString( "^9[ [{+activate}] ^8to restore computer's save point ^9]" );
     trig_ TriggerIgnoreTeam();
+    level.global_org = trig_.origin;
     wait 0.05;
     playFXOnTag( level.myfx[ 43 ], level.rift_comp, "tag_origin" );
     wait 0.05;
@@ -1802,6 +1803,8 @@ move_camera_to_teleport()
         player CameraActivate( false );
 
     }
+    wait 2.5;
+    level thread playerss_ride();
 }
 
 //todo
@@ -1856,6 +1859,8 @@ do_malfunction_visuals()
             plr.electry unlink();
         }
     }
+
+    level thread playerss_ride();
 
     
     

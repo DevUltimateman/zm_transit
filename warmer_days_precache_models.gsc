@@ -55,7 +55,7 @@ init()
     wait 0.05;
     if( level.dev_time )
     {
-        level thread printmodelorginfo();
+        //level thread printmodelorginfo();
     }
     
 }

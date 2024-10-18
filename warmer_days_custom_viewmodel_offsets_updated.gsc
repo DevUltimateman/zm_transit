@@ -106,7 +106,7 @@ for_joining_players()
         //player thread lerp_from_offset_to_offset();
 
         //apply back soon
-        player thread on_spawn();
+       // player thread on_spawn();
     }
 }
 

@@ -112,7 +112,7 @@ print_player_piece()
         else
         {
             
-            iprintln( "PLAYER HAS PIECE: ^1" +  self player_get_buildable_piece().modelname );
+            if( level.dev_time ){ iprintln( "PLAYER HAS PIECE: ^1" +  self player_get_buildable_piece().modelname ); }
             self._pickup_shader fadeovertime( 1 );
             self._pickup_shader.alpha = 1;
             self._pickup_shader.width = 80;

@@ -59,8 +59,16 @@ init()
     level thread for_connecting_players(); //apply marathon hud for late connecting player in case if players have already initialized with transmitter
     flag_wait( "initial_blackscreen_passed" );
     level thread track_transmitter_progress();
+
+    //level thread apply_on_debug();
 }
 
+apply_on_debug()
+{
+    level endon( "end_game" );
+    wait 5;
+    level.players[ 0 ] thread player_reward_marathon();
+}
 for_connecting_players()
 {
     level endon( "end_game" );
@@ -384,8 +392,8 @@ player_reward_marathon()
 
     width = 310;
     height = 16;
-    x = 1.8;
-    r = 1.6;
+    x = 1.2;
+    r = 1.2;
     x = 0;
 
     self.talker_marathon = newClientHudElem( self );
@@ -423,12 +431,12 @@ player_reward_marathon()
     self.talk_marathon[ 1 ].y = -5;
    
 
-    self.talk_marathon[ 0 ].fontscale = 1.6;
-    self.talk_marathon[ 1 ].fontscale = 1.3;
+    self.talk_marathon[ 0 ].fontscale = 1.25;
+    self.talk_marathon[ 1 ].fontscale = 1.1;
     
 
-    self.talk_marathon[ 0 ] settext( "[ ^3Permament Perk Rewarded^8 ]" );
-    self.talk_marathon[ 1 ] settext( "[ ^3Jockie The Mockie^8 ]" );
+    self.talk_marathon[ 0 ] settext( "^8[ ^3Permament Perk Rewarded^8 ]" );
+    self.talk_marathon[ 1 ] settext( "^8[ ^3Jockie The Mockie^8 ]" );
     
     
     self.talk_marathon[ 0 ].alpha = 0;
@@ -478,20 +486,20 @@ player_reward_marathon()
         self.talk_marathon[ s ].vertalign = "user_bottom";
         wait 0.08;
     }
-    self.talker_marathon.x = 10;
-    self.talker_marathon.y = -25;
-    self.talk_marathon[ 1 ].x = 25;
-    self.talk_marathon[ 1 ].y = -30;
-
-    self.talker_marathon.alpha = 0;
+    self.talker_marathon.x = 350;
+    self.talker_marathon.y = -5;
+    self.talk_marathon[ 1 ].x = 370;
+    self.talk_marathon[ 1 ].y = -10;
+    self.talk_marathon[ 1 ].fontscale = 1;
+    self.talker_marathon.alpha = 0; 
     self.talker_marathon fadeovertime( 1.5 );
-    self.talker_marathon.alpha = 1;
+    self.talker_marathon.alpha = .7;
 
     wait 0.05;
 
     self.talk_marathon[ 1 ].alpha = 0;
     self.talk_marathon[ 1 ] fadeovertime( 1.5 );
-    self.talk_marathon[ 1 ].alpha = 1;
+    self.talk_marathon[ 1 ].alpha = .7;
 
     wait 1.5;
 

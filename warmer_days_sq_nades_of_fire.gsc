@@ -98,7 +98,7 @@ fordev()
     for( i = 0; i < level.players.size; i++ )
     {
         //level.players[ i ] enableInvulnerability();  
-        level.players[ i ].score += 50000;
+        //level.players[ i ].score += 50000;
         //level.players[ i ] thread firegrenades_step2();
     }
 }

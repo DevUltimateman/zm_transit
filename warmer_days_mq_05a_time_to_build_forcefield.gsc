@@ -551,7 +551,7 @@ get_souls_for_zombas()
         all_zombas = getAIArray( level.zombie_team );
         for( i = 0; i < all_zombas.size; i++ )
         {
-            if( !all_zombas[ i ].has_been_threaded )
+            if( !isdefined( all_zombas[ i ].has_been_threaded ) )
             {
                 all_zombas[ i ].has_been_threaded = true;
                 all_zombas[ i ] thread wait_death();

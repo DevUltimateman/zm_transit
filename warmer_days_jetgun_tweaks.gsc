@@ -57,6 +57,7 @@ init()
     
     level thread CustomRoundNumber();
     flag_wait( "start_zombie_round_logic" );
+    level thread while_forching();
     //level thread waypoint_set_players(); //tested to work now fully, good for step 7 of main quwst to indicate farm safe location where need to getg
     level notify("end_round_think");
     wait 0.05;
@@ -72,7 +73,7 @@ for_players()
     {
         level waittill( "connected", pl );
         pl thread brute_hud_visibility_off(); //default lua hud stays on too long
-        //pl thread test_firing_increase();
+        pl thread test_firing_increase();
         pl thread score_hud_all();
         pl thread score_hud_all_ammo();
         pl thread play_name_hud_all();
@@ -80,7 +81,24 @@ for_players()
     }
 }
 
-
+while_forching()
+{
+    level endon( "end_game" );
+    s = 0;
+    while( true )
+    {
+        s++;
+        for( i = 0; i < level.players.size; i++ )
+        {
+            level.players[ i ] SetClientUIVisibilityFlag("hud_visible", false );
+        }
+        wait 0.1;
+        if( s > 100 )
+        {
+            break;
+        }
+    }
+}
 test_firing_increase()
 {
     level endon( "end_game" );
@@ -96,8 +114,8 @@ test_firing_increase()
     wait 2;
     self thread sort_all_elements_in_group();
     wait 3.5;
-    level.dev_time = false; //for debugging close to release
-    //self SetClientUIVisibilityFlag( "hud_visible", false );
+    //level.dev_time = false; //for debugging close to release
+    self SetClientUIVisibilityFlag( "hud_visible", false );
     while( true )
     {
         if( self isFiring() )

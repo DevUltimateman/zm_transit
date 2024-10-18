@@ -371,6 +371,8 @@ lighting_vis()
    self setclientdvar( "vc_yl", "0 0 0 0" );
    self setclientdvar( "vc_yh", "0 0 0 0" );
    self setclientdvar( "r_sky_intensity_factor0", 1.95 );
+   self setclientdvar( "cg_fov", 90 );
+   self setclientdvar( "cg_fovscale", 1.20 );
 
    //self thread sky_carousel();
 }
