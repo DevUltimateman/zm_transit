@@ -290,7 +290,7 @@ apply_movement_monitor()
                 cur_ = level.forest_zones[ i ];
                 self_touched = true;
                 xx = randomintrange( 0, 100 );
-                if( xx < 97 ) // give players some sorta chance..  all zombies being bus chaser is hella too crazy :D
+                if( xx < 99 ) // give players some sorta chance..  all zombies being bus chaser is hella too crazy :D
                 {
                     self set_zombie_run_cycle( "chase_bus" );
                     playfx( level._effects[77], self.origin );
@@ -692,7 +692,8 @@ all_rocks_done()
 move_cabin_rocks_to_pylon()
 {
     level endon( "end_game" );
-    level waittill( "cabin_rock_move" );
+    //level waittill( "cabin_rock_move" ); //first full soul box notifies this, use the newer to wait all 3 to be ready before moving
+    level waittill( "move_rocks_underneath_pylon" );
     corn_spots = [];
     corn_spots[ 0 ] = ( 7677.01, -527.996, -201.978 );
     corn_spots[ 1 ] = ( 7613.77, -332.177, -206.423 );
@@ -972,11 +973,11 @@ sound_loopers( origin )
 blinkers()
 {
     level endon( "end_game" );
-    while( true )
+    while( isdefined( self ) )
     {
         playfx( level._effects[ 77 ], self.origin );
         PlaySoundAtPosition(level.jsn_snd_lst[ 32 ], self.origin );
-        wait randomIntRange( 3, 6 );
+        wait randomIntRange( 9, 18 );
     }
 }
 wait_kill()
@@ -1174,7 +1175,7 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
-	subtitle_upper = NewudElem();
+	subtitle_upper = NewhudElem();
 	subtitle_upper.x = 0;
 	subtitle_upper.y = -42;
 	subtitle_upper SetText( sub_up );

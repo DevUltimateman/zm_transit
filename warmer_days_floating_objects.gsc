@@ -56,7 +56,7 @@ init()
     level thread level_power_lines();
     level thread all_floating_objects_around_the_map();
     level thread all_floating_rocks_around_the_map();
-    level thread test_fx_play();
+    //level thread test_fx_play();
     //while( true )
     //{
     //    level waittill( "connected", me );
@@ -344,9 +344,12 @@ all_floating_objects_around_the_map()
         wait randomFloatRange( 0.1, 0.6 );
         bumps[ s ] thread hover_rocks();
         bumps[ s ] thread spin_rocks();
-        playFXOnTag( level._effects[9], bumps[ s ], "tag_origin" );
+        //fog glow
+        //playFXOnTag( level._effects[9], bumps[ s ], "tag_origin" );
+        playfxontag( level._effects[47], bumps[s s], "tag_origin" ); //orange lava smoke bowl
         wait 0.1;
-        playFXOnTag( level._effects[22], bumps[ s ], "tag_origin" );
+        //below is a transformer fx
+        //playFXOnTag( level._effects[22], bumps[ s ], "tag_origin" );
         wait 0.1;
     }
 
@@ -394,7 +397,8 @@ find_and_moveto()
         }
         playfx( level.myFx[ 94 ], self.origin );
         wait 0.05;
-        playfx( level._effects[70], self.origin );
+        //power pulse, might cause too much stress on the game
+        //playfx( level._effects[70], self.origin );
 
         //stay stuck on the rock for a while
         for( i = 0; i < 4; i++ )
@@ -403,7 +407,7 @@ find_and_moveto()
             wait 0.4;
            
         }
-        playfx( level._effects[77], self.origin );
+        //playfx( level._effects[77], self.origin );
         wait 0.08;
     }
 }

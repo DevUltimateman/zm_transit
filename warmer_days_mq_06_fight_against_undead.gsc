@@ -192,15 +192,7 @@ lrotateme()
 playlockdown_song()
 {
     level endon( "end_game" );
-    while( level.lock_down_enabled )
-    {
-        for( i = 0; i < level.players.size; i++ )
-        {
-            level.players[ i ] playsound( "mus_load_zm_transit_dr" );
-        }
-        wait 20;
-    }
-    level.lock_down_enabled = false;
+
 }
 wait_players()
 {
@@ -246,7 +238,7 @@ monitor_player_use()
                     level.lock_down_enabled = true;
                     if( level.dev_time ) { iprintlnbold( "LOCKDOWN INITIATED" ); }
                     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-                    _spirit_of_sorrow_sub_text_alt( "You fools!", "Time to pay for your wrong doings..!!", 7, 1 );
+                    level thread _spirit_of_sorrow_sub_text_alt( "You fools!", "Time to pay for your wrong doings..!!", 7, 1 );
                     level notify( "lockdown_enabled" );
                     level notify( "spawn_blockers_for_lockdown" );
                     level thread playlockdown_song();
@@ -352,10 +344,10 @@ spawn_lockdown_blockers()
     level thread playloopsound_buried();
     wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _someone_unlocked_something( "^8Seems like ^4Spirit Of Sorrow^8 has gone rogue.", "^8Be careful out there!", 7, 1 );
+    level thread _someone_unlocked_something( "^8Seems like ^4Spirit Of Sorrow^8 has gone rogue.", "^8Be careful out there!", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _someone_unlocked_something( "^8Watch out for the poisonous gas!!!", "^8Get to your ^5Safe House^8 immediately!", 8, 1 );
+    level thread _someone_unlocked_something( "^8Watch out for the poisonous gas!!!", "^8Get to your ^5Safe House^8 immediately!", 8, 1 );
     level notify( "stop_mus_load_bur" );
     
 }

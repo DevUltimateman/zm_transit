@@ -56,12 +56,12 @@ intro_scene()
     wait 5;
 
 }
-
+/*
 
 do_intro_text()
 {
     flag_wait( "initial_blackscreen_passed" );
-    intro_camera_text = newclienthudelem();
+    //intro_camera_text = newclienthudelem();
 
     intro_camera_text.x = 0;
     intro_camera_text.y = -15;//-22.5;
@@ -116,3 +116,5 @@ do_intro_text()
     intro_camera_text destroy();
     //intro_camera_text_lower.color = ( 1, 0.6, 0.2 );
 }
+
+*/

@@ -55,13 +55,13 @@ init()
     level thread for_players();
     
     
-    //level thread CustomRoundNumber(); //enable back wheen recording done
+    level thread CustomRoundNumber(); //enable back wheen recording done
     flag_wait( "start_zombie_round_logic" );
     level thread while_forching();
     //level thread waypoint_set_players();  //enable back wheen recording done
-    //level notify("end_round_think"); //enable back wheen recording done
+    level notify("end_round_think"); //enable back wheen recording done
     wait 0.05;
-    //level thread round_think();
+    level thread round_think();
     
     flag_wait( "initial_blackscreen_passed" );
     //buildbuildable( "dinerhatch", true, false );
@@ -78,6 +78,7 @@ for_players()
         pl thread score_hud_all_ammo();
         pl thread play_name_hud_all();
         pl thread print_if_i_have_eq_test();
+        pl thread do_location_hud();
     }
 }
 
@@ -199,8 +200,10 @@ print_if_i_have_eq_test()
             amount = self getweaponammoclip( "frag_grenade_zm" );
             self.clays setText( "^3" + amount );
             self.clays fadeovertime( 0.2 );
-            self.clays.alpha = 0; //turn to 1 on release
-            wait 0.6;
+            self.clays_shade fadeovertime( 0.2 );
+            self.clays_shade.alpha = 1;
+            self.clays.alpha = 1; //turn to 1 on release
+            wait 0.2;
         }
         
         //turbine check
@@ -339,9 +342,9 @@ print_if_i_have_eq_test()
         }
         else 
         {
-            wait 1;
+            wait 0.5;
         }
-        wait 1;
+        wait 0.5;
     }
 }
 

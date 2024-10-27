@@ -832,14 +832,8 @@ print_zone()
 
 machine_says( sub_up, sub_low, duration, fadeTimer )
 {
-    //don't start drawing new hud if one already exists 
-    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
-    {
-        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
-    }
-    level.subtitles_on_so_have_to_wait = true;
-    level.play_schruder_background_sound = true;
-	subtitle_upper = NewClientHudElem();
+
+	subtitle_upper = NewHudElem();
 	subtitle_upper.x = 0;
 	subtitle_upper.y = -42;
 	subtitle_upper SetText( sub_up );
@@ -859,7 +853,7 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     
 	if ( IsDefined( sub_low ) )
 	{
-		subtitle_lower = NewClientHudelem();
+		subtitle_lower = NewHudelem();
 		subtitle_lower.x = 0;
 		subtitle_lower.y = -24;
 		subtitle_lower SetText( sub_low );

@@ -89,7 +89,7 @@ waitflag()
     //step 2
     level thread follow_the_spirit_visuals(); //visual effect for step2
     level thread shoot_orbs(); // shoots orbs from the top of pylon towards the center of it
-    level thread spirit_thunder_locations(); //thunder fx while doing this step
+   // level thread spirit_thunder_locations(); //thunder fx while doing this step
     
     level waittill( "orbs_on_ground" ); //waiting for orbs to "touch" ground
     level thread spawn_spirit(); //spawn the spirit that players should follow
