@@ -991,7 +991,7 @@ rocks_at_town_talk()
 {
     level endon( "end_game" );
 
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "^9Element 115 rocks^8.. Lava at town's center has risen few above the pit.", "^7See if you can teleport them to underneath the pylon with something steamy..", 10, 1  );
@@ -1020,7 +1020,7 @@ rocks_at_pylon()
 {
     level endon( "end_game" );
     level waittill( "end_break_check" );
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     wait 2;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Great, the rocks are at pylon...!", "Let's gather together underneath the pylon!", 7, 1 );
@@ -1028,7 +1028,7 @@ rocks_at_pylon()
     level notify( "stop_mus_load_bur" );
     level thread monitor_players_pylon();
     level waittill( "spawn_schruder" );
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "See if I'm able to transform!", "Aaarghh", 5, 1 );

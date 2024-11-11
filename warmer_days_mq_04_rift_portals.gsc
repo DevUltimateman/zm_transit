@@ -1544,7 +1544,7 @@ play_nav1_success( this_position )
 lamps_fixed_schruder_speaks()
 {
     level endon( "end_game" );
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
    // level waittill( "all_rift_lamps_repaired" );
     wait 4;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
@@ -1622,7 +1622,7 @@ computer_accessed_by_player( playa, a_comp )
 {
     level endon( "end_game" );
     a_comp_origin = a_comp.origin;
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     wait randomfloatrange( 3.1, 5.2 );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     _play_schruder_texts( "Excellent stuff!", "^9" + playa + " ^8was able to restore signals via ^5Main Frame^8!" , 8, 1 );

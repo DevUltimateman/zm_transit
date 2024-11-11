@@ -45,13 +45,27 @@
 init()
 {
 	level thread survivors_called_help();
-	//level thread debugger();
+	level thread debugger();
+	level thread waittill_ender();
 }
 
+waittill_ender()
+{
+	level endon( "end_game" );
+	level waittill( "can_be_ended" );
+
+
+
+}
 debugger()
 {
 	flag_wait( "initial_blackscreen_passed" );
-	wait 100;
+	xx = 100;
+	for( i = 0; i < xx; i++ )
+	{
+		wait 1;
+		iprintln( i );
+	}
 	level notify( "chaos_ensues_from_calling_help" );
 }
 survivors_called_help()
@@ -107,7 +121,7 @@ chaos_begins()
 		players playsound( level.jsn_snd_lst[ 17 ] );
 	}
 	PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
-	wait 0.1;
+	wait 14.5;
 	level thread exposure_flash();
 	PlaySoundAtPosition(level.jsn_snd_lst[ 17 ], level.players[ 0 ].origin );
 	foreach( p in level.players )
@@ -305,23 +319,45 @@ track_and_movetohit_player( plr )
 
 exposure_flash()
 {
+	//level.jsn_snd_lst[ 17 ] // hahahahaha demon laugh
+	//level.jsn_snd_lst[ 27 ] //thoombs sound
+	//level.jsn_snd_lst[ 29 ] // ring nuked sound
+
 	foreach( p in level.players )
 	{
-		p setclientdvar( "r_exposurevalue", 2.8 );
-		wait 0.08;
-		p setclientdvar( "r_exposurevalue", 1.8 );
-		wait 0.1;
-		p setclientdvar( "r_exposurevalue", 2.5 );
-		wait 0.05;
-		p setclientdvar( "r_exposurevalue", .8 );
-		wait 0.07;
-		p setclientdvar( "r_exposurevalue", 2.8 );
-		wait 0.1;
-		p setclientdvar( "r_exposurevalue", .4 );
-		wait 0.05;
-		p setclientdvar( "r_exposurevalue", 3 );
-		wait 0.1;
+		p playsound( level.jsn_snd_lst[ 29 ] );
+
 	}
+	wait 0.1;
+	foreach( p in level.players )
+	{
+		p playsound( level.jsn_snd_lst[ 27 ] );
+
+	}
+	wait 0.05;
+	PlaySoundAtPosition(level.jsn_snd_lst[ 17 ], level.players[ 0 ].origin );
+	for( i = 0; i < 4; i++ )
+	{
+		foreach( p in level.players )
+		{
+			p setclientdvar( "r_exposurevalue", 2.8 );
+			wait 0.08;
+			p setclientdvar( "r_exposurevalue", 1.8 );
+			wait 0.1;
+			p setclientdvar( "r_exposurevalue", 2.5 );
+			wait 0.05;
+			p setclientdvar( "r_exposurevalue", .8 );
+			wait 0.07;
+			p setclientdvar( "r_exposurevalue", 2.8 );
+			wait 0.1;
+			p setclientdvar( "r_exposurevalue", .4 );
+			wait 0.05;
+			p setclientdvar( "r_exposurevalue", 3 );
+			wait 0.1;
+		}
+		wait 0.125;
+	}
+	
 }
 
 

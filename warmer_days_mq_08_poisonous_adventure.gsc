@@ -247,7 +247,7 @@ do_first_dialog()
     wait 5;
     level waittill( "all_suitcases_collected" );
     wait 0.35;
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     wait 2.8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Hahaa, wunderbaar!", "You're quite a sharp shooter.", 8, 1  );
@@ -258,7 +258,7 @@ do_first_dialog()
     wait 10;
     level waittill( "crafting_serum" );
     wait 1;
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     //needs a 10 second wait so we dont have overlapping text
     wait 12;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }

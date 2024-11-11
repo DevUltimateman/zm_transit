@@ -217,8 +217,8 @@ return_spirit_textline( switcher )
             break;
         
         case 18:
-            u_ = "^8Ah I'm just playing around";
-            d_ = "^8Ooo, don't cancel me!";
+            u_ = "^8Ah, I'm just playing around";
+            d_ = "^8";
             foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 7, 1 );
             break;
@@ -456,6 +456,8 @@ spawn_spirit()
     playFXOnTag( level.myFx[ 2 ], level.o_spirit, "tag_origin" );
     level notify( "spirit_ready" );
     level.o_spirit playloopsound( "zmb_screecher_portal_loop", 2 );
+    wait 0.1;
+    playfxontag( level.myfx[ 1 ], level.o_spirit, "tag_origin" );
 }
 
 debug_spirit_locations()

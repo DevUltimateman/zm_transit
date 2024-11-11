@@ -53,8 +53,14 @@ init()
     level._limited_equipment = [];
 
     level.power_local_doors_globally = 1;
+    
     flag_wait( "initial_blackscreen_passed" );
     level thread disable_dev_time();
+    wait 2;
+    for( i = 0; i < level.players.size; i++ )
+    {
+        //level.players[ i ] thread update_self_survivor_names_list();
+    }
     wait 5;
     for( i = 0; i < level.players.size; i++ )
     {
@@ -154,6 +160,7 @@ shoot_bolts()
 
 spark_loop_sound_shoot()
 {
+    level endon( "end_game" );
     for( s = 0; s < 5; s++ )
     {
         PlaySoundAtPosition(level.jsn_snd_lst[ 65 ], self.origin );
@@ -163,7 +170,9 @@ spark_loop_sound_shoot()
 
 mr_s_for_final_time()
 {
-    level waittill( "spawn_mrs_for_final_time" );
+    level endon( "end_game" );
+
+    level waittill( "called_s" );
     here = ( 7629.86, -460.482, -172.256 );
     down_here = ( 7629.86, -460.482, -342.353 );
     mr_s = spawn( "script_model", down_here );
@@ -228,7 +237,7 @@ mr_s_for_final_time()
     mr_s delete();
     level notify( "stop_mus_load_bur" );
     level notify( "can_be_ended" );
-
+    //"chaos_ensues_from_calling_help"
 
 }
 
@@ -257,6 +266,90 @@ spawning_again()
             self thread set_remaining_perks( );
         }
     }
+}
+
+update_self_survivor_names_list()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    //self.survivor_names = [];
+    debug_name_list = [];
+    self.listsize = 0;
+    wait 0.1;
+    debug_name_list[ 0 ] = ( "Survivors" );
+    debug_name_list[ 1 ] = ( "Alfredo" );
+    debug_name_list[ 2 ] = ( "Jesse" );
+    debug_name_list[ 3 ] = ( "Mustaffa" );
+    debug_name_list[ 4 ] = ( "ThenWhen" );
+    debug_name_list[ 5 ] = ( "Ultimateman" ); 
+    debug_name_list[ 6 ] = ( "Gucci Mane" );
+    debug_name_list[ 7 ] = ( "DayDreamerXD" );
+    debug_name_list[ 8 ] = ( "Last Guy On List" );
+    //d//ebug_name_list[ 8 ] = ( "Survivors:" ); //this is the bottom always so that the list shows smoothly with any amount of plrs
+    //debug_name_list[ 9 ] = ( "GAYFUCK");
+    wait 2.5;
+    //self thread survivors_drawer( "^9Survivors: " );
+    //self.listsize++;
+    for( i = 0; i < debug_name_list.size ;/*level.players.size;*/ i++ )
+    {
+        //self.survivor_names[ i ] = level.players[ i ].name; //real ver
+        //self.survivor_names[ i ] = debug_name_list[ i ]; //debug ver
+        self thread survivors_drawer(  debug_name_list[ i ] );
+        self.listsize++;
+        wait 0.25;
+    }
+    //new_addon = debug_name_list.size + 1;
+    //debug_name_list[ new_addon ] =  "^9Survivors: ";
+    //self thread survivors_drawer(debug_name_list[ new_addon ] );
+    //wait 0.25;
+    //self.listsize++;
+}
+survivors_drawer( pname )
+{
+    self endon( "disconnect" );
+
+    if( self.listsize == 0 )    
+    { 
+        //first = 1;
+    }
+    survivor_list = newclienthudelem( self );
+    survivor_list settext( pname ); // rn empty, till we populate it
+    survivor_list.alpha = 0;
+    survivor_list.sort = true;
+    survivor_list.foreground = true;
+    survivor_list.hidewheninmenu = true;
+    survivor_list.alignx = "user_center";
+    survivor_list.aligny = "user_center";
+    survivor_list.fontscale = 1;
+    survivor_list.horzalign = "user_center";
+    survivor_list.vertalign = "user_center";    
+
+  
+
+    survivor_list.y = -5.5 + ( self.listsize * -10 );
+
+    if( pname == "Survivors" )
+    {
+        survivor_list setText( "^9Survivors: " );
+        survivor_list.fontscale = 1.25;
+        //survivor_list.color = ( 1, 0.75, 0 );
+    }
+    else if( pname != "Survivors" )
+    {
+        survivor_list.fontscale = 1;
+    }
+    survivor_list.text = pname;
+    if( survivor_list.text == self.name )
+    {
+        survivor_list destroy();
+        self.listsize--;
+    }
+
+    survivor_list.x = 0; 
+    survivor_list fadeovertime( 0.75 );
+    survivor_list.alpha = 1;
+    survivor_list thread destroy_if_downed( self );
+    
 }
 perk_drawer( shader, width, height, color, alpha, sort, foreground )
 {

@@ -341,7 +341,7 @@ spawn_lockdown_blockers()
         block[ s ] delete();
         block_upper[ s ] delete();
     }
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread _someone_unlocked_something( "^8Seems like ^4Spirit Of Sorrow^8 has gone rogue.", "^8Be careful out there!", 7, 1 );

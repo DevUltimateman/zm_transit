@@ -114,7 +114,7 @@ do_dialog_about_tunnel_help()
     level endon( "end_game" );
     wait 2.5;
     foreach( p in level.players ){   p thread daytime_preset();  }
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "Hahaa, you've had your fun ha?", "I think we can move ahead and try finding the ^3Tranceiver^8.", 5, 1 );
     wait 6;
@@ -245,7 +245,7 @@ spawn_all_distance_checkers()
 
 nighttime_preset()
 { 
-    PlaySoundAtPosition(level.jsn_snd_lst[ 49 ], ( 0, 0, 0 ) );
+    
     self setclientdvar( "r_lighttweaksuncolor", ( 0.1, 0.4, 1 ) );
     self setclientdvar( "r_sky_intensity_factor0", 0.45 );
 
@@ -458,7 +458,7 @@ waittill_powers_restored()
     wait 48;
     level notify( "all_powered" );
     foreach( p in level.players ){   p thread daytime_preset();  }
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "Wondeful!", "Power has been restored!", 5, 1 );
     wait 6;
@@ -466,6 +466,8 @@ waittill_powers_restored()
     level thread do_dialog_here( "Let's try meeting up again at ^3Pylon^8.", "I'm waiting for you there!", 7, 1 );
     wait 8;
     level notify( "stop_mus_load_bur" );
+
+
     level notify( "spawn_mrs_for_final_time" );
 
 }
@@ -1118,7 +1120,7 @@ do_meet_at_pylon_text()
     level endon( "end_game" );
     wait 4.5;
     //do_dialog_here
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "Fantastic! You received the ^3Tranceiver!", "Let's meet up underneath the pylon.", 8, 1 );
     wait 10;
@@ -1165,7 +1167,7 @@ wait_players_at_pylon()
             sa thread rotateit();
             level thread do_dialog_here( "Awesome!", "Seems like you were able to apply the ^3Tranceiver ^8on the transmitter.", 6, 1 );
             wait 3;
-            ss sethintstring( "^9[ ^3Call for help ^9]" );
+            ss sethintstring( "^9[ ^3Call for help... ^9]" );
             break;
         }
         wait 0.1;
@@ -1208,30 +1210,30 @@ wait_players_at_pylon()
         wait 0.05;
         s thread nighttime_preset();
     }
-    
+    PlaySoundAtPosition(level.jsn_snd_lst[ 49 ], ( 0, 0, 0 ) );
     level notify( "power_out" );
     level thread waittill_powers_restored();
     ss sethintstring( "^9[ ^1Malfunction, requires ^2re-powering ^9]" );
     level waittill( "all_powered" );
     ss sethintstring( "^9[ ^8Booting.. ^9]" );
-    level waittill( "can_be_ended" );
-    ss sethintstring( "^9[ ^8Call help. ^3Requires All Survivors^8 to press ^3[{+activate}] ^^9]");
+    //level waittill( "can_be_ended" );
+    //ss sethintstring( "^9[ ^8Call help. ^3Requires All Survivors^8 to press ^3[{+activate}] ^^9]");
 
-    wait 1;
-    while( true )
-    {
-        ss waittill( "trigger", who );
-        if( is_player_valid( who ) )
-        {
-            level notify( "chaos_ensues_from_calling_help" );
-            wait 0.1;
-            ss sethintstring( "^9[ ^8Help has been called.. ^9]" );
-            wait 1;
-            break;
-        }
-    }
-    wait 5;
-    ss delete();
+    //wait 1;
+   // while( true )
+   // {
+    //    ss waittill( "trigger", who );
+     //   if( is_player_valid( who ) )
+        //{
+       //     level notify( "chaos_ensues_from_calling_help" );
+      //      wait 0.1;
+      //      ss sethintstring( "^9[ ^8Help has been called.. ^9]" );
+     //       wait 1;
+       //     break;
+      //  }
+   // }
+    //wait 5;
+   // ss delete();
 }
 
 do_power_out_texts()
@@ -1241,8 +1243,8 @@ do_power_out_texts()
     wait 1;
     //level thread playloopsound_buried();
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Who's this guy speaking on the ^3Tranceiver^8?", "How did it come so dark suddenly?", 8, 1 );
-    wait 25;
+    do_dialog_here( "What's happening?", "How did it come so dark suddenly?", 8, 1 );
+    wait 9;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Power seems to be cut out completely!", "We can't try calling help without power..", 7, 1 );
     wait 8;

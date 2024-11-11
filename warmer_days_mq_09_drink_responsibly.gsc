@@ -197,6 +197,7 @@ wait_for_player_to_gamble()
                 self sethintstring( "" );
                 who thread do_drink_animation();
                 wait 1.5;
+                who playsound(   level.jsn_snd_lst[ 68 ] );
                 self setHintString( "^9[ ^8Drink contained ^1heavy dose of alcohol..^8 Survivor's stamina reduced for a certain period of time. ^9]" );
                 who thread reduce_stamina_for_certain_time();
                 //sfx
@@ -586,7 +587,7 @@ notify_on_drinks()
 
     if( level.drinks_drank == 3 )
     {
-        do_dialog_here_too( "^8Few don't seem to cause a problem.", "^8You're quite good at it!", 4, 0.1 );
+        do_dialog_here_too( "^8Few don't seem to cause a problem.. ha!", "^8You're quite good at it!", 4, 0.1 );
     }
 
     if( level.drinks_drank == 5 )

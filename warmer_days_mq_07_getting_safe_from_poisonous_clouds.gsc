@@ -955,7 +955,7 @@ level_waittill_continue_mq()
 {
     level waittill( "continue_main_quest_farm" );
     level thread do_guide_blockers_dialog();
-    level thread playloopsound_buried();
+   // level thread playloopsound_buried();
     //spawn blockers to guide player , this shit sucks and dont have time to make it work better.
     //level thread level_guide_players_to_depo_blockers();
     foreach( p in level.players ) { p setclientdvar( "r_fog", 1 ); p setclientdvar( "r_sky_intensity_factor0", 0.8 ); }

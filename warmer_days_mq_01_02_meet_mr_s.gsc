@@ -113,7 +113,7 @@ step3_talk()
     level endon( "end_game" );
     level waittill( "s_talks_navcard" ); //this level waittill notify is triggered from: warmer_days_mq_03_crafting_the_transmitter once players have succefully placed down their custom navcard
     gets = level.players;
-    level thread playloopsound_buried();
+    //level thread playloopsound_buried();
     foreach( g in gets )
     {
         g playsound( "zmb_sq_navcard_success" );
@@ -538,10 +538,10 @@ schruder_talks_everything_part2()
     level endon( "end_game" );
     level waittill( "meet_schruder_time_second" );
     wait randomIntRange( 2, 5 );
-    foreach( play in level.players )
-    {
-        play playsound( "mus_load_zm_buried" );
-    }
+    //foreach( play in level.players )
+    //{
+    //    play playsound( "mus_load_zm_buried" );
+   // }
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox07("");
     wait 8;
