@@ -714,7 +714,7 @@ move_cabin_rocks_to_pylon()
 move_diner_rocks_to_pylon()
 {
     level endon( "end_game" );
-    level waittill( "diner_rock_move" );
+    level waittill( "move_rocks_underneath_pylon" );
     corn_spots = [];
     corn_spots[ 0 ] = ( 7677.01, -527.996, -201.978 );
     corn_spots[ 1 ] = ( 7613.77, -332.177, -206.423 );
@@ -735,7 +735,7 @@ move_diner_rocks_to_pylon()
 move_corn_rocks_to_pylon()
 {
     level endon( "end_game" );
-    level waittill( "corn_rock_move" );
+    level waittill( "move_rocks_underneath_pylon" );
     corn_spots = [];
     corn_spots[ 0 ] = ( 7677.01, -527.996, -201.978 );
     corn_spots[ 1 ] = ( 7613.77, -332.177, -206.423 );
@@ -767,9 +767,10 @@ do_zombie_souls( which_summoning, idx )
     wait .05;
     PlaySoundAtPosition(level.jsn_snd_lst[ 42 ], inv_mover.origin );
     inv_mover playLoopSound( "zmb_spawn_powerup_loop" );
-    playFXOnTag( level.myfx[ 1 ], inv_mover, "tag_origin" );
+    playFXOnTag( level.myfx[ 2 ], inv_mover, "tag_origin" );
     //playfxontag( level._effect[ "fx_fire_fireplace_md" ], inv_mover, "tag_origin" );
     inv_mover moveto ( where_to_move, randomFloatRange( 0.2, 0.4 ), 0, 0 );
+    playFXOnTag( level.myfx[ 1 ], inv_mover, "tag_origin" );
     inv_mover waittill( "movedone" );
     playfx( level.myFx[ 94 ], where_to_move );
     inv_mover delete();
@@ -778,6 +779,7 @@ do_zombie_souls( which_summoning, idx )
     playsoundatposition( level.jsn_snd_lst[ 78 ], which_summoning.origin );
     playFX( level._effect[ "fx_zombie_powerup_wave" ], where_to_move );
     playsoundatposition( "zmb_meteor_activate", where_to_move );
+    wait 0.05;
     if( isdefined( inv_mover ) )
     {
         inv_mover delete();

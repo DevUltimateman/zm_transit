@@ -346,7 +346,7 @@ all_floating_objects_around_the_map()
         bumps[ s ] thread spin_rocks();
         //fog glow
         //playFXOnTag( level._effects[9], bumps[ s ], "tag_origin" );
-        playfxontag( level._effects[47], bumps[s s], "tag_origin" ); //orange lava smoke bowl
+        playfxontag( level._effects[7], bumps[ s ], "tag_origin" ); //orange lava smoke bowl
         wait 0.1;
         //below is a transformer fx
         //playFXOnTag( level._effects[22], bumps[ s ], "tag_origin" );
