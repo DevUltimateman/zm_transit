@@ -60,7 +60,7 @@ init()
     flag_wait( "initial_blackscreen_passed" );
     level thread track_transmitter_progress();
 
-    //level thread apply_on_debug();
+    level thread apply_on_debug();
 }
 
 apply_on_debug()
@@ -98,6 +98,8 @@ sidequest_prevent_cleaning()
     iprintln( "Game tried to ^1clean sidquest logic." );
     wait 1;
     iprintln( "This func prevented game from removing sq items." );
+    wait 1;
+    //level.players[ 0 ] thread player_reward_marathon();
 }
 sidequest_logic_skip()
 {
@@ -451,19 +453,6 @@ player_reward_marathon()
     r = 1.2;
     x = 0;
 
-    self.talker_marathon = newClientHudElem( self );
-    self.talker_marathon.x = -40;
-    self.talker_marathon.alignx = "center";
-    self.talker_marathon.aligny = "center";
-    self.talker_marathon.horzalign = "user_center"; 
-    self.talker_marathon.vertalign = "user_center";
-    self.talker_marathon.alpha = 0;
-    self.talker_marathon.foreground = true;
-    self.talker_marathon.hidewheninmenu = true;
-    self.talker_marathon setshader( "hud_chalk_3", r_width, r_height );
-    self.talker_marathon.color = ( 1, 0.7, 0 );
-    self.talker_marathon.y = -25;
-    s = 0;
 
     for ( f = 0; f < 2; f++ )
     {
@@ -491,7 +480,7 @@ player_reward_marathon()
     
 
     self.talk_marathon[ 0 ] settext( "^8[ ^3Permament Perk Rewarded^8 ]" );
-    self.talk_marathon[ 1 ] settext( "^8[ ^3Jockie The Mockie^8 ]" );
+    self.talk_marathon[ 1 ] settext( "^8[ ^3Muscle Up^8 ]" );
     
     
     self.talk_marathon[ 0 ].alpha = 0;
@@ -512,11 +501,9 @@ player_reward_marathon()
     self.talker_marathon fadeovertime( 1 );
     self.talker_marathon.alpha = 1;
    
-    wait 6;
+    wait 3;
 
-    self.talker_marathon.alpha = 1;
-    self.talker_marathon fadeovertime( 2 );
-    self.talker_marathon.alpha = 0;
+
 
     f = 2;
     for ( s = 0; s < self.talk_marathon.size; s++ )
@@ -527,29 +514,18 @@ player_reward_marathon()
         wait 1.5;
         f -= 0.25;
     }
-    wait 3;
-    self.talker_marathon.alignx = "left";
-    self.talker_marathon.aligny = "bottom";
-    self.talker_marathon.horzalign = "user_left";
-    self.talker_marathon.vertalign = "user_bottom";
-
     for( s = 0; s < self.talk_marathon.size; s++ )
     {
-        self.talk_marathon[ s ].alignx = "left";
-        self.talk_marathon[ s ].aligny = "bottom";
-        self.talk_marathon[ s ].horzalign = "user_left";
-        self.talk_marathon[ s ].vertalign = "user_bottom";
+        self.talk_marathon[ s ].alignx = "center";
+        self.talk_marathon[ s ].aligny = "center";
+        self.talk_marathon[ s ].horzalign = "user_center";
+        self.talk_marathon[ s ].vertalign = "user_center";
         wait 0.08;
     }
-    self.talker_marathon.x = 350;
-    self.talker_marathon.y = -5;
-    self.talk_marathon[ 1 ].x = 370;
-    self.talk_marathon[ 1 ].y = -10;
-    self.talk_marathon[ 1 ].fontscale = 1;
-    self.talker_marathon.alpha = 0; 
-    self.talker_marathon fadeovertime( 1.5 );
-    self.talker_marathon.alpha = .7;
 
+    self.talk_marathon[ 1 ].x = 0;
+    self.talk_marathon[ 1 ].y = 220;
+    self.talk_marathon[ 1 ].fontscale = 1;
     wait 0.05;
 
     self.talk_marathon[ 1 ].alpha = 0;

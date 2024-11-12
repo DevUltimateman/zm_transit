@@ -57,17 +57,14 @@ init()
     flag_wait( "initial_blackscreen_passed" );
     level thread disable_dev_time();
     wait 2;
-    for( i = 0; i < level.players.size; i++ )
-    {
-        //level.players[ i ] thread update_self_survivor_names_list();
-    }
+
     wait 5;
     for( i = 0; i < level.players.size; i++ )
     {
         level.players[ i ] thread self_waittill_drink_so_update();
     }
-    //level thread spawn_all_pickable_acidgats(); //for debug
-    //level thread do_perks(); //for debug
+    level thread spawn_all_pickable_acidgats(); //for debug
+    level thread do_perks(); //for debug
 }
 
 disable_dev_time()

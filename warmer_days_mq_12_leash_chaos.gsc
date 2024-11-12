@@ -336,6 +336,11 @@ exposure_flash()
 	}
 	wait 0.05;
 	PlaySoundAtPosition(level.jsn_snd_lst[ 17 ], level.players[ 0 ].origin );
+	foreach( s in level.players )
+	{
+		s setclientdvar( "r_exposuretweak", true );
+	}
+	wait 0.1;
 	for( i = 0; i < 4; i++ )
 	{
 		foreach( p in level.players )

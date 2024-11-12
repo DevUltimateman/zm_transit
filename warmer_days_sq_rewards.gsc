@@ -44,7 +44,7 @@
 init()
 {
     level thread notiff();
-    level thread waittill_rewards();
+    //level thread waittill_rewards();
 }
 
 notiff()

@@ -65,14 +65,248 @@ init()
     level.gas_is_the_trigger = false;
     //add a check before this so that we cant do it immediately
     //but now for testing on
-    level thread do_everything_for_gas_pickup();
-    level thread spawn_workbench_to_build_fire_trap_entrance();
-    level thread global_gas_quest_trigger_spawner( level.gas_pour_location, "^9[ ^8Workbench requires ^9Gasoline ^9]", "", level.myfx[ 75 ], level.myfx[ 76 ], "littered_floor" );
+    ///level thread do_everything_for_gas_pickup();
+    //level thread spawn_workbench_to_build_fire_trap_entrance();
+    //level thread global_gas_quest_trigger_spawner( level.gas_pour_location, "^9[ ^8Workbench requires ^9Gasoline ^9]", "", level.myfx[ 75 ], level.myfx[ 76 ], "littered_floor" );
 
     //change hintstring text once gas has been picked for work bench
-    level thread while_gas_hasnt_been_picked();
+    //level thread while_gas_hasnt_been_picked();
+    wait 1;
+
+    //next 5 steps are refactored to simplify the understanding of said code logic. 
+    //original code was coded that long ago that I can'tremember anymore how certain things were supposed to match and work
+    //this new simplified version seem to work well now
+    level thread gas_quest_01_pick_up_gas();
+    wait 6;
+    level thread gas_quest_02_place_down_gas();
+    level thread gas_quest_03_find_crackers();
+    level thread gas_quest_04_place_down_fc();
+    level thread gas_quest_05_fire_trap_logic();
+    if( level.dev_time ){ iprintlnbold( "GAS GUEST NEW LOGIC APPLIES" ); }
     
 }
+
+
+
+
+
+gas_quest_01_pick_up_gas()
+{
+    level endon( "end_game" );
+
+    wait 5;
+    level.fireplace_trigger = spawn( "trigger_radius_use", level.gas_pour_location, 0, 48, 48 );
+    level.fireplace_trigger setCursorHint( "HINT_NOICON" );
+    level.fireplace_trigger setHintString( "^9[ ^8Workbench requires ^9Gasoline^9]" );
+    level.fireplace_trigger triggerignoreteam();
+    wait 1;
+    gas_trig = spawn( "trigger_radius_use", level.gas_canister_pick_location, 0, 24, 24 );
+    gas_trig setcursorhint( "HINT_NOICON" );
+    gas_trig sethintstring( "^9[ ^3[{+activate}] ^8to pick up ^9Gasoline ^9]" );
+    gas_trig triggerignoreteam();
+    wait 0.05;
+    inv_mod_fx = spawn( "script_model", gas_trig.origin + ( 0, -40, 65) );
+    inv_mod_fx setmodel( "tag_origin" );
+    inv_mod_fx.angles = ( 0,0,0 );
+    wait 1;
+    playfxontag( level.myFx[ 2 ], inv_mod_fx, "tag_origin" );
+
+    cans = spawn( "script_model", gas_trig.origin + ( 0, -20, 3 ) );
+    cans setmodel( level.x_models[ 71 ] );
+    cans.angles = cans.angles;
+    wait 0.05;
+    playfxontag( level.myfx[ 44 ], cans, "tag_origin" );
+    cans vibrate( cans.angles[ 1 ] + 10, 30, 10, 9999 );
+
+    while( true )
+    {
+        gas_trig sethintstring( "^9[ ^3[{+activate}] ^8to pick up ^9Gasoline ^9]" );
+        gas_trig waittill( "trigger", presser );
+        if( isplayer( presser ) && is_player_valid( presser ) )
+        {
+            gas_trig sethintstring( "" );
+            level thread playlocal_plrsound();
+            level.gas_has_been_picked = true;
+            //presser freezeControls( true );
+            presser playSound( "zmb_sq_navcard_success" );
+            //presser.has_picked_up_g = false;
+            current_w = presser getCurrentWeapon();
+            presser giveWeapon( "zombie_builder_zm" );
+            presser switchToWeapon( "zombie_builder_zm" );
+            cans delete();
+            waiter = 3;
+            wait waiter;
+            presser maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
+            presser takeWeapon( "zombie_builder_zm" );
+            presser.has_picked_up_g = true;
+            level notify( "gas_got_picked" );
+            level.gas_been_picked_up = true;
+            level.gas_is_the_trigger = true;
+            _someone_unlocked_something( "^9" + presser.name + " ^8found some spoiled ^9Gasoline", "", 6, 1 );
+           // coop_print_base_find_or_fortify_fire_trap( "gas_got_picked", presser );
+            gas_trig delete();
+            inv_mod_fx delete();
+            wait 1;
+            //level thread gas_quest_02_place_down_gas();
+            level notify( "someone_picked_up_gas_to_bypass_check" );
+            break;
+        }
+    }
+}
+
+//a/s_quest_05_fire_trap_logic()
+//gas_quest_04_place_down_fc()
+///gas_quest_03_find_crackers()
+gas_quest_02_place_down_gas()
+{
+    level endon( "end_game" );
+    level waittill( "gas_got_picked" );
+    level.fireplace_trigger setHintString( "^9[ ^3[{+activate}] ^8to apply ^3Gasoline ^8to workbench ^9]");
+    while( true )
+    {
+        level.fireplace_trigger waittill( "trigger", who );
+        if( !is_player_valid( who ) )
+        {
+            wait 0.05;
+            continue;
+        }
+        if( is_player_valid( who ) )
+        {
+            level.fireplace_trigger sethintstring( "^9[ ^8Applying ^3Gasoline^8... ^9] " );
+            wait 0.1;
+            who playsound( "zmb_sq_navcard_success" );
+            
+            now_weap = who getcurrentweapon();
+            who giveweapon( "zombie_builder_zm" );
+            who switchToWeapon( "zombie_builder_zm" );
+            wait 3;
+            who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( now_weap );
+            who takeweapon( "zombie_builder_zm" );
+            _someone_unlocked_something( "^9" + who.name + " ^8brought Gasoline^8 to ^9Safe House", "", 6, 1 );
+            level.fireplace_trigger setHintString( "^9[ ^8Workbench requires ^3Fire Crackers ^9] " );
+            level notify( "start_firecracker_logic" );
+            wait 1;
+            break;
+        }
+    }
+}
+//gas_quest_05_fire_trap_logic()
+//gas_quest_04_place_down_fc()
+gas_quest_03_find_crackers()
+{
+    level endon( "end_game" );
+    level waittill( "start_firecracker_logic" );
+    firecracker_trigger = spawn( "trigger_radius_use", level.gas_fire_pick_location, 0, 48, 48 );
+    firecracker_trigger TriggerIgnoreTeam();
+    firecracker_trigger setHintString( "^9[ ^3[{+activate}] ^8to dig up ^3Fire Crackerz^8 ^9]");
+    firecracker_trigger setCursorHint( "HINT_NOICON") ;
+
+    while( true )
+    {
+        firecracker_trigger waittill( "trigger", surv );
+        if( !is_player_valid( surv ) )
+        {
+            wait 0.05;
+            continue;
+        }
+        else if( is_player_valid( surv ) )
+        {
+            if( isalive( surv )) 
+            {
+                wait 0.25;
+                level thread animate_fire_pickup();
+                firecracker_trigger setHintString( "^9[ ^8Found some old ^9Fire Crackers ^9]" );
+                wait 2.5;
+                level notify( "crackers_can_be_put_down" );
+                 _someone_unlocked_something( "^9" + surv.name + " ^8found some old ^9Fire Crackers", "", 6, 1 );
+                firecracker_trigger delete();
+
+                break;
+            }
+        }
+    }
+}
+
+//gas_quest_05_fire_trap_logic()
+gas_quest_04_place_down_fc()
+{
+    level endon( "end_game" );
+    level waittill( "crackers_can_be_put_down" );
+    level.fireplace_trigger setHintString( "^9[ ^3[{+activate}] ^8to apply ^9Fire Crackers ^8to workbench ^9]");
+    while( true )
+    {
+        level.fireplace_trigger waittill( "trigger", who );
+        if( !is_player_valid( who ) )
+        {
+            wait 0.05;
+            continue;
+        }
+        if( is_player_valid( who ) )
+        {
+            level.fireplace_trigger sethintstring( "^9[ ^8Applying ^9Crackers^8... ^9] " );
+            wait 0.1;
+            who playsound( "zmb_sq_navcard_success" );
+            
+            now_weap = who getcurrentweapon();
+            who giveweapon( "zombie_builder_zm" );
+            who switchToWeapon( "zombie_builder_zm" );
+            wait 3;
+            who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( now_weap );
+            who takeweapon( "zombie_builder_zm" );
+            _someone_unlocked_something( "^9" + who.name + " ^8finished upgrading ^9Safe House's ^8window entrances.", "Zombies climbing through said windows will be ^9killed^8 by the crafted fire trap.", 8, 1 );
+            level.fireplace_trigger sethintstring( "^9[ ^8Fire Trap ^8has been built ^9] " );
+            level notify( "start_firetrap_logic" );
+            wait 1;
+            break;
+        }
+    }
+}
+
+gas_quest_05_fire_trap_logic()
+{
+    level endon( "end_game" );
+    level waittill( "start_firetrap_logic" );
+    fxs = 12;
+    starting = 0;
+    while( fxs > starting )
+    {
+        if( starting < 4 )
+        {
+            s = 2;
+            x = 0;
+            if( randomInt( 4 ) < 2 )
+            {
+                playfx( level.myfx[ 75 ],level.gas_fireplaces[ starting ] );
+            }
+            else { playfx( level.myfx[ 76 ],level.gas_fireplaces[ starting ] ); }
+            wait 0.08;
+        }
+        if( starting >= 4 && starting < 8 )
+        {
+            playfx( level.myfx[ 44 ], level.gas_fireplaces[ starting ] );
+            wait 0.15;
+        }
+
+
+        playfx( level.myfx[ 78 ], level.gas_fireplaces[ starting ] );
+        wait 0.1;
+
+        if( starting >= 10 )
+        {
+            playfx( level.myfx[ 80 ], level.gas_fireplaces[ starting ] );
+            PlaySoundAtPosition( level.mysounds[ 12 ], level.gas_fireplaces[ starting ] );
+            wait 0.05;
+            playsoundatposition( level.mysounds[ 7 ], level.gas_fireplaces[ starting ] );
+        }
+        starting++;
+    }
+    level thread playloop_electricsound();
+
+}
+
+
+
+
 
 coop_print_base_find_or_fortify_fire_trap( which_notify, who_found )
 {
@@ -92,7 +326,7 @@ coop_print_base_find_or_fortify_fire_trap( which_notify, who_found )
         break;
 
         case "firetrap_active":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8finished upgrading ^9Safe House's ^8window entrance.", "Zombies climbing through said window will be ^9killed^8 by the crafted fire trap.", 8, 1 );
+        _someone_unlocked_something( "^9" + who_found.name + " ^8finished upgrading ^9Safe House's ^8window entrances.", "Zombies climbing through said window will be ^9killed^8 by the crafted fire trap.", 8, 1 );
         break;
 
         case "side_door_unlocked":

@@ -207,7 +207,7 @@ firegrenades_step1()
     //trigger origins
     locations = [];
     locations[ 0 ] = ( -2598.9, 651.268, -301.243 ); //broken bridge, lava creek
-    locations[ 1 ] = ( 10999.5, 8596.1, -1018.74 ); //power station, lava pit
+    locations[ 1 ] = ( 10999.5, 8596.1, -1018.74 ) + ( 0, 0, 750 ); //power station, lava pit, tried to raise it to be more easy to hit
     locations[ 2 ] = ( -5379.64, 5284.82, 79.4646 ); //left of bus depot
     locations[ 3 ] = ( 7218.47, -6443.15, -72.0212 ); //farm
     locations[ 4 ] = ( 2898.9, -462.642, -63.1327 ); //back town

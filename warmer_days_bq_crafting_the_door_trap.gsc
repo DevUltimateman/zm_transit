@@ -433,7 +433,7 @@ sglobal_gas_quest_trigger_spawner( location, text1, text2, fx1, fx2, notifier )
                 if( isdefined( tr ) )
                 {
                     //tr delete();
-                    tr setHintString( "^9[ ^8Side Entrance Blocker was built ^9]");
+                    tr setHintString( "^9[ ^8Side Entrance Blocker has been built ^9]");
                 }
                 if( isdefined( i_m ) )
                 {

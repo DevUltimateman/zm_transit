@@ -320,7 +320,7 @@ level_spawns_main_door_stuff()
 {
     wait 0.1;
     level thread base_fxs();
-    sglobal_gas_quest_trigger_spawner( level.door_base_main_trigger_location, "^9[ ^3[{+activate}] ^8to build ^3Main Entrance Blocker ^9]", "^9[ ^8Main Entrance Blocker ^8was built ^9]", level.myfx[ 75 ], level.myfx[ 76 ], "main_door_unlocked" );
+    sglobal_gas_quest_trigger_spawner( level.door_base_main_trigger_location, "^9[ ^3[{+activate}] ^8to build ^3Main Entrance Blocker ^9]", "^9[ ^8Main Entrance Blocker ^8has been built ^9]", level.myfx[ 75 ], level.myfx[ 76 ], "main_door_unlocked" );
 }
 
 //10
