@@ -45,8 +45,8 @@
 init()
 {
 	level thread survivors_called_help();
-	level thread debugger();
-	level thread waittill_ender();
+	//level thread debugger();
+	//level thread waittill_ender();
 }
 
 waittill_ender()
@@ -341,32 +341,42 @@ exposure_flash()
 		s setclientdvar( "r_exposuretweak", true );
 	}
 	wait 0.1;
-	for( i = 0; i < 4; i++ )
+	for( s = 0; s < level.players.size; s++ )
 	{
-		foreach( p in level.players )
-		{
-			p setclientdvar( "r_exposurevalue", 2.8 );
-			wait 0.08;
-			p setclientdvar( "r_exposurevalue", 1.8 );
-			wait 0.1;
-			p setclientdvar( "r_exposurevalue", 2.5 );
-			wait 0.05;
-			p setclientdvar( "r_exposurevalue", .8 );
-			wait 0.07;
-			p setclientdvar( "r_exposurevalue", 2.8 );
-			wait 0.1;
-			p setclientdvar( "r_exposurevalue", .4 );
-			wait 0.05;
-			p setclientdvar( "r_exposurevalue", 3 );
-			wait 0.1;
-		}
-		wait 0.125;
+		earthquake( 0.5, 4, level.players[ s ].origin, 2500 );
+	}
+	
+	foreach( playa in level.players )
+	{
+		playa thread flash_me();
 	}
 	
 }
 
 
-
+flash_me()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+	for( i = 0; i < 4; i++ )
+	{
+		
+		self setclientdvar( "r_exposurevalue", 2.8 );
+		wait 0.08;
+		self setclientdvar( "r_exposurevalue", 1.8 );
+		wait 0.1;
+		self setclientdvar( "r_exposurevalue", 2.5 );
+		wait 0.05;
+		self setclientdvar( "r_exposurevalue", .8 );
+		wait 0.07;
+		self setclientdvar( "r_exposurevalue", 2.8 );
+		wait 0.1;
+		self setclientdvar( "r_exposurevalue", .4 );
+		wait 0.05;
+		self setclientdvar( "r_exposurevalue", 3 );
+		wait 0.1;
+	}
+}
 
 
 
