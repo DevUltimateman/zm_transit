@@ -42,10 +42,174 @@
 
 #include maps\mp\zombies\_zm_craftables;
 
+main()
+{
+    replacefunc( maps\mp\_visionset_mgr::init, ::override_mainer );
+    replacefunc( maps\mp\_visionset_mgr::vsmgr_activate, ::override_others );
+    replacefunc( maps\mp\_visionset_mgr::vsmgr_timeout_lerp_thread, ::ff1 ); 
+    replacefunc( maps\mp\_visionset_mgr::vsmgr_timeout_lerp_thread_per_player, ::ff2 ); 
+    replacefunc( maps\mp\_visionset_mgr::finalize_type_clientfields, ::blahblah );
+    replacefunc( maps\mp\_visionset_mgr::onplayerconnect, ::on_player_fucked );
+    
+
+    replacefunc( maps\mp\createart\zm_transit_art::main, ::main_art );
+
+
+
+
+
+}
+
+
+main_art()
+{
+    level.tweakfile = 1;
+    setdvar( "scr_fog_exp_halfplane", "639.219" );
+    setdvar( "scr_fog_exp_halfheight", "18691.3" );
+    setdvar( "scr_fog_nearplane", "138.679" );
+    setdvar( "scr_fog_red", "0.9" );
+    setdvar( "scr_fog_green", "0.1" );
+    setdvar( "scr_fog_blue", "0.1" );
+    setdvar( "scr_fog_baseheight", "-2145.21" );
+    setdvar( "visionstore_glowTweakEnable", "0" );
+    setdvar( "visionstore_glowTweakRadius0", "5" );
+    setdvar( "visionstore_glowTweakRadius1", "" );
+    setdvar( "visionstore_glowTweakBloomCutoff", "0.5" );
+    setdvar( "visionstore_glowTweakBloomDesaturation", "0" );
+    setdvar( "visionstore_glowTweakBloomIntensity0", "1" );
+    setdvar( "visionstore_glowTweakBloomIntensity1", "" );
+    setdvar( "visionstore_glowTweakSkyBleedIntensity0", "" );
+    setdvar( "visionstore_glowTweakSkyBleedIntensity1", "" );
+    start_dist = 438.679;
+    half_dist = 2011.62;
+    half_height = 10834.5;
+    base_height = -2145.21;
+    fog_r = 0.8;
+    fog_g = 0.1;
+    fog_b = 0.1;
+    fog_scale = 3.5834;
+    sun_col_r = 0.8;
+    sun_col_g = 0.1;
+    sun_col_b = 0.1;
+    sun_dir_x = -0.99;
+    sun_dir_y = 0.06;
+    sun_dir_z = -0.11;
+    sun_start_ang = 0;
+    sun_stop_ang = 0;
+    time = 0;
+    max_fog_opacity = 0.8546;
+    setvolfog( start_dist, half_dist, half_height, base_height, fog_r, fog_g, fog_b, fog_scale, sun_col_r, sun_col_g, sun_col_b, sun_dir_x, sun_dir_y, sun_dir_z, sun_start_ang, sun_stop_ang, time, max_fog_opacity );
+    visionsetnaked( "zm_transit", 0 );
+    setdvar( "r_lightGridEnableTweaks", 1 );
+    setdvar( "r_lightGridIntensity", 1.4 );
+    setdvar( "r_lightGridContrast", 0.2 );
+}
+/*
+main_artss()
+{
+    level.tweakfile = 1;
+    setdvar( "scr_fog_exp_halfplane", "639.219" );
+    setdvar( "scr_fog_exp_halfheight", "18691.3" );
+    setdvar( "scr_fog_nearplane", "138.679" );
+    setdvar( "scr_fog_red", "0.806694" );
+    setdvar( "scr_fog_green", "0.962521" );
+    setdvar( "scr_fog_blue", "0.9624" );
+    setdvar( "scr_fog_baseheight", "1145.21" );
+    setdvar( "visionstore_glowTweakEnable", "0" );
+    setdvar( "visionstore_glowTweakRadius0", "5" );
+    setdvar( "visionstore_glowTweakRadius1", "" );
+    setdvar( "visionstore_glowTweakBloomCutoff", "0.5" );
+    setdvar( "visionstore_glowTweakBloomDesaturation", "0" );
+    setdvar( "visionstore_glowTweakBloomIntensity0", "1" );
+    setdvar( "visionstore_glowTweakBloomIntensity1", "" );
+    setdvar( "visionstore_glowTweakSkyBleedIntensity0", "" );
+    setdvar( "visionstore_glowTweakSkyBleedIntensity1", "" );
+    start_dist = 138.679;
+    half_dist = 1011.62;
+    half_height = 10834.5;
+    base_height = 1145.21;
+    fog_r = 0.501961;
+    fog_g = 0.501961;
+    fog_b = 0.501961;
+    fog_scale = 7.5834;
+    sun_col_r = 0.501961;
+    sun_col_g = 0.501961;
+    sun_col_b = 0.501961;
+    sun_dir_x = -0.99;
+    sun_dir_y = 0.06;
+    sun_dir_z = -0.11;
+    sun_start_ang = 0;
+    sun_stop_ang = 0;
+    time = 0;
+    max_fog_opacity = 0.8546;
+    setvolfog( start_dist, half_dist, half_height, base_height, fog_r, fog_g, fog_b, fog_scale, sun_col_r, sun_col_g, sun_col_b, sun_dir_x, sun_dir_y, sun_dir_z, sun_start_ang, sun_stop_ang, time, max_fog_opacity );
+    visionsetnaked( "zm_transit", 0 );
+    setdvar( "r_lightGridEnableTweaks", 1 );
+    setdvar( "r_lightGridIntensity", 1.4 );
+    setdvar( "r_lightGridContrast", 0.2 );
+}
+*/
+
+lollipopvols()
+{
+
+}
+on_player_fucked()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        level waittill( "connected", p );
+        p thread passeds();
+    }
+}
+
+passeds()
+{
+    self waittill( "spawned_player" );
+    iprintln( "passed fogvols" );
+}
+ff1( timeout, opt_param_2 )
+{
+    players = getplayers();
+    wait 0.05;
+    return;
+}
+
+ff2( player, timeout, opt_param_2 )
+{
+    wait 0.05;
+    return;
+}
+
+blahblah()
+{
+    if ( 1 >= self.info.size )
+        return;
+
+    self.in_use = 0;
+    self.cf_slot_bit_count = getminbitcountfornum( self.info.size - 1 );
+    self.cf_lerp_bit_count = self.info[self.sorted_name_keys[0]].lerp_bit_count;
+
+    for ( i = 0; i < self.sorted_name_keys.size; i++ )
+    {
+        self.info[self.sorted_name_keys[i]].slot_index = i;
+
+        if ( self.info[self.sorted_name_keys[i]].lerp_bit_count > self.cf_lerp_bit_count )
+            self.cf_lerp_bit_count = self.info[self.sorted_name_keys[i]].lerp_bit_count;
+    }
+
+    registerclientfield( "toplayer", self.cf_slot_name, self.highest_version, self.cf_slot_bit_count, "int" );
+
+    if ( 1 < self.cf_lerp_bit_count )
+        registerclientfield( "toplayer", self.cf_lerp_name, self.highest_version, self.cf_lerp_bit_count, "float" );
+}
 
 init()
 {
+    level thread fog_bank_alter_wait();
     flag_wait( "initial_blackscreen_passed" );
+    level thread main_art();
     level.gas_canister_pick_location = ( -4844.13, -7173.79, -56.2322 );
     level.gas_tools_pick_location = ( -4219.75, -7871.54, -62.8096 );
     level.gas_pour_location = ( 8051.65, -5330.98, 264.125 ); 
@@ -66,11 +230,11 @@ init()
     //add a check before this so that we cant do it immediately
     //but now for testing on
     ///level thread do_everything_for_gas_pickup();
-    //level thread spawn_workbench_to_build_fire_trap_entrance();
+    level thread spawn_workbench_to_build_fire_trap_entrance();
     //level thread global_gas_quest_trigger_spawner( level.gas_pour_location, "^9[ ^8Workbench requires ^9Gasoline ^9]", "", level.myfx[ 75 ], level.myfx[ 76 ], "littered_floor" );
 
     //change hintstring text once gas has been picked for work bench
-    //level thread while_gas_hasnt_been_picked();
+    //level thread while_gas_hasnt_been_picked();f
     wait 1;
 
     //next 5 steps are refactored to simplify the understanding of said code logic. 
@@ -87,9 +251,84 @@ init()
 }
 
 
+override_mainer()
+{
+    if ( level.createfx_enabled )
+        return;
+
+    level.vsmgr_initializing = 1;
+    level.vsmgr_default_info_name = "none";
+    level.vsmgr = [];
+    level thread register_type( "visionset" );
+    level thread register_type( "overlay" );
+    onfinalizeinitialization_callback( ::finalize_clientfields );
+}
+
+override_set_active( player, lerp )
+{
+    player_entnum = player getentitynumber();
+
+    if ( !isdefined( self.players[player_entnum] ) )
+        return;
+}
+
+override_others( type, name, playerf, opt_param_1, opt_param_2 )
+{
+
+    if ( level.vsmgr[type].info[name].state.activate_per_player )
+    {
+        return;
+    }
+
+    state = undefined;//level.vsmgr[type].info[name].state;
+
+    if ( state.ref_count_lerp_thread )
+    {
+        state.ref_count++;
+
+        if ( 1 < state.ref_count )
+            return;
+    }
+
+    if ( isdefined( state.lerp_thread ) )
+    {
+        //iprintln
+    }
+       
+    else
+    {
+        players = getplayers();
+    }
+}
 
 
 
+fog_bank_alter_wait()
+{
+    level endon( "end_game" );
+    flag_wait( "initial_blackscreen_passed" );
+    wait 1;
+    
+    ArrayRemoveIndex(level.fv2vs_infos, 501);
+    ArrayRemoveIndex(level.fv2vs_infos, 502);
+    ArrayRemoveIndex(level.fv2vs_infos, 504);
+    ArrayRemoveIndex(level.fv2vs_infos, 506);
+    ArrayRemoveIndex(level.fv2vs_infos, 508);
+    ArrayRemoveIndex(level.fv2vs_infos, 510);
+    
+   
+    /*
+    level.fv2vs_infos[ 501 ].visionset = 1;
+    level.fv2vs_infos[ 502 ].visionset = 2;
+    level.fv2vs_infos[ 504 ].visionset = 4;
+    wait 0.05;
+    level.fv2vs_infos[ 506 ].visionset = 6;
+    wait 0.05;
+    level.fv2vs_infos[ 508 ].visionset = 8;
+    wait 0.05;
+    level.fv2vs_infos[ 510 ].visionset = 10;
+     */
+}
 gas_quest_01_pick_up_gas()
 {
     level endon( "end_game" );
@@ -97,12 +336,12 @@ gas_quest_01_pick_up_gas()
     wait 5;
     level.fireplace_trigger = spawn( "trigger_radius_use", level.gas_pour_location, 0, 48, 48 );
     level.fireplace_trigger setCursorHint( "HINT_NOICON" );
-    level.fireplace_trigger setHintString( "^9[ ^8Workbench requires ^9Gasoline^9]" );
+    level.fireplace_trigger setHintString( "^9[ ^8Workbench requires ^3Gasoline^9 ]" );
     level.fireplace_trigger triggerignoreteam();
     wait 1;
     gas_trig = spawn( "trigger_radius_use", level.gas_canister_pick_location, 0, 24, 24 );
     gas_trig setcursorhint( "HINT_NOICON" );
-    gas_trig sethintstring( "^9[ ^3[{+activate}] ^8to pick up ^9Gasoline ^9]" );
+    gas_trig sethintstring( "^9[ ^3[{+activate}] ^8to pick up ^3Gasoline ^9]" );
     gas_trig triggerignoreteam();
     wait 0.05;
     inv_mod_fx = spawn( "script_model", gas_trig.origin + ( 0, -40, 65) );
@@ -120,7 +359,7 @@ gas_quest_01_pick_up_gas()
 
     while( true )
     {
-        gas_trig sethintstring( "^9[ ^3[{+activate}] ^8to pick up ^9Gasoline ^9]" );
+        gas_trig sethintstring( "^9[ ^3[{+activate}] ^8to pick up ^3Gasoline ^9]" );
         gas_trig waittill( "trigger", presser );
         if( isplayer( presser ) && is_player_valid( presser ) )
         {
@@ -215,7 +454,7 @@ gas_quest_03_find_crackers()
             {
                 wait 0.25;
                 level thread animate_fire_pickup();
-                firecracker_trigger setHintString( "^9[ ^8Found some old ^9Fire Crackers ^9]" );
+                firecracker_trigger setHintString( "^9[ ^8Found some old ^3Fire Crackers ^9]" );
                 wait 2.5;
                 level notify( "crackers_can_be_put_down" );
                  _someone_unlocked_something( "^9" + surv.name + " ^8found some old ^9Fire Crackers", "", 6, 1 );
@@ -232,7 +471,7 @@ gas_quest_04_place_down_fc()
 {
     level endon( "end_game" );
     level waittill( "crackers_can_be_put_down" );
-    level.fireplace_trigger setHintString( "^9[ ^3[{+activate}] ^8to apply ^9Fire Crackers ^8to workbench ^9]");
+    level.fireplace_trigger setHintString( "^9[ ^3[{+activate}] ^8to apply ^3Fire Crackers ^8to workbench ^9]");
     while( true )
     {
         level.fireplace_trigger waittill( "trigger", who );
@@ -549,7 +788,7 @@ do_everything_for_gas_pickup()
 
     gas_trig = spawn( "trigger_radius_use", level.gas_canister_pick_location, 0, 24, 24 );
     gas_trig setcursorhint( "HINT_NOICON" );
-    gas_trig sethintstring( "^9[ ^3[{+activate}] ^8to pick up ^9Gasoline ^9]" );
+    gas_trig sethintstring( "^9[ ^3[{+activate}] ^8to pick up ^3Gasoline ^9]" );
     gas_trig triggerignoreteam();
     wait 0.05;
     inv_mod_fx = spawn( "script_model", gas_trig.origin + ( 0, -40, 65) );
@@ -632,10 +871,10 @@ do_everything_for_gas_placedown()
     level waittill( "littered_floor" ); 
     temp = spawn( "trigger_radius_use", level.gas_pour_location, 0, 48, 48 );
     temp setCursorHint( "HINT_NOICON" );
-    temp setHintString( "^9[ ^8Workbench requires ^9Fire Crackers ^9]" );
+    temp setHintString( "^9[ ^8Workbench requires ^3Fire Crackers ^9]" );
     temp triggerignoreteam();
 
-    level thread global_gas_quest_trigger_spawner( level.gas_fire_pick_location + ( 0, 0, 60 ), "^9[ ^3[{+activate}]^8 to dig up ^9Fire Crackers ^9]", "", "", "", "fire_picking" );
+    level thread global_gas_quest_trigger_spawner( level.gas_fire_pick_location + ( 0, 0, 60 ), "^9[ ^3[{+activate}]^8 to dig up ^3Fire Crackers ^9]", "", "", "", "fire_picking" );
     level waittill( "fire_picking" );
 
     level thread animate_fire_pickup( );
@@ -644,7 +883,7 @@ do_everything_for_gas_placedown()
     {
         temp delete();
     }
-    level thread global_gas_quest_trigger_spawner( level.gas_fire_place_location, "^9[ ^3[{+activate}]^8 to add ^9Fire Crackers^8 to the fire trap ^9]", "^9[ ^8Fire Trap has been built ^9]", level.myfx[ 75 ], level.myfx[ 76 ], "firetrap_active" );
+    level thread global_gas_quest_trigger_spawner( level.gas_fire_place_location, "^9[ ^3[{+activate}]^8 to add ^3Fire Crackers^8 to the fire trap ^9]", "^9[ ^8Fire Trap has been built ^9]", level.myfx[ 75 ], level.myfx[ 76 ], "firetrap_active" );
     level waittill( "firetrap_active" );
     
     fxs = 12;
