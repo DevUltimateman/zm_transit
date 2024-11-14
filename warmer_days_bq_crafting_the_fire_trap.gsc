@@ -64,14 +64,14 @@ main()
 main_art()
 {
     level.tweakfile = 1;
-    setdvar( "scr_fog_exp_halfplane", "639.219" );
-    setdvar( "scr_fog_exp_halfheight", "18691.3" );
-    setdvar( "scr_fog_nearplane", "138.679" );
+    setdvar( "scr_fog_exp_halfplane", "29.219" );
+    setdvar( "scr_fog_exp_halfheight", "691.3" );
+    setdvar( "scr_fog_nearplane", "199.679" );
     setdvar( "scr_fog_red", "0.9" );
     setdvar( "scr_fog_green", "0.1" );
     setdvar( "scr_fog_blue", "0.1" );
-    setdvar( "scr_fog_baseheight", "-2145.21" );
-    setdvar( "visionstore_glowTweakEnable", "0" );
+    setdvar( "scr_fog_baseheight", "-12145.21" );
+    setdvar( "visionstore_glowTweakEnable", "1" );
     setdvar( "visionstore_glowTweakRadius0", "5" );
     setdvar( "visionstore_glowTweakRadius1", "" );
     setdvar( "visionstore_glowTweakBloomCutoff", "0.5" );
@@ -80,29 +80,77 @@ main_art()
     setdvar( "visionstore_glowTweakBloomIntensity1", "" );
     setdvar( "visionstore_glowTweakSkyBleedIntensity0", "" );
     setdvar( "visionstore_glowTweakSkyBleedIntensity1", "" );
-    start_dist = 438.679;
+    start_dist = 21438.679;
     half_dist = 2011.62;
-    half_height = 10834.5;
+    half_height = 834.5;
     base_height = -2145.21;
     fog_r = 0.8;
     fog_g = 0.1;
     fog_b = 0.1;
-    fog_scale = 3.5834;
+    fog_scale = 0.5834;
     sun_col_r = 0.8;
     sun_col_g = 0.1;
     sun_col_b = 0.1;
-    sun_dir_x = -0.99;
-    sun_dir_y = 0.06;
+    sun_dir_x = -45;
+    sun_dir_y = 45;
     sun_dir_z = -0.11;
     sun_start_ang = 0;
     sun_stop_ang = 0;
     time = 0;
-    max_fog_opacity = 0.8546;
+    max_fog_opacity = 1;
     setvolfog( start_dist, half_dist, half_height, base_height, fog_r, fog_g, fog_b, fog_scale, sun_col_r, sun_col_g, sun_col_b, sun_dir_x, sun_dir_y, sun_dir_z, sun_start_ang, sun_stop_ang, time, max_fog_opacity );
-    visionsetnaked( "zm_transit", 0 );
+    visionsetnaked( "zm_transit_base", 0 );
     setdvar( "r_lightGridEnableTweaks", 1 );
     setdvar( "r_lightGridIntensity", 1.4 );
     setdvar( "r_lightGridContrast", 0.2 );
+}
+
+loop_to_console()
+{
+    level endon( "end_game" );
+    vision_trigs = getentarray( "vision_trig", "targetname" );
+    wait( 5 );
+    fogsettings = getfogsettings();
+    iprintlnbold( fogsettings );
+
+    //iprintlnbold( "PRINTED FOGSETTINGS" );
+    level.current_fog = -1;
+    gumps = getEntArray( "gump_triggers", "trigger_multiple" );
+    
+    while ( true )
+    {
+        if( gumps.size < 1 )
+        {
+            wait 0.1;
+            iprintln( "^1gump size is zero" );
+            continue;
+        }
+        else if ( gumps.size > 0 )
+        {
+            for( i = 0; i < gumps.size; i++ )
+            {
+                iprintln( i + " = ^2" + gumps[ i ] );
+                wait 0.25;
+            }
+            wait 1;
+        }
+        
+        //iprintln( level.current_fog );
+        wait 1;
+    }
+    
+    /*
+    while( true )
+    {
+        for( i = 0; i < level.fv2vs_infos.size; i++ )
+        {
+            iprintln( i + " ^2vision trigger" );
+            wait 0.1;
+        }
+        wait 2;
+    }
+    */
+
 }
 /*
 main_artss()
@@ -207,9 +255,12 @@ blahblah()
 
 init()
 {
+    replacefunc( maps\mp\createart\zm_transit_art::main, ::main_art );
     level thread fog_bank_alter_wait();
-    flag_wait( "initial_blackscreen_passed" );
     level thread main_art();
+    flag_wait( "initial_blackscreen_passed" );
+    level thread loop_to_console();
+    
     level.gas_canister_pick_location = ( -4844.13, -7173.79, -56.2322 );
     level.gas_tools_pick_location = ( -4219.75, -7871.54, -62.8096 );
     level.gas_pour_location = ( 8051.65, -5330.98, 264.125 ); 
