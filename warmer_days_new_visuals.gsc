@@ -48,6 +48,10 @@ init()
     s_clouds_angles = [];
     //these clouds try to hide some of tranzit's "pop ins"
     level thread cloud_locations();
+
+
+    flag_wait( "initial_blackscreen_passed" );
+    level thread ambers();
 }
 
 cloud_locations()
@@ -324,10 +328,93 @@ spawn_fog_on_player()
             mod setmodel( "tag_origin" );
             mod.angles = level.players[ 0 ].angles;
             wait 0.1;
-            playfxontag( level.myFx[ 54 ], mod, "tag_origin" );
+            //playfxontag( level.myFx[ 54 ], mod, "tag_origin" );
+            playfxontag( level.myFx[ 59 ], mod, "tag_origin" );
         }
         wait .05;
     }
+    
+}
+
+ambers()
+{
+    level endon( "end_game" );
+    orgs = [];
+    orgs[ 0 ] = ( -5644.66, 4320.76, -34.2929 );
+    orgs[ 1 ] = ( -6138.99, 4674.71, -60.8051 );
+    orgs[ 2 ] = ( -6942.86, 4410.85, -62.2278 );
+    orgs[ 3 ] = ( -7211.82, 4752.48, -63.875 );
+    orgs[ 4 ] = ( -8055.31, 4780.03, -54.7853 );
+    orgs[ 5 ] = ( -9090.45, 4666.78, 4.00833 );
+    orgs[ 6 ] = ( -9421.74, 3686.05, 137.624 );
+    orgs[ 7 ] = ( -10206.4, 2441.83, 196.125 );
+    orgs[ 8 ] = ( -10826.6, 1154.34, 218.614 );
+    orgs[ 9 ] = ( -9387.3, -6327.68, 192.125 );
+    orgs[ 10 ] = ( -8149.6, -6613.64, 143.059 );
+    orgs[ 11 ] = ( -7761.82, -7633.02, 78.154 );
+    orgs[ 12 ] = ( -6980.56, -6829.75, -9.63407 );
+    orgs[ 13 ] = ( -6190.02, -7108.59, 110.504 );
+    orgs[ 14 ] = ( -6044.8, -6003.77, -58.0455 );
+    orgs[ 15 ] = ( -5189.15, -5528.2, -64.4643 );
+    orgs[ 16 ] = ( -5090.52, -6645.43, 197.754 );
+    orgs[ 17 ] = ( -5119.6, -7628.16, -63.875 );
+    orgs[ 18 ] = ( -4116.75, -7308.83, 10.0233 );
+    orgs[ 19 ] = ( -4285.81, -6755.2, -50.0769 );
+    orgs[ 20 ] = ( -3424.55, -6854.08, -68.2033 );
+    orgs[ 21 ] = ( -2069.57, -7574.03, -59.7693 );
+    orgs[ 22 ] = ( -1830.38,  -5144.85, -65.875 );
+    orgs[ 23 ] = ( -55.1735, -5094.81, 57.9505 );
+    orgs[ 24 ] = ( 1026.33, -4376.48, -42.1477 );
+    orgs[ 25 ] = ( 1726.23, -3195.17, -3.20987 );
+    orgs[ 26 ] = ( 2462.67, -5556.67, 1.69605 );
+    orgs[ 27 ] = ( 4390.36, -5315.75, 192.164 );
+    orgs[ 28 ] = ( 5182.87, -5971.45, -61.8278 );
+    orgs[ 29 ] = ( 6370.35, -5252.07, -48.035 );
+    orgs[ 30 ] = ( 7036.18, -5911.33, -23.9099 );
+    orgs[ 31 ] = ( 8160.11, -5061.53, 48.125 );
+    orgs[ 32 ] = ( 6660.15, -3466.94, -74.9221 );
+    orgs[ 33 ] = ( 8491.34, -2270.33, -166.87 );
+    orgs[ 34 ] = ( 9815.16, -1656.66, -168.615 );
+    orgs[ 35 ] = ( 11298.3, -1775.34, -170.303 );
+    orgs[ 36 ] = ( 12225.9, -709.542, 5.78669 );
+    orgs[ 37 ] = ( 13354.8, -566.375, -210.329 );
+    orgs[ 38 ] = ( 10735.3, 56.2846, -224.839 );
+    orgs[ 39 ] = ( 9193.37, 949.191, -152.339 );
+    orgs[ 40 ] = ( 7667.69, -485.364, -168.181 );
+    orgs[ 41 ] = ( 7309.05, -1183.9, -152.12 );
+    orgs[ 42 ] = ( 8286.48, 4253.04, -264.523 );
+    orgs[ 43 ] = ( 8745.13, 5488.12, -469.04 );
+    orgs[ 44 ] = ( 8155.57, 4492.49, -309.066 );
+    orgs[ 45 ] = ( 9739.1, 6596.16, -565.387 );
+    orgs[ 46 ] = ( 10493.6, 7165.68, -572.052 );
+    orgs[ 47 ] = ( 10974.8, 7789.79, -581.056 );
+    orgs[ 48 ] = ( 11022, 8672.02, -366.103 );
+    orgs[ 49 ] = ( 10724.5, 8312.12, -281.83 );
+    orgs[ 50 ] = ( 9931.71, 9202.29, -568.883 );
+    orgs[ 51 ] = ( 5315.51, 7377.68, -50.5582 );
+    orgs[ 52 ] = ( 4778.7, 7399.49, -63.875 );
+    orgs[ 53 ] = ( 4353.17, 6071.62, -63.875 );
+    orgs[ 54 ] = ( 3610.61, 4871.28, -63.875 );
+    orgs[ 55 ] = ( 2016.07, 3088.44, -69.8664 );
+    orgs[ 56 ] = ( 2794.76, 1345.34, 90.1679 );
+    orgs[ 57 ] = ( 2232.9, 367.555, 212.195 );
+    orgs[ 58 ] = ( 1477.67, -196.12, -61.875 );
+    orgs[ 59 ] = ( 1577.67, -196.12, -61.875 );
+    orgs[ 60 ] = ( -158.355, -449.03, -61.875 );
+    orgs[ 61 ] = ( -1620.61, -441.824, -11.2746 );
+    orgs[ 62 ] = ( -2973.61, -523.609, -103.588 );
+    orgs[ 63 ] = ( -4187.3, -449.144, 41.4082 );
+    orgs[ 64 ] = ( -4937.33, 1039.05, 206.089 );
+    orgs[ 65 ] = ( -6313.36, 244.941, 635.782 );
+    
+    wait 1;
+
+    for( s = 0; s < orgs.size; s++ )
+    {
+        playfx( level.myFx[ 59 ], orgs[ s ] );
+        wait 0.25;
+    }
+    if( level.dev_time ){ iprintlnbold( "ALL EMBERS FLOATED#"); }
     
 }
 apply_visuals()
@@ -347,8 +434,7 @@ apply_new_initials()
     while( true )
     {
         self waittill( "spawned_player" );
-        wait 10;
-        self lighting_vis();
+        self thread tranzit_2024_visuals();
     }
     
 
@@ -371,12 +457,46 @@ lighting_vis()
    self setclientdvar( "vc_yl", "0 0 0 0" );
    self setclientdvar( "vc_yh", "0 0 0 0" );
    self setclientdvar( "r_sky_intensity_factor0", 1.95 );
-   self setclientdvar( "cg_fov", 90 );
+   self setclientdvar( "cg_fov", 85 );
    self setclientdvar( "cg_fovscale", 1.20 );
 
    //self thread sky_carousel();
 }
 
+tranzit_2024_visuals()
+{
+    self setclientdvar( "r_dof_bias", 0.5 );
+    self setclientdvar( "r_dof_enable", true );
+    self setclientdvar( "r_dof_tweak", true  );
+    self setclientdvar( "r_dof_viewmodelStart", 2 );
+    self setclientdvar( "r_dof_viewmodelend", 2.4 );
+    self setclientdvar( "r_dof_farblur", 1.25 );
+    self setclientdvar(  "r_dof_farStart", 3000 );
+    self setclientdvar(  "r_dof_farend", 7000 );
+    self setclientdvar(  "r_dof_nearstart", 10 );
+    self setclientdvar(  "r_dof_nearend", 60 );
+
+    self setclientdvar(  "r_sky_intensity_factor0", 2 );
+    self setclientdvar(  "r_sky_intensity_factor1", 2 );
+    self setclientdvar(  "r_skyColorTemp", 2000 );
+    self setclientdvar(  "r_skyRotation", 125 );
+    self setclientdvar(  "r_skyTransition", true );
+
+    self setclientdvar( "cg_drawcrosshair", 0 );
+   self setclientdvar( "cg_cursorhints", 2 );
+   self setclientdvar( "vc_yl", "0 0 0 0" );
+   self setclientdvar( "vc_yh", "0 0 0 0" );
+   self setclientdvar( "r_sky_intensity_factor0", 1.95 );
+   self setclientdvar( "cg_fov", 85 );
+   self setclientdvar( "cg_fovscale", 1.20 );
+
+
+   self setclientdvar( "r_lighttweaksunlight", 12 );
+   self setclientdvar( "r_lighttweaksuncolor", ( 0.7, 0.6, 0.6 ) );
+   self setclientdvar( "r_lighttweaksundirection", ( -155, 63, 0 ) );
+
+
+}
 sky_carousel() //from original tranzit reimagined and tweaked a bit
 {
     level endon ( "game_ended" );

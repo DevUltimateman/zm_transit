@@ -81,11 +81,47 @@ do_perks()
 daytime_preset()
 { 
     //PlaySoundAtPosition(level.jsn_snd_lst[ 49 ], ( 0, 0, 0 ) );
-    self setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.52, 0.36 ) );
-    self setclientdvar( "r_sky_intensity_factor0", 1.95 );
+    self thread tranzit_2024_visuals();
 
 }
-
+tranzit_2024_visuals()
+{
+    self setclientdvar( "r_filmusetweaks", true );
+    self setclientdvar( "r_bloomtweaks", 1  );
+    self setclientdvar( "cg_usecolorcontrol", 1 );
+    self setclientdvar( "r_fog", 0  );
+    self setclientdvar( "sm_sunsamplesizenear", 1.4  );
+    self setclientdvar( "wind_global_vector", ( 200, 250, 50 )  );
+    self setclientdvar( "vc_fsm", "1 1 1 1" );    
+    self setclientdvar( "cg_colorscale", "1 1 1"  );
+    self setclientdvar( "r_lodbiasrigid", -1000  );
+    self setclientdvar( "r_lodbiasskinned", -1000 );
+    self setclientdvar( "r_dof_bias", 0.5 );
+    self setclientdvar( "r_dof_enable", true );
+    self setclientdvar( "r_dof_tweak", true  );
+    self setclientdvar( "r_dof_viewmodelStart", 2 );
+    self setclientdvar( "r_dof_viewmodelend", 2.4 );
+    self setclientdvar( "r_dof_farblur", 1.25 );
+    self setclientdvar(  "r_dof_farStart", 3000 );
+    self setclientdvar(  "r_dof_farend", 7000 );
+    self setclientdvar(  "r_dof_nearstart", 10 );
+    self setclientdvar(  "r_dof_nearend", 60 );
+    self setclientdvar(  "r_sky_intensity_factor0", 2 );
+    self setclientdvar(  "r_sky_intensity_factor1", 2 );
+    self setclientdvar(  "r_skyColorTemp", 2000 );
+    self setclientdvar(  "r_skyRotation", 125 );
+    self setclientdvar(  "r_skyTransition", true );
+    self setclientdvar( "cg_drawcrosshair", 0 );
+    self setclientdvar( "cg_cursorhints", 2 );
+    self setclientdvar( "vc_yl", "0 0 0 0" );
+    self setclientdvar( "vc_yh", "0 0 0 0" );
+    self setclientdvar( "r_sky_intensity_factor0", 1.95 );
+    self setclientdvar( "cg_fov", 85 );
+    self setclientdvar( "cg_fovscale", 1.20 );
+    self setclientdvar( "r_lighttweaksunlight", 12 );
+    self setclientdvar( "r_lighttweaksuncolor", ( 0.7, 0.6, 0.6 ) );
+    self setclientdvar( "r_lighttweaksundirection", ( -155, 63, 0 ) );
+}
 self_waittill_drink_so_update()
 {
     self endon( "disconnect" );
