@@ -63,8 +63,8 @@ init()
     {
         level.players[ i ] thread self_waittill_drink_so_update();
     }
-    level thread spawn_all_pickable_acidgats(); //for debug
-    level thread do_perks(); //for debug
+    //level thread spawn_all_pickable_acidgats(); //for debug
+    //level thread do_perks(); //for debug
 }
 
 disable_dev_time()
@@ -106,8 +106,8 @@ tranzit_2024_visuals()
     self setclientdvar(  "r_dof_farend", 7000 );
     self setclientdvar(  "r_dof_nearstart", 10 );
     self setclientdvar(  "r_dof_nearend", 60 );
-    self setclientdvar(  "r_sky_intensity_factor0", 2 );
-    self setclientdvar(  "r_sky_intensity_factor1", 2 );
+    self setclientdvar(  "r_sky_intensity_factor0", 2.8 );
+    self setclientdvar(  "r_sky_intensity_factor1", 2.8 );
     self setclientdvar(  "r_skyColorTemp", 2000 );
     self setclientdvar(  "r_skyRotation", 125 );
     self setclientdvar(  "r_skyTransition", true );
@@ -115,7 +115,7 @@ tranzit_2024_visuals()
     self setclientdvar( "cg_cursorhints", 2 );
     self setclientdvar( "vc_yl", "0 0 0 0" );
     self setclientdvar( "vc_yh", "0 0 0 0" );
-    self setclientdvar( "r_sky_intensity_factor0", 1.95 );
+    self setclientdvar( "r_sky_intensity_factor0", 2.8 );
     self setclientdvar( "cg_fov", 85 );
     self setclientdvar( "cg_fovscale", 1.20 );
     self setclientdvar( "r_lighttweaksunlight", 12 );
