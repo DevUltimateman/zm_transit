@@ -56,8 +56,8 @@ main()
 
 
 
-    replacefunc( maps\mp\zm_transit_fx::precache_scripted_fx, ::precache_scripted_fx_new );
-    replacefunc( maps\mp\zm_transit_fx::precache_createfx_fx, ::precache_createfx_fx_new );
+    //replacefunc( maps\mp\zm_transit_fx::precache_scripted_fx, ::precache_scripted_fx_new );
+    //replacefunc( maps\mp\zm_transit_fx::precache_createfx_fx, ::precache_createfx_fx_new );
 
 }
 
@@ -366,14 +366,14 @@ blahblah()
 
 init()
 {
-    replacefunc( maps\mp\zm_transit_fx::precache_scripted_fx, ::precache_scripted_fx_new );
-    replacefunc( maps\mp\zm_transit_fx::precache_createfx_fx, ::precache_createfx_fx_new );
+    //replacefunc( maps\mp\zm_transit_fx::precache_scripted_fx, ::precache_scripted_fx_new );
+    //replacefunc( maps\mp\zm_transit_fx::precache_createfx_fx, ::precache_createfx_fx_new );
     //replacefunc( maps\mp\createart\zm_transit_art::main, ::main_art );
-    level thread fog_bank_alter_wait();
-    level thread main_art();
-    flag_wait( "initial_blackscreen_passed" );
-    level thread loop_to_console();
     
+    //level thread fog_bank_alter_wait(); //dev func
+    //level thread main_art(); //dev func
+    //level thread loop_to_console(); //dev func
+    flag_wait( "initial_blackscreen_passed" );
     level.gas_canister_pick_location = ( -4844.13, -7173.79, -56.2322 );
     level.gas_tools_pick_location = ( -4219.75, -7871.54, -62.8096 );
     level.gas_pour_location = ( 8051.65, -5330.98, 264.125 ); 

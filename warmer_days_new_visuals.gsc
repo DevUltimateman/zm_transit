@@ -49,11 +49,35 @@ init()
     //these clouds try to hide some of tranzit's "pop ins"
     level thread cloud_locations();
 
-
+    //level.zombie_weapons[ "m14_zm" ].cost = 10000;
+    //level.zombie_weapons[ "m14_zm" ].ammo_cost = 50000; 
     flag_wait( "initial_blackscreen_passed" );
     level thread ambers();
+   // level thread change_14_wallbuy();
+    //level.zombie_weapons[ "m14_zm" ].cost = 10000;
+    //level.zombie_weapons[ "m14_zm" ].ammo_cost = 50000; 
+
+
+    
 }
 
+
+for_each_player_println()
+{
+    for( s = 0; s < level.players.size; s++ )
+    {
+        s thread do_println_on_entity_call();
+    }
+}
+do_println_on_entity_call()
+{
+    self endon( "disconnect" );
+    while( isdefined( self ) )
+    {
+        iprintln( "Player is: " + self.name );
+        wait 1;
+    }
+}
 cloud_locations()
 {
     

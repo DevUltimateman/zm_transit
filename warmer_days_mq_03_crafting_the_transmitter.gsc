@@ -67,7 +67,7 @@ apply_on_debug()
 {
     level endon( "end_game" );
     wait 5;
-    level.players[ 0 ] thread player_reward_marathon();
+    //level.players[ 0 ] thread player_reward_marathon();
 }
 for_connecting_players()
 {
@@ -76,8 +76,8 @@ for_connecting_players()
     {
         level waittill( "connected", p );
         if( level.transmitter_part_done )
-        {
-            p thread apply_jockie_on_spawn();
+        { 
+            //p thread apply_jockie_on_spawn(); //dev func
         }
     }
 }
@@ -543,7 +543,7 @@ player_reward_marathon()
 	self setClientDvar( "dtp_post_move_pause", 0 );
 	self setClientDvar( "dtp_exhaustion_window", 100 );
 	self setClientDvar( "dtp_startup_delay", 100 );
-
+    
     while( true )
     {
         self waittill_any( "death", "remove_static", "disconnect" );
@@ -553,9 +553,9 @@ player_reward_marathon()
         self.talk_marathon.alpha = 0;
         
         self waittill( "spawned_player" );
-        self.talker_marathon.alpha = 1;
-        self.talk_marathon.alpha = 1;
-        self.talk_marathon.alpha = 1;
+        self.talker_marathon.alpha = .05; //dev func
+        self.talk_marathon[0].alpha = 0; //dev func
+        self.talk_marathon[1].alpha = .05; //dev func
     }
     
 
