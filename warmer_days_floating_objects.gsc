@@ -56,12 +56,6 @@ init()
     level thread level_power_lines();
     level thread all_floating_objects_around_the_map();
     level thread all_floating_rocks_around_the_map();
-    //level thread test_fx_play();
-    //while( true )
-    //{
-    //    level waittill( "connected", me );
-    //    //me thread player_spawns();
-    //}
 }
 
 
@@ -170,16 +164,20 @@ all_floating_rocks_around_the_map()
     wait 0.1;
     for( s = 0; s < locations.size; s++ )
     {
-        level.bumps[ s ] = spawn( "script_model", locations[ s ] + ( 0, 0, 350 ) );
+        if( s % 2 == 0 )
+        {
+            level.bumps[ s ] = spawn( "script_model", locations[ s ] + ( 0, 0, 350 ) );
 
-        level.bumps[ s ] setmodel( "p6_zm_rocks_medium_05"/*"p6_zm_rocks_large_cluster_01" */);
+            level.bumps[ s ] setmodel( "p6_zm_rocks_medium_05"/*"p6_zm_rocks_large_cluster_01" */);
+            
+            level.bumps[ s ].angles = ( 180, randomInt( 360 ), randomintrange( -30, 30 ) );
+            wait randomFloatRange( 0.1, 0.6 ); 
+            level.bumps[ s ] thread playlighting_playembers();
+            level.bumps[ s ] thread hover_rocks();
+            level.bumps[ s ] thread spin_rocks();
+            wait 0.1;
+        }
         
-        level.bumps[ s ].angles = ( 180, randomInt( 360 ), randomintrange( -30, 30 ) );
-        wait randomFloatRange( 0.1, 0.6 ); 
-        level.bumps[ s ] thread playlighting_playembers();
-        level.bumps[ s ] thread hover_rocks();
-        level.bumps[ s ] thread spin_rocks();
-        wait 0.1;
     }
 }
 
@@ -346,7 +344,7 @@ all_floating_objects_around_the_map()
         bumps[ s ] thread spin_rocks();
         //fog glow
         //playFXOnTag( level._effects[9], bumps[ s ], "tag_origin" );
-        playfxontag( level._effects[7], bumps[ s ], "tag_origin" ); //orange lava smoke bowl
+        //playfxontag( level._effects[7], bumps[ s ], "tag_origin" ); //orange lava smoke bowl
         wait 0.1;
         //below is a transformer fx
         //playFXOnTag( level._effects[22], bumps[ s ], "tag_origin" );
@@ -358,6 +356,7 @@ all_floating_objects_around_the_map()
         buster = spawn( "script_model", locations[ a ] );
         buster setmodel( "p6_zm_rocks_small_cluster_01" );
         buster.angles = ( randomint(360 ), randomInt( 360 ), randomInt( 360 ) );
+        wait 0.1;
         playfxontag( level._effects[17], buster, "tag_origin" );
         buster thread find_and_moveto();
         wait 1;
@@ -404,7 +403,7 @@ find_and_moveto()
         for( i = 0; i < 4; i++ )
         {
             self moveto( level.bumps[ rnd].origin, 0.1, 0, 0 );
-            wait 0.4;
+            wait 0.1;
            
         }
         //playfx( level._effects[77], self.origin );

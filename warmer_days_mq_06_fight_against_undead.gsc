@@ -309,6 +309,7 @@ do_zombies_go_crazy()
 spawn_lockdown_blockers()
 {
     level waittill( "spawn_blockers_for_lockdown" );
+    level.zombie_total = 10000;
     //PlaySoundAtPosition(level.jsn_snd_lst[ 61 ], (0,0,0));
     locs = [];
     locs[ 0 ] = ( 13551.9, -290.809, -187.875 );
@@ -322,11 +323,12 @@ spawn_lockdown_blockers()
         block[ i ] = spawn( "script_model", locs[ i ] );
         block[ i ] setmodel( level.myModels[ 0 ] );
         block[ i ].angles = block[ i ].angles;
-        wait 0.05;
+        wait 1;
         playfxontag(level.myFx[ 78 ], block[ i ], "tag_origin" ); 
         block_upper[ i ] = spawn( "script_model", locs[ i ] + ( 0, 0, 50 ) );
         block_upper[ i ] setmodel( level.myModels[ 0 ] );
         block_upper[ i ].angles = block[ i ].angles;
+        playfxontag(level.myFx[ 78 ], block_upper[ i ], "tag_origin" ); 
     }
 
     level waittill( "lockdown_disabled" );
@@ -335,6 +337,7 @@ spawn_lockdown_blockers()
         block[ i ] movez( -1600, 2.5 );
         block_upper[ i ] movez( -1600, 2.5 );
     }
+    level.zombie_total = undefined;
     wait 4;
     for( s = 0; s < locs.size; s++ )
     {
@@ -369,73 +372,52 @@ playloopsound_buried()
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^9Dr. Schruder: ^8" + text, "^8" + text2, duration, fadetimer );
+	level thread machine_says( "^9Dr. Schruder: ^8" + text, "^8" + text2, duration, fadetimer );
 }
 
 _spirit_of_sorrow_sub_text_alt( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-    level thread Subtitle( "^4Spirit Of Sorrow: ^8" + text, "^8" + text2, duration, fadetimer );
+    level thread machine_says( "^4Spirit Of Sorrow: ^8" + text, "^8" + text2, duration, fadetimer );
 }
 
-Subtitle( text, text2, duration, fadeTimer )
+machine_says( sub_up, sub_low, duration, fadeTimer )
 {
-	subtitle = NewHudElem();
-	subtitle.x = 0;
-	subtitle.y = -42;
-	subtitle SetText( text );
-	subtitle.fontScale = 1.32;
-	subtitle.alignX = "center";
-	subtitle.alignY = "middle";
-	subtitle.horzAlign = "center";
-	subtitle.vertAlign = "bottom";
-	subtitle.sort = 1;
-    
-	//subtitle2 = undefined;
-	subtitle.alpha = 0;
-    subtitle fadeovertime( fadeTimer );
-    subtitle.alpha = 1;
-
-	if ( IsDefined( text2 ) )
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
+    {
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
+    }
+    level.subtitles_on_so_have_to_wait = true;
+    level.play_schruder_background_sound = true;
+    level.subtitle_upper.alpha = 0;
+    level.subtitle_upper.x = 0;
+    level.subtitle_lower.x = 0;
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 1;
+	if ( IsDefined( sub_low ) )
 	{
-		subtitle2 = NewHudelem();
-		subtitle2.x = 0;
-		subtitle2.y = -24;
-		subtitle2 SetText( text2 );
-		subtitle2.fontScale = 1.22;
-		subtitle2.alignX = "center";
-		subtitle2.alignY = "middle";
-		subtitle2.horzAlign = "center";
-		subtitle2.vertAlign = "bottom";
-		subtitle2.sort = 1;
-        subtitle2.alpha = 0;
-        subtitle2 fadeovertime( fadeTimer );
-        subtitle2.alpha = 1;
+        level.subtitle_lower.alpha = 0;
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 1;
 	}
-	
+
 	wait ( duration );
-    //level thread a_glowby( subtitle );
-    //if( isdefined( subtitle2 ) )
-    //{
-    //    level thread a_glowby( subtitle2 );
-    //}
-    /*
-	level thread flyby( subtitle );
-	//subtitle Destroy();
-	
-	if ( IsDefined( subtitle2 ) )
-	{
-		level thread flyby( subtitle2 );
-	}
-    */
-    subtitle fadeovertime( fadetimer );
-    subtitle2 fadeovertime( fadetimer );
-    subtitle.alpha = 0;
-    subtitle2.alpha = 0;
-    subtitle destroy_hud();
-    subtitle2 destroy_hud();
-}
+    
+	level thread flyby( level.subtitle_upper );
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 0;
 
+	if ( IsDefined( sub_low ) )
+	{
+		level thread flyby( level.subtitle_lower );
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 0;
+	}
+
+    wait 1;
+    level.play_schruder_background_sound = false;
+}
 flyby( element )
 {
     level endon( "end_game" );
@@ -445,19 +427,6 @@ flyby( element )
     while( element.x < on_right )
     {
         element.x += 200;
-        /*
-        //if( element.x < on_right )
-        //{
-            
-            //waitnetworkframe();
-        //    wait 0.01;
-        //}
-        //if( element.x >= on_right )
-        //{
-        //    element destroy();
-        //}
-        */
         wait 0.05;
     }
-    element destroy_hud();
 }

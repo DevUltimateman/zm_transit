@@ -1148,7 +1148,7 @@ call_summoning_on_player_logic( ride_loc, ride_ang, which_lamp )
         wait 0.1;
         earthquake( 0.25, 10, self.origin, 1050 );
         level thread new_do_summoning_animation( player_to_summon, ride_loc, ride_ang, which_lamp );
-        self thread xdfx();
+        //self thread xdfx(); //why is this here? maybe causing some fucking
         player_to_summon thread xdfx();
         self.hintstring = "^6Summoning in progress!";
         //earthquake here
@@ -1363,8 +1363,6 @@ all_fixable_spots_spawn_fixer_logic() //is in use
         fix_trig_available_fx setmodel( "tag_origin" );
         fix_trig_available_fx.angles = ( 0,0,0 );
         wait 0.05;
-        //commenting out this fx to see if we can help the engine not overload
-        //playfxontag( level.myfx[ 2 ], fix_trig_available_fx, "tag_origin" );
         fix_trig_available_fx thread monitor_everything( fix_trig, sizer );
     }
     //dont spawn the rift computer at power station till all lamps are fixed
@@ -1383,14 +1381,8 @@ make_light_hinters()
         level.light_hinters[ i ] = spawn( "script_model", initial_hinters[ i ].origin + ( 0, 0, 148 ) );
         level.light_hinters[ i ] setmodel( "tag_origin" );
         level.light_hinters[ i ].angles = ( 0, 0, 0 );
-        wait 0.05;
-        //playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
-
+        wait 0.05;  
         wait 0.13;
-        //playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
-        //wait 0.17;
-        //playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
-
         if( level.dev_time ) { iprintlnbold( "SPAWNED A LIGHT HINTER AT: " + level.light_hinters[ i ] ); }
     }
 }
@@ -1484,8 +1476,7 @@ rise_bulb_underneath( value_at, fixable_integer ) //in use now
     //self movez( 148, 1.5, 0, 0.4 );
     self waittill( "movedone" );
     level thread check_which_light_needs_changing( self ); 
-    //playfx( level.myfx[ 96 ], self.origin );
-    playLoopedFX( level.myfx[ 96 ], 1.2, self.origin );
+    //playLoopedFX( level.myfx[ 96 ], 1.2, self.origin );
     
     playfx( level._effect[ "fx_zmb_tranzit_light_safety_ric" ], self.origin, 0, -90 ); // good
 
@@ -1505,14 +1496,14 @@ rise_bulb_underneath( value_at, fixable_integer ) //in use now
 test_turn_off_lamps()
 {
     level endon( "end_game" );
-    level waittill( "power_on" );
-    wait 10;
-    iprintlnbold( "DOING THIS SHIT SHIT SHIT "); 
-    for( i = 0; i < level.players.size; i++ )
-    {
-        level.players[ i ] setclientfield( "screecher_sq_lights", 0 );
-        level.players[ i ] setclientfield( "sq_tower_sparks", 1 );
-    }
+    //level waittill( "power_on" );
+    //wait 10;
+    //iprintlnbold( "DOING THIS SHIT SHIT SHIT "); 
+    //for( i = 0; i < level.players.size; i++ )
+    //{
+    //    level.players[ i ] setclientfield( "screecher_sq_lights", 0 );
+    //    level.players[ i ] setclientfield( "sq_tower_sparks", 1 );
+   // }
     
 }
 check_which_light_needs_changing( location_of_light )
@@ -2199,57 +2190,44 @@ play_crows()
 _play_schruder_texts( subtitle_upper, subtitle_lower, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread SchruderSays( "^9Dr. Schruder: ^8" + subtitle_upper, "^8" + subtitle_lower, duration, fadetimer );
+	level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper, "^8" + subtitle_lower, duration, fadetimer );
 }
-
-SchruderSays( sub_up, sub_low, duration, fadeTimer )
+machine_says( sub_up, sub_low, duration, fadeTimer )
 {
-	subtitle_upper = NewHudElem();
-	subtitle_upper.x = 0;
-	subtitle_upper.y = -42;
-	subtitle_upper SetText( sub_up );
-	subtitle_upper.fontScale = 1.32;
-	subtitle_upper.alignX = "center";
-	subtitle_upper.alignY = "middle";
-	subtitle_upper.horzAlign = "center";
-	subtitle_upper.vertAlign = "bottom";
-	subtitle_upper.sort = 1;
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
+    {
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
+    }
+    level.subtitles_on_so_have_to_wait = true;
+    level.play_schruder_background_sound = true;
+    level.subtitle_upper.x = 0;
+    level.subtitle_lower.x = 0;
+    level.subtitle_upper.alpha = 0;
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 1;
+	if ( IsDefined( sub_low ) )
+	{
+        level.subtitle_lower.alpha = 0;
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 1;
+	}
+
+	wait ( duration );
     
-	subtitle_lower = undefined;
-	subtitle_upper.alpha = 0;
-    subtitle_upper fadeovertime( fadeTimer );
-    subtitle_upper.alpha = 1;
+	level thread flyby( level.subtitle_upper );
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 0;
 
 	if ( IsDefined( sub_low ) )
 	{
-		subtitle_lower = NewHudelem();
-		subtitle_lower.x = 0;
-		subtitle_lower.y = -24;
-		subtitle_lower SetText( sub_low );
-		subtitle_lower.fontScale = 1.22;
-		subtitle_lower.alignX = "center";
-		subtitle_lower.alignY = "middle";
-		subtitle_lower.horzAlign = "center";
-		subtitle_lower.vertAlign = "bottom";
-		subtitle_lower.sort = 1;
-        subtitle_lower.alpha = 0;
-        subtitle_lower fadeovertime( fadeTimer );
-        subtitle_lower.alpha = 1;
+		level thread flyby( level.subtitle_lower );
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 0;
 	}
-	
-	wait ( duration );
-	level thread flyby( subtitle_upper );
-    subtitle_upper fadeovertime( fadeTimer );
-    subtitle_upper.alpha = 0;
-	//subtitle Destroy();
-	
-	if ( IsDefined( subtitle_lower ) )
-	{
-		level thread flyby( subtitle_lower );
-        subtitle_lower fadeovertime( fadeTimer );
-        subtitle_lower.alpha = 0;
-	}
-    
+
+    wait 1;
+    level.play_schruder_background_sound = false;
 }
 
 //this a gay ass hud flyer, still choppy af
@@ -2264,5 +2242,4 @@ flyby( element )
         element.x += 100;
         wait 0.05;
     }
-    element destroy_hud();
 }

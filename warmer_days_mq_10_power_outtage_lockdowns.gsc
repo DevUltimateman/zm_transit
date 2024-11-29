@@ -622,6 +622,16 @@ spawn_s_to_do_stuff( which_location, which_location_loop )
     sc setmodel( level.automaton.model );
     sc.angles = ( -10, 0,  0 );
     wait 0.1;
+    degree_tagger = spawn( "script_model", sc.origin );
+    degree_tagger setmodel( "tag_origin" );
+    degree_tagger.angles = ( 180, 0, 0 );
+
+    playfxontag( level._effect[ "screecher_hole" ], degree_tagger, "tag_origin" );
+    wait 0.1;
+    playfxontag( level._effect[ "screecher_vortex" ], degree_tagger, "tag_origin" );
+
+    degree_tagger enablelinkto();
+    degree_tagger linkto( sc );
     _blocker = spawn( "script_model", sc.origin  );
     _blocker setmodel( "collision_geo_64x64x64_standard" );
     _blocker.angles = sc.angles;
@@ -716,6 +726,7 @@ spawn_s_to_do_stuff( which_location, which_location_loop )
     level.sc_flying_in_progress = false;
     wait 2;
     sc delete();
+    degree_tagger delete();
 }
 
 power_store_visuals()
@@ -1287,6 +1298,7 @@ playloopsound_buried()
         wait 40;
     }
 }
+
 machine_says( sub_up, sub_low, duration, fadeTimer )
 {
     //don't start drawing new hud if one already exists 
@@ -1296,67 +1308,33 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
-	if( !isdefined( subs_up) )
-    {
-        subs_up = newhudelem();
-    }
-	subs_up.x = 0;
-	subs_up.y = -42;
-	subs_up SetText( sub_up );
-	subs_up.fontScale = 1.32;
-	subs_up.alignX = "center";
-	subs_up.alignY = "middle";
-	subs_up.horzAlign = "center";
-	subs_up.vertAlign = "bottom";
-	subs_up.sort = 1;
-    
-	subs_low = undefined;
-	subs_up.alpha = 0;
-    subs_up fadeovertime( fadeTimer );
-    subs_up.alpha = 1;
-    
-    
-    
+    level.subtitle_upper.alpha = 0;
+    level.subtitle_upper.x = 0;
+    level.subtitle_lower.x = 0;
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 1;
 	if ( IsDefined( sub_low ) )
 	{
-        if( !isdefined( subs_low ) )
-    {
-        subs_low = newhudelem();
-    }
-		subs_low.x = 0;
-		subs_low.y = -24;
-		subs_low SetText( sub_low );
-		subs_low.fontScale = 1.22;
-		subs_low.alignX = "center";
-		subs_low.alignY = "middle";
-		subs_low.horzAlign = "center";
-		subs_low.vertAlign = "bottom";
-		subs_low.sort = 1;
-        subs_low.alpha = 0;
-        subs_low fadeovertime( fadeTimer );
-        subs_low.alpha = 1;
+        level.subtitle_lower.alpha = 0;
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 1;
 	}
-	
+
 	wait ( duration );
-    level.play_schruder_background_sound = false;
-    //level thread a_glowby( subtitle );
-    //if( isdefined( subs_low ) )
-    //{
-    //    level thread a_glowby( subs_low );
-    //}
     
-	level thread flyby( subs_up );
-    subs_up fadeovertime( fadeTimer );
-    subs_up.alpha = 0;
-	//subtitle Destroy();
-	
-	if ( IsDefined( subs_low ) )
+	level thread flyby( level.subtitle_upper );
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 0;
+
+	if ( IsDefined( sub_low ) )
 	{
-		level thread flyby( subs_low );
-        subs_low fadeovertime( fadeTimer );
-        subs_low.alpha = 0;
+		level thread flyby( level.subtitle_lower );
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 0;
 	}
-    
+
+    wait 1;
+    level.play_schruder_background_sound = false;
 }
 
 //this a gay ass hud flyer, still choppy af
@@ -1371,8 +1349,6 @@ flyby( element )
         element.x += 200;
         wait 0.05;
     }
-    element destroy_hud();
-    //let new huds start drawing if needed
     level.subtitles_on_so_have_to_wait = false;
 }
 

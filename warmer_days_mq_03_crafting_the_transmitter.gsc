@@ -290,64 +290,41 @@ init_navcomputer_dont_rebuild_if_done()
 
 
 
-Subtitle( text, text2, duration, fadeTimer )
+machine_says( sub_up, sub_low, duration, fadeTimer )
 {
-	subtitle = NewHudElem();
-	subtitle.x = 0;
-	subtitle.y = -42;
-	subtitle SetText( text );
-	subtitle.fontScale = 1.32;
-	subtitle.alignX = "center";
-	subtitle.alignY = "middle";
-	subtitle.horzAlign = "center";
-	subtitle.vertAlign = "bottom";
-	subtitle.sort = 1;
-    
-	//subtitle2 = undefined;
-	subtitle.alpha = 0;
-    subtitle fadeovertime( fadeTimer );
-    subtitle.alpha = 1;
-
-	if ( IsDefined( text2 ) )
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
+    {
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
+    }
+    level.subtitles_on_so_have_to_wait = true;
+    level.play_schruder_background_sound = true;
+    level.subtitle_upper.alpha = 0;
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 1;
+	if ( IsDefined( sub_low ) )
 	{
-		subtitle2 = newHudElem();
-		subtitle2.x = 0;
-		subtitle2.y = -24;
-		subtitle2 SetText( text2 );
-		subtitle2.fontScale = 1.22;
-		subtitle2.alignX = "center";
-		subtitle2.alignY = "middle";
-		subtitle2.horzAlign = "center";
-		subtitle2.vertAlign = "bottom";
-		subtitle2.sort = 1;
-        subtitle2.alpha = 0;
-        subtitle2 fadeovertime( fadeTimer );
-        subtitle2.alpha = 1;
+        level.subtitle_lower.alpha = 0;
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 1;
 	}
-	
+
 	wait ( duration );
-    //level thread a_glowby( subtitle );
-    //if( isdefined( subtitle2 ) )
-    //{
-    //    level thread a_glowby( subtitle2 );
-    //}
-    /*
-	level thread flyby( subtitle );
-	//subtitle Destroy();
-	
-	if ( IsDefined( subtitle2 ) )
-	{
-		level thread flyby( subtitle2 );
-	}
-    */
-    subtitle fadeovertime( fadetimer );
-    subtitle2 fadeovertime( fadetimer );
-    subtitle.alpha = 0;
-    subtitle2.alpha = 0;
-    subtitle destroy_hud();
-    subtitle2 destroy_hud();
-}
+    
+	level thread flyby( level.subtitle_upper );
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 0;
 
+	if ( IsDefined( sub_low ) )
+	{
+		level thread flyby( level.subtitle_lower );
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 0;
+	}
+
+    wait 1;
+    level.play_schruder_background_sound = false;
+}
 flyby( element )
 {
     level endon( "end_game" );
@@ -357,27 +334,14 @@ flyby( element )
     while( element.x < on_right )
     {
         element.x += 100;
-        /*
-        //if( element.x < on_right )
-        //{
-            
-            //waitnetworkframe();
-        //    wait 0.01;
-        //}
-        //if( element.x >= on_right )
-        //{
-        //    element destroy();
-        //}
-        */
         wait 0.05;
     }
-    element destroy_hud();
 }
 
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^9Dr. Schruder: ^8" + text, "^8" + text2, duration, fadetimer );
+	level thread machine_says( "^9Dr. Schruder: ^8" + text, "^8" + text2, duration, fadetimer );
 }
 
 
@@ -407,9 +371,6 @@ spawn_looping_wire_fx()
     wait 1;
     playfxontag( level.myfx[ 2 ], spawn1, "tag_origin" );
     playfxontag( level.myfx[ 2 ], spawn2, "tag_origin" );
-    wait 0.05;
-    //playfxontag( level.myFx[ 34 ], spawn1, "tag_origin" );
-    //playfxontag( level.myFx[ 34 ], spawn2, "tag_origin" );
     wait 0.1;
     spawn1 thread go_cables();
     wait 3;
@@ -563,3 +524,4 @@ player_reward_marathon()
     
 
 }
+

@@ -281,6 +281,8 @@ apply_movement_monitor()
     }
 
     self_touched = false;
+    //fuck this, makes the game too hard
+    /*
     while( true )
     {
         for( i = 0; i < level.forest_zones.size; i++ )
@@ -309,6 +311,7 @@ apply_movement_monitor()
         }
         wait 0.1;
     }
+    */
 }
 
 forest_zones()
@@ -674,14 +677,13 @@ wait_death()
 all_rocks_done()
 {
     level endon( "end_game" );
-    level endon( "end_brake_check" ); 
-    if( level.rocks_at_pylon < 3 )
-    {
-        while( level.rocks_at_pylon < 3 ){ wait 1; }
-    }
+    level endon( "end_break_check" ); 
+
+    level waittill( "start_tracking_t" );
+    while( level.rocks_at_pylon < 3 ){ wait 1; }
     level notify( "move_rocks_underneath_pylon" );
     wait 1;
-    
+
     if( level.dev_time ){ iprintlnbold( "ALL ROCK SOULS COLLECTED###" ); }
     wait 0.1;
     level notify( "end_break_check" );
@@ -802,8 +804,8 @@ cs()
 {
     self endon( "disconnect" );
     self waittill( "spawned_player" );
-    wait 7;
-    self.has_up_nades = true;
+   // wait 7;
+    //self.has_up_nades = true;
 }
 
 spawn_generators()
@@ -990,7 +992,7 @@ wait_kill()
 rocks_at_town_talk()
 {
     level endon( "end_game" );
-
+    level notify( "start_tracking_t" );
     //level thread playloopsound_buried();
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
@@ -1019,6 +1021,7 @@ rocks_at_town_talk()
 rocks_at_pylon()
 {
     level endon( "end_game" );
+    //playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
     level waittill( "end_break_check" );
     //level thread playloopsound_buried();
     wait 2;
@@ -1086,7 +1089,17 @@ do_everything_schruder_spawns()
     wait 0.06;
     
     playfx( level._effects[ 77 ], sc.origin );
-    playfxontag( level._effect[ "screecher_hole" ], sc, "tag_origin" );
+
+    degree_tagger = spawn( "script_model", sc.origin );
+    degree_tagger setmodel( "tag_origin" );
+    degree_tagger.angles = ( 180, 0, 0 );
+
+    playfxontag( level._effect[ "screecher_hole" ], degree_tagger, "tag_origin" );
+    wait 0.1;
+    playfxontag( level._effect[ "screecher_vortex" ], degree_tagger, "tag_origin" );
+    degree_tagger enableLinkTo();
+    degree_tagger linkto( sc );
+    degree_tagger thread while_sc_exists( sc ); //automatic remove tagger once we delete schruder
     sc thread hover_sc();
     sc thread rotate_sc();
     level notify( "continue_talking" );
@@ -1102,6 +1115,15 @@ do_everything_schruder_spawns()
     
 }
 
+while_sc_exists( who )
+{
+    level endon( "end_game" );
+    while( isdefined( who ) ) 
+    {
+        wait 1;
+    }
+    self delete();
+}
 hover_sc()
 {
     level endon( "end_game" );
@@ -1178,61 +1200,33 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
-	subtitle_upper = NewhudElem();
-	subtitle_upper.x = 0;
-	subtitle_upper.y = -42;
-	subtitle_upper SetText( sub_up );
-	subtitle_upper.fontScale = 1.32;
-	subtitle_upper.alignX = "center";
-	subtitle_upper.alignY = "middle";
-	subtitle_upper.horzAlign = "center";
-	subtitle_upper.vertAlign = "bottom";
-	subtitle_upper.sort = 1;
-    
-	subtitle_lower = undefined;
-	subtitle_upper.alpha = 0;
-    subtitle_upper fadeovertime( fadeTimer );
-    subtitle_upper.alpha = 1;
-    
-    
-    
+    level.subtitle_upper.x = 0;
+    level.subtitle_lower.x = 0;
+    level.subtitle_upper.alpha = 0;
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 1;
 	if ( IsDefined( sub_low ) )
 	{
-		subtitle_lower = NewHudelem();
-		subtitle_lower.x = 0;
-		subtitle_lower.y = -24;
-		subtitle_lower SetText( sub_low );
-		subtitle_lower.fontScale = 1.22;
-		subtitle_lower.alignX = "center";
-		subtitle_lower.alignY = "middle";
-		subtitle_lower.horzAlign = "center";
-		subtitle_lower.vertAlign = "bottom";
-		subtitle_lower.sort = 1;
-        subtitle_lower.alpha = 0;
-        subtitle_lower fadeovertime( fadeTimer );
-        subtitle_lower.alpha = 1;
+        level.subtitle_lower.alpha = 0;
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 1;
 	}
-	
+
 	wait ( duration );
-    level.play_schruder_background_sound = false;
-    //level thread a_glowby( subtitle );
-    //if( isdefined( subtitle_lower ) )
-    //{
-    //    level thread a_glowby( subtitle_lower );
-    //}
     
-	level thread flyby( subtitle_upper );
-    subtitle_upper fadeovertime( fadeTimer );
-    subtitle_upper.alpha = 0;
-	//subtitle Destroy();
-	
-	if ( IsDefined( subtitle_lower ) )
+	level thread flyby( level.subtitle_upper );
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 0;
+
+	if ( IsDefined( sub_low ) )
 	{
-		level thread flyby( subtitle_lower );
-        subtitle_lower fadeovertime( fadeTimer );
-        subtitle_lower.alpha = 0;
+		level thread flyby( level.subtitle_lower );
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 0;
 	}
-    
+
+    wait 1;
+    level.play_schruder_background_sound = false;
 }
 
 //this a gay ass hud flyer, still choppy af
@@ -1247,7 +1241,6 @@ flyby( element )
         element.x += 200;
         wait 0.05;
     }
-    element destroy_hud();
     //let new huds start drawing if needed
     level.subtitles_on_so_have_to_wait = false;
 }

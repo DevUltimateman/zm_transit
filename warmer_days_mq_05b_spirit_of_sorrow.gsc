@@ -479,6 +479,8 @@ spawn_spirit()
     level.o_spirit playloopsound( "zmb_screecher_portal_loop", 2 );
     wait 0.1;
     playfxontag( level.myfx[ 1 ], level.o_spirit, "tag_origin" );
+    wait 1;
+    playfxontag( level.myfx[ 2 ],level.o_spirit,"tag_origin");
 }
 
 debug_spirit_locations()
@@ -661,7 +663,7 @@ monitor_players()
     mods setmodel( "tag_origin" );
     mods.angles = ( -270, 0, 0 );
     wait 0.1;
-    playfxontag( level._effect[ "lght_marker" ], mods, "tag_origin" );
+    //playfxontag( level._effect[ "lght_marker" ], mods, "tag_origin" );
     
     //playfx( level._effect[ "lght_marker" ], mods.origin );
     cust_trig = spawn( "trigger_radius", loc, 48, 48, 48 );
@@ -870,66 +872,46 @@ global_locations()
 spirit_says( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	Subtitle( "^8" + text, "^8" + text2, duration, fadetimer );
+	machine_says( "^8" + text, "^8" + text2, duration, fadetimer );
 }
 
-Subtitle( text, text2, duration, fadeTimer )
+machine_says( sub_up, sub_low, duration, fadeTimer )
 {
-    if( isdefined( subtitle ) )
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
     {
-        subtitle fadeOverTime( 0.1 );
-        subtitle.alpha = 0;
-        wait 0.1;
-        subtitle destroy_hud();
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
     }
-    if( isdefined( subtitle2 ) )
-    {
-        subtitle2 fadeovertime( 0.1 );
-        subtitle.alpha = 0;
-        wait 0.1;
-        subtitle2 destroy_hud();
-    }
-	subtitle = NewHudElem();
-	subtitle.x = 0;
-	subtitle.y = -42;
-	subtitle SetText( "^6Spirit of Sorrow: ^7" +"^8" +  text );
-	subtitle.fontScale = 1.32;
-	subtitle.alignX = "center";
-	subtitle.alignY = "middle";//middle
-	subtitle.horzAlign = "center";
-	subtitle.vertAlign = "bottom";
-	subtitle.sort = 1;
-    
-	//subtitle2 = undefined;
-	subtitle.alpha = 0;
-    subtitle fadeovertime( fadeTimer );
-    
-    subtitle.alpha = 1;
-
-	if ( IsDefined( text2 ) )
+    level.subtitles_on_so_have_to_wait = true;
+    level.play_schruder_background_sound = true;
+    level.subtitle_upper.x = 0;
+    level.subtitle_lower.x = 0;
+    level.subtitle_upper.alpha = 0;
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 1;
+	if ( IsDefined( sub_low ) )
 	{
-		subtitle2 = NewHudelem();
-		subtitle2.x = 0;
-		subtitle2.y = -24;
-		subtitle2 SetText( text2 );
-		subtitle2.fontScale = 1.22;
-		subtitle2.alignX = "center";
-		subtitle2.alignY = "middle";
-		subtitle2.horzAlign = "center";
-		subtitle2.vertAlign = "bottom";
-		subtitle2.sort = 1;
-        subtitle2.alpha = 0;
-        subtitle2 fadeovertime( fadeTimer );
-        subtitle2.alpha = 1;
+        level.subtitle_lower.alpha = 0;
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 1;
 	}
-	
-	wait ( duration );
-    subtitle fadeovertime( fadeTimer );
-    subtitle2 fadeovertime( fadeTimer );
-    subtitle.alpha = 0;
-    subtitle2.alpha = 0;
-}
 
+	wait ( duration );
+    
+	level thread flyby( level.subtitle_upper );
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 0;
+
+	if ( IsDefined( sub_low ) )
+	{
+		level thread flyby( level.subtitle_lower );
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 0;
+	}
+
+    wait 1;
+    level.play_schruder_background_sound = false;
+}
 flyby( element )
 {
     level endon( "end_game" );
@@ -939,21 +921,8 @@ flyby( element )
     while( element.x < on_right )
     {
         element.x += 200;
-        /*
-        //if( element.x < on_right )
-        //{
-            
-            //waitnetworkframe();
-        //    wait 0.01;
-        //}
-        //if( element.x >= on_right )
-        //{
-        //    element destroy();
-        //}
-        */
         wait 0.05;
     }
-    element destroy_hud();
 }
 
 

@@ -92,6 +92,11 @@
 #include maps\mp\zombies\_zm_ffotd;
 #include maps\mp\zm_transit_lava;
 
+main()
+{
+    define_global_bootprint_chats();
+    define_global_bootprints();
+}
 
 init()
 {
@@ -436,7 +441,7 @@ f_boots3()
     level endon( "end_game" );
 
 
-    level thread _someone_unlocked_something( "Excellent! You've summoned all Fire Bootz!", "They're now yours to keep. Pick them up from ^9labs.", 8, 0.5 );
+    level thread _someone_unlocked_something( "Excellent! You've summoned all Fire Boots!", "They're now yours to keep. You can pick them up from ^9Safe House.", 8, 0.5 );
     //text up
     text_u = [];
     text_u[ 0 ] = "Excellent stuff!";
@@ -824,72 +829,145 @@ fireboots_sound_before_locating( alias, which_active )
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle( "^9Dr. Schruder: ^8" + text, text2, duration, fadetimer );
+	level thread machine_says( "^9Dr. Schruder: ^8" + text, text2, duration, fadetimer );
 }
 
 _print_someone_found_boot_piece( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread Subtitle(  text, "^9Dr. Schruder: ^8" + text2, duration, fadetimer );
+	level thread machine_says_boot_print(  text, "^9Dr. Schruder: ^8" + text2, duration, fadetimer );
 }
 
-Subtitle( text, text2, duration, fadeTimer )
+
+
+define_global_bootprint_chats()
 {
-	subtitle = NewHudElem();
-	subtitle.x = 0;
-	subtitle.y = -42;
-	subtitle SetText( text );
-	subtitle.fontScale = 1.32;
-	subtitle.alignX = "center";
-	subtitle.alignY = "middle";
-	subtitle.horzAlign = "center";
-	subtitle.vertAlign = "bottom";
-	subtitle.sort = 1;
+    level.subtitle_upper_fireboot = NewHudElem();
+	level.subtitle_upper_fireboot.x = 0;
+	level.subtitle_upper_fireboot.y = -42;
+	level.subtitle_upper_fireboot SetText( "" );
+	level.subtitle_upper_fireboot.fontScale = 1.32;
+	level.subtitle_upper_fireboot.alignX = "center";
+	level.subtitle_upper_fireboot.alignY = "middle";
+	level.subtitle_upper_fireboot.horzAlign = "center";
+	level.subtitle_upper_fireboot.vertAlign = "bottom";
+	level.subtitle_upper_fireboot.sort = 1;
     
-	//subtitle2 = undefined;
-	subtitle.alpha = 0;
-    subtitle fadeovertime( fadeTimer );
-    subtitle.alpha = 1;
+	level.subtitle_lower_fireboot = NewHudelem();
+    level.subtitle_lower_fireboot.x = 0;
+    level.subtitle_lower_fireboot.y = -24;
+    level.subtitle_lower_fireboot SetText( "" );
+    level.subtitle_lower_fireboot.fontScale = 1.22;
+    level.subtitle_lower_fireboot.alignX = "center";
+    level.subtitle_lower_fireboot.alignY = "middle";
+    level.subtitle_lower_fireboot.horzAlign = "center";
+    level.subtitle_lower_fireboot.vertAlign = "bottom";
+    level.subtitle_lower_fireboot.sort = 1;
 
-	if ( IsDefined( text2 ) )
-	{
-		subtitle2 = NewHudelem();
-		subtitle2.x = 0;
-		subtitle2.y = -24;
-		subtitle2 SetText( text2 );
-		subtitle2.fontScale = 1.22;
-		subtitle2.alignX = "center";
-		subtitle2.alignY = "middle";
-		subtitle2.horzAlign = "center";
-		subtitle2.vertAlign = "bottom";
-		subtitle2.sort = 1;
-        subtitle2.alpha = 0;
-        subtitle2 fadeovertime( fadeTimer );
-        subtitle2.alpha = 1;
-	}
-	
-	wait ( duration );
-    //level thread a_glowby( subtitle );
-    //if( isdefined( subtitle2 ) )
-    //{
-    //    level thread a_glowby( subtitle2 );
-    //}
-    /*
-	level thread flyby( subtitle );
-	//subtitle Destroy();
-	
-	if ( IsDefined( subtitle2 ) )
-	{
-		level thread flyby( subtitle2 );
-	}
-    */
-    subtitle fadeovertime( fadetimer );
-    subtitle2 fadeovertime( fadetimer );
-    subtitle.alpha = 0;
-    subtitle2.alpha = 0;
-    subtitle destroy_hud();
-    subtitle2 destroy_hud();
 }
+
+define_global_bootprints()
+{
+    level.subtitle_upper_f = NewHudElem();
+	level.subtitle_upper_f.x = 0;
+	level.subtitle_upper_f.y = -42;
+	level.subtitle_upper_f SetText( "" );
+	level.subtitle_upper_f.fontScale = 1.32;
+	level.subtitle_upper_f.alignX = "center";
+	level.subtitle_upper_f.alignY = "middle";
+	level.subtitle_upper_f.horzAlign = "center";
+	level.subtitle_upper_f.vertAlign = "bottom";
+	level.subtitle_upper_f.sort = 1;
+    
+	level.subtitle_lower_f = NewHudelem();
+    level.subtitle_lower_f.x = 0;
+    level.subtitle_lower_f.y = -24;
+    level.subtitle_lower_f SetText( "" );
+    level.subtitle_lower_f.fontScale = 1.22;
+    level.subtitle_lower_f.alignX = "center";
+    level.subtitle_lower_f.alignY = "middle";
+    level.subtitle_lower_f.horzAlign = "center";
+    level.subtitle_lower_f.vertAlign = "bottom";
+    level.subtitle_lower_f.sort = 1;
+
+}
+machine_says( sub_up, sub_low, duration, fadeTimer )
+{
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
+    {
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
+    }
+    level.subtitles_on_so_have_to_wait = true;
+    level.play_schruder_background_sound = true;
+    level.subtitle_upper_fireboot.alpha = 0;
+    level.subtitle_upper_fireboot.x = 0;
+    level.subtitle_lower_fireboot.x = 0;
+    level.subtitle_upper_fireboot fadeovertime( fadeTimer );
+    level.subtitle_upper_fireboot.alpha = 1;
+	if ( IsDefined( sub_low ) ) 
+	{
+        level.subtitle_lower_fireboot.alpha = 0;
+        level.subtitle_lower_fireboot fadeovertime( fadeTimer );
+        level.subtitle_lower_fireboot.alpha = 1;
+	}
+
+	wait ( duration );
+    
+	level thread flyby( level.subtitle_upper_fireboot );
+    level.subtitle_upper_fireboot fadeovertime( fadeTimer );
+    level.subtitle_upper_fireboot.alpha = 0;
+
+	if ( IsDefined( sub_low ) )
+	{
+		level thread flyby( level.subtitle_lower_fireboot );
+        level.subtitle_lower_fireboot fadeovertime( fadeTimer );
+        level.subtitle_lower_fireboot.alpha = 0;
+	}
+
+    wait 1;
+    level.play_schruder_background_sound = false;
+}
+
+
+machine_says_boot_print( sub_up, sub_low, duration, fadeTimer )
+{
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
+    {
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
+    }
+    level.subtitles_on_so_have_to_wait = true;
+    level.play_schruder_background_sound = true;
+    level.subtitle_upper_f.alpha = 0;
+    level.subtitle_upper_f.x = 0;
+    level.subtitle_lower_f.x = 0;
+    level.subtitle_upper_f fadeovertime( fadeTimer );
+    level.subtitle_upper_f.alpha = 1;
+	if ( IsDefined( sub_low ) )
+	{
+        level.subtitle_lower_f.alpha = 0;
+        level.subtitle_lower_f fadeovertime( fadeTimer );
+        level.subtitle_lower_f.alpha = 1;
+	}
+
+	wait ( duration );
+    
+	level thread flyby( level.subtitle_upper_f);
+    level.subtitle_upper_f fadeovertime( fadeTimer );
+    level.subtitle_upper_f.alpha = 0;
+
+	if ( IsDefined( sub_low ) )
+	{
+		level thread flyby( level.subtitle_lower_f );
+        level.subtitle_lower_f fadeovertime( fadeTimer );
+        level.subtitle_lower_f.alpha = 0;
+	}
+
+    wait 1;
+    level.play_schruder_background_sound = false;
+}
+
 
 flyby( element )
 {
@@ -900,21 +978,8 @@ flyby( element )
     while( element.x < on_right )
     {
         element.x += 200;
-        /*
-        //if( element.x < on_right )
-        //{
-            
-            //waitnetworkframe();
-        //    wait 0.01;
-        //}
-        //if( element.x >= on_right )
-        //{
-        //    element destroy();
-        //}
-        */
         wait 0.05;
     }
-    element destroy_hud();
 }
 
 summoning_in_progress( model, bounce_upwards )

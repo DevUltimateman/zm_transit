@@ -89,7 +89,7 @@ head_needs_spawning()
     fade_off = 0.2;
     level.protection_helmet_spawn thread hover_helmet();
     //sub_player( t1, t2, time, fade_off );
-    level thread scripts\zm\zm_transit\warmer_days_sq_boots_of_fire::Subtitle( "^3Dr. Scruder: ^7" + t1,t2,time,fade_off);
+    //&&level thread scripts\zm\zm_transit\warmer_days_sq_boots_of_fire::Subtitle( "^3Dr. Scruder: ^7" + t1,t2,time,fade_off);
 
     playFXOnTag( level.myfx[ 1 ], level.protection_helmet_spawn, "tag_origin" );
     //playsound
@@ -118,7 +118,7 @@ head_needs_spawning()
 
                 //failsafe check for upcoming disconnect
                 level.someone_picked = true;
-                level thread scripts\zm\zm_transit\warmer_days_sq_boots_of_fire::Subtitle( "^3Dr. Schruder: ^7" + t1, t2, time, fade_off );
+                //level thread scripts\zm\zm_transit\warmer_days_sq_boots_of_fire::Subtitle( "^3Dr. Schruder: ^7" + t1, t2, time, fade_off );
                 
                 //make schruder ask about the spirit of sorrow
                 level notify( "ask_sometime_after" );

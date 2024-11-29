@@ -491,30 +491,30 @@ move_poisonous_clouds_main_quest()
     wait 1.5;
     for( s = 0; s < level.players.size; s++ ){ level.players[ s ] thread fade_to_black_on_impact_self_only(); } 
     wait 1.5;
-    foreach( player in level.players )
+    foreach( playera in level.players )
     {
         
 
-           player.surround_cloud = spawn( "script_model", player.origin + ( 0, 0, -10 ) );
-           player.surround_cloud setmodel( "tag_origin" );
-           player.surround_cloud.angles = player.angles;
+           playera.surround_cloud = spawn( "script_model", playera.origin + ( 0, 0, -10 ) );
+           playera.surround_cloud setmodel( "tag_origin" );
+           playera.surround_cloud.angles = playera.angles;
             wait 0.05;
-          playfxontag( level._effects[ 47 ], player.surround_cloud, "tag_origin" );
+          playfxontag( level._effects[ 47 ], playera.surround_cloud, "tag_origin" );
             wait 0.05;
-              playfxontag( level.myfx[ 32 ], player.surround_cloud, "tag_origin" );
+              playfxontag( level.myfx[ 32 ], playera.surround_cloud, "tag_origin" );
             
         
 
         wait 0.05;
-        player thread do_damage_cloud();
+        playera thread do_damage_cloud();
         //player thread do_big_damage_cloud();
-        player setclientdvar( "r_fog", true );
-        player waypoint_set_players();
-        player setclientdvar( "r_dof_enable", true );
-        player setclientdvar( "r_dof_tweak", true );
-        player setclientdvar( "r_dof_farblur", 10 );
-        player setclientdvar( "r_dof_farstart", 10 );
-        player setclientdvar( "r_dof_farend", 2000 );
+        playera setclientdvar( "r_fog", true );
+        playera thread waypoint_set_players();
+        playera setclientdvar( "r_dof_enable", true );
+        playera setclientdvar( "r_dof_tweak", true );
+        playera setclientdvar( "r_dof_farblur", 10 );
+        playera setclientdvar( "r_dof_farstart", 10 );
+        playera setclientdvar( "r_dof_farend", 2000 );
         
         
         //player.custom_cloud = spawn( "script_model", player.origin );
@@ -522,14 +522,14 @@ move_poisonous_clouds_main_quest()
         //player.custom_cloud.angles = player.angles;
         //wait 0.1;
         //playfxontag( level._effects[ 47 ], player.custom_cloud, "tag_origin" );
-        player PlaySound( level.jsn_snd_lst[ 34 ] );
+        playera PlaySound( level.jsn_snd_lst[ 34 ] );
         wait 0.2;
-        player playsound( level.jsn_snd_lst[ 32 ] );
+        playera playsound( level.jsn_snd_lst[ 32 ] );
 
-        player thread triangle_cloud_follow();
+        playera thread triangle_cloud_follow();
         //player thread which_zone_im_in();
         //player.custom_cloud mover( player );
-        player thread monitor_arrive_farm();
+        playera thread monitor_arrive_farm();
 
 
     }
@@ -829,67 +829,43 @@ print_zone()
     }
 }
 
-
 machine_says( sub_up, sub_low, duration, fadeTimer )
 {
-
-	subtitle_upper = NewHudElem();
-	subtitle_upper.x = 0;
-	subtitle_upper.y = -42;
-	subtitle_upper SetText( sub_up );
-	subtitle_upper.fontScale = 1.32;
-	subtitle_upper.alignX = "center";
-	subtitle_upper.alignY = "middle";
-	subtitle_upper.horzAlign = "center";
-	subtitle_upper.vertAlign = "bottom";
-	subtitle_upper.sort = 1;
-    
-	subtitle_lower = undefined;
-	subtitle_upper.alpha = 0;
-    subtitle_upper fadeovertime( fadeTimer );
-    subtitle_upper.alpha = 1;
-    
-    
-    
+    //don't start drawing new hud if one already exists 
+    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
+    {
+        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
+    }
+    level.subtitles_on_so_have_to_wait = true;
+    level.play_schruder_background_sound = true;
+    level.subtitle_upper.alpha = 0;
+    level.subtitle_upper.x = 0;
+    level.subtitle_lower.x = 0;
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 1;
 	if ( IsDefined( sub_low ) )
 	{
-		subtitle_lower = NewHudelem();
-		subtitle_lower.x = 0;
-		subtitle_lower.y = -24;
-		subtitle_lower SetText( sub_low );
-		subtitle_lower.fontScale = 1.22;
-		subtitle_lower.alignX = "center";
-		subtitle_lower.alignY = "middle";
-		subtitle_lower.horzAlign = "center";
-		subtitle_lower.vertAlign = "bottom";
-		subtitle_lower.sort = 1;
-        subtitle_lower.alpha = 0;
-        subtitle_lower fadeovertime( fadeTimer );
-        subtitle_lower.alpha = 1;
+        level.subtitle_lower.alpha = 0;
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 1;
 	}
-	
-	wait ( duration );
-    level.play_schruder_background_sound = false;
-    //level thread a_glowby( subtitle );
-    //if( isdefined( subtitle_lower ) )
-    //{
-    //    level thread a_glowby( subtitle_lower );
-    //}
-    
-	level thread flyby( subtitle_upper );
-    subtitle_upper fadeovertime( fadeTimer );
-    subtitle_upper.alpha = 0;
-	//subtitle Destroy();
-	
-	if ( IsDefined( subtitle_lower ) )
-	{
-		level thread flyby( subtitle_lower );
-        subtitle_lower fadeovertime( fadeTimer );
-        subtitle_lower.alpha = 0;
-	}
-    
-}
 
+	wait ( duration );
+    
+	level thread flyby( level.subtitle_upper );
+    level.subtitle_upper fadeovertime( fadeTimer );
+    level.subtitle_upper.alpha = 0;
+
+	if ( IsDefined( sub_low ) )
+	{
+		level thread flyby( level.subtitle_lower );
+        level.subtitle_lower fadeovertime( fadeTimer );
+        level.subtitle_lower.alpha = 0;
+	}
+
+    wait 1;
+    level.play_schruder_background_sound = false;
+}
 //this a gay ass hud flyer, still choppy af
 flyby( element )
 {
@@ -900,22 +876,8 @@ flyby( element )
     while( element.x < on_right )
     {
         element.x += 200;
-        /*
-        //if( element.x < on_right )
-        //{
-            
-            //waitnetworkframe();
-        //    wait 0.01;
-        //}
-        //if( element.x >= on_right )
-        //{
-        //    element destroy();
-        //}
-        */
         wait 0.05;
     }
-    element destroy_hud();
-    //let new huds start drawing if needed
     level.subtitles_on_so_have_to_wait = false;
 }
 
@@ -955,9 +917,6 @@ level_waittill_continue_mq()
 {
     level waittill( "continue_main_quest_farm" );
     level thread do_guide_blockers_dialog();
-   // level thread playloopsound_buried();
-    //spawn blockers to guide player , this shit sucks and dont have time to make it work better.
-    //level thread level_guide_players_to_depo_blockers();
     foreach( p in level.players ) { p setclientdvar( "r_fog", 1 ); p setclientdvar( "r_sky_intensity_factor0", 0.8 ); }
     //clouds have now disappeared and players must pick up suit case
     //this notifies warmer_days_mq_08_poisonous_adventure script function and starts new logic from there

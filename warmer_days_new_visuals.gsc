@@ -43,7 +43,6 @@
 init()
 {
     level thread apply_visuals();
-    level thread spawn_fog_on_player();
     s_clouds = [];
     s_clouds_angles = [];
     //these clouds try to hide some of tranzit's "pop ins"
@@ -325,8 +324,12 @@ cloud_locations()
     wait 1;
     for( s = 0; s < additionals_.size; s++ )
     {
-        playfx( level.myfx[ 54 ], additionals_[ s ] + ( 0, 0, 65 ) );
-        wait 0.05;
+        if( s % 2 == 0 )
+        {
+            playfx( level.myfx[ 54 ], additionals_[ s ] + ( 0, 0, 65 ) );
+            wait 0.05;
+        }
+        
     }
 
     for( a = 0; a < 3; a++ )
@@ -435,8 +438,12 @@ ambers()
 
     for( s = 0; s < orgs.size; s++ )
     {
-        playfx( level.myFx[ 59 ], orgs[ s ] );
-        wait 0.25;
+        if( s % 2 == 0 )
+        {
+            playfx( level.myFx[ 59 ], orgs[ s ] );
+            wait 0.25;
+        }
+        
     }
     if( level.dev_time ){ iprintlnbold( "ALL EMBERS FLOATED#"); }
     

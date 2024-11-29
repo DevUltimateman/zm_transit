@@ -41,20 +41,11 @@
 
 init()
 {
-    //level thread applyTreeOnPlayer();
-    //locations_to_spawn();
-    //level thread spawn_all_trees();
     precachemodel( "t5_foliage_tree_burnt02" );
     precachemodel( "t5_foliage_tree_burnt03" );
     precachemodel( "t5_foliage_shrubs02" );
     precachemodel( "collision_player_64x64x128" );
     precachemodel( "t5_foliage_bush05" );
-    //flag_wait( "initial_blackscreen_passed" );
-    //locations_to_spawn();
-   // level thread all_collidables();
-    //level thread spawn_all_static_trees();
-    
-
 }
 
 spawn_all_trees()
