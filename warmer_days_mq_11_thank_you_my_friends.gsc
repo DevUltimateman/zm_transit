@@ -212,6 +212,7 @@ mr_s_for_final_time()
     mr_s setmodel( level.automaton.model );
     mr_s.angles = ( -10, 0,  0 );
     mr_s thread are_players_close();
+    wait 1;
     level waittill( "players_close" );
     Earthquake(.3, 2, mr_s.origin, 500 );
     mr_s moveto( here, 1.5, 0, 0.5 );
@@ -269,7 +270,8 @@ mr_s_for_final_time()
     mr_s waittill( "movedone" );
     mr_s delete();
     level notify( "stop_mus_load_bur" );
-    level notify( "can_be_ended" );
+    level notify( "can_call_help" );
+    //level notify( "can_be_ended" );
     //"chaos_ensues_from_calling_help"
 
 }

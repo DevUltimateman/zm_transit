@@ -77,7 +77,7 @@ for_connecting_players()
         level waittill( "connected", p );
         if( level.transmitter_part_done )
         { 
-            //p thread apply_jockie_on_spawn(); //dev func
+            p thread apply_jockie_on_spawn(); //if game has unlocked "MUSCLE UP" already, give it to connecting players
         }
     }
 }
@@ -172,10 +172,10 @@ transmitter_wait_for_navcard()
             level notify( "s_talks_navcard" );
             navtrig sethintstring( "^9[ ^8Transmitter is now sending ^9signals^8 to nearby ^9radiophones ^9]");
             wait 1;
-            foreach( playa in level.players )
-            {
-                playa thread player_reward_marathon();
-            }
+           // foreach( playa in level.players )
+          //  {
+          //      playa thread player_reward_marathon();
+          //  }
             break;
         }
     }
@@ -184,7 +184,7 @@ transmitter_wait_for_navcard()
 wait_for_final_meet_up()
 {
     level endon( "end_game" );
-    level waittill( "spawn_mrs_for_final_time" );
+    level waittill( "all_powered" );
     wait 0.1;
     self setHintString( "^9[ ^3[{+activate}] ^8to call ^3Mr. Schruder ^8for one more time.. ^9]" );
     wait 0.1;
@@ -212,8 +212,10 @@ wait_for_final_meet_up()
     }
     wait 2.5;
     self sethintstring( "" );
-    level waittill( "can_be_ended" );
-    self sethintstring( "^9[ ^8Call help. ^3Requires All Survivors^8 to press ^3[{+activate}] ^^9]");
+    level waittill( "can_call_help" );
+    wait 2.5;
+    self sethintstring( "^9[ ^8Call help. ^3[{+activate}] ^8to send the signal. There's no turning back after this. ^9]");
+    
     while( true )
     {
         self waittill( "trigger", who );
@@ -232,6 +234,7 @@ wait_for_final_meet_up()
             break;
         }
     }
+    
     self delete();
 }
 play_nav1_success( this_position )

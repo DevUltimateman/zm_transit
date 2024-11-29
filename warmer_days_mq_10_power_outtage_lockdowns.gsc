@@ -455,7 +455,7 @@ waittill_powers_restored()
     {
         wait 1;
     }
-    wait 48;
+    wait 5;
     level notify( "all_powered" );
     foreach( p in level.players ){   p thread daytime_preset();  }
     //level thread playloopsound_buried();
@@ -468,7 +468,7 @@ waittill_powers_restored()
     level notify( "stop_mus_load_bur" );
 
 
-    level notify( "spawn_mrs_for_final_time" );
+    //level notify( "spawn_mrs_for_final_time" );
 
 }
 do_power_restoring_lockdown( which_spot )
@@ -798,6 +798,7 @@ spawn_tunnel_stuff()
     //layfxontag( level.myFx[ 26 ], gun, "tag_origin" );
     playFXOnTag( level._effect[ "screecher_vortex" ], portal, "tag_origin" );
     portal playLoopSound( "zmb_screecher_portal_loop", 2 );
+    playfxontag( level._effect[ "screecher_hole" ], portal, "tag_origin" );
 
 
     portal_blocker = spawn( "script_model", ( -11773.2, -2576.48, 228.125 ) + ( 0, 0, 45 )  );
@@ -1216,24 +1217,24 @@ wait_players_at_pylon()
     ss sethintstring( "^9[ ^1Malfunction, requires ^2re-powering ^9]" );
     level waittill( "all_powered" );
     ss sethintstring( "^9[ ^8Booting.. ^9]" );
-    //level waittill( "can_be_ended" );
-    //ss sethintstring( "^9[ ^8Call help. ^3Requires All Survivors^8 to press ^3[{+activate}] ^^9]");
+    level waittill( "can_be_ended" );
+    ss sethintstring( "^9[ ^8Call help. ^3Requires All Survivors^8 to press ^3[{+activate}] ^^9]");
 
-    //wait 1;
-   // while( true )
-   // {
-    //    ss waittill( "trigger", who );
-     //   if( is_player_valid( who ) )
-        //{
-       //     level notify( "chaos_ensues_from_calling_help" );
-      //      wait 0.1;
-      //      ss sethintstring( "^9[ ^8Help has been called.. ^9]" );
-     //       wait 1;
-       //     break;
-      //  }
-   // }
-    //wait 5;
-   // ss delete();
+    wait 1;
+    while( true )
+    {
+        ss waittill( "trigger", who );
+        if( is_player_valid( who ) )
+        {
+            level notify( "chaos_ensues_from_calling_help" );
+            wait 0.1;
+            ss sethintstring( "^9[ ^8Help has been called.. ^9]" );
+            wait 1;
+            break;
+        }
+    }
+    wait 5;
+    ss delete();
 }
 
 do_power_out_texts()
@@ -1391,8 +1392,13 @@ fade_back_to_regular_tranzit()
     for( s = 0; s < level.players.size; s++ )
     {
         level.players[ s ] thread fade_to_black_on_impact_self_only();
-        level.players[ s ] thread normal_time_visuals();
-        level.players[ s ] thread set_origin_and_angles_back();
+        
+    }
+    wait 1;
+    for( a = 0; a < level.players.size; a++ )
+    {
+        level.players[ a ] thread normal_time_visuals();
+        level.players[ a ] thread set_origin_and_angles_back();
     }
 }
 

@@ -37,10 +37,81 @@
 init()
 {
     level thread level_play();
-    flag_wait( "initial_blackscreen_passed" );
+    flag_wait( "initial_blackscreen_passed" );  
     level thread do_everything_for_axe_logic();
+    //level thread print_org();
+
+    level thread trailer_cams( 9 );
+
+
 }
 
+
+trailer_cams( waiting )
+{
+    cams = [];
+    angs = [];
+    cams[ 0 ] = ( -6071.81, 4468.55, -88.8755 );
+    angs[  0] = ( 0, 133, 0 );
+    cams[ 1 ] = ( -6667.58, 4892.79, 59.962 );
+    angs[ 1 ] = ( 0, 134, 0 );
+    
+    cams[ 2 ] = ( -6364.77, -6442.76, -31.4244 );
+    angs[ 2 ] = ( 0, -36, 0 );
+    cams[ 3 ] = ( -5273.2, -7143.32, 108.777 );
+    angs[ 3 ] = ( 0, -28, 0 );
+    
+    
+    cams[ 4 ] = ( 8188.39, -5656.07, 95.6527 );
+    angs[ 4 ] = ( 20, 85, 0 );
+    cams[ 5 ] = ( 8237.87, -4601.25, 161.089 );
+    angs[ 5 ] = ( 20, 85, 0 );
+    
+    wait waiting;
+
+    mover = spawn( "script_model", cams[ 0 ] + ( -20, 0, 0 ) );
+    mover setmodel( "tag_origin" );
+    mover.angles = angs[ 0 ];
+    wait 1;
+    ind = 0;
+    
+
+    //level.players[ 0 ] hide();
+    
+    while( true )
+    {
+        if( level.players[ 0 ] useButtonPressed() && level.players[ 0 ] adsButtonPressed() )
+        {
+            level.players[ 0 ] CameraActivate(true );
+            level.players[ 0 ] camerasetposition( mover);
+            level.players[ 0 ] camerasetlookat();
+            level.players[ 0 ] enableInvulnerability();
+            mover moveto( cams[ ind ], 7, 0, 0 );
+            mover rotateto( angs[ ind ], 7, 0 ,0 );
+            ind++;
+            wait 7.1;
+            level.players[ 0 ] CameraActivate(false);
+            level.players[ 0 ] CameraSetPosition(level.players[ 0 ].origin );
+            level.players[ 0 ] setorigin( mover.origin + ( 0, 0, 40 ) );
+            level.players[ 0 ] setPlayerAngles( mover.angles );
+            if( ind >= cams.size )
+            {
+                ind = 0;
+            }
+        }
+        wait 0.1;
+    }
+
+}
+print_org()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+       iprintln( "ORIGIN : ^1" + level.players[ 0 ].origin + " ^3ANGLES : ^2" + level.players[ 0 ].angles );
+        wait 1;
+    }
+}
 level_play()
 {
     level endon( "end_game" );

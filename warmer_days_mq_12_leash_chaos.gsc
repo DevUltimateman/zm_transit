@@ -72,17 +72,24 @@ survivors_called_help()
 {
 	level endon( "end_game" );
 	level waittill( "chaos_ensues_from_calling_help" );
+	wait 3;
+	/*
+	//debug:
+	foreach( p in level.players )
+	{
+		p setOrigin( ( 7457.21, -431.969, -195.816 ) + ( 20, 10, randomIntRange( 50, 120 ) )) ;
+	}
+	*/
 	//dialogue schruder says they sorry
 	//but end is coming now
 	//schruder tried to keep you not from calling help by giving u nice things
 	//now game is going to become last stand fuck
 	wait 3;
 	PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
-	foreacH( s in level.players ){ s playsound( level.jsn_snd_lst[ 62 ] ); }
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dials( "My friend!", "What have you come done?!", 6, 1 );
 	wait 8;
-	//foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
 	level thread do_dials( "I didn't want it to come down to this..", "You've been such a great survivor...", 6, 1 );
 	wait 7;
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }

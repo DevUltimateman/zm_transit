@@ -98,7 +98,7 @@ init()
     level.c_points = [];
     level.c_angles = [];
     level.rift_step_active = false;
-    level.turbine_to_rift_treshold = 200; //distance in units
+    level.turbine_to_rift_treshold = 270; //distance in units
     level._malfunction_complete = false; //just a check at power off stage
     level.repaired_rifts = 0; //actually amount of fixed lamps for rift portal
     level.repaired_rifts_to_do = undefined;
@@ -1140,7 +1140,7 @@ call_summoning_on_player_logic( ride_loc, ride_ang, which_lamp )
     while( isdefined( self ) )
     {
         self waittill( "trigger", player_to_summon );
-        if( level.spirit_step_active )
+        if( isdefined( level.rifts_disabled_for_while ) && level.rifts_disabled_for_while == true )
         {
             wait 1;
             continue;
@@ -1363,7 +1363,8 @@ all_fixable_spots_spawn_fixer_logic() //is in use
         fix_trig_available_fx setmodel( "tag_origin" );
         fix_trig_available_fx.angles = ( 0,0,0 );
         wait 0.05;
-        playfxontag( level.myfx[ 2 ], fix_trig_available_fx, "tag_origin" );
+        //commenting out this fx to see if we can help the engine not overload
+        //playfxontag( level.myfx[ 2 ], fix_trig_available_fx, "tag_origin" );
         fix_trig_available_fx thread monitor_everything( fix_trig, sizer );
     }
     //dont spawn the rift computer at power station till all lamps are fixed
@@ -1377,11 +1378,13 @@ make_light_hinters()
     level.light_hinters = [];
     for( i = 0; i < initial_hinters.size; i++ )
     {
+        //invisible models that we check distance against in another function.
+        //remove the fxs cos engine cant handle the load but leave the tags
         level.light_hinters[ i ] = spawn( "script_model", initial_hinters[ i ].origin + ( 0, 0, 148 ) );
         level.light_hinters[ i ] setmodel( "tag_origin" );
         level.light_hinters[ i ].angles = ( 0, 0, 0 );
         wait 0.05;
-        playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
+        //playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
 
         wait 0.13;
         //playfxontag( level._effect[ "fx_zmb_tranzit_light_safety_max" ], level.light_hinters[ i ], "tag_origin" );
@@ -1618,8 +1621,8 @@ computer_wait_for_player_interact( trigger_delete ) //in use now
     {
         for( i = 0; i < level.players.size; i++ )
         {
-            if( !distance2d( level.players[ i ].origin, level.rift_comp.origin ) > 40 ) { continue; }
-            if( distance2d( level.players[ i ].origin, level.rift_comp.origin ) < 35 )
+            if( !distance2d( level.players[ i ].origin, level.rift_comp.origin ) > 60 ) { continue; }
+            if( distance2d( level.players[ i ].origin, level.rift_comp.origin ) < 55 )
             {
                 if( !level.players[ i ] useButtonPressed() ) { continue; }
                 if( level.players[ i ] useButtonPressed() )
@@ -1933,8 +1936,8 @@ do_malfunction_visuals()
     {
         pls setclientdvar( "r_exposurevalue", 3 );
         pls setClientDvar( "r_exposureTweak", false );
-        plr setclientdvar( "cg_colorscale", "1 1 1" );
-        plr setclientdvar( "cg_colorhue", 0 );
+        pls setclientdvar( "cg_colorscale", "1 1 1" );
+        pls setclientdvar( "cg_colorhue", 0 );
         if( isdefined( plr.electry ) )
         {
             plr.electry unlink();

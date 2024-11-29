@@ -231,6 +231,7 @@ do_first_dialog()
 
     level waittill( "someone_picked_up_poison" );
     level.moving_to_depo_active = false;
+    level.rifts_disabled_for_while = false;
     level thread playloopsound_buried();
     wait 2.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }

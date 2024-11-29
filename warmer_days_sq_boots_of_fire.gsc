@@ -329,11 +329,7 @@ setBootStat( firstTime )
     self waittill( "spawned_player" );
     self.has_picked_up_boots = undefined;
     wait 1;
-    self setClientDvar( "cg_ufo_scaler", 0.5 );
     self.has_picked_up_boots = firstTime;
-    self giveweapon( "mp5k_zm" );
-    self giveMaxAmmo( "mp5k_zm" );
-    self switchToWeapon( "mp5k_zm" );
 } 
 
 

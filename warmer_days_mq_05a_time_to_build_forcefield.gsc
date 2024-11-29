@@ -101,7 +101,7 @@ init()
     level.rock_summoning_stage_active = false;
 
 
-    
+    level.rifts_disabled_for_while = false;
     
 
 
@@ -1028,8 +1028,9 @@ rocks_at_pylon()
     level notify( "stop_mus_load_bur" );
     level thread monitor_players_pylon();
     level waittill( "spawn_schruder" );
+    level.rifts_disabled_for_while = true;
     //level thread playloopsound_buried();
-    wait 1;
+    wait 3;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "See if I'm able to transform!", "Aaarghh", 5, 1 );
     level thread do_everything_schruder_spawns();
