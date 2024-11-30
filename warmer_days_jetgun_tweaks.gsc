@@ -58,7 +58,6 @@ init()
     level thread CustomRoundNumber(); //enable back wheen recording done
     flag_wait( "start_zombie_round_logic" );
     level thread while_forching();
-    //level thread waypoint_set_players();  //enable back wheen recording done
     level notify("end_round_think"); //enable back wheen recording done
     wait 0.05;
     level thread round_think();
@@ -201,8 +200,8 @@ print_if_i_have_eq_test()
             self.clays setText( "^3" + amount );
             self.clays fadeovertime( 0.2 );
             self.clays_shade fadeovertime( 0.2 );
-            self.clays_shade.alpha = 0; //debug 0
-            self.clays.alpha = 0; //debug 0
+            self.clays_shade.alpha = 1; //debug 0
+            self.clays.alpha = 1; //debug 0
             wait 0.2;
         }
         
@@ -220,8 +219,8 @@ print_if_i_have_eq_test()
             self.eq_hud_shower setShader( t_hud, 18, 18 );
             self.eq_hud_shower fadeovertime( 1 );
             self.eq_actionslot_shower fadeovertime( 1 );
-            self.eq_hud_shower.alpha = 0;//debug 0
-            self.eq_actionslot_shower.alpha = 0;//debug 0
+            self.eq_hud_shower.alpha = 1;//debug 0
+            self.eq_actionslot_shower.alpha = 1;//debug 0
             wait 1;
             while( self hasWeapon( t_1 ) || self hasWeapon( t_2 ) )
             {
@@ -248,8 +247,8 @@ print_if_i_have_eq_test()
             self.eq_hud_shower setShader( j_hud, 18, 18 );
             self.eq_hud_shower fadeovertime( 1 );
             self.eq_actionslot_shower fadeovertime( 1 );
-            self.eq_hud_shower.alpha = 0; //Debug 0
-            self.eq_actionslot_shower.alpha = 0; //Debug 0
+            self.eq_hud_shower.alpha = 1; //Debug 0
+            self.eq_actionslot_shower.alpha = 1; //Debug 0
             wait 1;
             while( self hasWeapon( j_1 ) || self hasWeapon( j_2 ) )
             {
@@ -275,8 +274,8 @@ print_if_i_have_eq_test()
             self.eq_hud_shower setShader( tu_hud, 18, 18 );
             self.eq_hud_shower fadeovertime( 1 );
             self.eq_actionslot_shower fadeovertime( 1 );
-            self.eq_hud_shower.alpha = 0; //Debug 0
-            self.eq_actionslot_shower.alpha = 0; //Debug 0
+            self.eq_hud_shower.alpha = 1; //Debug 0
+            self.eq_actionslot_shower.alpha = 1; //Debug 0
             wait 1;
             while( self hasWeapon( tu_1 ) || self hasWeapon( tu_2 ) )
             {
@@ -301,8 +300,8 @@ print_if_i_have_eq_test()
             self.eq_hud_shower setShader( el_hud, 18, 18 );
             self.eq_hud_shower fadeovertime( 1 );
             self.eq_actionslot_shower fadeovertime( 1 );
-            self.eq_hud_shower.alpha = 0; //Debug 0
-            self.eq_actionslot_shower.alpha = 0; //Debug 0
+            self.eq_hud_shower.alpha = 1; //Debug 0
+            self.eq_actionslot_shower.alpha = 1; //Debug 0
             wait 1;
             while( self hasWeapon( el_1 ) || self hasWeapon( el_2 ) )
             {
@@ -327,8 +326,8 @@ print_if_i_have_eq_test()
             self.eq_hud_shower setShader( ri_hud, 18, 18 );
             self.eq_hud_shower fadeovertime( 1 );
             self.eq_actionslot_shower fadeovertime( 1 );
-            self.eq_hud_shower.alpha = 0; //Debug 0
-            self.eq_actionslot_shower.alpha = 0; //Debug 0
+            self.eq_hud_shower.alpha = 1; //Debug 0
+            self.eq_actionslot_shower.alpha = 1; //Debug 0
             wait 1;
             while( self hasWeapon( ri_1 ) || self hasWeapon( ri_2 ) )
             {
@@ -513,7 +512,7 @@ change_location()
     wait 1;
     self.location_hud settext( "^8" + update_location_hud_text( self get_current_zone() ) );
     self.location_hud fadeovertime( 1 );
-    self.location_hud.alpha = 0; //Debug 0
+    self.location_hud.alpha = 1; //Debug 0
     wait 1;
     self.can_change = true;
     //update_location_hud_text( which_zone )
@@ -799,7 +798,7 @@ jetgun_value_hud()
     self.jetgun_ammo_hud.sort = 1;
     self.jetgun_ammo_hud.alpha = 0; 
     self.jetgun_ammo_hud fadeovertime( 1 );
-    self.jetgun_ammo_hud.alpha = 0; //Debug 0
+    self.jetgun_ammo_hud.alpha = 1; //Debug 0
     
     self.jetgun_name_hud.x = 30;
     self.jetgun_name_hud.y = -77.5;
@@ -812,7 +811,7 @@ jetgun_value_hud()
     self.jetgun_name_hud.sort = 1;
     self.jetgun_name_hud.alpha = 0;
     self.jetgun_name_hud fadeovertime( 1 );
-    self.jetgun_name_hud.alpha = 0; //Debug 0
+    self.jetgun_name_hud.alpha = 1; //Debug 0
 
 
 }
@@ -869,7 +868,7 @@ scores_hud()
     self.real_score_hud.sort = 1;
     self.real_score_hud.alpha = 0;
     self.real_score_hud fadeovertime( 1.5 );
-    self.real_score_hud.alpha = 0; //Debug 0
+    self.real_score_hud.alpha = 1; //Debug 0
     self.real_score_hud.color = ( 1, 0.7, 0 );
 
     
@@ -884,7 +883,7 @@ scores_hud()
     self.survivor_points.sort = 1;
     self.survivor_points.alpha = 0;
     self.survivor_points fadeovertime( 1.5 );
-    self.survivor_points.alpha = 0; //Debug 0
+    self.survivor_points.alpha = 1; //Debug 0
 
 
 }
@@ -997,7 +996,7 @@ scores_hud_ammo()
     self.weapon_ammo.sort = 1;
     self.weapon_ammo.alpha = 0;
     self.weapon_ammo fadeovertime( 1.5 );
-    self.weapon_ammo.alpha = 0; //Debug 0
+    self.weapon_ammo.alpha = 1; //Debug 0
 
 
     
@@ -1012,7 +1011,7 @@ scores_hud_ammo()
     self.ammo_slash.sort = 1;
     self.ammo_slash.alpha = 0;
     self.ammo_slash fadeovertime( 1.5 );
-    self.ammo_slash.alpha = 0; //Debug 0
+    self.ammo_slash.alpha = 1; //Debug 0
 
     
     self.weapon_ammo_stock.x = 2;
@@ -1027,7 +1026,7 @@ scores_hud_ammo()
     self.weapon_ammo_stock.alpha = 0;
     self.weapon_ammo_stock.color = ( 0.65, 0.65, 0.65 );
     self.weapon_ammo_stock fadeovertime( 1.5 );
-    self.weapon_ammo_stock.alpha = 0; //Debug 0
+    self.weapon_ammo_stock.alpha = 1; //Debug 0
 
 
    
@@ -1043,7 +1042,7 @@ scores_hud_ammo()
     self.say_ammo.alpha = 0;
     self.say_ammo.color = ( 0.9, 0.7, 0 );
     self.say_ammo fadeovertime( 1.5 );
-    self.say_ammo.alpha = 0; //Debug 0
+    self.say_ammo.alpha = 1; //Debug 0
 
 
 
@@ -1149,7 +1148,7 @@ name_hud()
     //self.playname.color = ( 0.8, 0.4, 0 );
     self.playname.color = ( 0.65, 0.65, 0.65 );
     self.playname fadeovertime( 1.5 );
-    self.playname.alpha = 0; //Debug 0
+    self.playname.alpha = 1; //Debug 0
 }
 
 
@@ -1216,10 +1215,10 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
     level.hudtext fadeovertime( 1.5 );
     level.huddefcon fadeovertime( 1 );
     level.huddefconline fadeovertime( 1 );
-    level.huddefconline.alpha = 0; //Debug 0
-    level.huddefcon.alpha = 0; //Debug 0
-	level.hud.alpha = 0; //Debug 0
-    level.hudtext.alpha = 0; //Debug 0
+    level.huddefconline.alpha = 1; //Debug 0
+    level.huddefcon.alpha = 1; //Debug 0
+	level.hud.alpha = 1; //Debug 0
+    level.hudtext.alpha = 1; //Debug 0
 	
 	wait 4.5;
 
@@ -1245,7 +1244,7 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
     level.hud settext(  level.round_number );
     level.hud fadeovertime( 0.5 );
     
-    level.hud.alpha = 0; //Debug 0
+    level.hud.alpha = 1; //Debug 0
     wait 0.5;
 }
 
@@ -1355,8 +1354,8 @@ flashroundnumber()
 	//level.hud.fontscale = 3;
 	level.hud fadeovertime( 1.5 );
 	level.hudtext fadeovertime( 1.5 );
-    level.hud.alpha = 0; //Debug 0
-	level.hudtext.alpha = 0; //1; //Debug 0
+    level.hud.alpha = 1; //Debug 0
+	level.hudtext.alpha = 1; //1; //Debug 0
 	wait 5;
 	level.hudtext fadeovertime( 1 );
 	level.hudtext.alpha = 0;
@@ -1371,7 +1370,7 @@ flashroundnumber()
     level.hud.color = ( 0.65, 0.65, 0.65 );
     level.hud settext( level.round_number );
     level.hud fadeovertime( 0.5 );
-    level.hud.alpha = 0; //Debug 0
+    level.hud.alpha = 1; //Debug 0
     wait 1;
 }
 
@@ -1411,7 +1410,7 @@ round_pause( delay ) //from zm-gsc, might use later
 	level.countdown_hud = create_counter_hud();
 	level.countdown_hud setvalue( delay );
 	level.countdown_hud.color = ( 0.8, 0, 0 );
-	level.countdown_hud.alpha = 0; //Debug 0
+	level.countdown_hud.alpha = 1; //Debug 0
     level.countdown_hud.x = 0;
     level.countdown_hud.y = 0;
 
