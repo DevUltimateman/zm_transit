@@ -1308,6 +1308,11 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
+    level.subtitle_upper settext( sub_up );
+    if( isdefined( sub_low ) )
+    {
+        level.subtitle_lower settext( sub_low );
+    }
     level.subtitle_upper.alpha = 0;
     level.subtitle_upper.x = 0;
     level.subtitle_lower.x = 0;

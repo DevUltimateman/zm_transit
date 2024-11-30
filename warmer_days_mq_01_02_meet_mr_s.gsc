@@ -44,7 +44,7 @@
 
 main()
 {
-    define_global_subtitles();
+    //define_global_subtitles();
 }
 init()
 {   
@@ -58,7 +58,7 @@ init()
     //this also calls a monitor_players from schruder function
     //and then notifies step1_talk function to start rolling if conditions are met.
     level thread schruder_model();
-    
+    level thread define_global_subtitles();
     //wait till players discover schruder. 
     //nowadays trigger after spawning in after a while..
     level thread step1_talk();
@@ -855,6 +855,13 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
+
+    level.subtitle_upper settext( sub_up );
+    if( isdefined( sub_low ) )
+    {
+        level.subtitle_lower settext( sub_low );
+    }
+    
     level.subtitle_upper.x = 0;
     level.subtitle_lower.x = 0;
     level.subtitle_upper.alpha = 0;

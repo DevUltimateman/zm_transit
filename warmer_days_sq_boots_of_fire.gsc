@@ -94,8 +94,7 @@
 
 main()
 {
-    define_global_bootprint_chats();
-    define_global_bootprints();
+    
 }
 
 init()
@@ -103,7 +102,8 @@ init()
 
     //re build function to support lava shoes with player_lava_damage(trig) func check
     replacefunc( ::player_lava_damage, ::player_lava_damage_think_if_fireboots );
-
+    level thread define_global_bootprint_chats();
+    level thread define_global_bootprints();
     level.boots_found = 0; //how many fireboots have players found?
     level.summoning_kills_combined_total = 45; //check for if true
     level.summoninglevel_active = false; //defaults to false so that all summoning locations can be accessed before initiating
@@ -900,6 +900,11 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
+    level.subtitle_upper_fireboot settext( sub_up );
+    if( isdefined( sub_low ) )
+    {
+        level.subtitle_lower_fireboot settext( sub_low );
+    }
     level.subtitle_upper_fireboot.alpha = 0;
     level.subtitle_upper_fireboot.x = 0;
     level.subtitle_lower_fireboot.x = 0;
@@ -939,6 +944,11 @@ machine_says_boot_print( sub_up, sub_low, duration, fadeTimer )
     }
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
+    level.subtitle_upper_f settext( sub_up );
+    if( isdefined( sub_low ) )
+    {
+        level.subtitle_lower_f settext( sub_low );
+    }
     level.subtitle_upper_f.alpha = 0;
     level.subtitle_upper_f.x = 0;
     level.subtitle_lower_f.x = 0;
