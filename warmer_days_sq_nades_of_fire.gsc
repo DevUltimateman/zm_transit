@@ -528,7 +528,7 @@ firegrenade_player_wait_for_upgrade()
     
     //the real on screen subtitles for this step
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
-    self _someone_unlocked_something_client( "^9Dr. Schruder: ^8What!? How did you find all the nades so quickly?", "Silly you, you still have things to do.. ^9Zombie ^8go boom! ", 8, 0.1 );
+    self _someone_unlocked_something_client( "^9Dr. Schruder: ^8What!? How did you find all the nades so quickly?", "^8Silly you, you still have things to do.. ^9Zombie ^8go boom! ", 8, 0.1 );
 
     //notify the waittill("its_time") to progress into firenade step 2
     self notify( "its_time" ); //custom noti / waittill
@@ -549,7 +549,7 @@ firegrenade_reward_player( to_who )
     to_who thread firegrenades_throw_logic(); //to_who == self player, firegrenade think logic thread()
     to_who.has_up_nades = true;
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
-    _someone_unlocked_something( "^8Haha! How do you like your new nades?", "I hope they'll come to good use.. ^9Wunderbar!", 8, 0.1 );
+    self _someone_unlocked_something( "^8Haha! How do you like your new ^9nades^8?", "^8I hope they'll come to good use.. ^9Wunderbar!", 8, 0.1 );
 }
 
 //monitor firegrenade usage
@@ -839,9 +839,10 @@ firegrenade_touched( who )
                         }
                         else { amount = amount; }
                     }
+                    wait 0.05;
                     who _someone_unlocked_something_client( "^8Fire Grenades Found", "^9[ ^8" + amount + " ^9/^8 5 ^9]", 4, 1 );
                     //who.hits++; //increase player who hit score
-                    iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
+                    //iprintlnbold( who.name + "HIT, TRIGGER : ^3" + level.trigger_to_hit_with_nade[ i ] );
                     //self notify( "gucci" ); 
                     playfx( level.myfx[ 78 ], level.trigger_to_hit_with_nade[ i ].origin );
                     playsoundatposition( "zmb_avogadro_death_short", level.trigger_to_hit_with_nade[ i ].origin );
@@ -906,7 +907,7 @@ firegrenade_assign_hitlist_to_connecting_midgame()
 _someone_unlocked_something( subtitle_upper, subtitle_lower, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread SchruderSays( "^9Dr. Schrude: ^8" + subtitle_upper, subtitle_lower, duration, fadetimer );
+	level thread SchruderSays( "^9Dr. Schruder: ^8" + subtitle_upper, subtitle_lower, duration, fadetimer );
 }
 
 _someone_unlocked_something_client( subtitle_upper, subtitle_lower, duration, fadetimer )

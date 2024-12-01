@@ -109,11 +109,10 @@ dev_visuals()
     level endon( "end_game" );
 
     self waittill( "spawned_player" );
-    self setclientdvar( "r_lighttweaksuncolor", "0.5 0.8 0.9" );
+    self setclientdvar( "r_lighttweaksuncolor", "0.62 0.52 0.46" );
     self setclientdvar( "r_lighttweaksunlight", 12  );
     self setclientdvar( "r_filmusetweaks", true );
     self setclientdvar( "r_lighttweaksundirection",( -45, 210, 0 ) );
-    self setclientdvar( "r_sky_intensity_factor0", 2.8 );
     self setclientdvar( "r_bloomtweaks", 1  );
     self setclientdvar( "cg_usecolorcontrol", 1 );
     self setclientdvar( "cg_colorscale", "1 1 1"  );
@@ -151,8 +150,8 @@ tranzit_2024_visuals()
     self setclientdvar(  "r_dof_farend", 7000 );
     self setclientdvar(  "r_dof_nearstart", 10 );
     self setclientdvar(  "r_dof_nearend", 60 );
-    self setclientdvar(  "r_sky_intensity_factor0", 2.8 );
-    self setclientdvar(  "r_sky_intensity_factor1", 2.8 );
+    self setclientdvar(  "r_sky_intensity_factor0", 2.4 );
+    self setclientdvar(  "r_sky_intensity_factor1", 2.4 );
     self setclientdvar(  "r_skyColorTemp", 2000 );
     self setclientdvar(  "r_skyRotation", 125 );
     self setclientdvar(  "r_skyTransition", true );
@@ -160,10 +159,12 @@ tranzit_2024_visuals()
     self setclientdvar( "cg_cursorhints", 2 );
     self setclientdvar( "vc_yl", "0 0 0 0" );
     self setclientdvar( "vc_yh", "0 0 0 0" );
-    self setclientdvar( "r_sky_intensity_factor0", 2.8 );
     self setclientdvar( "cg_fov", 85 );
     self setclientdvar( "cg_fovscale", 1.20 );
     self setclientdvar( "r_lighttweaksunlight", 12 );
-    self setclientdvar( "r_lighttweaksuncolor", ( 0.7, 0.6, 0.6 ) );
+    self setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.52, 0.46) );
     self setclientdvar( "r_lighttweaksundirection", ( -155, 63, 0 ) );
+
+    self setclientdvar( "vc_rgbh", "0.3 0.2 0.2 0" );
+   self setclientdvar( "vc_rgbl", "0.1 0.05 0.05 0" );
 }

@@ -609,31 +609,19 @@ leg_trigger_logic( model_origin )
             if( is_player_valid( guy ) && isdefined( level.boots_are_being_picked_up ) && !level.boots_are_being_picked_up )
             {
                  //this check needs to be added below since we need to check after the initial hit if someone is already picking up boots
-                level thread picking_up_boots_cooldown_others_timer( cooldownTimer );
                 
                 // to display the number of boots found currently
-                //true_indicator = level.boots_found + 1; 
-                level.boots_found++;
+                true_indicator = level.boots_found + 1; 
                 playsoundatposition( "zmb_box_poof", self.origin );
                 wait 0.5;
                 //give a little reward to the player who picked up said boots
                 guy.score += 750;
                 guy playsoundtoplayer( "zmb_vault_bank_deposit", guy );
-                //SCHRUDER SAYS SOMETHING TO PLAYER
-                //seperate print function first time dont show the parts found hud text, only schruder
-                if( level.boots_found == 1 )
-                {
-                    upper_text = "^8Ah you've found the first piece of fireboots!";
-                    lower_text = _returnFireBootStepText();
-                    level thread _someone_unlocked_something( upper_text, lower_text, 8, 0.1 );
-                }
-                else
-                { 
-                    upper_text = "^8Fireboots found: ^9" + level.boots_found + "^8 / ^9" + ( level.fireboot_locations.size  );//- 1  ); 
-                    lower_text = _returnFireBootStepText();
-                    level thread _print_someone_found_boot_piece( upper_text, lower_text, 8, 0.1 );    
-                }
+                lower_text = "^8Fireboots found: ^9" + true_indicator + "^8 / ^9" + ( level.fireboot_locations.size  );//- 1  ); 
+                level thread machine_saysser( "^9Dr. Schruder: ^8" + _returnFireBootStepText(), lower_text, 8, 0.25 );
                 wait 0.05;
+                level.boots_found++;
+                level thread picking_up_boots_cooldown_others_timer( cooldownTimer );
                 //self == trigger
                 if( isdefined( self ) ) { self delete(); }
                 if( isdefined( leg_model ) ) {  leg_model delete(); } //delete linked model
@@ -829,7 +817,7 @@ fireboots_sound_before_locating( alias, which_active )
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread machine_says( "^9Dr. Schruder: ^8" + text, text2, duration, fadetimer );
+	level thread machine_saysser( "^9Dr. Schruder: ^8" + text, text2, duration, fadetimer );
 }
 
 _print_someone_found_boot_piece( text, text2, duration, fadetimer )
@@ -891,7 +879,7 @@ define_global_bootprints()
     level.subtitle_lower_f.sort = 1;
 
 }
-machine_says( sub_up, sub_low, duration, fadeTimer )
+machine_saysser( sub_up, sub_low, duration, fadeTimer )
 {
     //don't start drawing new hud if one already exists 
     if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )

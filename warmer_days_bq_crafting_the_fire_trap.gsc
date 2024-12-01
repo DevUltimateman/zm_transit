@@ -380,7 +380,14 @@ init()
     level.gas_fire_pick_location = ( 8410.4, -6343.49, 103.431 ); //outside farm main base next to house lava crack
     level.gas_fire_place_location = level.gas_pour_location;
 
-
+    
+    level.cracker_pickups = [];
+    level.cracker_pickups[ 0 ] = ( 8410.4, -6343.49, 103.431 ); //farm lava crack next to main house
+    level.cracker_pickups[ 1 ] = ( -647.101, -1127.28, -61.3341 ); //outside towwn on left before bridge
+    level.cracker_pickups[ 2 ] = ( 4742.58, 7480.7, -63.875 ); //behind cabin in the woods
+    level.cracker_pickups[ 3 ] = ( 10837, 8066.7, -556.448 ); //power station behind the drop down back to outside, next to truck
+    level.cracker_pickups[ 4 ] = ( -11296, -2678.63, 193.003 ); //tunnels, next to the big pillar at portal location
+    
     level.gas_fireplaces = [];
     level.gas_fireplaces[ level.gas_fireplaces.size ] = ( 8483.78, -5406.71, 264.125 );
     level.gas_fireplaces[ level.gas_fireplaces.size ] = ( 8488.59, -5353.79, 264.125 );
@@ -599,9 +606,9 @@ gas_quest_03_find_crackers()
 {
     level endon( "end_game" );
     level waittill( "start_firecracker_logic" );
-    firecracker_trigger = spawn( "trigger_radius_use", level.gas_fire_pick_location, 0, 48, 48 );
+    firecracker_trigger = spawn( "trigger_radius_use", level.cracker_pickups[ randomint( level.cracker_pickups.size ) ], 0, 48, 48 );
     firecracker_trigger TriggerIgnoreTeam();
-    firecracker_trigger setHintString( "^9[ ^3[{+activate}] ^8to dig up ^3Fire Crackerz^8 ^9]");
+    firecracker_trigger setHintString( "^9[ ^3[{+activate}] ^8to dig up ^3Fire Crackers^8 ^9]");
     firecracker_trigger setCursorHint( "HINT_NOICON") ;
 
     while( true )

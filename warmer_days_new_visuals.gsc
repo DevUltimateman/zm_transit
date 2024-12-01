@@ -491,6 +491,9 @@ lighting_vis()
    self setclientdvar( "cg_fov", 85 );
    self setclientdvar( "cg_fovscale", 1.20 );
 
+   self setclientdvar( "vc_rgbh", "0.3 0.2 0.2 0" );
+   self setclientdvar( "vc_rgbl", "0.1 0.05 0.05 0" );
+
    //self thread sky_carousel();
 }
 
@@ -525,6 +528,10 @@ tranzit_2024_visuals()
    self setclientdvar( "r_lighttweaksunlight", 12 );
    self setclientdvar( "r_lighttweaksuncolor", ( 0.7, 0.6, 0.6 ) );
    self setclientdvar( "r_lighttweaksundirection", ( -155, 63, 0 ) );
+
+
+   self setclientdvar( "vc_rgbh", "0.3 0.2 0.2 0" );
+   self setclientdvar( "vc_rgbl", "0.1 0.05 0.05 0" );
 
 
 }

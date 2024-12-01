@@ -46,6 +46,7 @@ main()
 
 init()
 {
+    //flag_set( "door_can_close" );
     //flag_wait( "initial_blackscreen_passed" );
     precacheshader( "menu_mp_party_ease_icon" );
     precacheshader( "menu_mp_killstreak_select" );
@@ -163,7 +164,7 @@ print_if_i_have_eq_test()
     self.clays_shade.aligny = "center";
     self.clays_shade.horzalign = "user_center";
     self.clays_shade.vertalign = "user_center";
-    self.clays_shade.alpha = 0; //turn to 1 on release
+    self.clays_shade.alpha = 1; //turn to 1 on release
     self.clays_shade.foreground = true;
     self.clays_shade.hidewheninmenu = true;
     self.clays_shade setshader( "hud_status_dead", 15, 15 );
@@ -371,9 +372,33 @@ test_firing_increase()
             if( self if_player_has_jetgun() )
             {
                 self.custom_heat++;
+                
                 self.jetgun_ammo_hud SetValue( self.custom_heat );
                 if( level.dev_time ){ iprintlnbold( "CUSTOM HEAT INCREASE" + self.custom_heat ); }
                 wait 0.1;
+                //if zombies are nearby, give some points
+                zombies = getAIArray( level.zombie_team );
+                for( s = 0; s < zombies.size; s++ )
+                {
+                    if( isalive( zombies[ s ] ) )
+                    {
+                        if( distance( zombies[ s ].origin, self.origin ) < 120 )
+                        {
+                            if( zombies[ s ].has_not_given_points )
+                            {
+                                zombies[ s ].has_not_given_points = false;
+                                zombies[ s ].score_loop = 0;
+                            }
+
+                            if( !zombies[ s ].has_not_given_points && zombies[ s ].score_loop < 5 )
+                            {
+                                zombies[ s ].score_loop++;
+                                self.score += 40;
+                            }
+                            
+                        }
+                    }
+                }
                 self SetWeaponOverheating( 0, 0 );
                 if( self.custom_heat > 99 )
                 {
@@ -757,8 +782,8 @@ move_all( opt, opt2, opt3, opt4, opt5, opt6, opt7, opt8, opt9 )
     opt2.x = opt2.x + x_num;
     opt2.y = opt2.y + y_num;
 
-    opt3.x = opt3.x + x_num;
-    opt3.y = opt3.y + y_num;
+    opt3.x = opt3.x + x_num + 6.5; //self.real_score_hud "amount of points player has"
+    opt3.y = opt3.y + y_num ;
 
     opt4.x = opt4.x + x_num;
     opt4.y = opt4.y + y_num;
@@ -860,7 +885,7 @@ scores_hud()
     self.real_score_hud.x = -5;
     self.real_score_hud.y = -118;
     self.real_score_hud SetValue( self.score );
-    self.real_score_hud.fontScale = 1.72;
+    self.real_score_hud.fontScale = 1.52;
     self.real_score_hud.alignX = "center";
     self.real_score_hud.alignY = "center";
     self.real_score_hud.horzAlign = "user_center";
@@ -875,7 +900,7 @@ scores_hud()
     self.survivor_points.x = 27.5;
     self.survivor_points.y = -115;
     self.survivor_points SetText( "^9$^7" );
-    self.survivor_points.fontScale = 1.42;
+    self.survivor_points.fontScale = 1.32;
     self.survivor_points.alignX = "center";
     self.survivor_points.alignY = "center";
     self.survivor_points.horzAlign = "user_center";
