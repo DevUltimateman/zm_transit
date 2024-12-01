@@ -488,7 +488,7 @@ sort_all_elements_in_group()
     */
 
     move_all( self.jetgun_ammo_hud, self.jetgun_name_hud, self.real_score_hud,
-             self.survivor_points, self.weapon_ammo, self.ammo_slash,
+             self.survivor_points, self.weapon_ammo,
              self.weapon_ammo_stock, self.say_ammo, self.playname );
 
 
@@ -771,7 +771,7 @@ do_location_hud()
 
 
 
-move_all( opt, opt2, opt3, opt4, opt5, opt6, opt7, opt8, opt9 )
+move_all( opt, opt2, opt3, opt4, opt5, opt7, opt8, opt9 )
 {
     x_num = 360;
     y_num = 290;
@@ -790,9 +790,6 @@ move_all( opt, opt2, opt3, opt4, opt5, opt6, opt7, opt8, opt9 )
 
     opt5.x = opt5.x + x_num;
     opt5.y = opt5.y + y_num;
-
-    opt6.x = opt6.x + x_num;
-    opt6.y = opt6.y + y_num;
 
     opt7.x = opt7.x + x_num;
     opt7.y = opt7.y + y_num;
@@ -991,11 +988,11 @@ score_hud_all_ammo()
 {
     self waittill( "spawned_player" );
     self.weapon_ammo = newClientHudElem( self );
-    self.ammo_slash = newClientHudElem( self );
+    //self.ammo_slash = newClientHudElem( self );
     self.weapon_ammo_stock = newClientHudElem( self );
     self.say_ammo = newClientHudElem( self );
     self.weapon_ammo.alpha = 0;
-    self.ammo_slash.alpha = 0;
+    //self.ammo_slash.alpha = 0;
     self.weapon_ammo_stock.alpha = 0;
     self.say_ammo.alpha = 0;
 
@@ -1009,10 +1006,10 @@ scores_hud_ammo()
     level endon( "end_game" );
     self endon( "disconnect" );
     
-    self.weapon_ammo.x = -37.5;
+    self.weapon_ammo.x = -27.5;
     self.weapon_ammo.y = -100;
     self.weapon_ammo.color = ( 0.65, 0.65, 0.65 );
-    self.weapon_ammo SetValue(  self getWeaponAmmoClip( self getCurrentWeapon() ) );
+    self.weapon_ammo SetValue(  self getWeaponAmmoClip( self getCurrentWeapon()  ) );
     self.weapon_ammo.fontScale = 1.82;
     self.weapon_ammo.alignX = "center";
     self.weapon_ammo.alignY = "center";
@@ -1025,23 +1022,11 @@ scores_hud_ammo()
 
 
     
-    self.ammo_slash.x = -19.5;
-    self.ammo_slash.y = -100;
-    self.ammo_slash SetText( " ^9/  " );
-    self.ammo_slash.fontScale = 1.82;
-    self.ammo_slash.alignX = "center";
-    self.ammo_slash.alignY = "center";
-    self.ammo_slash.horzAlign = "user_center";
-    self.ammo_slash.vertAlign = "user_center";
-    self.ammo_slash.sort = 1;
-    self.ammo_slash.alpha = 0;
-    self.ammo_slash fadeovertime( 1.5 );
-    self.ammo_slash.alpha = 1; //Debug 0
 
     
     self.weapon_ammo_stock.x = 2;
     self.weapon_ammo_stock.y = -100;
-    self.weapon_ammo_stock SetValue(  self getWeaponAmmoStock( self getCurrentWeapon() ) );
+    self.weapon_ammo_stock settext(  " ^9/ ^8" + self getWeaponAmmoStock( self getCurrentWeapon() ) );
     self.weapon_ammo_stock.fontScale = 1.82;
     self.weapon_ammo_stock.alignX = "center";
     self.weapon_ammo_stock.alignY = "center";
@@ -1070,6 +1055,8 @@ scores_hud_ammo()
     self.say_ammo.alpha = 1; //Debug 0
 
 
+    //self.grenade.x = 32.5 ;
+    //self.grenade.y = -95;
 
 }
 
@@ -1082,6 +1069,7 @@ update_ammo_hud()
     stock = self getWeaponAmmoStock( weapon );
     ammo_clip = self getWeaponAmmoClip( weapon );
     ammo_stock = self getWeaponAmmoStock( weapon );
+    old_ammo_stock = self getweaponammostock( weapon );
     while( true )
     {
         wait 0.05;
@@ -1096,20 +1084,81 @@ update_ammo_hud()
         
         if(  ammo_clip < ammo && self getCurrentWeapon() == weapon )
         {
-            self.weapon_ammo setvalue( ammo_clip  );
+            self.weapon_ammo setvalue( ammo_clip   );
             self.weapon_ammo.color = ( 0.65, 0.1, 0 );
-            self.weapon_ammo_stock setValue( ammo_stock );
+            
+            //self.weapon_ammo_stock setValue( ammo_stock );
+            ammo_stock = stock;
             ammo = self getWeaponAmmoClip( weapon );
             wait 0.05;
             self.weapon_ammo.color = ( 0.65, 0.65, 0.65 );
+
+
+            if( self getWeaponAmmoClip( self getCurrentWeapon() ) < 100 )
+            {
+                if( self getweaponammostock( self getcurrentweapon() ) < 100 )
+                {
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -22.5 );
+                }
+                else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
+                {
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -25 );
+                }
+                
+            }
+
+            else if( self getWeaponAmmoClip( self getCurrentWeapon() ) >= 100 )
+            {
+                if( self getweaponammostock( self getcurrentweapon() ) < 100 )
+                {
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -27.5 );
+                }
+                else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
+                {
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -32.5 );
+                }
+                
+            }
         }
         else if( ammo_clip > ammo && self getCurrentWeapon() == weapon )
         {
             self.weapon_ammo setvalue( ammo_clip );
-            self.weapon_ammo_stock setValue( ammo_stock );
+            //self.weapon_ammo_stock setValue( ammo_stock );
+            ammo_stock = stock;
             ammo = self getweaponammoclip( weapon ); 
             wait 0.05;
             self.weapon_ammo.color = ( 0.1, 0.65, 0 );
+            if( self getWeaponAmmoClip( self getCurrentWeapon() ) < 100 )
+            {
+                if( self getweaponammostock( self getcurrentweapon() ) < 100 )
+                {
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -22.5 );
+                }
+                else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
+                {
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -25 );
+                }
+                
+            }
+
+            else if( self getWeaponAmmoClip( self getCurrentWeapon() ) >= 100 )
+            {
+                if( self getweaponammostock( self getcurrentweapon() ) < 100 )
+                {
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -27.5 );
+                }
+                else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
+                {
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -32.5 );
+                }
+                
+            }
+        }
+
+        else if( old_ammo_stock != ammo_stock )
+        {
+            old_ammo_stock = ammo_stock;
+            self.weapon_ammo_stock setText( " ^9/ ^8" + old_ammo_stock );
         }
     }
 }

@@ -105,19 +105,19 @@ spawn_bottles_on_the_counter()
     bottle_origins[ 4 ] = ( 2283.79, door_side_org, height_org );
     bottle_origins[ 5 ] = ( 2250.98, door_side_org, height_org );
 
-    bottle_models = [];
-    bottle_models[ 0 ] = ( "t6_wpn_zmb_perk_bottle_tombstone_world" );
-    bottle_models[ 1 ] = ( "t6_wpn_zmb_perk_bottle_doubletap_world" );
-    bottle_models[ 2 ] = ( "t6_wpn_zmb_perk_bottle_jugg_world" );
-    bottle_models[ 3 ] = ( "t6_wpn_zmb_perk_bottle_marathon_world" );
-    bottle_models[ 4 ] = ( "t6_wpn_zmb_perk_bottle_revive_world" );
-    bottle_models[ 5 ] = ( "t6_wpn_zmb_perk_bottle_sleight_world" );
+    level.bottle_models = [];
+    level.bottle_models[ 0 ] = ( "t6_wpn_zmb_perk_bottle_tombstone_world" );
+    level.bottle_models[ 1 ] = ( "t6_wpn_zmb_perk_bottle_doubletap_world" );
+    level.bottle_models[ 2 ] = ( "t6_wpn_zmb_perk_bottle_jugg_world" );
+    level.bottle_models[ 3 ] = ( "t6_wpn_zmb_perk_bottle_marathon_world" );
+    level.bottle_models[ 4 ] = ( "t6_wpn_zmb_perk_bottle_revive_world" );
+    level.bottle_models[ 5 ] = ( "t6_wpn_zmb_perk_bottle_sleight_world" );
 
     wait 1;
     for( s = 0; s < bottle_origins.size; s++ )
     {
         level.get_wasted_bottles[ s ] = spawn( "script_model", bottle_origins[ s ] );
-        level.get_wasted_bottles[ s ] setmodel( bottle_models[ s ] );
+        level.get_wasted_bottles[ s ] setmodel( level.bottle_models[ s ] );
         level.get_wasted_bottles[ s ].angles = ( 0, randomInt( 360 ), 0 );
         wait 0.05;
         playFXOnTag( level.myFx[ 32 ], level.get_wasted_bottles[ s ], "tag_origin" );

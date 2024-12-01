@@ -66,6 +66,8 @@ init()
     level thread player_waiter();
 
     //ghetto screechers off
+    flag_wait( "initial_blackscreen_passed" );
+    //level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^6PHD Flopper ^8Reward Unlocked", "^8" + "Players can now take explosive damage", "^8" + "without losing any health health.", 6, 0.25 );
     
 }
 

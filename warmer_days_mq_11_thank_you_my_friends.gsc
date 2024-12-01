@@ -64,7 +64,7 @@ init()
         level.players[ i ] thread self_waittill_drink_so_update();
     }
     level thread spawn_all_pickable_acidgats(); //for debug
-    //level thread do_perks(); //for debug
+   // level thread do_perks(); //for debug
 }
 
 disable_dev_time()
@@ -143,7 +143,7 @@ self_waittill_drink_so_update()
         {
             self thread perk_drawer( "specialty_juggernaut_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
         }
-        else if( perk == "specialty_rof_upgrade" )
+        else if( perk == "specialty_rof" )
         {
             self thread perk_drawer( "specialty_doubletap_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
         }
@@ -151,7 +151,7 @@ self_waittill_drink_so_update()
         {
             self thread perk_drawer( "specialty_tombstone_zombies" , 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
         }
-        else if ( perk == "specialty_longersprint_upgrade" )
+        else if ( perk == "specialty_longersprint" )
         {
             self thread perk_drawer( "specialty_marathon_zombies", 20, 20, ( 1, 1, 1 ), 1, 1, 1 );
         }
@@ -373,7 +373,7 @@ survivors_drawer( pname )
     survivor_list.vertalign = "user_center";    
 
   
-
+    
     survivor_list.y = -5.5 + ( self.listsize * -10 );
 
     if( pname == "Survivors" )

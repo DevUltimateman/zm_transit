@@ -43,7 +43,12 @@
 
 init()
 {
-    level thread notiff();
+    //spawn hud struct
+    level thread make_middle_print_struct();
+
+    //test text
+    flag_wait( "initial_blackscreen_passed" );
+    //level thread print_text_middle( "^6PHD Flopper ^8Reward Unlocked", "^8" + "Players can now take explosive damage", "^8" + "without losing health.", 6, 0.25 );
     //level thread waittill_rewards();
 }
 
@@ -439,4 +444,77 @@ player_reward_marathon()
 
 
 
+print_text_middle( textbig, textsmall, textsmall_lower, duration, fadefloat )
+{
+    
+    level.mid_print_text_big.alpha = 0;
+    level.mid_print_text_small.alpha = 0;
+    level.mid_print_text_small_lower.alpha = 0;
+    level.mid_print_text_big settext( textbig );
+    level.mid_print_text_small settext( textsmall );
+    level.mid_print_text_small_lower settext( textsmall_lower );
 
+    level.mid_print_text_big fadeOverTime( 1.5 );
+    level.mid_print_text_big.alpha = 1;
+    wait 1.5;
+
+    level.mid_print_text_small fadeovertime( 1.5 );
+    level.mid_print_text_small.alpha = 1;
+    wait 0.5;
+    level.mid_print_text_small_lower fadeovertime( 1 );
+    level.mid_print_text_small_lower.alpha = 1;
+    wait 16;
+
+    level.mid_print_text_big fadeOverTime( 1.5 );
+    level.mid_print_text_big.alpha = 0;
+    wait 1;
+    level.mid_print_text_small fadeOverTime( 1.5 );
+    level.mid_print_text_small.alpha = 0;
+    wait 1;
+    level.mid_print_text_small_lower fadeOverTime( 1 );
+    level.mid_print_text_small_lower.alpha = 0;
+    wait 1.5;
+    level.mid_print_text_small_lower setText( "" );
+    level.mid_print_text_big settext( "" );
+    level.mid_print_text_small settext( "" );
+}
+
+
+
+
+
+make_middle_print_struct()
+{
+    level.mid_print_text_big = NewHudElem();
+	level.mid_print_text_big.x = 0;
+	level.mid_print_text_big.y = 125;
+	level.mid_print_text_big SetText( "" );
+	level.mid_print_text_big.fontScale = 2.25;
+	level.mid_print_text_big.alignX = "CENTER";
+	level.mid_print_text_big.alignY = "CENTER";
+	level.mid_print_text_big.horzAlign = "center";
+	level.mid_print_text_big.vertAlign = "center";
+	level.mid_print_text_big.sort = 1;
+
+    level.mid_print_text_small = newhudelem();
+    level.mid_print_text_small.x = 0;
+    level.mid_print_text_small.y = 170;
+    level.mid_print_text_small settext( "" );
+    level.mid_print_text_small.fontscale = 1.15;
+    level.mid_print_text_small.alignx = "CENTER";
+    level.mid_print_text_small.aligny = "CENTER";
+    level.mid_print_text_small.horzalign = "CENTER";
+    level.mid_print_text_small.vertalign = "CENTER";
+    level.mid_print_text_small.sort = true;
+
+    level.mid_print_text_small_lower = newhudelem();
+    level.mid_print_text_small_lower.x = 0;
+    level.mid_print_text_small_lower.y = 182.5;
+    level.mid_print_text_small_lower settext( "" );
+    level.mid_print_text_small_lower.fontscale = 1.05;
+    level.mid_print_text_small_lower.alignx = "CENTER";
+    level.mid_print_text_small_lower.aligny = "CENTER";
+    level.mid_print_text_small_lower.horzalign = "CENTER";
+    level.mid_print_text_small_lower.vertalign = "CENTER";
+    level.mid_print_text_small_lower.sort = true;
+}

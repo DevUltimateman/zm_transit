@@ -147,10 +147,10 @@ init()
 
 test_updater()
 {
-    self.mq_opening_hud_underline thread update_shader_size_based_on_step( "white", self.mq_opening_hud_underline.height, self.mq_opening_hud_underline.width, self.mq_opening_hud_underline.x, self.mq_opening_hud_underline.y, 2, ( 1, 1 , 1), ( .7, 0, 0 ), 1  );
-    self.mq_opening_hud_step_icon_left thread update_shader_size_based_on_step( "zombies_rank_5_ded", self.mq_opening_hud_step_icon_left.height, self.mq_opening_hud_step_icon_left.width, self.mq_opening_hud_step_icon_left.x, self.mq_opening_hud_step_icon_left.y, 2, ( 1, 1 , 1), ( .7, 0, 0 ), 1 );
-    self.mq_opening_hud_step_icon_right thread update_shader_size_based_on_step( "zombies_rank_5_ded", self.mq_opening_hud_step_icon_right.height, self.mq_opening_hud_step_icon_right.width, self.mq_opening_hud_step_icon_right.x, self.mq_opening_hud_step_icon_right.y, 2, ( 1, 1 , 1), ( .7, 0, 0 ), 1  );
-    self.mq_opening_hud_text thread update_text_size_based_on_step( "Spirit Of Sorrow", 1.8, self.mq_opening_hud_text.x, self.mq_opening_hud_text.y, 2, ( 1, .7 , 0.2 ), ( .7, 0, 0 ), 0.8 );
+    //self.mq_opening_hud_underline thread update_shader_size_based_on_step( "white", self.mq_opening_hud_underline.height, self.mq_opening_hud_underline.width, self.mq_opening_hud_underline.x, self.mq_opening_hud_underline.y, 2, ( 1, 1 , 1), ( .7, 0, 0 ), 1  );
+    //self.mq_opening_hud_step_icon_left thread update_shader_size_based_on_step( "zombies_rank_5_ded", self.mq_opening_hud_step_icon_left.height, self.mq_opening_hud_step_icon_left.width, self.mq_opening_hud_step_icon_left.x, self.mq_opening_hud_step_icon_left.y, 2, ( 1, 1 , 1), ( .7, 0, 0 ), 1 );
+    //self.mq_opening_hud_step_icon_right thread update_shader_size_based_on_step( "zombies_rank_5_ded", self.mq_opening_hud_step_icon_right.height, self.mq_opening_hud_step_icon_right.width, self.mq_opening_hud_step_icon_right.x, self.mq_opening_hud_step_icon_right.y, 2, ( 1, 1 , 1), ( .7, 0, 0 ), 1  );
+    //self.mq_opening_hud_text thread update_text_size_based_on_step( "Spirit Of Sorrow", 1.8, self.mq_opening_hud_text.x, self.mq_opening_hud_text.y, 2, ( 1, .7 , 0.2 ), ( .7, 0, 0 ), 0.8 );
 }
 update_shader_size_based_on_step( shader, height, width, x_pos, y_pos, fadetime, initial_color, colorfade, alpha )
 {

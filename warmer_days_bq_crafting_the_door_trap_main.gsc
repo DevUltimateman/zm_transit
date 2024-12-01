@@ -841,7 +841,7 @@ Subtitle( text, text2, duration, fadeTimer )
     
 }
 
-flyby( element )
+fliebies( element )
 {
     level endon( "end_game" );
     x = 0;
