@@ -1155,7 +1155,8 @@ update_ammo_hud()
             }
         }
 
-        else if( old_ammo_stock != ammo_stock )
+        //ELSE IF
+        if( old_ammo_stock != ammo_stock )
         {
             old_ammo_stock = ammo_stock;
             self.weapon_ammo_stock setText( " ^9/ ^8" + old_ammo_stock );
