@@ -68,7 +68,8 @@ init()
     //ghetto screechers off
     flag_wait( "initial_blackscreen_passed" );
     //level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^6PHD Flopper ^8Reward Unlocked", "^8" + "Players can now take explosive damage", "^8" + "without losing any health health.", 6, 0.25 );
-    
+    level thread make_trees_hide_some();
+    level thread make_smoke_hide_some();
 }
 
 player_waiter()
@@ -162,11 +163,74 @@ tranzit_2024_visuals()
     self setclientdvar( "vc_yl", "0 0 0 0" );
     self setclientdvar( "vc_yh", "0 0 0 0" );
     self setclientdvar( "cg_fov", 85 );
-    self setclientdvar( "cg_fovscale", 1.20 );
+    self setclientdvar( "cg_fovscale", 1.15 );
     self setclientdvar( "r_lighttweaksunlight", 12 );
     self setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.52, 0.46) );
     self setclientdvar( "r_lighttweaksundirection", ( -155, 63, 0 ) );
 
     self setclientdvar( "vc_rgbh", "0.3 0.2 0.2 0" );
    self setclientdvar( "vc_rgbl", "0.1 0.05 0.05 0" );
+}
+
+
+
+make_trees_hide_some()
+{
+    locs = [];
+
+    //din
+    locs[ locs.size ] = ( -7901.59, -7559.07, 83.4541 );
+    locs[ locs.size ] = ( -7722.85, -7735.9, 53.2281 );
+    locs[ locs.size ] = ( 7484.35, -7725.78, 62.0928 );
+    locs[ locs.size ] = ( -7594.29, -8049.54, 30.4262 );
+    locs[ locs.size ] = ( -7183.91, -7619.72, 31.9997 );
+    locs[ locs.size ] = ( -8362.86, -7468.88, 113.468 );
+
+    //farm
+    locs[ locs.size ] = ( 7540, -6203.95, 42.5817 );
+    locs[ locs.size ] = ( 7472.84, -6114.09, 8.45713 );
+    locs[ locs.size ] = ( 7306.34, -6185.79, -95.6539 );
+    locs[ locs.size ] = ( 7547.45, -5873.21, -73.8581 );
+    locs[ locs.size ] = ( 7512.56, -5919.39, 23.8992 );
+    locs[ locs.size ] = ( 7710.79, -5821.44, -15.7865 ); //also spawn collision with this 1
+    locs[ locs.size ] = ( 6948.67, -5530.28, -133.472 );
+    //locs[  ] = (  );
+
+    for( s = 0; s < locs.size; s++ )
+    {
+        spawning = spawn( "script_model", locs[ s ] );
+        spawning setmodel( "t5_foliage_tree_burnt03" );
+        spawning.angles = ( 0, randomint( 360 ), 0 );
+        wait 0.1;
+    }
+
+    oo = spawn( "script_model", locs[ 10 ] );
+    oo setmodel( "collision_player_128x128x128" );
+    oo.angles = ( 0, 0, 0 );
+
+}
+
+
+make_smoke_hide_some()
+{
+    smokes = [];
+    smokes[  smokes.size ] =  ( 9227.48, 1874.04, 417.567 );
+    smokes[ smokes.size  ] =  ( 9197.59, 2514.9, 334.256 );
+    smokes[ smokes.size  ] =  ( 9506.4, 4711.39, -451.493 );
+    smokes[ smokes.size ] =  ( 6646.28, 868.357, 417.024 );
+    smokes[  smokes.size ] =  ( 7317.45, 1251.19, 366.293 );
+    smokes[  smokes.size ] =  ( 7182.14, 2337.19, 317.971 );
+    smokes[  smokes.size ] =  ( 7072.38, -1945.53, -174.008 );
+    smokes[ smokes.size  ] =  ( -5496.9, -4646.62, 27.227 );
+    smokes[  smokes.size ] =  ( -9112.71, -7551.7, 379.639 );
+    smokes[  smokes.size ] =  ( -8626.08, 6244.98, -83.4548 );
+
+
+    for( a = 0; a < smokes.size; a++ )
+    {
+        playfx( level._effects[28], smokes[ a ] + ( 0, 0, 180 )  );
+        wait 0.25;
+    }
+
+
 }

@@ -141,7 +141,7 @@ tranzit_2024_visuals()
     self setclientdvar( "vc_yl", "0 0 0 0" );
     self setclientdvar( "vc_yh", "0 0 0 0" );
     self setclientdvar( "cg_fov", 85 );
-    self setclientdvar( "cg_fovscale", 1.20 );
+    self setclientdvar( "cg_fovscale", 1.15  );
     self setclientdvar( "r_lighttweaksunlight", 12 );
     self setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.52, 0.46 ) );
     self setclientdvar( "r_lighttweaksundirection", ( -155, 63, 0 ) );

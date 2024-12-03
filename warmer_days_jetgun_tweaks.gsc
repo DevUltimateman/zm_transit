@@ -568,26 +568,40 @@ zone_name_hud()
 	self endon("disconnect");
 
 	wait 0.05;
-
+    self.located_zone_text_prev = undefined;
+    current_name_new = undefined;
+    current_name = update_location_hud_text( self get_current_zone() );
 	prev_player = self;
 	prev_zone_name = "";
     zone_name = "";
+    is_allowed = false;
+    
 	while ( true )
 	{
 		//player = self get_current_spectating_player();
 
 		zone = self get_current_zone();
-
+        current_name_new = update_location_hud_text( self get_current_zone() );
 		if ( zone == prev_zone_name )
 		{
 			wait 0.05;
 			continue;
 		}
 
-        if( self.can_change && zone != prev_zone_name  )
+        
+        if( self.can_change && zone != prev_zone_name )
         {
-            self thread change_location();
-            prev_zone_name = self get_current_zone();
+            //gucci = "^8" + update_location_hud_text( self get_current_zone() );
+            if( current_name_new != current_name  )//seems to work now well with this check
+            {
+                current_name_new = update_location_hud_text( self get_current_zone() );
+                current_name = current_name_new;
+                self thread change_location();
+                prev_zone_name = self get_current_zone();
+            }
+                
+            
+            
         }
 		wait 0.05;
 	}
@@ -601,31 +615,38 @@ change_location()
     self.location_hud fadeOverTime( 0.25 );
     self.location_hud.alpha = 0;
     wait 1;
+    
     self.location_hud settext( "^8" + update_location_hud_text( self get_current_zone() ) );
+    //
     self.location_hud fadeovertime( 1 );
     self.location_hud.alpha = 1; //Debug 0
     wait 1;
     self.can_change = true;
     //update_location_hud_text( which_zone )
 }
+
+same_names_to_check_against( zonename )
+{
+    
+}
 update_location_hud_text( which_zone )
 {
 
 		if (which_zone == "zone_pri")
 		{
-			name = "Marissa's Bus Depo";
+			name = "Stalinburgh's Bus Depot";
 		}
 		else if (which_zone == "zone_pri2")
 		{
-			name = "Marissa's Bus Depo";
+			name = "Stalinburgh's Bus Depot";
 		}
 		else if (which_zone == "zone_station_ext")
 		{
-			name = "Marissa's Bus Depo";
+			name = "Stalinburgh's Bus Depot";
 		}
 		else if (which_zone == "zone_trans_2b")
 		{
-			name = "";
+			name = "Stalinburgh's Bus Depot";
 		}
 		else if (which_zone == "zone_trans_2")
 		{
@@ -633,31 +654,31 @@ update_location_hud_text( which_zone )
 		}
 		else if (which_zone == "zone_amb_tunnel")
 		{
-			name = "Abandoned Tunels";
+			name = "Abandoned Tunnels";
 		}
 		else if (which_zone == "zone_trans_3")
 		{
-			name = "Abandoned Tunnels";
+			name = "Diner Route 66";
 		}
 		else if (which_zone == "zone_roadside_west")
 		{
-			name = "Outside Diner";
+			name = "Mikey's Diner";
 		}
 		else if (which_zone == "zone_gas")
 		{
-			name = "Mikey's Gas Station";
+			name = "Mikey's Diner";
 		}
 		else if (which_zone == "zone_roadside_east")
 		{
-			name = "Mikey's Parkdrive";
+			name = "Mikey's Diner";
 		}
 		else if (which_zone == "zone_trans_diner")
 		{
-			name = "Mikey's Diner Yard";
+			name = "Mikey's Diner";
 		}
 		else if (which_zone == "zone_trans_diner2")
 		{
-			name = "Mikey's Parkdrive";
+			name = "Mikey's Diner";
 		}
 		else if (which_zone == "zone_gar")
 		{
@@ -673,11 +694,11 @@ update_location_hud_text( which_zone )
 		}
 		else if (which_zone == "zone_trans_4")
 		{
-			name = "";
+			name = "Jeremy Swamp Road";
 		}
 		else if (which_zone == "zone_amb_forest")
 		{
-			name = "";
+			name = "Jeremy Swamp Road";
 		}
 		else if (which_zone == "zone_trans_10")
 		{
@@ -689,27 +710,27 @@ update_location_hud_text( which_zone )
 		}
 		else if (which_zone == "zone_trans_5")
 		{
-			name = "";
+			name = "Death Valley";
 		}
 		else if (which_zone == "zone_far")
 		{
-			name = "Denny's Happy Cow Farm";
+			name = "Denny's Cow Plantation";
 		}
 		else if (which_zone == "zone_far_ext")
 		{
-			name = "Denny's Happy Cow Farm";
+			name = "Denny's Cow Plantation";
 		}
 		else if (which_zone == "zone_brn")
 		{
-			name = "Denny's Safe House";
+			name = "Safe House";
 		}
 		else if (which_zone == "zone_farm_house")
 		{
-			name = "Denny's Farmhouse";
+			name = "Denny's Cow Plantation";
 		}
 		else if (which_zone == "zone_trans_6")
 		{
-			name = "";
+			name = "Lost Fields";
 		}
 		else if (which_zone == "zone_amb_cornfield")
 		{
@@ -717,15 +738,15 @@ update_location_hud_text( which_zone )
 		}
 		else if (which_zone == "zone_cornfield_prototype")
 		{
-			name = "WW2 Outpost";
+			name = "Abandoned WW2 Outpost";
 		}
 		else if (which_zone == "zone_trans_7")
 		{
-			name = "";
+			name = "Train Road Crossing";
 		}
 		else if (which_zone == "zone_trans_pow_ext1")
 		{
-			name = "";
+			name = "Train Road Crossing";
 		}
 		else if (which_zone == "zone_pow")
 		{
@@ -733,19 +754,19 @@ update_location_hud_text( which_zone )
 		}
 		else if (which_zone == "zone_prr")
 		{
-			name = "Stalinburgh's Power Station";
+			name = "Plasmatory Room";
 		}
 		else if (which_zone == "zone_pcr")
 		{
-			name = "Stalinburgh's Control Room";
+			name = "Control Room";
 		}
 		else if (which_zone == "zone_pow_warehouse")
 		{
-			name = "Stalinburgh's Warehouse";
+			name = "Warehouse";
 		}
 		else if (which_zone == "zone_trans_8")
 		{
-			name = "";
+			name = "Facility Road";
 		}
 		else if (which_zone == "zone_amb_power2town")
 		{
@@ -753,7 +774,7 @@ update_location_hud_text( which_zone )
 		}
 		else if (which_zone == "zone_trans_9")
 		{
-			name = "";
+			name = "Facility Road";
 		}
 		else if (which_zone == "zone_town_north")
 		{
@@ -761,7 +782,7 @@ update_location_hud_text( which_zone )
 		}
 		else if (which_zone == "zone_tow")
 		{
-			name = "Dr. Ravenholm's Town Center";
+			name = "Dr. Ravenholm's Townhall";
 		}
 		else if (which_zone == "zone_town_east")
 		{
@@ -777,35 +798,35 @@ update_location_hud_text( which_zone )
 		}
 		else if (which_zone == "zone_bar")
 		{
-			name = "Dr. Ravenholm's Bar";
+			name = "Moe's Pub";
 		}
 		else if (which_zone == "zone_town_barber")
 		{
-			name = "Dr. Ravenholm's Bookstore";
+			name = "Marissa's Bookstore";
 		}
 		else if (which_zone == "zone_ban")
 		{
-			name = "Dr. Ravenholm's Bank";
+			name = "Cheapoh's Bank";
 		}
 		else if (which_zone == "zone_ban_vault")
 		{
-			name = "Dr. Ravenholm's Bank";
+			name = "Cheapoh's Vault";
 		}
 		else if (which_zone == "zone_tbu")
 		{
-			name = "Dr. Ravenholm's Unidentified Basement";
+			name = "Undisclosed Laboratory";
 		}
 		else if (which_zone == "zone_trans_11")
 		{
-			name = "";
+			name = "Boy Scout Lane";
 		}
 		else if (which_zone == "zone_amb_bridge")
 		{
-			name = "";
+			name = "Bloody Bride Bridge";
 		}
 		else if (which_zone == "zone_trans_1")
 		{
-			name = "";
+			name = "Boy Scout Lane";
 		}
 
         else if( which_zone == "" )
@@ -822,7 +843,7 @@ do_location_hud()
     self endon( "disconnect" );
     
     self.location_hud = newClientHudElem( self );
-    self.location_hud settext( "^8Current Locationss" );
+    self.location_hud settext( "^8Stalinburgh's Bus Depot" );
     self.location_hud.fontscale = 1;
     self.location_hud.alpha = 0;
     self.location_hud.x = -395;

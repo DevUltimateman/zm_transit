@@ -229,7 +229,7 @@ fireboots_souls( which_summoning, idx )
 
     
     zm_head = self gettagorigin( "j_head" );
-    where_to_move = level.summoning_trigger.origin + ( 0, 0, 200 );
+    where_to_move = level.summoning_trigger.origin + ( 0, 0, 225 );
 
     inv_mover = spawn( "script_model", zm_head );
     inv_mover setmodel( "tag_origin" );
@@ -454,10 +454,11 @@ f_boots3()
     text_d = undefined;
 
     //trigger origin
-    //rn outside bus station for debugging.
-    loc = ( -6188.75, 4594.24, -15.4793 );
+    //rn outside bus station for debugging. -6188.75, 4594.24, -15.4793
+    t_loc = ( 8326.36, -4649.86, 264.125 );
+    m_loc = ( 8381.89, -4625.11, 304.939 );
     if( level.dev_time ){ iprintlnbold( "WE HAVE SETUP THE INTIAL BOOT PICK UP POINT NOW, WAITING FOR 5 SECS BEFORE SPAWNING IT" ); }
-    pickup_model = spawn( "script_model", loc );
+    pickup_model = spawn( "script_model", m_loc );
     pickup_model setmodel( "c_zom_zombie3_g_rlegspawn" );
     pickup_model.angles = ( randomintrange( 0, 360 ), randomintrange( 0, 360 ), randomintrange( 0, 180 ) );
     
@@ -472,14 +473,14 @@ f_boots3()
     //small stream of steam like geyshir type
     playfx( level.myFx[ 61 ], pickup_model.origin );
 
-    trigg = spawn( "trigger_radius", pickup_model.origin, 45, 45, 45 );
+    trigg = spawn( "trigger_radius", t_loc, 45, 45, 45 );
     
 
     //trigg useRequireLookAt();
 
     wait 1;
 
-    trigg setHintString( "^9[ Hold ^3[{+activate}]^8 to pick up your ^9Lava Shoes ]" );
+    trigg setHintString( "^9[ ^3[{+activate}]^8 to pick up your ^3Fire Boots ]" );
     trigg setCursorHint( "HINT_NOICON" );
     while( true )
     {
@@ -487,12 +488,16 @@ f_boots3()
         
         if( user in_revive_trigger() )
         {
+            wait 0.1;
             continue;
         }
 
         if( user.has_picked_up_boots )
         {
-            iprintlnbold( "You already have ^3Fire Bootz" );
+            trigg sethintstring( "^9[ ^8You're already wearing ^3Fire Boots ^9]" );
+            wait 1.5;
+            trigg setHintString( "^9[ ^3[{+activate}]^8 to pick up your ^3Fire Boots ]" );
+            //iprintlnbold( "You already have ^3Fire Bootz" );
             continue;
         }
 

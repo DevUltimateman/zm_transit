@@ -488,8 +488,8 @@ lighting_vis()
    self setclientdvar( "vc_yl", "0 0 0 0" );
    self setclientdvar( "vc_yh", "0 0 0 0" );
    self setclientdvar( "r_sky_intensity_factor0", 2.8 );
-   self setclientdvar( "cg_fov", 85 );
-   self setclientdvar( "cg_fovscale", 1.20 );
+   self setclientdvar( "cg_fov", 90 );
+   self setclientdvar( "cg_fovscale", 1.15  );
 
    self setclientdvar( "vc_rgbh", "0.3 0.2 0.2 0" );
    self setclientdvar( "vc_rgbl", "0.1 0.05 0.05 0" );
@@ -521,8 +521,8 @@ tranzit_2024_visuals()
    self setclientdvar( "vc_yl", "0 0 0 0" );
    self setclientdvar( "vc_yh", "0 0 0 0" );
    self setclientdvar( "r_sky_intensity_factor0", 2.8 );
-   self setclientdvar( "cg_fov", 85 );
-   self setclientdvar( "cg_fovscale", 1.20 );
+   self setclientdvar( "cg_fov", 90 );
+   self setclientdvar( "cg_fovscale", 1.15  );
 
 
    self setclientdvar( "r_lighttweaksunlight", 12 );
