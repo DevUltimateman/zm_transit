@@ -44,7 +44,7 @@
 init()
 {
     //spawn hud struct
-    level thread make_middle_print_struct();
+    //level thread make_middle_print_struct();
 
     //test text
     flag_wait( "initial_blackscreen_passed" );
@@ -59,7 +59,8 @@ notiff()
 waittill_rewards()
 {
     level endon( "end_game" );
-    level waittill( "final_quest_reached" );
+    //commented out to debug
+    //level waittill( "final_quest_reached" );
 
     level thread be_rewarded();
 }

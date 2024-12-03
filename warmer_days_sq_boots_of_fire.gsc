@@ -434,7 +434,7 @@ f_boots1() //fireboot quest step1. Find 8 different fireboots around the map ( j
     wait 8;
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
     //activate this back when the crashing issue is figured out.
-    level thread _someone_unlocked_something( "^8You've located all the ^9fireboot^8 pieces, conqratulations!", "^8Quick, catch and summon them before they run away!", 8, 0.5 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8You've located all the ^9fireboot^8 pieces, conqratulations!", "^8Quick, catch and summon them before they run away!", 8, 0.25 );
     wait 8;
     level notify( "fireboots_step1_completed" );
 }
@@ -443,8 +443,7 @@ f_boots3()
 {
     level endon( "end_game" );
 
-
-    level thread _someone_unlocked_something( "^8Excellent! ^9You've summoned all Fire Boots^8!", "^8They're now yours to keep. You can pick them up from ^9Safe House.", 8, 0.5 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Excellent! ^8You've summoned each ^9Fire Boot^8!", "^8They're now yours to keep. You can pick them up from ^9Safe House.", 8, 0.25 );
     //text up
     text_u = [];
     text_u[ 0 ] = "^8Excellent stuff!";
@@ -523,8 +522,7 @@ f_boots3()
                 
                 /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
                 //this commented out till we can fix the text freeze issue that crashes the game after ~1 minute of calling it
-                level thread _someone_unlocked_something( text_d, text_upper, 7, 0.5 );
-
+                level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + text_d, text_upper, 8, 0.25 );
                 //wait_network_frame();
                 text_d = undefined;
             }
@@ -621,9 +619,9 @@ leg_trigger_logic( model_origin )
                 //give a little reward to the player who picked up said boots
                 guy.score += 750;
                 guy playsoundtoplayer( "zmb_vault_bank_deposit", guy );
-                lower_text = "^8Fireboots found: ^9" + true_indicator + "^8 / ^9" + ( level.fireboot_locations.size  );//- 1  ); 
+                lower_text = "^9[ ^8Fireboots found: ^8" + true_indicator + "^9 / ^8" + ( level.fireboot_locations.size + " ^9]" );//- 1  ); 
                 wait 0.1;
-                level thread Subtitle( "^9Dr. Schruder^8: " + _returnFireBootStepText(), lower_text, 8, 0.25 );
+                level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + _returnFireBootStepText(), lower_text, 8, 0.25 );
                 wait 0.05;
                 level.boots_found++;
                 level thread picking_up_boots_cooldown_others_timer( cooldownTimer );
@@ -799,76 +797,8 @@ fireboots_sound_before_locating( alias, which_active )
 }
 
 
-_someone_unlocked_something( text, text2, duration, fadetimer )
-{
-    level endon( "end_game" );
-	level thread Subtitle( "^9Dr. Schruder: ^8" + text, text2, duration, fadetimer );
-}
-
-_print_someone_found_boot_piece( text, text2, duration, fadetimer )
-{
-    level endon( "end_game" );
-    
-	level thread Subtitle(  text, "^9Dr. Schruder: ^8" + text2, duration, fadetimer );
-}
 
 
-
-
-Subtitle( text, text2, duration, fadeTimer )
-{
-	subtitle = NewHudElem();
-	subtitle.x = 0;
-	subtitle.y = -42;
-	subtitle SetText( text );
-	subtitle.fontScale = 1.32;
-	subtitle.alignX = "center";
-	subtitle.alignY = "middle";
-	subtitle.horzAlign = "center";
-	subtitle.vertAlign = "bottom";
-	subtitle.sort = 1;
-    
-	//subtitle2 = undefined;
-	subtitle.alpha = 0;
-    subtitle fadeovertime( fadeTimer );
-    subtitle.alpha = 1;
-
-	if ( IsDefined( text2 ) && text2 != "" )
-	{
-		subtitle2 = NewHudelem();
-		subtitle2.x = 0;
-		subtitle2.y = -24;
-		subtitle2 SetText( text2 );
-		subtitle2.fontScale = 1.22;
-		subtitle2.alignX = "center";
-		subtitle2.alignY = "middle";
-		subtitle2.horzAlign = "center";
-		subtitle2.vertAlign = "bottom";
-		subtitle2.sort = 1;
-        subtitle2.alpha = 0;
-        subtitle2 fadeovertime( fadeTimer );
-        subtitle2.alpha = 1;
-	}
-	
-	wait ( duration );
-
-    subtitle fadeovertime( fadetimer );
-    if( isdefined( subtitle2 ) )
-    {
-        subtitle2 fadeovertime( fadetimer );
-        subtitle2.alpha = 0;
-    }
-    
-    subtitle.alpha = 0;
-    
-    wait fadetimer;
-    subtitle destroy_hud();
-    if( isdefined( subtitle2 ) )
-    {
-        subtitle2 destroy_hud();
-    }
-    
-}
 
 fliebies( element )
 {

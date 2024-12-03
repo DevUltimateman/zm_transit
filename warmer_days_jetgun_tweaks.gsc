@@ -54,11 +54,11 @@ init()
 
     precacheshader( "tactical_gren_reticle" );
     level thread for_players();
-    
-    
+    level thread while_forching();
+    level thread force_everything_level_off();
     level thread CustomRoundNumber(); //enable back wheen recording done
     flag_wait( "start_zombie_round_logic" );
-    level thread while_forching();
+    
     level notify("end_round_think"); //enable back wheen recording done
     wait 0.05;
     level thread round_think();
@@ -79,6 +79,8 @@ for_players()
         pl thread play_name_hud_all();
         pl thread print_if_i_have_eq_test();
         pl thread do_location_hud();
+
+        pl thread force_everything_off();
     }
 }
 
@@ -101,7 +103,70 @@ while_forching()
     }
 }
 
+turn_everything_on()
+{
+    self.clays_shade fadeovertime( 2.5 );
+    self.clays fadeovertime( 2.5 );
+    self.jetgun_ammo_hud fadeovertime( 2.5 );
+    self.jetgun_name_hud fadeovertime( 2.5 );
+    self.location_hud fadeovertime( 2.5 );
+    self.survivor_points fadeovertime( 2.5 );
+    self.real_score_hud fadeovertime( 2.5 );
+    self.weapon_ammo fadeovertime( 2.5 );
+    self.weapon_ammo_stock fadeovertime( 2.5 );
+    self.playname fadeovertime( 2.5 );
+    
+    self.clays_shade.alpha = 1;
+    self.clays.alpha = 1;
+    self.jetgun_ammo_hud.alpha = 1;
+    self.jetgun_name_hud.alpha = 1;
+    self.location_hud.alpha = 1;
+    self.survivor_points.alpha = 1;
+    self.real_score_hud.alpha = 1;
+    self.weapon_ammo.alpha = 1;
+    self.weapon_ammo_stock.alpha = 1;
+    self.playname.alpha = 1;
 
+}
+
+force_everything_level_off()
+{
+    level endon( "end_game" );
+    for( s = 0; s < 265; s++ )
+    {
+        if( isdefined( level.huddefcon ) ){ level.huddefcon.alpha = 0; }
+        if( isdefined( level.huddefconline ) ){ level.huddefconline.alpha = 0; }
+        wait 0.05;
+    }
+    wait 0.25;
+    level.huddefcon fadeovertime( 2.5 );
+    level.huddefconline fadeovertime( 2.5 );
+    level.huddefcon.alpha = 1;
+    level.huddefconline.alpha = 1;
+}
+force_everything_off()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" ); //failscheck if something happen upon connecting, otherwise this function will kill itself after player has spawned in
+    for( s = 0; s < 250; s++ )
+    {
+        self setclientuivisibilityflag( "hud_visible", false );
+        if( isdefined( self.clays_shade ) ) { self.clays_shade.alpha = 0; }
+        if( isdefined( self.clays ) ) { self.clays.alpha = 0; }
+        if( isdefined( self.jetgun_ammo_hud ) ) { self.jetgun_ammo_hud.alpha = 0; }
+        if( isdefined( self.jetgun_name_hud ) ) { self.jetgun_name_hud.alpha = 0; }
+        if( isdefined( self.location_hud ) ) { self.location_hud.alpha = 0; }
+        if( isdefined( self.survivor_points ) ) { self.survivor_points.alpha = 0; }
+        if( isdefined( self.real_score_hud ) ) { self.real_score_hud.alpha = 0; }
+        if( isdefined( self.weapon_ammo ) ) { self.weapon_ammo.alpha = 0; }
+        if( isdefined( self.weapon_ammo_stock ) ) { self.weapon_ammo_stock.alpha = 0; }
+        if( isdefined( self.playname ) ) { self.playname.alpha = 0; }
+        wait 0.05;
+
+    }
+    wait 0.25;
+    self thread turn_everything_on();
+}
 print_if_i_have_eq_test()
 {
     level endon( "end_game ");
@@ -158,8 +223,8 @@ print_if_i_have_eq_test()
 
 
     self.clays_shade = newClientHudElem( self );
-    self.clays_shade.x = 310;
-    self.clays_shade.y = 215;
+    self.clays_shade.x = 382.5;
+    self.clays_shade.y = 212.5;
     self.clays_shade.alignx = "center";
     self.clays_shade.aligny = "center";
     self.clays_shade.horzalign = "user_center";
@@ -167,13 +232,14 @@ print_if_i_have_eq_test()
     self.clays_shade.alpha = 1; //turn to 1 on release
     self.clays_shade.foreground = true;
     self.clays_shade.hidewheninmenu = true;
-    self.clays_shade setshader( "hud_status_dead", 15, 15 );
+    self.clays_shade setshader( "hud_status_dead", 12, 12 );
     self.clays_shade.color = ( 1, 0.85, 0.65 );
 
 
     self.clays = newclienthudelem( self );
-    self.clays.x = 300;
-    self.clays.y = 220;
+    self.clays.x = 367.5;
+    self.clays.y = 215;
+    self.clays.color = ( 0.65, 0.65, 0.65 );
     self.clays.alignx = "center";
     self.clays.aligny = "center";
     self.clays.horzalign = "user_center";
@@ -181,8 +247,8 @@ print_if_i_have_eq_test()
     self.clays.alpha = 0;
     self.clays.foreground = false;
     self.clays.hidewheninmenu = true;
-    self.clays.fontscale = 1.075;
-    self.clays settext( "^9[{+actionslot 1}]" );
+    self.clays.fontscale = 1.25;
+    self.clays settext( "[{+actionslot 1}]" );
 
     //self setWeaponAmmoClip("frag_grenade_mp", 2);
     
@@ -198,7 +264,7 @@ print_if_i_have_eq_test()
         if( brute < self getWeaponAmmoClip( "frag_grenade_zm" ) || brute > self getWeaponAmmoClip( "frag_grenade_zm" )  )
         {
             amount = self getweaponammoclip( "frag_grenade_zm" );
-            self.clays setText( "^3" + amount );
+            self.clays setText(  amount );
             self.clays fadeovertime( 0.2 );
             self.clays_shade fadeovertime( 0.2 );
             self.clays_shade.alpha = 1; //debug 0
@@ -489,7 +555,7 @@ sort_all_elements_in_group()
 
     move_all( self.jetgun_ammo_hud, self.jetgun_name_hud, self.real_score_hud,
              self.survivor_points, self.weapon_ammo,
-             self.weapon_ammo_stock, self.say_ammo, self.playname );
+             self.weapon_ammo_stock, self.playname );
 
 
 }
@@ -771,7 +837,7 @@ do_location_hud()
 
 
 
-move_all( opt, opt2, opt3, opt4, opt5, opt7, opt8, opt9 )
+move_all( opt, opt2, opt3, opt4, opt5, opt7,  opt9 )
 {
     x_num = 360;
     y_num = 290;
@@ -794,9 +860,6 @@ move_all( opt, opt2, opt3, opt4, opt5, opt7, opt8, opt9 )
     opt7.x = opt7.x + x_num;
     opt7.y = opt7.y + y_num;
 
-    opt8.x = opt8.x + x_num;
-    opt8.y = opt8.y + y_num;
-
     opt9.x = opt9.x + x_num;
     opt9.y = opt9.y + y_num;
 
@@ -808,11 +871,11 @@ jetgun_value_hud()
     self endon( "disconnect" );
     self.custom_heat = 0;
     
-    self.jetgun_ammo_hud.x = 10;
-    self.jetgun_ammo_hud.y = -80;
+    self.jetgun_ammo_hud.x = -20;
+    self.jetgun_ammo_hud.y = -75;
     self.jetgun_ammo_hud.color = ( 0.65, 0.65, 0.65 );
     self.jetgun_ammo_hud SetValue( self.custom_heat );
-    self.jetgun_ammo_hud.fontScale = 1.52;
+    self.jetgun_ammo_hud.fontScale = 1.25;
     self.jetgun_ammo_hud.alignX = "center";
     self.jetgun_ammo_hud.alignY = "center";
     self.jetgun_ammo_hud.horzAlign = "user_center";
@@ -822,10 +885,10 @@ jetgun_value_hud()
     self.jetgun_ammo_hud fadeovertime( 1 );
     self.jetgun_ammo_hud.alpha = 1; //Debug 0
     
-    self.jetgun_name_hud.x = 30;
+    self.jetgun_name_hud.x = -5;
     self.jetgun_name_hud.y = -77.5;
     self.jetgun_name_hud Setshader( "zm_hud_icon_jetgun_gauges", 12, 12 );
-    self.jetgun_name_hud.fontScale = 1.52;
+    //self.jetgun_name_hud.fontScale = 1.22;
     self.jetgun_name_hud.alignX = "center";
     self.jetgun_name_hud.alignY = "center";
     self.jetgun_name_hud.horzAlign = "user_center";
@@ -879,10 +942,10 @@ scores_hud()
     level endon( "end_game" );
     self endon( "disconnect" );
      //x-20,y-134
-    self.real_score_hud.x = -5;
+    self.real_score_hud.x = 12.5;
     self.real_score_hud.y = -118;
     self.real_score_hud SetValue( self.score );
-    self.real_score_hud.fontScale = 1.52;
+    self.real_score_hud.fontScale = 1.32;
     self.real_score_hud.alignX = "center";
     self.real_score_hud.alignY = "center";
     self.real_score_hud.horzAlign = "user_center";
@@ -891,13 +954,14 @@ scores_hud()
     self.real_score_hud.alpha = 0;
     self.real_score_hud fadeovertime( 1.5 );
     self.real_score_hud.alpha = 1; //Debug 0
-    self.real_score_hud.color = ( 1, 0.7, 0 );
+    self.real_score_hud.color = ( 0.69, 0.78, 0.54 );
 
     
-    self.survivor_points.x = 27.5;
-    self.survivor_points.y = -115;
-    self.survivor_points SetText( "^9$^7" );
-    self.survivor_points.fontScale = 1.32;
+    self.survivor_points.x = self.real_score_hud.x + ( -15 );
+    self.survivor_points.y = self.real_score_hud.y;
+    self.survivor_points SetText( "$" );
+    self.survivor_points.color = ( 0.94, 0.84, 0.54 );
+    self.survivor_points.fontScale = 1.175;
     self.survivor_points.alignX = "center";
     self.survivor_points.alignY = "center";
     self.survivor_points.horzAlign = "user_center";
@@ -956,7 +1020,7 @@ change_col_score_up()
     wait 0.25;
     self.real_score_hud fadeovertime( 0.15 );
     wait 0.15;
-    self.real_score_hud.color = ( 1, 0.7, 0 );
+    self.real_score_hud.color = ( 0.69, 0.78, 0.54 );
 }
 
 change_col_score_down()
@@ -968,7 +1032,7 @@ change_col_score_down()
     wait 0.35;
     self.real_score_hud fadeovertime( 0.25 );
     wait 0.25;
-    self.real_score_hud.color = ( 1, 0.7, 0 );
+    self.real_score_hud.color = ( 0.69, 0.78, 0.54 );
 }
 
 
@@ -990,7 +1054,7 @@ score_hud_all_ammo()
     self.weapon_ammo = newClientHudElem( self );
     //self.ammo_slash = newClientHudElem( self );
     self.weapon_ammo_stock = newClientHudElem( self );
-    self.say_ammo = newClientHudElem( self );
+    //self.say_ammo = newClientHudElem( self );
     self.weapon_ammo.alpha = 0;
     //self.ammo_slash.alpha = 0;
     self.weapon_ammo_stock.alpha = 0;
@@ -1000,6 +1064,8 @@ score_hud_all_ammo()
     self thread scores_hud_ammo();
     wait 2;
     self thread update_ammo_hud();
+    wait 0.1;
+    self thread update_ammo_stock_set_text();
 }
 scores_hud_ammo()
 {
@@ -1008,8 +1074,9 @@ scores_hud_ammo()
     
     self.weapon_ammo.x = -27.5;
     self.weapon_ammo.y = -100;
-    self.weapon_ammo.color = ( 0.65, 0.65, 0.65 );
-    self.weapon_ammo SetValue(  self getWeaponAmmoClip( self getCurrentWeapon()  ) );
+    self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
+    //self.weapon_ammo SetValue(  self getWeaponAmmoClip( self getCurrentWeapon()  ) );
+    self.weapon_ammo setvalue( "" );
     self.weapon_ammo.fontScale = 1.82;
     self.weapon_ammo.alignX = "center";
     self.weapon_ammo.alignY = "center";
@@ -1023,10 +1090,14 @@ scores_hud_ammo()
 
     
 
-    
-    self.weapon_ammo_stock.x = 2;
+    //make self.weapon_ammo_stock settext instead of set value
+    //the hud elem needs updating so little that it won't cause an overflow with settext instead of setvalue
+    //this way we can combine the forward slash and stock ammo into one hud elem
+    //since we are already maxing out hud limit
+    self.weapon_ammo_stock.x = 11.5;
     self.weapon_ammo_stock.y = -100;
-    self.weapon_ammo_stock settext(  " ^9/ ^8" + self getWeaponAmmoStock( self getCurrentWeapon() ) );
+    //self.weapon_ammo_stock settext(  " ^9/ ^8" + self getWeaponAmmoStock( self getCurrentWeapon() ) );
+    self.weapon_ammo_stock settext( "" );
     self.weapon_ammo_stock.fontScale = 1.82;
     self.weapon_ammo_stock.alignX = "center";
     self.weapon_ammo_stock.alignY = "center";
@@ -1034,12 +1105,15 @@ scores_hud_ammo()
     self.weapon_ammo_stock.vertAlign = "user_center";
     self.weapon_ammo_stock.sort = 1;
     self.weapon_ammo_stock.alpha = 0;
-    self.weapon_ammo_stock.color = ( 0.65, 0.65, 0.65 );
+    self.weapon_ammo_stock.color = ( 0.5, 0.7, 0.82 ); //( 0.85, 0.7, 0.57 );
     self.weapon_ammo_stock fadeovertime( 1.5 );
     self.weapon_ammo_stock.alpha = 1; //Debug 0
 
 
-   
+    
+    //remove this
+    //we are hitting hud limits already, limit hud elems to only the most necessary ones.
+    //dec 03 2024
     self.say_ammo.x = 32.5 ;
     self.say_ammo.y = -95;
     self.say_ammo Setshader( "zm_hud_icon_ammobox", 12, 12 );
@@ -1060,20 +1134,52 @@ scores_hud_ammo()
 
 }
 
+
+//updated version, works fine 
+update_ammo_stock_set_text()
+{
+    self endon(  "disconnect" );
+    level endon( "end_game" );
+    self.stock_to_compare = self getweaponammostock( self getcurrentweapon() );
+    wait 2.5;
+    while( true )
+    {
+        if( self.stock_to_compare == self getweaponammostock( self getcurrentweapon() ) )
+        {
+            self.weapon_ammo_stock settext( " / " + self.stock_to_compare  );
+            while( self.stock_to_compare == self getweaponammostock( self getcurrentweapon() ) )
+            {
+                wait 0.25;
+            }
+            wait 0.25;
+            self.stock_to_compare = self getweaponammostock( self getcurrentweapon() );
+            self.weapon_ammo_stock settext( " / ^3" + self.stock_to_compare );
+        }
+        wait 0.05;
+    }
+}
 update_ammo_hud()
 {
     self endon( "disconnect" );
     level endon( "end_game" );
+    //wait 5.5;
     weapon = self getCurrentWeapon();
     ammo = self getWeaponAmmoClip( weapon );
     stock = self getWeaponAmmoStock( weapon );
     ammo_clip = self getWeaponAmmoClip( weapon );
+
+
     ammo_stock = self getWeaponAmmoStock( weapon );
     old_ammo_stock = self getweaponammostock( weapon );
+
+
+    //self.weapon_ammo_stock setText( " ^9/ ^8" + old_ammo_stock );
+    skip_first_time_check = true;
     while( true )
     {
         wait 0.05;
-        if( ammo_clip == ammo )
+        //if current clip size == old clip size we compare against
+        if( ammo_clip == ammo && !skip_first_time_check )
         {
             wait 0.05;
         }
@@ -1081,61 +1187,86 @@ update_ammo_hud()
         //self waittill( "weapon_fired" );
         ammo_clip = self getWeaponAmmoClip( weapon );
         ammo_stock = self getWeaponAmmoStock( weapon );
-        
+        skip_first_time_check = false;
+        //old_current_stock = self getweaponammostock( self getcurrentweapon() );
+        current_stock = self getWeaponAmmoStock( self getCurrentWeapon() );
+        //if new current clip has less ammo than earlier grab
         if(  ammo_clip < ammo && self getCurrentWeapon() == weapon )
         {
+            
             self.weapon_ammo setvalue( ammo_clip   );
-            self.weapon_ammo.color = ( 0.65, 0.1, 0 );
+            self thread change_col_ammo_clip_minus();
+            //self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
             
             //self.weapon_ammo_stock setValue( ammo_stock );
             ammo_stock = stock;
             ammo = self getWeaponAmmoClip( weapon );
             wait 0.05;
-            self.weapon_ammo.color = ( 0.65, 0.65, 0.65 );
+           // self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
 
 
+            //if clip has less than 100 bullets in it
             if( self getWeaponAmmoClip( self getCurrentWeapon() ) < 100 )
             {
+                current_stock = self getweaponammostock( self getcurrentweapon() );
+                //if stock has less than 100 bullets in it
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
+                    
+                    //self.weapon_ammo_stock.x = 15.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -22.5 );
                 }
+                //if stock has more or equal than 100 bullets in it
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
+                    //self.weapon_ammo_stock.x = 12.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -25 );
                 }
                 
             }
 
+            //if clip has more than 100 bullets in it
             else if( self getWeaponAmmoClip( self getCurrentWeapon() ) >= 100 )
             {
+                current_stock = self getweaponammostock( self getcurrentweapon() );
+                //if stock has less than 100 bullets in it
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
+                    //self.weapon_ammo_stock.x = 15.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -27.5 );
                 }
+                //if stock has more or equal than 100 bullets in it
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
+                    //self.weapon_ammo_stock.x = 12.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -32.5 );
                 }
                 
             }
         }
+
+        //if new current clip has more ammo than earlier grab
         else if( ammo_clip > ammo && self getCurrentWeapon() == weapon )
         {
+            //we_should_update = true;
             self.weapon_ammo setvalue( ammo_clip );
+            self thread change_col_ammo_clip_plus();
             //self.weapon_ammo_stock setValue( ammo_stock );
-            ammo_stock = stock;
+           // ammo_stock = stock;
             ammo = self getweaponammoclip( weapon ); 
             wait 0.05;
-            self.weapon_ammo.color = ( 0.1, 0.65, 0 );
+            //self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
             if( self getWeaponAmmoClip( self getCurrentWeapon() ) < 100 )
             {
+                current_stock = self getweaponammostock( self getcurrentweapon() );
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
+                    //self.weapon_ammo_stock.x = 15.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -22.5 );
                 }
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
+                    //self.weapon_ammo_stock.x = 12.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -25 );
                 }
                 
@@ -1143,53 +1274,61 @@ update_ammo_hud()
 
             else if( self getWeaponAmmoClip( self getCurrentWeapon() ) >= 100 )
             {
+                current_stock = self getweaponammostock( self getcurrentweapon() );
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
+                    //self.weapon_ammo_stock.x = 15.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -27.5 );
                 }
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
+                    //self.weapon_ammo_stock.x = 12.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -32.5 );
+                    
                 }
                 
             }
-        }
 
-        //ELSE IF
-        if( old_ammo_stock != ammo_stock )
-        {
-            old_ammo_stock = ammo_stock;
-            self.weapon_ammo_stock setText( " ^9/ ^8" + old_ammo_stock );
+            
         }
+        
+        //fail safe update'
+        //actually this fucked it more xd
+       // if( current_stock != self getWeaponAmmoStock( self getcurrentweapon() ) )
+       // {
+          // current_stock = self getWeaponAmmoStock( self getcurrentweapon() );
+          // self.weapon_ammo_stock setText( " ^9/ ^8" + current_stock );
+       // }
     }
 }
 
 change_col_ammo_clip_plus()
 {
+    //self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
     self.weapon_ammo fadeOverTime( 0.1 );
     //self.weapon_ammo_stock fadeOverTime( 0.15 );
-    self.weapon_ammo.color = ( 0.6, 1, 0 );
+    self.weapon_ammo.color = ( 0.55, 0.82, 0.5 );
     //self.weapon_ammo_stock.color = ( 1, 0.4, 0 );
     wait 0.1;
     self.weapon_ammo fadeovertime( 0.05 );
     //self.weapon_ammo_stock fadeOverTime( 0.15 );
     wait 0.05;
-    self.weapon_ammo.color = ( 0.65, 0.65, 0.65 );
+    self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
     //self.weapon_ammo_stock.color = ( 1, 1, 1 );
 }
 
 change_col_ammo_clip_minus()
 {
-    self.weapon_ammo.color = (0.65, 0.65, 0.65 );
+    //self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
     self.weapon_ammo fadeOverTime( 0.1 );
     //self.weapon_ammo fadeOverTime( 0.15 );
-    self.weapon_ammo.color = ( 1, 0.4, 0 );
+    self.weapon_ammo.color = ( 0.89, 0.39, 0.29 );
     //self.weapon_ammo_stock.color = ( 1, 0.4, 0 );
     wait 0.1;
     self.weapon_ammo fadeovertime( 0.15 );
     //self.weapon_ammo_stock fadeOverTime( 0.15 );
     wait 0.15;
-    self.weapon_ammo.color = ( 0.65, 0.65, 0.65 );
+    self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
 }
 
 
@@ -1455,7 +1594,7 @@ staticPhaseText()
 
     self waittill( "spawned_player" );
 
-    self.phase = newClientHudElem( self );
+    //self.phase = newClientHudElem( self );
     self.phase.color = ( 1, 1, 1 );
     self.phase settext("Phase");
     self.phase.fontscale = 1.3;

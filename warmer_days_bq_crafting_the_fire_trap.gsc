@@ -61,6 +61,66 @@ main()
 
 }
 
+
+
+init()
+{
+    //replacefunc( maps\mp\zm_transit_fx::precache_scripted_fx, ::precache_scripted_fx_new );
+    //replacefunc( maps\mp\zm_transit_fx::precache_createfx_fx, ::precache_createfx_fx_new );
+    //replacefunc( maps\mp\createart\zm_transit_art::main, ::main_art );
+    
+    //level thread fog_bank_alter_wait(); //dev func
+    //level thread main_art(); //dev func
+    //level thread loop_to_console(); //dev func
+    flag_wait( "initial_blackscreen_passed" );
+    level.gas_canister_pick_location = ( -4844.13, -7173.79, -56.2322 );
+    level.gas_tools_pick_location = ( -4219.75, -7871.54, -62.8096 );
+    level.gas_pour_location = ( 8051.65, -5330.98, 264.125 ); 
+    level.gas_fire_pick_location = ( 8410.4, -6343.49, 103.431 ); //outside farm main base next to house lava crack
+    level.gas_fire_place_location = level.gas_pour_location;
+
+    
+    level.cracker_pickups = [];
+    level.cracker_pickups[ 0 ] = ( 8410.4, -6343.49, 103.431 ); //farm lava crack next to main house
+    level.cracker_pickups[ 1 ] = ( -647.101, -1127.28, -61.3341 ); //outside towwn on left before bridge
+    level.cracker_pickups[ 2 ] = ( 4742.58, 7480.7, -63.875 ); //behind cabin in the woods
+    level.cracker_pickups[ 3 ] = ( 10837, 8066.7, -556.448 ); //power station behind the drop down back to outside, next to truck
+    level.cracker_pickups[ 4 ] = ( -11296, -2678.63, 193.003 ); //tunnels, next to the big pillar at portal location
+    
+    level.gas_fireplaces = [];
+    level.gas_fireplaces[ level.gas_fireplaces.size ] = ( 8483.78, -5406.71, 264.125 );
+    level.gas_fireplaces[ level.gas_fireplaces.size ] = ( 8488.59, -5353.79, 264.125 );
+    level.gas_fireplaces[ level.gas_fireplaces.size ] = ( 8476.43, -5304.71, 264.125 );
+    level.gas_fireplaces[ level.gas_fireplaces.size ] = ( 8458.43, -5362.5, 264.125 );
+     
+    level.gas_has_been_picked = false;
+
+    level.gas_been_picked_up = false;
+    level.gas_is_the_trigger = false;
+    //add a check before this so that we cant do it immediately
+    //but now for testing on
+    ///level thread do_everything_for_gas_pickup();
+    level thread spawn_workbench_to_build_fire_trap_entrance();
+    //level thread global_gas_quest_trigger_spawner( level.gas_pour_location, "^9[ ^8Workbench requires ^9Gasoline ^9]", "", level.myfx[ 75 ], level.myfx[ 76 ], "littered_floor" );
+
+    //change hintstring text once gas has been picked for work bench
+    //level thread while_gas_hasnt_been_picked();f
+    wait 1;
+
+    //next 5 steps are refactored to simplify the understanding of said code logic. 
+    //original code was coded that long ago that I can'tremember anymore how certain things were supposed to match and work
+    //this new simplified version seem to work well now
+    level thread gas_quest_01_pick_up_gas();
+    wait 6;
+    level thread gas_quest_02_place_down_gas();
+    level thread gas_quest_03_find_crackers();
+    level thread gas_quest_04_place_down_fc();
+    level thread gas_quest_05_fire_trap_logic();
+    if( level.dev_time ){ iprintlnbold( "GAS GUEST NEW LOGIC APPLIES" ); }
+    
+}
+
+
 precache_scripted_fx_new()
 {
     level._effect["switch_sparks"] = loadfx( "env/electrical/fx_elec_wire_spark_burst" );
@@ -364,64 +424,6 @@ blahblah()
         registerclientfield( "toplayer", self.cf_lerp_name, self.highest_version, self.cf_lerp_bit_count, "float" );
 }
 
-init()
-{
-    //replacefunc( maps\mp\zm_transit_fx::precache_scripted_fx, ::precache_scripted_fx_new );
-    //replacefunc( maps\mp\zm_transit_fx::precache_createfx_fx, ::precache_createfx_fx_new );
-    //replacefunc( maps\mp\createart\zm_transit_art::main, ::main_art );
-    
-    //level thread fog_bank_alter_wait(); //dev func
-    //level thread main_art(); //dev func
-    //level thread loop_to_console(); //dev func
-    flag_wait( "initial_blackscreen_passed" );
-    level.gas_canister_pick_location = ( -4844.13, -7173.79, -56.2322 );
-    level.gas_tools_pick_location = ( -4219.75, -7871.54, -62.8096 );
-    level.gas_pour_location = ( 8051.65, -5330.98, 264.125 ); 
-    level.gas_fire_pick_location = ( 8410.4, -6343.49, 103.431 ); //outside farm main base next to house lava crack
-    level.gas_fire_place_location = level.gas_pour_location;
-
-    
-    level.cracker_pickups = [];
-    level.cracker_pickups[ 0 ] = ( 8410.4, -6343.49, 103.431 ); //farm lava crack next to main house
-    level.cracker_pickups[ 1 ] = ( -647.101, -1127.28, -61.3341 ); //outside towwn on left before bridge
-    level.cracker_pickups[ 2 ] = ( 4742.58, 7480.7, -63.875 ); //behind cabin in the woods
-    level.cracker_pickups[ 3 ] = ( 10837, 8066.7, -556.448 ); //power station behind the drop down back to outside, next to truck
-    level.cracker_pickups[ 4 ] = ( -11296, -2678.63, 193.003 ); //tunnels, next to the big pillar at portal location
-    
-    level.gas_fireplaces = [];
-    level.gas_fireplaces[ level.gas_fireplaces.size ] = ( 8483.78, -5406.71, 264.125 );
-    level.gas_fireplaces[ level.gas_fireplaces.size ] = ( 8488.59, -5353.79, 264.125 );
-    level.gas_fireplaces[ level.gas_fireplaces.size ] = ( 8476.43, -5304.71, 264.125 );
-    level.gas_fireplaces[ level.gas_fireplaces.size ] = ( 8458.43, -5362.5, 264.125 );
-     
-    level.gas_has_been_picked = false;
-
-    level.gas_been_picked_up = false;
-    level.gas_is_the_trigger = false;
-    //add a check before this so that we cant do it immediately
-    //but now for testing on
-    ///level thread do_everything_for_gas_pickup();
-    level thread spawn_workbench_to_build_fire_trap_entrance();
-    //level thread global_gas_quest_trigger_spawner( level.gas_pour_location, "^9[ ^8Workbench requires ^9Gasoline ^9]", "", level.myfx[ 75 ], level.myfx[ 76 ], "littered_floor" );
-
-    //change hintstring text once gas has been picked for work bench
-    //level thread while_gas_hasnt_been_picked();f
-    wait 1;
-
-    //next 5 steps are refactored to simplify the understanding of said code logic. 
-    //original code was coded that long ago that I can'tremember anymore how certain things were supposed to match and work
-    //this new simplified version seem to work well now
-    level thread gas_quest_01_pick_up_gas();
-    wait 6;
-    level thread gas_quest_02_place_down_gas();
-    level thread gas_quest_03_find_crackers();
-    level thread gas_quest_04_place_down_fc();
-    level thread gas_quest_05_fire_trap_logic();
-    if( level.dev_time ){ iprintlnbold( "GAS GUEST NEW LOGIC APPLIES" ); }
-    
-}
-
-
 override_mainer()
 {
     if ( level.createfx_enabled )
@@ -552,7 +554,7 @@ gas_quest_01_pick_up_gas()
             level notify( "gas_got_picked" );
             level.gas_been_picked_up = true;
             level.gas_is_the_trigger = true;
-            _someone_unlocked_something( "^9" + presser.name + " ^8found some spoiled ^9Gasoline", "", 6, 1 );
+            level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + presser.name + " ^8found some spoiled ^9Gasoline", "", 6, 1  );
            // coop_print_base_find_or_fortify_fire_trap( "gas_got_picked", presser );
             gas_trig delete();
             inv_mod_fx delete();
@@ -592,7 +594,7 @@ gas_quest_02_place_down_gas()
             wait 3;
             who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( now_weap );
             who takeweapon( "zombie_builder_zm" );
-            _someone_unlocked_something( "^9" + who.name + " ^8brought Gasoline^8 to ^9Safe House", "", 6, 1 );
+            level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who.name + " ^8brought Gasoline^8 to ^9Safe House", "", 6, 1   );
             level.fireplace_trigger setHintString( "^9[ ^8Workbench requires ^3Fire Crackers ^9] " );
             level notify( "start_firecracker_logic" );
             wait 1;
@@ -628,7 +630,7 @@ gas_quest_03_find_crackers()
                 firecracker_trigger setHintString( "^9[ ^8Found some old ^3Fire Crackers ^9]" );
                 wait 2.5;
                 level notify( "crackers_can_be_put_down" );
-                 _someone_unlocked_something( "^9" + surv.name + " ^8found some old ^9Fire Crackers", "", 6, 1 );
+                level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + surv.name + " ^8found some old ^9Fire Crackers", "", 6, 1   );
                 firecracker_trigger delete();
 
                 break;
@@ -663,7 +665,7 @@ gas_quest_04_place_down_fc()
             wait 3;
             who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( now_weap );
             who takeweapon( "zombie_builder_zm" );
-            _someone_unlocked_something( "^9" + who.name + " ^8finished upgrading ^9Safe House's ^8window entrances.", "Zombies climbing through said windows will be ^9killed^8 by the crafted fire trap.", 8, 1 );
+            level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9" + who.name + " ^8finished upgrading ^9Safe House's ^8window entrances.", "Zombies climbing through said windows will be ^9killed^8 by the crafted fire trap.", 8, 1  );
             level.fireplace_trigger sethintstring( "^9[ ^8Fire Trap ^8has been built ^9] " );
             level notify( "start_firetrap_logic" );
             wait 1;
@@ -724,26 +726,27 @@ coop_print_base_find_or_fortify_fire_trap( which_notify, who_found )
     switch( which_notify )
     {
         case "gas_got_picked":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8found some spoiled ^9Gasoline", "", 6, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8found some spoiled ^9Gasoline", "", 6, 1 );
         break;
 
         case "littered_floor":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8brought Gasoline^8 to ^9Safe House", "", 6, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8brought Gasoline^8 to ^9Safe House", "", 6, 1  );
         break;
 
         case "fire_picking":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8found some old ^9Fire Crackers", "", 6, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8found some old ^9Fire Crackers", "", 6, 1   );
         break;
 
         case "firetrap_active":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8finished upgrading ^9Safe House's ^8window entrances.", "Zombies climbing through said window will be ^9killed^8 by the crafted fire trap.", 8, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8finished upgrading ^9Safe House's ^8window entrance.", "Zombies climbing through said window will be ^9killed^8 by the crafted fire trap.", 8, 1 );
         break;
 
         case "side_door_unlocked":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8crafted a barricade on the side entrance of ^9Safe House ^8that prevents zombies from entering the barn.", "", 8, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8crafted a barricade on the side entrance of ^9Safe House ^8that prevents zombies from entering the barn.", "", 8, 1  );
         break;
+
         case "main_door_unlocked":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8crafted an air locking door mechanism on the main entrance of ^9Safe House^8.", "Keep an eye on the door's ^9health^8. There might be a time when it needs ^9repairing^8..", 9, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8crafted an air locking door mechanism on the main entrance of ^9Safe House^8.", "^8Keep an eye on the door's ^9health^8. There might be a time when it needs ^9repairing^8..", 9, 1  );
         break;
         default:
         break;
@@ -835,11 +838,7 @@ flyby( element )
     
 }
 
-_someone_unlocked_something( text, text2, duration, fadetimer )
-{
-    level endon( "end_game" );
-	level thread Subtitle( text, text2, duration, fadetimer );
-}
+
 
 while_gas_hasnt_been_picked()
 {

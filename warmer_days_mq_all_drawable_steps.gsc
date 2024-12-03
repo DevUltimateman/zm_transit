@@ -210,10 +210,10 @@ update_hud_elems_to_correct_top_place()
 construct_main_quest_shader_logic()
 {
     
-    self.mq_opening_hud_underline = newclienthudelem( self );
-    self.mq_opening_hud_step_icon_right = newclienthudelem( self );
-    self.mq_opening_hud_step_icon_left = newclienthudelem( self );
-    self.mq_opening_hud_text = newClientHudElem( self );
+    //self.mq_opening_hud_underline = newclienthudelem( self );
+    //self.mq_opening_hud_step_icon_right = newclienthudelem( self );
+   // self.mq_opening_hud_step_icon_left = newclienthudelem( self );
+   // self.mq_opening_hud_text = newClientHudElem( self );
 
     self.mq_opening_hud_text.x = 0;
     self.mq_opening_hud_text.y = -22.5;
@@ -291,14 +291,14 @@ debug_shaderdrawing()
     wait 2;
     for( i = 0; i < level.players.size; i++ )
     {
-        level.players[ i ] thread construct_main_quest_shader_logic();
-        update_hud_elems_to_correct_top_place();
+        //level.players[ i ] thread construct_main_quest_shader_logic();
+        //update_hud_elems_to_correct_top_place();
     }
 
     wait 5;
     for( s = 0; s < level.players.size; s++ )
     {
-        level.players[ s ] thread test_updater();
+        //level.players[ s ] thread test_updater();
     }
     
 }

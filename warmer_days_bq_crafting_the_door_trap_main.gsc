@@ -44,6 +44,8 @@
 
 init()
 {
+    setdvar( "ragdoll_explode_upbias", 6 );
+    setdvar( "ragdoll_explode_force", 100 );
     precachemodel( "p6_wood_plank_rustic01_2x12_96" );
     flag_wait( "initial_blackscreen_passed" );
     level thread for_connecting_players();
@@ -760,26 +762,27 @@ coop_print_base_notify_trap_main( which_notify, who_found )
     switch( which_notify )
     {
         case "gas_got_picked":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8found some spoiled ^9Gasoline", "", 6, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8found some spoiled ^9Gasoline", "", 6, 1 );
         break;
 
         case "littered_floor":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8brought Gasoline^8 to ^9Safe House", "", 6, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8brought Gasoline^8 to ^9Safe House", "", 6, 1  );
         break;
 
         case "fire_picking":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8found some old ^9Fire Crackers", "", 6, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8found some old ^9Fire Crackers", "", 6, 1   );
         break;
 
         case "firetrap_active":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8finished upgrading ^9Safe House's ^8window entrance.", "Zombies climbing through said window will be ^9killed^8 by the crafted fire trap.", 8, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8finished upgrading ^9Safe House's ^8window entrance.", "Zombies climbing through said window will be ^9killed^8 by the crafted fire trap.", 8, 1 );
         break;
 
         case "side_door_unlocked":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8crafted a barricade on the side entrance of ^9Safe House ^8that prevents zombies from entering the barn.", "", 8, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8crafted a barricade on the side entrance of ^9Safe House ^8that prevents zombies from entering the barn.", "", 8, 1  );
         break;
+
         case "main_door_unlocked":
-        _someone_unlocked_something( "^9" + who_found.name + " ^8crafted an air locking door mechanism on the main entrance of ^9Safe House^8.", "^8Keep an eye on the door's ^9health^8. There might be a time when it needs ^9repairing^8..", 9, 1 );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who_found.name + " ^8crafted an air locking door mechanism on the main entrance of ^9Safe House^8.", "^8Keep an eye on the door's ^9health^8. There might be a time when it needs ^9repairing^8..", 9, 1  );
         break;
         default:
         break;
@@ -914,7 +917,7 @@ spawn_collectables_for_bench() //works well now
     possible_origins[ 0 ] = ( -4573.98, 958.331, 175.547 ); //bridge
     possible_origins[ 1 ] = ( 8241.56, 8257.77, -554.781 ); //train
     possible_origins[ 2 ] = ( 13303.2, 62.6599, -191.906 ); //corn nnacht
-    possible_origins[ 3 ] = ( 8721.38, -6511.89, 112.125 ); //farm
+    possible_origins[ 3 ] = ( -7791.01, 5276.51, -57.5811 ); //farm 8721.38, -6511.89, 112.125; this needs changing. //currently behind bus depo ( opposite side of nav card pick up depo)
     possible_origins[ 4 ] = ( 1609.28, -4479.94, -66.4735 ); //shortcut
 
     possible_origins_angles[ 0 ] = ( 0, 113, 0 );
@@ -989,7 +992,7 @@ waittill_pickup( switcher, model_to_delete )
             if( switcher == "door_r" )
             {
                 level.collected_door_pieces++;
-                level thread Subtitle( "^9" + who.name + " ^8found an upgrade piece that belongs to ^9Safe House", "", 8, 2.5 );
+                level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who.name + " ^8found an upgrade piece that belongs to ^9Safe House", "", 8, 2.5  );
                 wait 0.05;
                 playfx( level._effect[ "fx_zmb_blackhole_trap_end" ], self.origin );
                 PlaySoundAtPosition( level.mysounds[ 3 ], self.origin );
@@ -1007,7 +1010,7 @@ waittill_pickup( switcher, model_to_delete )
             else if( switcher == "door_l" )
             {
                 level.collected_door_pieces++;
-                level thread Subtitle( "^9" + who.name + " ^8found an upgrade piece that belongs to ^9Safe House", "", 8, 2.5 );
+                level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who.name + " ^8found an upgrade piece that belongs to ^9Safe House", "", 8, 2.5   );
                 wait 0.05;
                 playfx( level._effect[ "fx_zmb_blackhole_trap_end" ], self.origin );
                 PlaySoundAtPosition( level.mysounds[ 3 ], self.origin );

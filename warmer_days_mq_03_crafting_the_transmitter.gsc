@@ -88,7 +88,7 @@ apply_jockie_on_spawn()
     self endon( "disconnect" );
     self waittill( "spawned_player" );
     wait 1;
-    self thread player_reward_marathon();
+    //self thread player_reward_marathon();
 }
 sidequest_prevent_cleaning()
 {
