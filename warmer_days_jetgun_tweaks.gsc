@@ -129,6 +129,21 @@ turn_everything_on()
 
 }
 
+ammo_fade_fast()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    self.weapon_ammo fadeOverTime( 0.1 );
+    self.weapon_ammo_stock fadeOverTime( 0.1 );
+    self.weapon_ammo.alpha = 0;
+    self.weapon_ammo_stock.alpha = 0;
+    wait .1;
+    self.weapon_ammo fadeOverTime( 0.1 );
+    self.weapon_ammo_stock fadeOverTime( 0.1 );
+    self.weapon_ammo.alpha = 1;
+    self.weapon_ammo_stock.alpha = 1;
+    wait 0.1;
+}
 force_everything_level_off()
 {
     level endon( "end_game" );
@@ -223,7 +238,7 @@ print_if_i_have_eq_test()
 
 
     self.clays_shade = newClientHudElem( self );
-    self.clays_shade.x = 382.5;
+    self.clays_shade.x = 383;
     self.clays_shade.y = 212.5;
     self.clays_shade.alignx = "center";
     self.clays_shade.aligny = "center";
@@ -233,13 +248,13 @@ print_if_i_have_eq_test()
     self.clays_shade.foreground = true;
     self.clays_shade.hidewheninmenu = true;
     self.clays_shade setshader( "hud_status_dead", 12, 12 );
-    self.clays_shade.color = ( 1, 0.85, 0.65 );
+    self.clays_shade.color = (  0.69, 0.78, 0.54 );//green( 0.5, 0.7, 0.82 );//blue
 
 
     self.clays = newclienthudelem( self );
-    self.clays.x = 367.5;
+    self.clays.x = 375;
     self.clays.y = 215;
-    self.clays.color = ( 0.65, 0.65, 0.65 );
+    self.clays.color = (0.5, 0.7, 0.82 );
     self.clays.alignx = "center";
     self.clays.aligny = "center";
     self.clays.horzalign = "user_center";
@@ -248,6 +263,7 @@ print_if_i_have_eq_test()
     self.clays.foreground = false;
     self.clays.hidewheninmenu = true;
     self.clays.fontscale = 1.25;
+    self.clays.color = ( 0.5, 0.7, 0.82 );
     self.clays settext( "[{+actionslot 1}]" );
 
     //self setWeaponAmmoClip("frag_grenade_mp", 2);
@@ -424,6 +440,8 @@ test_firing_increase()
     self.jetgun_name_hud = newClientHudElem( self );
     self.jetgun_name_hud.alpha = 0;
     self.jetgun_ammo_hud.alpha = 0;
+    self.jetgun_ammo_hud.color = ( 0.5, 0.7, 0.82 );//blue
+    self.jetgun_name_hud.color = (  0.94, 0.84, 0.54 );//green( 0.5, 0.7, 0.82 );//blue
     wait 3.5;
     self thread jetgun_value_hud();
     wait 2;
@@ -497,10 +515,10 @@ blink_jetgun_hud_heat()
     
    
     self.jetgun_ammo_hud fadeOverTime( 0.25 );
-    self.jetgun_ammo_hud.color = ( 0.2, 1, 0 );
+    self.jetgun_ammo_hud.color = ( 0.94, 0.84, 0.54 );
     wait 0.3;
     self.jetgun_ammo_hud.color fadeovertime( 0.1 );
-    self.jetgun_ammo_hud.color = ( 0.65, 0.65, 0.65 );
+    self.jetgun_ammo_hud.color = ( 0.5, 0.7, 0.82 );
     
     
 }
@@ -894,7 +912,7 @@ jetgun_value_hud()
     
     self.jetgun_ammo_hud.x = -20;
     self.jetgun_ammo_hud.y = -75;
-    self.jetgun_ammo_hud.color = ( 0.65, 0.65, 0.65 );
+    self.jetgun_ammo_hud.color = ( 0.5, 0.7, 0.82 );
     self.jetgun_ammo_hud SetValue( self.custom_heat );
     self.jetgun_ammo_hud.fontScale = 1.25;
     self.jetgun_ammo_hud.alignX = "center";
@@ -906,7 +924,7 @@ jetgun_value_hud()
     self.jetgun_ammo_hud fadeovertime( 1 );
     self.jetgun_ammo_hud.alpha = 1; //Debug 0
     
-    self.jetgun_name_hud.x = -5;
+    self.jetgun_name_hud.x = -8;
     self.jetgun_name_hud.y = -77.5;
     self.jetgun_name_hud Setshader( "zm_hud_icon_jetgun_gauges", 12, 12 );
     //self.jetgun_name_hud.fontScale = 1.22;
@@ -1165,14 +1183,50 @@ update_ammo_stock_set_text()
     wait 2.5;
     while( true )
     {
+        weapon = self getcurrentweapon();
+        
         if( self.stock_to_compare == self getweaponammostock( self getcurrentweapon() ) )
         {
-            self.weapon_ammo_stock settext( " / " + self.stock_to_compare  );
-            while( self.stock_to_compare == self getweaponammostock( self getcurrentweapon() ) )
+            if( weapon != "jetgun_zm" 
+            || weapon != "" 
+            || weapon != "zombie_builder_zm" 
+            || weapon != "turbine" 
+            || weapon != "equip_turbine_zm" 
+            || weapon != "frag_grenade_zm" 
+            || weapon != "claymore_zm" 
+            || weapon != "riotshield_zm" 
+            || weapon != "equip_turret_zm" 
+            || weapon != "equip_riotshield_zm"
+            || weapon != "equip_electrictrap_zm" 
+            || weapon != "tazer_knuckles_zm"
+            || weapon != "cymbal_monkey_zm" 
+            || weapon != "sticky_grenade_zm" 
+            || weapon !=  "bowie_knife_zm" )
             {
-                wait 0.25;
+                self.weapon_ammo_stock settext( " / " + self.stock_to_compare  );
+                while( self.stock_to_compare == self getweaponammostock( self getcurrentweapon() ) )
+                {
+                    wait 0.05;
+                }
             }
-            wait 0.25;
+        }
+        wait 0.05;
+        if( weapon != "jetgun_zm" 
+        || weapon != "" 
+        || weapon != "zombie_builder_zm" 
+        || weapon != "turbine" 
+        || weapon != "equip_turbine_zm" 
+        || weapon != "frag_grenade_zm" 
+        || weapon != "claymore_zm" 
+        || weapon != "riotshield_zm" 
+        || weapon != "equip_turret_zm" 
+        || weapon != "equip_riotshield_zm"
+        || weapon != "equip_electrictrap_zm" 
+        || weapon != "tazer_knuckles_zm"
+        || weapon != "cymbal_monkey_zm" 
+        || weapon != "sticky_grenade_zm" 
+        || weapon !=  "bowie_knife_zm" )
+        {
             self.stock_to_compare = self getweaponammostock( self getcurrentweapon() );
             self.weapon_ammo_stock settext( " / ^3" + self.stock_to_compare );
         }
@@ -1183,19 +1237,15 @@ update_ammo_hud()
 {
     self endon( "disconnect" );
     level endon( "end_game" );
-    //wait 5.5;
+    //self thread also_monitor_weapon_change_for_fading(); //calling this from here 
     weapon = self getCurrentWeapon();
     ammo = self getWeaponAmmoClip( weapon );
     stock = self getWeaponAmmoStock( weapon );
     ammo_clip = self getWeaponAmmoClip( weapon );
-
-
     ammo_stock = self getWeaponAmmoStock( weapon );
     old_ammo_stock = self getweaponammostock( weapon );
-
-
-    //self.weapon_ammo_stock setText( " ^9/ ^8" + old_ammo_stock );
     skip_first_time_check = true;
+    skip = false;
     while( true )
     {
         wait 0.05;
@@ -1205,27 +1255,54 @@ update_ammo_hud()
             wait 0.05;
         }
         weapon = self getCurrentWeapon();
-        //self waittill( "weapon_fired" );
         ammo_clip = self getWeaponAmmoClip( weapon );
         ammo_stock = self getWeaponAmmoStock( weapon );
         skip_first_time_check = false;
-        //old_current_stock = self getweaponammostock( self getcurrentweapon() );
         current_stock = self getWeaponAmmoStock( self getCurrentWeapon() );
         //if new current clip has less ammo than earlier grab
         if(  ammo_clip < ammo && self getCurrentWeapon() == weapon )
         {
-            
-            self.weapon_ammo setvalue( ammo_clip   );
+            //these are the weapons that should disable weird ammo logic that is shown on the screen when equipped
+            if( weapon == "jetgun_zm" 
+            || weapon == "" 
+            || weapon == "zombie_builder_zm" 
+            || weapon == "turbine" 
+            || weapon == "equip_turbine_zm" 
+            || weapon == "frag_grenade_zm" 
+            || weapon == "claymore_zm" 
+            || weapon == "riotshield_zm" 
+            || weapon == "equip_turret_zm" 
+            || weapon == "equip_riotshield_zm"
+            || weapon == "equip_electrictrap_zm" 
+            || weapon == "tazer_knuckles_zm"
+            || weapon == "cymbal_monkey_zm" 
+            || weapon == "sticky_grenade_zm" 
+            || weapon ==  "bowie_knife_zm" )
+            {
+                skip = true;
+                
+                self.weapon_ammo fadeovertime( 0.05 );
+                self.weapon_ammo_stock fadeovertime( 0.05 );
+                self.weapon_ammo_stock.alpha = 0;
+                self.weapon_ammo.alpha = 0;
+                while( self getCurrentWeapon() == weapon )
+                {
+                    wait 0.05;
+                }
+            }
+            if( !skip )
+            {
+                self.weapon_ammo setvalue( ammo_clip );
+                self.weapon_ammo fadeovertime( 1 );
+                self.weapon_ammo_stock fadeovertime( 1 );
+                self.weapon_ammo.alpha = 1;
+                self.weapon_ammo_stock.alpha = 1;
+                skip = false;
+            }
             self thread change_col_ammo_clip_minus();
-            //self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
-            
-            //self.weapon_ammo_stock setValue( ammo_stock );
             ammo_stock = stock;
             ammo = self getWeaponAmmoClip( weapon );
-            wait 0.05;
-           // self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
-
-
+            skip = false;
             //if clip has less than 100 bullets in it
             if( self getWeaponAmmoClip( self getCurrentWeapon() ) < 100 )
             {
@@ -1233,19 +1310,14 @@ update_ammo_hud()
                 //if stock has less than 100 bullets in it
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
-                    
-                    //self.weapon_ammo_stock.x = 15.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -22.5 );
                 }
                 //if stock has more or equal than 100 bullets in it
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
-                    //self.weapon_ammo_stock.x = 12.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -25 );
                 }
-                
             }
-
             //if clip has more than 100 bullets in it
             else if( self getWeaponAmmoClip( self getCurrentWeapon() ) >= 100 )
             {
@@ -1253,102 +1325,133 @@ update_ammo_hud()
                 //if stock has less than 100 bullets in it
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
-                    //self.weapon_ammo_stock.x = 15.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -27.5 );
                 }
                 //if stock has more or equal than 100 bullets in it
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
-                    //self.weapon_ammo_stock.x = 12.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -32.5 );
                 }
-                
             }
         }
-
         //if new current clip has more ammo than earlier grab
         else if( ammo_clip > ammo && self getCurrentWeapon() == weapon )
         {
-            //we_should_update = true;
-            self.weapon_ammo setvalue( ammo_clip );
+            //these are the weapons that should disable weird ammo logic that is shown on the screen when equipped
+            if( weapon == "jetgun_zm" 
+            || weapon == "" 
+            || weapon == "zombie_builder_zm" 
+            || weapon == "turbine" 
+            || weapon == "equip_turbine_zm" 
+            || weapon == "claymore_zm" 
+            || weapon == "riotshield_zm" 
+            || weapon == "equip_turret_zm" 
+            || weapon == "equip_riotshield_zm"
+            || weapon == "equip_electrictrap_zm" 
+            || weapon == "tazer_knuckles_zm"
+            || weapon == "cymbal_monkey_zm" 
+            || weapon == "sticky_grenade_zm" 
+            || weapon == "frag_grenade_zm" 
+            || weapon ==  "bowie_knife_zm" )
+            {
+                skip = true;
+                self.weapon_ammo fadeovertime( 0.05 );
+                self.weapon_ammo_stock fadeovertime( 0.05 );
+                self.weapon_ammo_stock.alpha = 0;
+                self.weapon_ammo.alpha = 0;
+
+                while( self getCurrentWeapon() == weapon )
+                {
+                    wait 0.05;
+                }
+            }
+            if( !skip )
+            {
+                self.weapon_ammo setvalue( ammo_clip );
+                self.weapon_ammo fadeovertime( 1 );
+                self.weapon_ammo_stock fadeovertime( 1 );
+                self.weapon_ammo.alpha = 1;
+                self.weapon_ammo_stock.alpha = 1;
+                skip = false;
+            }
+            
             self thread change_col_ammo_clip_plus();
-            //self.weapon_ammo_stock setValue( ammo_stock );
-           // ammo_stock = stock;
-            ammo = self getweaponammoclip( weapon ); 
-            wait 0.05;
-            //self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
+            //ammo = self getweaponammoclip( weapon ); 
+            skip = false;
             if( self getWeaponAmmoClip( self getCurrentWeapon() ) < 100 )
             {
                 current_stock = self getweaponammostock( self getcurrentweapon() );
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
-                    //self.weapon_ammo_stock.x = 15.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -22.5 );
                 }
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
-                    //self.weapon_ammo_stock.x = 12.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -25 );
                 }
-                
             }
-
             else if( self getWeaponAmmoClip( self getCurrentWeapon() ) >= 100 )
             {
                 current_stock = self getweaponammostock( self getcurrentweapon() );
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
-                    //self.weapon_ammo_stock.x = 15.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -27.5 );
                 }
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
-                    //self.weapon_ammo_stock.x = 12.5;
                     self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -32.5 );
-                    
                 }
-                
             }
-
-            
         }
-        
-        //fail safe update'
-        //actually this fucked it more xd
-       // if( current_stock != self getWeaponAmmoStock( self getcurrentweapon() ) )
-       // {
-          // current_stock = self getWeaponAmmoStock( self getcurrentweapon() );
-          // self.weapon_ammo_stock setText( " ^9/ ^8" + current_stock );
-       // }
+        skip = false;
     }
 }
 
+also_monitor_weapon_change_for_fading()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    while( true )
+    {
+        self waittill( "weapon_change") ;
+        
+        weapon = self getCurrentWeapon();
+        if( weapon != "jetgun_zm" 
+            || weapon != "" 
+            || weapon != "zombie_builder_zm" 
+            || weapon != "turbine" 
+            || weapon != "equip_turbine_zm" 
+            || weapon != "claymore_zm" 
+            || weapon != "riotshield_zm" 
+            || weapon != "equip_turret_zm" 
+            || weapon != "equip_riotshield_zm"
+            || weapon != "equip_electrictrap_zm" 
+            || weapon != "tazer_knuckles_zm"
+            || weapon != "cymbal_monkey_zm" 
+            || weapon != "sticky_grenade_zm" 
+            || weapon != "frag_grenade_zm" 
+            || weapon !=  "bowie_knife_zm" )
+        {
+            self thread ammo_fade_fast();
+        }
+        
+    }
+}
 change_col_ammo_clip_plus()
 {
-    //self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
+    self endon( "disconnect" );
     self.weapon_ammo fadeOverTime( 0.1 );
-    //self.weapon_ammo_stock fadeOverTime( 0.15 );
     self.weapon_ammo.color = ( 0.55, 0.82, 0.5 );
-    //self.weapon_ammo_stock.color = ( 1, 0.4, 0 );
     wait 0.1;
-    self.weapon_ammo fadeovertime( 0.05 );
-    //self.weapon_ammo_stock fadeOverTime( 0.15 );
-    wait 0.05;
     self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
-    //self.weapon_ammo_stock.color = ( 1, 1, 1 );
 }
 
 change_col_ammo_clip_minus()
 {
-    //self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
+    self endon( "disconnect" );
     self.weapon_ammo fadeOverTime( 0.1 );
-    //self.weapon_ammo fadeOverTime( 0.15 );
     self.weapon_ammo.color = ( 0.89, 0.39, 0.29 );
-    //self.weapon_ammo_stock.color = ( 1, 0.4, 0 );
     wait 0.1;
-    self.weapon_ammo fadeovertime( 0.15 );
-    //self.weapon_ammo_stock fadeOverTime( 0.15 );
-    wait 0.15;
     self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
 }
 

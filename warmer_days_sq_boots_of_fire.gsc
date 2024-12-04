@@ -237,19 +237,18 @@ fireboots_souls( which_summoning, idx )
     inv_mover playLoopSound( "zmb_spawn_powerup_loop" );
     playFXOnTag( level.myfx[ 1 ], inv_mover, "tag_origin" );
     inv_mover thread safety_delete();
-    //playfxontag( level._effect[ "fx_fire_fireplace_md" ], inv_mover, "tag_origin" );
     inv_mover moveto ( where_to_move, randomFloatRange( 0.2, 0.4 ), 0, 0 );
     inv_mover waittill( "movedone" );
     playfx( level.myFx[ 94 ], where_to_move );
     inv_mover delete();
     playFX( level._effect[ "fx_zombie_powerup_wave" ], where_to_move );
-    playsoundatposition( "zmb_meteor_activate", where_to_move );
-    //level.summoningkills + idx +=1;                     
+    playsoundatposition( "zmb_meteor_activate", where_to_move );                 
 }
 
 safety_delete()
 {
-    wait 10;
+    level endon( "end_game" );
+    wait 4;
     if( isdefined( self ) )
     {
         self delete();
