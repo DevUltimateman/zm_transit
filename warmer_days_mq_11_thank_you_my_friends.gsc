@@ -63,8 +63,8 @@ init()
     {
         level.players[ i ] thread self_waittill_drink_so_update();
     }
-    level thread spawn_all_pickable_acidgats(); //for debug
-   level thread do_perks(); //for debug
+    //level thread spawn_all_pickable_acidgats(); //for debug
+   //level thread do_perks(); //for debug
 }
 
 disable_dev_time()

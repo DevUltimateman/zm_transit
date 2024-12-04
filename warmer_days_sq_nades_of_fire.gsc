@@ -153,13 +153,13 @@ fordev()
     flag_wait( "initial_blackscreen_passed" );
 
     level.player_out_of_playable_area_monitor = false;
-    setdvar( "sv_cheats", 1 );
-    setdvar( "g_ai", false );
+    //setdvar( "sv_cheats", 1 );
+    //setdvar( "g_ai", false );
     setdvar( "player_clipSizeMultiplier", 2.0 );    
     for( i = 0; i < level.players.size; i++ )
     {
         //level.players[ i ] enableInvulnerability();  
-        level.players[ i ].score += 10000;
+        //level.players[ i ].score += 10000;
         //level.players[ i ] thread firegrenades_step2();
     }
 }

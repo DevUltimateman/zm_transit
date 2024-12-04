@@ -169,13 +169,17 @@ transmitter_wait_for_navcard()
             wait 3.2;
             //this notify triggers a thread from: warmer_days_meet_mr_s.gsc to make schruder talk with player
             //and starts the main quest step 4
-            level notify( "s_talks_navcard" );
+            
             navtrig sethintstring( "^9[ ^8Transmitter is now sending ^9signals^8 to nearby ^9radiophones ^9]");
             wait 1;
-           // foreach( playa in level.players )
-          //  {
-          //      playa thread player_reward_marathon();
-          //  }
+            level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Muscle Up ^8Reward Unlocked", "^8Survivors can now run indefinitely without losing stamina.", "^8Survivor's running speed has also been increased.", 6, 0.25 );
+            foreach( playa in level.players )
+            {
+                playa thread player_reward_marathon();
+            }
+            wait 6.5;
+            level notify( "s_talks_navcard" );
+           // 
             break;
         }
     }
@@ -409,98 +413,6 @@ player_reward_marathon()
     
     level endon( "end_game" );
     self endon( "disconnect" );
-
-    wait 1;
-    
-    self.talk_marathon = [];
-    r_width = 20;
-    r_height = 20;
-
-    width = 310;
-    height = 16;
-    x = 1.2;
-    r = 1.2;
-    x = 0;
-
-
-    for ( f = 0; f < 2; f++ )
-    {
-        self.talk_marathon[ f ] = newClientHudElem( self );
-        self.talk_marathon[ f ].x = 0;
-        self.talk_marathon[ f ].y = 0;
-        self.talk_marathon[ f ].alignx = "center";
-        self.talk_marathon[ f ].aligny = "center";
-        self.talk_marathon[ f ].horzalign = "user_center";
-        self.talk_marathon[ f ].vertalign = "user_center";
-        self.talk_marathon[ f ].foreground = true;
-        self.talk_marathon[ f ].alpha = 0;
-        self.talk_marathon[ f ].color = ( 1, 1, 1 );
-        self.talk_marathon[ f ].inuse = false;
-        self.talk_marathon[ f ].hidewheninmenu = true;
-        self.talk_marathon[ f ].font = "default";
-    }
-    wait 0.05;
-    self.talk_marathon[ 0 ].y = 10;
-    self.talk_marathon[ 1 ].y = -5;
-   
-
-    self.talk_marathon[ 0 ].fontscale = 1.25;
-    self.talk_marathon[ 1 ].fontscale = 1.1;
-    
-
-    self.talk_marathon[ 0 ] settext( "^8[ ^3Permament Perk Rewarded^8 ]" );
-    self.talk_marathon[ 1 ] settext( "^8[ ^3Muscle Up^8 ]" );
-    
-    
-    self.talk_marathon[ 0 ].alpha = 0;
-    self.talk_marathon[ 1 ].alpha = 0;
-
-    f = 2;
-    for ( s = 0; s < self.talk_marathon.size; s++ )
-    {
-        self.talk_marathon[ s ].alpha = 0;
-        self.talk_marathon[ s ] fadeovertime( f );
-        self.talk_marathon[ s ].alpha = 1; //1
-        wait 1.5;
-        f -= 0.25;
-    }
-
-
-    self.talker_marathon.alpha = 0;
-    self.talker_marathon fadeovertime( 1 );
-    self.talker_marathon.alpha = 1;
-   
-    wait 3;
-
-
-
-    f = 2;
-    for ( s = 0; s < self.talk_marathon.size; s++ )
-    {
-        self.talk_marathon[ s ].alpha = 1;
-        self.talk_marathon[ s ] fadeovertime( f );
-        self.talk_marathon[ s ].alpha = 0;
-        wait 1.5;
-        f -= 0.25;
-    }
-    for( s = 0; s < self.talk_marathon.size; s++ )
-    {
-        self.talk_marathon[ s ].alignx = "center";
-        self.talk_marathon[ s ].aligny = "center";
-        self.talk_marathon[ s ].horzalign = "user_center";
-        self.talk_marathon[ s ].vertalign = "user_center";
-        wait 0.08;
-    }
-
-    self.talk_marathon[ 1 ].x = 0;
-    self.talk_marathon[ 1 ].y = 220;
-    self.talk_marathon[ 1 ].fontscale = 1;
-    wait 0.05;
-
-    self.talk_marathon[ 1 ].alpha = 0;
-    self.talk_marathon[ 1 ] fadeovertime( 1.5 );
-    self.talk_marathon[ 1 ].alpha = .7;
-
     wait 1.5;
 
     self setperk( "specialty_unlimitedsprint" );
@@ -512,20 +424,22 @@ player_reward_marathon()
 	self setClientDvar( "dtp_post_move_pause", 0 );
 	self setClientDvar( "dtp_exhaustion_window", 100 );
 	self setClientDvar( "dtp_startup_delay", 100 );
-    
     while( true )
     {
         self waittill_any( "death", "remove_static", "disconnect" );
-
-        self.talker_marathon.alpha = 0;
-        self.talk_marathon.alpha = 0;
-        self.talk_marathon.alpha = 0;
-        
+        wait 1;
         self waittill( "spawned_player" );
-        self.talker_marathon.alpha = .05; //dev func
-        self.talk_marathon[0].alpha = 0; //dev func
-        self.talk_marathon[1].alpha = .05; //dev func
+        self setperk( "specialty_unlimitedsprint" );
+        self setperk( "specialty_fastmantle" );
+        self setClientDvar( "player_backSpeedScale", 1 );
+        self setClientDvar( "player_strafeSpeedScale", 1 );
+        self setClientDvar( "player_sprintStrafeSpeedScale", 1 );
+        self setClientDvar( "g_speed", 210 );
+        self setClientDvar( "dtp_post_move_pause", 0 );
+        self setClientDvar( "dtp_exhaustion_window", 100 );
+        self setClientDvar( "dtp_startup_delay", 100 );
     }
+
     
 
 }

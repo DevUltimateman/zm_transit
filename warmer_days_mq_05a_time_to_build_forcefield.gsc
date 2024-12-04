@@ -1043,8 +1043,14 @@ rocks_at_pylon()
     do_dialog_here( "Ahh finally..! Hello there!", "You've helped me get into my physical form..", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "So fantastic, you've been such a help...", "Let me reward you with something..", 7, 1 );
-    wait 8;
+    do_dialog_here( "So fantastic, you've been such a help...", "Let me reward you with something..", 4.5, .7 );
+    wait 5;
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^6Phd Flopper ^8Reward Unlocked", "^8Survivors can now take explosive damage, without losing health.", "^8Survivor's can also now do belly dive explosions.", 6, 0.25 );
+    foreach( plays in level.players )
+    {
+        plays thread reward_give_phd();
+    }
+    wait 4.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "Haa..! Hope you like it.", "Hold on a second..", 6, 1 );
     wait 7;

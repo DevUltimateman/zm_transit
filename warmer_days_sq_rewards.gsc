@@ -48,9 +48,99 @@ init()
 
     //test text
     flag_wait( "initial_blackscreen_passed" );
-    //level thread print_text_middle( "^6PHD Flopper ^8Reward Unlocked", "^8" + "Players can now take explosive damage", "^8" + "without losing health.", 6, 0.25 );
+    wait 5;
     //level thread waittill_rewards();
 }
+
+reward_give_phd()
+{
+    level endon( "end_game" );
+    self endon( "disconnect" );
+    wait 1.5;
+    self thread monitor_flopping();
+    set_zombie_var( "zombie_perk_divetonuke_radius", 300 );
+    set_zombie_var( "zombie_perk_divetonuke_min_damage", 1000 );
+    set_zombie_var( "zombie_perk_divetonuke_max_damage", 99999 );
+
+    self setperk( "specialty_flakjacket"  );
+
+    while( true )
+    {
+        self waittill_any( "death", "remove_static", "disconnect" );
+        wait 1;
+        self waittill( "spawned_player" );
+        self setperk( "specialty_flakjacket"  );
+
+    }
+
+}
+
+monitor_flopping()
+{
+    self endon( "disconnect" );
+    level endon( "end_game" );
+    allowed = true;
+    while( true )
+    {
+        if( self StanceButtonPressed() && allowed )
+        {
+            wait 0.1;
+            h_old = self.origin[2];
+            allowed = false;
+            if( self getStance() == "prone" )
+            {
+                if( !self isOnGround() )
+                {   
+                    while( !self isOnGround() )
+                    {
+                        wait 0.05;
+                    }
+                    h_new = self.origin[2];
+                    if( h_new < h_old && h_new < h_old - 100 )
+                    {
+                        org = self getOrigin();
+                        self thread divetonuke_explode( self, org );
+                    }               
+                }
+            }
+            allowed = true;
+        }
+        wait 0.05;
+    }
+}
+
+divetonuke_host_migration_func()
+{
+    flop = getentarray( "vending_divetonuke", "targetname" );
+
+    foreach ( perk in flop )
+    {
+        if ( isdefined( perk.model ) && perk.model == level.machine_assets["divetonuke"].on_model )
+        {
+            perk perk_fx( undefined, 1 );
+            perk thread perk_fx( "divetonuke_light" );
+        }
+    }
+}
+
+divetonuke_explode( attacker, origin )
+{
+    radius = level.zombie_vars["zombie_perk_divetonuke_radius"];
+    min_damage = level.zombie_vars["zombie_perk_divetonuke_min_damage"];
+    max_damage = level.zombie_vars["zombie_perk_divetonuke_max_damage"];
+
+   
+    radiusdamage( origin, radius, max_damage, min_damage, attacker, "MOD_GRENADE_SPLASH" );
+
+    playfx( level.myFx[ 91 ], origin );
+    wait 0.05;
+    playfx( level.myFx[ 9 ], origin );
+    attacker playsound( "zmb_phdflop_explo" );
+    //maps\mp\_visionset_mgr::vsmgr_activate( "visionset", "zm_perk_divetonuke", attacker );
+    wait 1;
+    //maps\mp\_visionset_mgr::vsmgr_deactivate( "visionset", "zm_perk_divetonuke", attacker );
+}
+
 
 notiff()
 {
@@ -448,6 +538,7 @@ player_reward_marathon()
 print_text_middle( textbig, textsmall, textsmall_lower, duration, fadefloat )
 {
     
+    make_middle_print_struct();
     level.mid_print_text_big.alpha = 0;
     level.mid_print_text_small.alpha = 0;
     level.mid_print_text_small_lower.alpha = 0;
@@ -478,6 +569,10 @@ print_text_middle( textbig, textsmall, textsmall_lower, duration, fadefloat )
     level.mid_print_text_small_lower setText( "" );
     level.mid_print_text_big settext( "" );
     level.mid_print_text_small settext( "" );
+
+    level.mid_print_text_big destroy();
+    level.mid_print_text_small destroy();
+    level.mid_print_text_small_lower destroy();
 }
 
 
