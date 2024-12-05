@@ -473,7 +473,6 @@ monitorDoorHealth()
             }
             wait 0.05;
             level thread blast_doors_wide_close();
-            //level thread spawn_rebuildable_pieces();
             level.main_door_tr sethintstring( "^9[ ^8Door health: ^9" + level.door_health_ + " ^8/ ^9" + level.door_health_fixed_ + " ^9]" );
             if( level.dev_time )
             { 

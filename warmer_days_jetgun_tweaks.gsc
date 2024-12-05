@@ -1159,7 +1159,7 @@ scores_hud_ammo()
     self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
     //self.weapon_ammo SetValue(  self getWeaponAmmoClip( self getCurrentWeapon()  ) );
     self.weapon_ammo setvalue( "" );
-    self.weapon_ammo.fontScale = 1.92; 
+    self.weapon_ammo.fontScale = 2.02; 
     self.weapon_ammo.alignX = "center";
     self.weapon_ammo.alignY = "center";
     self.weapon_ammo.horzAlign = "user_center";
@@ -1180,7 +1180,7 @@ scores_hud_ammo()
     self.weapon_ammo_stock.y = -100;
     //self.weapon_ammo_stock settext(  " ^9/ ^8" + self getWeaponAmmoStock( self getCurrentWeapon() ) );
     self.weapon_ammo_stock setvalue( "" );
-    self.weapon_ammo_stock.fontScale = 1.62;
+    self.weapon_ammo_stock.fontScale = 1.52;
     self.weapon_ammo_stock.alignX = "center";
     self.weapon_ammo_stock.alignY = "center";
     self.weapon_ammo_stock.horzAlign = "user_center";
@@ -1355,12 +1355,12 @@ update_ammo_hud()
                 //if stock has less than 100 bullets in it
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
-                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -22.5 );
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -20 );
                 }
                 //if stock has more or equal than 100 bullets in it
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
-                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -25 );
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -22.5 );
                 }
             }
             //if clip has more than 100 bullets in it
@@ -1370,12 +1370,12 @@ update_ammo_hud()
                 //if stock has less than 100 bullets in it
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
-                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -27.5 );
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -25 );
                 }
                 //if stock has more or equal than 100 bullets in it
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
-                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -32.5 );
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -30 );
                 }
             }
         }
@@ -1428,11 +1428,11 @@ update_ammo_hud()
                 current_stock = self getweaponammostock( self getcurrentweapon() );
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
-                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -22.5 );
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -20 );
                 }
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
-                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -25 );
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -22.5 );
                 }
             }
             else if( self getWeaponAmmoClip( self getCurrentWeapon() ) >= 100 )
@@ -1440,11 +1440,11 @@ update_ammo_hud()
                 current_stock = self getweaponammostock( self getcurrentweapon() );
                 if( self getweaponammostock( self getcurrentweapon() ) < 100 )
                 {
-                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -27.5 );
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -25 );
                 }
                 else if( self getweaponammostock( self getcurrentweapon() ) >= 100 )
                 {
-                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -32.5 );
+                    self.weapon_ammo.x = self.weapon_ammo_stock.x + ( -30 );
                 }
             }
         }
