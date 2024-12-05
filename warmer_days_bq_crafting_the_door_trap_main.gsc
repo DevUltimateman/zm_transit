@@ -308,7 +308,7 @@ someone_is_touching_the_main_area()
 
     for( i = 0; i < level.players.size; i++ )
     {
-        if( distance2d( level.players[ i ].origin, level.open_air_lock_door_origin ) < 55 )
+        if( distance2d( level.players[ i ].origin, level.open_air_lock_door_origin ) < 75 )
         {
             return true;
         }
@@ -408,7 +408,7 @@ base_fxs()
 
     for( i = 0; i < hanging_bulb_origins.size; i++ )
     {
-        playfx( level._effects[ 9 ], hanging_bulb_origins[ i ] );
+        //playfx( level._effects[ 9 ], hanging_bulb_origins[ i ] );
         wait 0.05;
         playfx( level._effects[ 18 ], hanging_bulb_origins[ i ] );
     }
@@ -426,7 +426,7 @@ base_fxs()
         wait 1;
         playfx( level._effects[ 14 ], outside_lights_origins[ z ] );
         wait 0.05;
-        playfx( level._effects[ 16 ], outside_lights_origins[ z ] );
+        //playfx( level._effects[ 16 ], outside_lights_origins[ z ] );
         wait 0.05;
         playfx( level._effects[ 18 ], outside_lights_origins[ z ] );
         wait 0.05;
@@ -459,6 +459,7 @@ monitorDoorHealth()
         //zombies did enough damage to the door
         if( level.door_health_ < 5 && level.door_needs_repairing == false )
         {
+            level.main_door_tr setHintString( "^9[ ^8Door requires repairing ^9]" );
             level notify( "main_door_has_been_broken" );
             level.door_needs_repairing = true;
             if( level.dev_time ){ iprintln( "ZOMBIE DOOR BROKE!" ); }
@@ -472,7 +473,8 @@ monitorDoorHealth()
             }
             wait 0.05;
             level thread blast_doors_wide_close();
-            level thread spawn_rebuildable_pieces();
+            //level thread spawn_rebuildable_pieces();
+            level.main_door_tr sethintstring( "^9[ ^8Door health: ^9" + level.door_health_ + " ^8/ ^9" + level.door_health_fixed_ + " ^9]" );
             if( level.dev_time )
             { 
                 iprintln( "ZOMBIE MAIN DOOR BARRICADE HAS BEEN REBUILT" );
@@ -534,30 +536,36 @@ base_has_been_rebuilt()
 
 spawn_rebuildable_pieces()
 {
-    spawn_amount = 6;
-    if( level.players_have_pieces > 3 )
+    if( level.players_have_pieces > 0 )
     {
         return;
     }
 
-    tempo_array = level.random_base_piece_locations;
-    new_spawn_amount = spawn_amount - level.players_have_pieces;
-    for( i = 0; i < new_spawn_amount; i++ )
-    {
-        randoms = randomInt( tempo_array.size );
-        level.random_base_piece[ i ] = spawn( "script_model", tempo_array[ randoms ] );
-        level.random_base_piece[ i ] setmodel( "p6_wood_plank_rustic01_2x12_96" );
-        level.random_base_piece[ i ].angles = ( 0, 0, 0 );
-        wait 0.05;
-        playfxontag( level.myfx[ 2 ], level.random_base_piece[ i ], "tag_origin" );
-        wait 0.05;
-        level.random_base_piece[ i ] thread letPlayerPickUp();
-        wait 0.1;
-        ArrayRemoveIndex( tempo_array, randoms );
-        
-    }
+    possible_origins[ 0 ] = ( -4573.98, 958.331, 175.547 ); //bridge
+    possible_origins[ 1 ] = ( 8241.56, 8257.77, -554.781 ); //train
+    possible_origins[ 2 ] = ( 13303.2, 62.6599, -191.906 ); //corn nnacht
+    possible_origins[ 3 ] = ( -7791.01, 5276.51, -57.5811 ); //farm 8721.38, -6511.89, 112.125; this needs changing. //currently behind bus depo ( opposite side of nav card pick up depo)
+    possible_origins[ 4 ] = ( 1609.28, -4479.94, -66.4735 ); //shortcut
+    possible_origins[ 5 ] = (5234.69, 8060.26, -50.8346 ); //cabin
 
-    if( level.dev_time ){ iprintln( "WE SPAWNED " + level.random_base_piece.size + " amount of barriers to pick up" ); }
+    possible_origins_angles[ 0 ] = ( 0, 113, 0 );
+    possible_origins_angles[ 1 ] = ( 0, 167, 0 );
+    possible_origins_angles[ 2 ] = ( 0, 355, 0 );
+    possible_origins_angles[ 3 ] = ( 0, -7, 0 );
+    possible_origins_angles[ 4 ] = ( 0, 265, 0 );
+    possible_origins_angles[ 5 ] = ( 0, -35, 0 );
+
+    spawn_amount = possible_origins.size;
+    
+    for( s = 0; s < spawn_amount; s++ )
+    {
+        fence = spawn( "script_model", possible_origins[ s ] );
+        fence setmodel( level.mymodels[ 9 ] );
+        fence.angles = possible_origins_angles[ s ];
+        wait 0.1;
+        playfxontag( level.myfx[ 48 ], fence, "tag_origin" ); 
+        fence thread letPlayerPickUp();
+    }
 }
 
 letPlayerPickUp()
@@ -566,15 +574,16 @@ letPlayerPickUp()
     wait 0.05;
     p_t = spawn( "trigger_radius_use", self.origin, 48, 48, 48 );
     p_t setCursorHint( "HINT_NOICON" );
-    p_t setHintString( "^9[ ^3[{+activate}] ^8to pick up a repair barricade for ^9Safe House ^9]" );
+    p_t setHintString( "^9[ ^3[{+activate}] ^8to pick up some repair materials for ^9Safe House ^9]" );
     p_t TriggerIgnoreTeam();
 
     while( true )
     {
         p_t waittill( "trigger", who );
         who playsound( "evt_player_upgrade" );
+        level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who.name + " ^8found an upgrade piece that belongs to ^9Safe House", "", 8, 2.5  );
         //who playsound( "zmb_perks_packa_deny" );
-        p_t setHintString( "^9[ ^8You picked up ^9Safe House ^8upgrade ^9]" );
+        p_t setHintString( "^9[ ^8You found some repair materials to ^9Safe House ^9]" );
         who.has_bar_piece++;
         self delete();
         wait 2;
@@ -713,9 +722,12 @@ monitorAfterWards()
                     level.players_have_pieces--;
                 }
                 
-                if( who.has_bar_pieces > 0 )
+                
+                
+                who.has_bar_piece --;
+                if( who.has_bar_piece < 0 )
                 {
-                    who.has_bar_piece --;
+                    who.has_bar_piece = 0;
                 }
                 wait 1;
                 //is this a good notify sound?
