@@ -1159,7 +1159,7 @@ scores_hud_ammo()
     self.weapon_ammo.color = ( 0.85, 0.7, 0.57 );
     //self.weapon_ammo SetValue(  self getWeaponAmmoClip( self getCurrentWeapon()  ) );
     self.weapon_ammo setvalue( "" );
-    self.weapon_ammo.fontScale = 1.82;
+    self.weapon_ammo.fontScale = 1.92; 
     self.weapon_ammo.alignX = "center";
     self.weapon_ammo.alignY = "center";
     self.weapon_ammo.horzAlign = "user_center";
@@ -1305,7 +1305,7 @@ update_ammo_hud()
         skip_first_time_check = false;
         current_stock = self getWeaponAmmoStock( self getCurrentWeapon() );
         //if new current clip has less ammo than earlier grab
-        if(  ammo_clip < ammo && self getCurrentWeapon() == weapon )
+        if(  ammo_clip <= ammo && self getCurrentWeapon() == weapon )
         {
             //these are the weapons that should disable weird ammo logic that is shown on the screen when equipped
             if( weapon == "jetgun_zm" 
@@ -1380,7 +1380,7 @@ update_ammo_hud()
             }
         }
         //if new current clip has more ammo than earlier grab
-        else if( ammo_clip > ammo && self getCurrentWeapon() == weapon )
+        else if( ammo_clip >= ammo && self getCurrentWeapon() == weapon )
         {
             //these are the weapons that should disable weird ammo logic that is shown on the screen when equipped
             if( weapon == "jetgun_zm" 

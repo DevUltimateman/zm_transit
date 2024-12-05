@@ -281,6 +281,7 @@ do_zombies_go_crazy()
         ai[ a ] doDamage( ai[ a ].health + 555, ai[ a ].origin );
 
     }
+    wait 0.05;
     level.zombie_total = 9999;
     if( level.dev_time ){ iprintlnbold( "ZOMBIE TOTAL FOR LOCKDOWN = ^4" + level.zombie_total ); }
     //dont make zombies super sprinters here. 

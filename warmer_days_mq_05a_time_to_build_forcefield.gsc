@@ -64,6 +64,8 @@ init()
     //initial amount that touches genes
     level.close_to_size = 0;
     level.rocks_at_pylon = 0;
+
+    
     forest_zones(); //global zones for zombie speed up
     //for d bug
     level thread cheat_();
@@ -106,6 +108,8 @@ init()
 
 
     flag_wait( "initial_blackscreen_passed" );
+
+    level thread print_middle_when_speeds_alter(); //print stuff when zombie speeds etc change
     level thread level_round_10_speed_change();
     //level thread change_speed();
     if( level.dev_time && getdvar( "developer_script" ) == 1 )
@@ -183,14 +187,14 @@ change_zombie_speed10()
 
         for( s = 0; s < zo.size; s++ )
         {
-            if( isdefined(zo[ s ].has_marked_for_thread ) && zo[ s ].has_marked_for_thread )
+            if( isdefined(zo[ s ].is_allowed_to_apply_movement_thread ) && zo[ s ].is_allowed_to_apply_movement_thread )
             {
                 wait 0.05;
                 continue;
             }
-            else 
+            else if( !isdefined( zo[ s ].is_allowed_to_apply_movement_thread ) && !zo[ s ].is_allowed_to_apply_movement_thread )
             {
-                zo[ s ].has_marked_for_thread = true;
+                zo[ s ].is_allowed_to_apply_movement_thread = true;
                 zo[ s ] thread apply_movement_monitor();
             }
         }
@@ -215,71 +219,100 @@ apply_movement_monitor()
     temp = false;
     r1 = "super_sprint";
     r2 = "sprint";
-    xs = randomInt( 10 );
-    
-    if( xs < 7 )
-    {
-        if( level.round_number < 9 )
-        {
-            pass_to = r2;
-            self set_zombie_run_cycle( r2 );
-            playfx( level._effects[77], self.origin );
-        }
-        else if( level.round_number >= 9 )
-        {
-            pass_to = r1;
-            self set_zombie_run_cycle( r1 );
-            playfx( level._effects[77], self.origin );
-        }
-        
-    }
-    else if( xs >= 7 )
-    {
-        if( level.round_number < 9 )
-        {
-            pass_to = r2;
-            self set_zombie_run_cycle( r2 );
-            playfx( level._effects[77], self.origin );
-        }
-        else if( level.round_number >= 9 )
-        {
-            pass_to = r1;
-            self set_zombie_run_cycle( r1 );
-            playfx( level._effects[77], self.origin );
-        }
-        
-    }
-    wait 0.05;
-    if( level.round_number < 11 )
-    {
-        return;
-    }   
 
-    if( level.spirit_of_sorrow_step_active )
+    if( level.spirit_of_sorrow_step_active ) 
     {
+        playfx( level._effects[ 77 ], self.origin );
+        self set_zombie_run_cycle( "walk" );
         return;
     }
 
     if( level.moving_to_depo_active )
     {
+        playfx( level._effects[ 77 ], self.origin );
+        self set_zombie_run_cycle( r1 );
         return;
     }
 
     if( level.rock_summoning_step_active )
     {
+        playfx( level._effects[ 77 ], self.origin );
+        self set_zombie_run_cycle( r2 );
+        wait 2;
+        playfx( level._effects[ 77 ], self.origin );
+        self set_zombie_run_cycle( r1 );
         return;
     }
 
     if( level.rift_step_active )
     {
+        playfx( level._effects[ 77 ], self.origin );
+        self set_zombie_run_cycle( r2 );
+        wait 2;
+        playfx( level._effects[ 77 ], self.origin );
+        self set_zombie_run_cycle( r1 );
         return;
     }
 
     if( level.lock_down_enabled )
     {
+        playfx( level._effects[ 77 ], self.origin );
+        self set_zombie_run_cycle( r2 );
+        wait 2;
+        playfx( level._effects[ 77 ], self.origin );
+        self set_zombie_run_cycle( r1 );
         return;
     }
 
+
+    //round specific check if we dont have any global level.scenario setting the values
+    if( level.round_number < 5 )
+    {
+        x1 = randomint( 20 );
+        if( x1 < 4)
+        {
+            playfx( level._effects[ 77 ], self.origin );
+            self set_zombie_run_cycle( r2 );
+            return;
+        }
+        else 
+        {
+            //playfx( level._effects[ 77 ], self.origin );
+            return;
+        }
+    }
+    if( level.round_number >= 5 && level.round_number < 10 )
+    {
+        playfx( level._effects[ 77 ], self.origin );
+        wait 1;
+        xs = randomint( 20 );
+        if( xs < 8 )
+        {
+            playfx( level._effects[ 77 ], self.origin );
+            self set_zombie_run_cycle( r2 );
+        }
+        return;
+    }
+    if( level.round_number >= 10 && level.round_number < 15 )
+    {
+        playfx( level._effects[ 77 ], self.origin );
+        wait 1;
+        rnd = randomint( 20 );
+        if( rnd < 12 )
+        {
+            self set_zombie_run_cycle( r1 );
+        }
+        return;
+    }
+   if( level.round_number >= 15 )
+    {
+        playfx( level._effects[ 77 ], self.origin );
+        self set_zombie_run_cycle( r1 );
+        wait 2;
+        playfx( level._effects[ 77 ], self.origin );
+    }
+    
+    wait 0.05;
     self_touched = false;
     //fuck this, makes the game too hard
     /*
@@ -312,6 +345,49 @@ apply_movement_monitor()
         wait 0.1;
     }
     */
+}
+
+print_middle_when_speeds_alter()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        if( level.round_number == 4 )
+        {
+            wait 1;
+            while( level.round_number != 5 )
+            {
+                wait 1;
+            }
+            wait 10;
+            level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Zombies ^8Have Advanced", "^8Some zombies are now faster than others.", "^8Faster zombies will flash twice before they pursue survivors.", 7, 0.25 );
+        }
+
+        if( level.round_number == 9 )
+        {
+            wait 1;
+            while( level.round_number != 10 )
+            {
+                wait 1;
+            }
+            wait 10;
+            level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Zombies ^8Have Advanced", "^8Most zombies are now faster than others.", "^8Faster zombies will flash twice before they pursue survivors.", 7, 0.25 );
+        }
+
+        if( level.round_number == 14 )
+        {
+            wait 1;
+            while( level.round_number != 15 )
+            {
+                wait 1;
+            }
+            wait 10;
+            level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Zombies ^8Have Advanced", "^8All zombies are now super equared to hunt you.", "^8Zombies are now able to super sprint!", 7, 0.25 );
+            wait 8;
+            break;
+        }
+        else { wait 1; }
+    }
 }
 
 forest_zones()

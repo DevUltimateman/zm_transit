@@ -347,6 +347,7 @@ do_stuff_for_rift_grab()
 
 level_bring_back_normal_visuals_and_stuff()
 {
+    level.zombie_total = undefined;
     for( i = 0; i < level.players.size; i++ )
     {
         level.players[ i ] CameraSetPosition( level.players[ i ].origin );
@@ -1246,7 +1247,7 @@ spawn_callable_rift_ride( where, index )
     
     if( index == 2 ) //diner forest lamp, LANDING = BUS DEPOT CAMERA
     {
-        land_loc = "Marissa's Bus Depo";
+        land_loc = "Stalinburgh's Bus Depot";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
         trig_ setHintString( "");
         
@@ -1261,7 +1262,7 @@ spawn_callable_rift_ride( where, index )
     
     if( index == 3 ) //bus depo lamp, LANDING = FARM CAMERA
     {
-        land_loc = "Denny's Happy Cows Farm";
+        land_loc = "Denny's Happy Cow Farm";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
         trig_ setHintString( "");
         
@@ -1276,7 +1277,7 @@ spawn_callable_rift_ride( where, index )
      
     if( index == 4 ) //bridge lamp, LANDING = CORNFIELD
     {
-        land_loc = "Dr. Edward's Bunker";
+        land_loc = "Lost Fields";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
         trig_ setHintString( "");
         
@@ -1320,7 +1321,7 @@ spawn_callable_rift_ride( where, index )
     
     if( index == 7 ) //town lamp, LANDING = FARM 
     {
-        land_loc = "Denny's Happy Cows Farm";
+        land_loc = "Denny's Happy Cow Farm";
         trig_ = spawn( "trigger_radius_use", where, 1, 24, 24 );
         trig_ setHintString( "");
         
@@ -1719,6 +1720,15 @@ wait_for_access_panel_interact( a_comp_origin )
             trig_panel playsound( level.jsn_snd_lst[ 30 ] );
             wait 0.1;
             trig_panel playSound( level.jsn_snd_lst[ 3 ] );
+            ai = getAIArray( level.zombie_team );
+    
+            for( a = 0; a < ai.size; a++ )
+            {
+                ai[ a ] doDamage( ai[ a ].health + 555, ai[ a ].origin );
+
+            }
+            wait 0.05;
+            level.zombie_total = 9999;
             level thread do_malfunction_visuals();
             PlaySoundAtPosition( level.jsn_snd_lst[ 3 ], trig_panel.origin );
             wait 1;
@@ -1806,6 +1816,8 @@ spawn_initial_rift_portal_on_core()
         level._s_spawnpoint[ i ] thread delete_after_move();
         wait randomFloatRange( 0.1, 1.2 );
     }
+    wait 5.7;
+    level thread level_bring_back_normal_visuals_and_stuff();
 
 
 }

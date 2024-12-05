@@ -43,15 +43,144 @@
 
 init()
 {
-    //spawn hud struct
-    //level thread make_middle_print_struct();
-
-    //test text
+    level.e_trap_ee_kills = 0;
+    level.e_trap_ee_kills_required = 30;
+    replacefunc( maps\mp\zombies\_zm_equip_electrictrap::zap_zombie, ::zap_zombies ); //make it to also increase level.e_tarp_ee_kills
     flag_wait( "initial_blackscreen_passed" );
-    wait 5;
-    //level thread waittill_rewards();
+    wait 15;
+    level thread reward_clip_size_4x(); //at one point players get 4x multiplier clip
+    level thread track_e_trap_ee_kills(); //mini ee that unlocks zombies to come avogadros
 }
 
+track_e_trap_ee_kills()
+{
+    level endon( "end_game" );
+    while( level.e_trap_ee_kills < level.e_trap_ee_kills_required )
+    {
+        wait 1;
+    }
+    wait 1;
+    level thread activate_avogadro_zombies();
+}
+
+activate_avogadro_zombies()
+{
+    level endon( "end_game" );
+    level waittill( "can_get_av_zoms" );
+    knife_loc = ( 11092.5, 8447.29, -545.993 );
+    cant_be_done = false;
+    while( true )
+    {
+        for( s = 0; s < level.players.size; s++ )
+        {
+            if( distance( knife_loc, level.players[ s ].origin ) < 150 )
+            {
+                if( level.players[ s ] meleeButtonPressed() )
+                {
+                    if( !cant_be_done )
+                    {
+                        cant_be_done = true;
+                        level thread reward_mini_quest_avogadro_zombies();
+                        level.players[ s ].score += 1500;
+                        level.players[ s ] playsound( "zmb_cha_ching" );
+                        wait 1;
+                        break;
+                    }
+                    
+                }
+            }
+        }
+        wait 0.05;
+    }
+}
+zap_zombies( zombie )
+{
+    if ( isdefined( zombie.ignore_electric_trap ) && zombie.ignore_electric_trap )
+        return;
+
+    if ( zombie.health > level.etrap_damage )
+    {
+        zombie dodamage( level.etrap_damage, self.origin );
+        zombie.ignore_electric_trap = 1;
+        return;
+    }
+
+    self playsound( "wpn_zmb_electrap_zap" );
+
+    if ( !( isdefined( level.electrocuting_zombie ) && level.electrocuting_zombie ) )
+    {
+        thread electrocution_lockout( 2 );
+        zombie thread play_elec_vocals();
+        level.e_trap_ee_kills++;
+        zombie thread maps\mp\zombies\_zm_traps::electroctute_death_fx();
+        zombie.is_on_fire = 0;
+        zombie notify( "stop_flame_damage" );
+    }
+
+    zombie thread electrictrapkill( self );
+}
+reward_mini_quest_avogadro_zombies() 
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        foreach( zom in getAIArray( level.zombie_team ) )
+        {
+            if( zom.model != "c_zom_avagadro_fb" )
+            {
+                zom setmodel( "c_zom_avagadro_fb" );
+            }
+            
+        }
+        wait 1;
+    }
+    
+}
+take_ss()
+{
+    level endon( "end_game" );
+    wait 20;
+        if( isdefined( self.clays_shade ) ) { self.clays_shade.alpha = 0; }
+        if( isdefined( self.clays ) ) { self.clays.alpha = 0; }
+        if( isdefined( self.jetgun_ammo_hud ) ) { self.jetgun_ammo_hud.alpha = 0; }
+        if( isdefined( self.jetgun_name_hud ) ) { self.jetgun_name_hud.alpha = 0; }
+        if( isdefined( self.location_hud ) ) { self.location_hud.alpha = 0; }
+        if( isdefined( self.survivor_points ) ) { self.survivor_points.alpha = 0; }
+        if( isdefined( self.real_score_hud ) ) { self.real_score_hud.alpha = 0; }
+        if( isdefined( self.weapon_ammo ) ) { self.weapon_ammo.alpha = 0; }
+        if( isdefined( self.weapon_ammo_stock ) ) { self.weapon_ammo_stock.alpha = 0; }
+        if( isdefined( self.playname ) ) { self.playname.alpha = 0; }
+        wait 0.05;
+    level.huddefcon.alpha = 0;
+    level.huddefconline.alpha = 0;
+    level.hud.alpha = 0;
+
+}
+reward_clip_size_4x()
+{
+    level endon( "end_game" );
+    level endon( "fail_s_end_4x_reward_waittill" );
+    while( true )
+    {
+        if( level.round_number == 24 )
+        {
+            while( level.round_number != 25 )
+            {
+                wait 1;
+            }
+            wait 10;
+            level thread print_text_middle( "^9Call Of Juarez ^3x2 ^8Reward Unlocked", "^8Survivors now pack twice the amount of original ^9Call Of Juarez' ^8clip size.", "^8Survivor's ammo pouche capacity has been increased.", 6, 0.25 );
+            foreach( playa in level.players )
+            {
+                playa setclientdvar( "player_clipsizemultiplier", 4.0 );
+            }
+            setdvar( "player_clipSizeMultiplier", 4.0 ); 
+            break;
+            level notify( "fail_s_end_4x_reward_waittill" );
+        }
+        wait 1;
+    }
+}
 reward_give_phd()
 {
     level endon( "end_game" );

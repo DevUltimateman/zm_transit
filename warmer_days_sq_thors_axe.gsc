@@ -39,7 +39,7 @@ init()
     level thread level_play();
     flag_wait( "initial_blackscreen_passed" );  
     level thread do_everything_for_axe_logic();
-    //level thread print_org();
+    level thread print_org();
 
     //level thread trailer_cams( 9 );
 

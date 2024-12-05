@@ -62,8 +62,8 @@ init()
     //precachemodel
     //precachemodel
     //disable zombies, enable godm, 50k pts
-    level thread fordev();
-    level thread make_characters_for_trailer();
+    //level thread fordev();
+    //level thread make_characters_for_trailer();
     //build check for printlines
     level.dev_time = false;
     
