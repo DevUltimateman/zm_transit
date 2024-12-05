@@ -247,8 +247,8 @@ return_spirit_textline( switcher )
             break;
 
         case 22:
-            u_ = "^8See what I can do!";
-            d_ = "^8Aaaaaarggghh..!";
+            u_ = "^8See ya!";
+            d_ = "^8You were too slow ha.";
             foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
             level thread spirit_says( u_, d_, 5, 0.3 );
             break;
@@ -874,7 +874,7 @@ global_locations()
 spirit_says( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	machine_says( "^8" + text, "^8" + text2, duration, fadetimer );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^8" + text, "^8" + text2, duration, fadetimer );
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )

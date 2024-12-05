@@ -807,7 +807,7 @@ do_dialog_here( sub_up, sub_low, duration, fader )
     
     durations = duration;
     fadetimer = fader;
-    level thread machine_says( "^9Dr. Schruder: ^8" + sub_up, "^8" + sub_low, durations, fadetimer );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder: ^8" + sub_up, "^8" + sub_low, durations, fadetimer );
 }
 
 

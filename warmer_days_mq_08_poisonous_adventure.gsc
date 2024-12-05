@@ -235,14 +235,13 @@ do_first_dialog()
     level thread playloopsound_buried();
     wait 2.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Excellent! You've found the mixing container^8..", "You'll need it in our next step..", 9, 1 );
-    wait 10;
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Excellent!", "^8" + "You've found the mixing container^8..", 5, 1 );
+    wait 6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "The container will teleport on the ground, close to a soda machine^8 once you're close to a one.", "You could ^6test ^8it right now. There should be a soda machine nearby..", 10, 1 );
-    wait 12;
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8The container will spawn next to a soda machine once you're close to it.", "^8" + "Feel free to locate a soda machine next.", 8, 1 );
+    wait 9;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "I'll let you figure out ^8what to do next..", "Don't dissapoint me!", 7, 1 );
-    level notify( "stop_mus_load_bur" );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8I'll let you figure out what to do after that..", "^8" + "Don't disappoint me!", 6, 1 );
     wait 8;
     level thread are_players_close_to_spawn_suitcase();
     wait 5;
@@ -251,10 +250,10 @@ do_first_dialog()
     //level thread playloopsound_buried();
     wait 2.8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Hahaa, wunderbaar!", "You're quite a sharp shooter.", 8, 1  );
-    wait 5;
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Haha, impressive!", "^8" + "You're quite a sharp shooter.", 6, 1 );
+    wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "The container is now full of different sodas!", "You could try your luck next at ^6labs^8..", 9, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8The container is now full of different sodas.", "^8" + "You could try your luck next at ^6labs^8..", 6, 1 );
     level notify( "stop_mus_load_bur" );
     wait 10;
     level waittill( "crafting_serum" );
@@ -263,16 +262,13 @@ do_first_dialog()
     //needs a 10 second wait so we dont have overlapping text
     wait 12;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Fantastic, you've crafted the potion!", "", 6, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " +  "^8Fantastic, how did it taste like?", "^8" + "Funny face you got ha!", 6, 1 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "You should now be ^6immune ^8to those toxic clouds now..", "Are you feeling safe to step outside now..?", 8, 1 );
-    wait 11;
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " +  "^8Hahaa you know what, I'm just teasing you now.. ", "^8" + "", 5, 1 );
+    wait 6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Hahaa you know what, I'm just teasing you now.. ", "Sometimes I like to have my fun too!", 8, 1 );
-    wait 11;
-    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "I am so proud of you.. we should ^6celebrate^8 a bit..", "Meet me at the ^6bar^8!", 8, 1 ); 
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " +  "^8I am so proud of you.. we should ^6celebrate^8 a bit..", "^8" + "Meet me at ^9Moe's Pub^8!", 7, 1 );
     level notify( "wait_for_bar_meetup" );
     level.step_9_possible = true;
     wait 11;
@@ -543,9 +539,9 @@ spawn_drinkable_step()
                 who takeWeapon( "zombie_perk_bottle_tombstone" );
                 who playsound( "evt_bottle_dispense" );
                 foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-                level thread machine_says(  "^9" + who.name + "^8 upgraded their ^9abilities.^8","^8" +  "Survivor now has ^9Immunity Drink ^8effects.", 4.5, 0.15 );
+                level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who.name + "^8 crafted the potion.", "^8" + "The potion is ready to be consumed.", 5, 1 );
                 wait 0.1;
-                anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^9Immunity Drink ^9]" );
+                anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^3Potion ^9]" );
             }
             if( who.has_immunity == false && who.has_immunity_health < 50 )
             {

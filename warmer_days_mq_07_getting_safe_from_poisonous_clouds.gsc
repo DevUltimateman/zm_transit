@@ -909,21 +909,17 @@ playloopsound_buried()
 do_guide_blockers_dialog()
 {
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^9Dr. Schruder: ^8" + "What the hell was that?!", "^8" + "Are you okay?", 7, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + "Are you guys able to hear me?", "^8" + "What was that?!", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^9Dr. Schruder: ^8" + "^6Spirit Of Sorrow^8 really wants to get rid of you guys, huh.", "^8" + "I can't let that happen!", 7, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + "^6And what was up with ^5Spirit Of Sorrow^8?", "^8" + "She didn't seem to be her normal self.", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^9Dr. Schruder: ^8" + "It seems that the clouds are gone for now.","^8" +  "However there seems to bea a heavy mist still present", 7, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + "Those toxic clouds seem to be gone for now.", "^8" + "Seems that there's only minor mist still present.", 7, 1  );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^9Dr. Schruder: ^8" + "We could craft some sorta ^6elixir drink ^8that allows you to have immunity against those poisonous clouds.. ", "^8" + "The drink requires multiple ingredients from different ^6soda machines^8!", 10, 1 );
-    level notify( "stop_mus_load_bur" );
-    wait 12;
-    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread machine_says( "^9Dr. Schruder: ^8" + "Go locate the mixing container from ^5Bus Depo^8.", "^8" + "Be fast, I don't know when the clouds strike again!", 7, 1 );
-    
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + "You should locate the mixing container from ^9Bus Depot^8.", "^8" + "We should craft an potion after that.", 8, 1 );
+
 }
 level_waittill_continue_mq()
 {

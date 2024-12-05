@@ -1072,27 +1072,21 @@ rocks_at_town_talk()
     //level thread playloopsound_buried();
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "^9Element 115 rocks^8.. Lava at town's center has risen few above the pit.", "^7See if you can teleport them to underneath the pylon with something steamy..", 10, 1  );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "What's happening at ^9Town Center^8?", "^8Investigate it and see if you can move the meteors with something steamy..", 8, 0.25 );
     level thread wait_kill();
     level notify( "stop_mus_load_bur" );
     level waittill( "gnerators_start_floating" );
+    level.first_time_texter = true; 
     //level thread playloopsound_buried();
     wait 0.6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Excellent, they're moving!", "Meet me underneath the pylon!", 8, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Where's the meteors going?", "^8They're supposed to head towards the pylon. ^1Find Them^8!!", 8, 0.25 );
     wait 10;
-    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Something's not right, said rocks are not underneath the pylon!", "What did you do? Where did they land?! ^1Find Them!!!^7", 10, 1 );
-    wait 12;
     level notify( "stop_mus_load_bur" );
     level waittill( "found_first_rock" );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "What..! Are the rocks taking souls from zombies upon their death", "Maybe the rocks are gathering their own energy to make themselves move to pylon..", 10, 1 );
-    wait 12;
-    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Interesting..! ..aaand ^5wundeeerbar ^7as well!", "Come on, stay slaying! Keep on doing you. ", 7, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Interesting, the meteors seem to collect zombie souls!", "^8Try feeding undead to them!", 8, 0.25 );
     wait 13;
-    level notify( "stop_mus_load_bur" );
 }
 rocks_at_pylon()
 {
@@ -1102,7 +1096,7 @@ rocks_at_pylon()
     //level thread playloopsound_buried();
     wait 2;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Great, the rocks are at pylon...!", "Let's gather together underneath the pylon!", 7, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Great, the rocks are at pylon...!", "^8Let's try to gather together underneath the pylon.", 8, 0.25 );
     wait 8;
     level notify( "stop_mus_load_bur" );
     level thread monitor_players_pylon();
@@ -1111,16 +1105,16 @@ rocks_at_pylon()
     //level thread playloopsound_buried();
     wait 3;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "See if I'm able to transform!", "Aaarghh", 5, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Ahh finally!", "^8Hello there.", 5, 0.25 );
     level thread do_everything_schruder_spawns();
     level waittill( "continue_talking" );
     wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Ahh finally..! Hello there!", "You've helped me get into my physical form..", 7, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Wait..! I have an surprise for you,", "^8Watch me tranfoooormm...!", 8, 0.25 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "So fantastic, you've been such a help...", "Let me reward you with something..", 4.5, .7 );
-    wait 5;
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Fantastic, you've been such a help...", "^8Let me reward you with something..", 5, 0.25 );
+    wait 6;
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^6Phd Flopper ^8Reward Unlocked", "^8Survivors can now take explosive damage, without losing health.", "^8Survivor's can also now do belly dive explosions.", 6, 0.25 );
     foreach( plays in level.players )
     {
@@ -1128,10 +1122,10 @@ rocks_at_pylon()
     }
     wait 4.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Haa..! Hope you like it.", "Hold on a second..", 6, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Haa.. I Hope you like it.", "^8Hold on a second..", 5, 0.25 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Something's coming.. I can hear it!", "Hold tight!", 5, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Something's coming.. I can hear it.", "^8I gotta disappear!", 5, 0.25 );
     wait 6;
     level notify( "fly_sc_away" );
     wait 2;
@@ -1263,72 +1257,4 @@ monitor_players_pylon()
     }
 }
 
-
-do_dialog_here( sub_up, sub_low, duration, fader )
-{
-    subtitle_upper =  sub_up;
-    subtitle_lower = sub_low;
-    durations = duration;
-    fadetimer = fader;
-    level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper, "^8" + subtitle_lower, durations, fadetimer );
-}
-
-machine_says( sub_up, sub_low, duration, fadeTimer )
-{
-    //don't start drawing new hud if one already exists 
-    if(  isdefined( level.subtitles_on_so_have_to_wait ) && level.subtitles_on_so_have_to_wait )
-    {
-        while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
-    }
-    level.subtitles_on_so_have_to_wait = true;
-    level.play_schruder_background_sound = true;
-    level.subtitle_upper settext( sub_up );
-    if( isdefined( sub_low ) )
-    {
-        level.subtitle_lower settext( sub_low );
-    }
-    level.subtitle_upper.x = 0;
-    level.subtitle_lower.x = 0;
-    level.subtitle_upper.alpha = 0;
-    level.subtitle_upper fadeovertime( fadeTimer );
-    level.subtitle_upper.alpha = 1;
-	if ( IsDefined( sub_low ) )
-	{
-        level.subtitle_lower.alpha = 0;
-        level.subtitle_lower fadeovertime( fadeTimer );
-        level.subtitle_lower.alpha = 1;
-	}
-
-	wait ( duration );
-    
-	level thread flyby( level.subtitle_upper );
-    level.subtitle_upper fadeovertime( fadeTimer );
-    level.subtitle_upper.alpha = 0;
-
-	if ( IsDefined( sub_low ) )
-	{
-		level thread flyby( level.subtitle_lower );
-        level.subtitle_lower fadeovertime( fadeTimer );
-        level.subtitle_lower.alpha = 0;
-	}
-
-    wait 1;
-    level.play_schruder_background_sound = false;
-}
-
-//this a gay ass hud flyer, still choppy af
-flyby( element )
-{
-    level endon( "end_game" );
-    x = 0;
-    on_right = 640;
-
-    while( element.x < on_right )
-    {
-        element.x += 200;
-        wait 0.05;
-    }
-    //let new huds start drawing if needed
-    level.subtitles_on_so_have_to_wait = false;
-}
 

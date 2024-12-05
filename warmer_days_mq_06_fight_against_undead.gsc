@@ -373,13 +373,13 @@ playloopsound_buried()
 _someone_unlocked_something( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-	level thread machine_says( "^9Dr. Schruder: ^8" + text, "^8" + text2, duration, fadetimer );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + text, "^8" + text2, duration, fadetimer );
 }
 
 _spirit_of_sorrow_sub_text_alt( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-    level thread machine_says( "^4Spirit Of Sorrow: ^8" + text, "^8" + text2, duration, fadetimer );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^4Spirit Of Sorrow: ^8" + text, "^8" + text2, duration, fadetimer  );
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )

@@ -240,10 +240,10 @@ level_tell_about_rifts()
 {
     level endon( "end_game" );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread _play_schruder_texts( "Did you see that???", "The rift tried grab you!", 5, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Did you see that???", "The rift tried to grab you!", 6, 0.25 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread _play_schruder_texts( "I think that it will try grabbing you once more...", "Think you should get ready..!", 7, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "It will certainly try grabbing you again in a bit..", "Think you should get ready!", 7, 0.25 );
     wait 9;
     level notify( "do_it" );
     level notify( "stop_mus_load_bur" );
@@ -1569,14 +1569,10 @@ lamps_fixed_schruder_speaks()
    // level waittill( "all_rift_lamps_repaired" );
     wait 4;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _play_schruder_texts( "Ahh.. Very good!", "It seems that all the lamps are powered now!", 5, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Ahh.. Good job!", "Rift lamps are powered now!", 5, 0.25 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _play_schruder_texts( "Check if the lamps are sending signals to the ^5Main Frame^8.", "The computer should be located somewhere at ^5Power Station^8!", 7, 1 );
-    wait 9;
-    level notify( "stop_mus_load_bur" );
-    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _play_schruder_texts( "Quick check at station and we should be done with portals.", "Let's get to it!", 8, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Check if ^9Stalinburg's Power Station^8 is receiving any signals from the lamps.", "The computer should be located somewhere in the ^9Control Room^8.", 7, 1 );
     wait 9;
     //level notify( "spawn_rift_computer" );
     level thread spawn_rift_computer();
@@ -1646,11 +1642,10 @@ computer_accessed_by_player( playa, a_comp )
     //level thread playloopsound_buried();
     wait randomfloatrange( 3.1, 5.2 );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _play_schruder_texts( "Excellent stuff!", "^9" + playa + " ^8was able to restore signals via ^5Main Frame^8!" , 8, 1 );
-    wait 10;
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Excellent stuff!", "^9" + playa + " ^8was able to restore signal recception from the computer.", 6, .25 );
+    wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    _play_schruder_texts( "Something's wrong with the computer..", "Access the control panel and restart the computer!", 6, 1 );
-    //level notify( "stop_mus_load_bur" );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Something's wrong with the computer..", "Access the control panel and restart the computer, quick!", 6, 1  );
     wait 7;
     level thread wait_for_access_panel_interact( a_comp_origin );
 
