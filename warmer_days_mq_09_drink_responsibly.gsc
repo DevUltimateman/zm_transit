@@ -572,7 +572,7 @@ dialogs_for_bar_step()
     do_dialog_here_too( "^8Well hello again my friend!", "^8Glad to see you doing fine..", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here_too( "I wanted to throw a party for your achievements!", "^8You've been a great help and I've never come across survivors like you guys..", 10, 1 );
+    do_dialog_here_too( "I wanted to throw a party for you for your achievements!", "^8You've been a great help and I've never come across survivors like you..", 10, 1 );
     wait 11;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here_too( "^8Here, come closer to the counter!", "^8The drinks are on me.. Feel free to pick any one of em!", 7, 1 );
@@ -584,7 +584,7 @@ dialogs_for_bar_step()
     }
     wait 1.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here_too( "^8Fantastic!", "^8You drank too much now you cheeky bastard!", 7, 1 );
+    do_dialog_here_too( "^8Hahaa look what you've done!", "^8You drank too much you cheeky bastard!", 7, 1 );
     wait 9;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here_too( "^8I'll be in touch with you once you've sobered up.", "^8Watch out, you might be a bit stubmly now haha. Bye bye!", 7, 1 );
@@ -594,17 +594,17 @@ notify_on_drinks()
 {
     if( level.drinks_drank == 2 )
     {
-        do_dialog_here_too( "^8Good old brew..", "^8How about another one?", 3, 0.1 );
+        do_dialog_here_too( "^8Good old brew..", "^8How about another one?", 2, 0.1 );
     }
 
     if( level.drinks_drank == 3 )
     {
-        do_dialog_here_too( "^8Few don't seem to cause a problem.. ha!", "^8You're quite good at it!", 4, 0.1 );
+        do_dialog_here_too( "^8Few don't seem to cause a problem.. ha!", "^8You're quite good at it!", 2.5, 0.1 );
     }
 
     if( level.drinks_drank == 5 )
     {
-        do_dialog_here_too( "^8What?!", "^8Chugging them down like a champion!", 4, 0.1 );
+        do_dialog_here_too( "^8What?!", "^8Chugging them down like a champion!", 2, 0.1 );
     }
 }
 

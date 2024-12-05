@@ -166,7 +166,7 @@ explosive_tracer_spawn()
     block.angles = block.angles;
     wait 0.05;
     //playfx(level._effect[ "powerup_on"], gunOrigin + ( 0, 0, 3 ) );
-    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
+    playfx( level.myFx[ 26 ], gun.origin );
     playfx( level.myFx[ 44 ] , gunorigin + ( 0, 0, -4 ) );
     gun playLoopSound( "zmb_spawn_powerup_loop" );
 
@@ -175,7 +175,6 @@ explosive_tracer_spawn()
     portal.angles = ( 0, 180, 0 );
     wait 0.1;
     playfx( level.myFx[ 44 ] , portal.origin );
-    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
     playFXOnTag( level._effect[ "screecher_vortex" ], portal, "tag_origin" );
     portal playLoopSound( "zmb_screecher_portal_loop", 2 );
 
@@ -184,23 +183,16 @@ explosive_tracer_spawn()
     spas setmodel( "tag_origin" );
     wait 0.05;
     playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
-    
-    cost1 = 7500; //10 000
-
+    cost1 = 7500;
     player.hasused = false;
-
     while ( true )
     {
         trigger waittill( "trigger", player ); //continue from this point tommorow. 9 hours work on this shit today, tired..
         if ( player useButtonPressed() && player.score >= cost1 && player getCurrentWeapon() )
         {
-            
             wait .1;
             if ( player usebuttonpressed() )
             {
-               
-
-                //playfxontag( level._effect[ "screecher_hole" ], portal, "tag_origin" );
                 player.score -= 7500;
                 player playsound( "zmb_cha_ching" );
                 player disableWeapons();
@@ -215,9 +207,7 @@ explosive_tracer_spawn()
                 gun movez( 180, 1, 0.1, 0.4 );
                 spas movez( -1000, 5, 0, 0 );
                 wait 0.1;
-                
             }
-
         }
     }
 }
@@ -226,7 +216,6 @@ drawGunInfo()
 {
     self endon("disconnect");
     level endon("end_game");
-
     self iPrintLnBold( "You've aquired ^3Explosive Tracers^7!" );
     wait 3;
     self iPrintLnBold( "This upgrade is only viable while using a sniper rifle" );
@@ -235,7 +224,6 @@ drawGunTextAgain()
 {
     self endon ("disconnect");
     level endon("end_game");
-
     self hide();
 }
 drawGunTextAgainNEW()

@@ -322,7 +322,7 @@ level_spawns_main_door_stuff()
 {
     wait 0.1;
     level thread base_fxs();
-    sglobal_gas_quest_trigger_spawner( level.door_base_main_trigger_location, "^9[ ^3[{+activate}] ^8to build ^3Main Entrance Blocker ^9]", "^9[ ^8Main Entrance Blocker ^8has been built ^9]", level.myfx[ 75 ], level.myfx[ 76 ], "main_door_unlocked" );
+    sglobal_gas_quest_trigger_spawner( level.door_base_main_trigger_location, "^9[ ^3[{+activate}] ^8to build ^3Main Entrance Blocker ^9]", "^9[ ^8Main Entrance Blocker ^8has been built ^9]", "", level._effects[48], "main_door_unlocked" );
 }
 
 //10
@@ -424,10 +424,8 @@ base_fxs()
     {
         playfx( level._effects[ 12 ], outside_lights_origins[ z ] );
         wait 1;
-        playfx( level._effects[ 14 ], outside_lights_origins[ z ] );
-        wait 0.05;
+        //playfx( level._effects[ 14 ], outside_lights_origins[ z ] );
         //playfx( level._effects[ 16 ], outside_lights_origins[ z ] );
-        wait 0.05;
         playfx( level._effects[ 18 ], outside_lights_origins[ z ] );
         wait 0.05;
     }
@@ -448,7 +446,12 @@ monitorDoorHealth()
                 {
                     wait randomfloatrange( 0.05, 0.45 );
                     zombie_hits_door = randomIntRange( 5, 25 );
-                    playfxontag( level.myfx[ 9 ], zombies_[ i ], "j_elbow_le" );
+                    rnd = randomint( 50 );
+                    if( rnd < 15 )
+                    {
+                        playfxontag( level.myfx[ 9 ], zombies_[ i ], "j_elbow_le" );
+                    }
+                    
                     level.door_health_ -= zombie_hits_door;
                     if( level.dev_time ) { iprintln( "ZOMBIE hit main door and did ^1" + zombie_hits_door + " ^8amount of damage. ") ;
                     iprintln( "MAIN DOOR HEALTH IS AT: ^3" + level.door_health_ + " ^8/ ^3 750" ); }
@@ -756,15 +759,6 @@ playlocal_plrsound()
     self playsound( level.mysounds[ 9 ] );
 }
 
-playloop_electricsound()
-{
-    level endon( "end_game" );
-    while( true )
-    {
-        PlaySoundAtPosition( level.mysounds[ 1 ], level.gas_pour_location );
-        wait 5;
-    }
-}
 
 
 coop_print_base_notify_trap_main( which_notify, who_found )
@@ -864,25 +858,12 @@ fliebies( element )
     while( element.x < on_right )
     {
         element.x += 200;
-        /*
-        //if( element.x < on_right )
-        //{
-            
-            //waitnetworkframe();
-        //    wait 0.01;
-        //}
-        //if( element.x >= on_right )
-        //{
-        //    element destroy();
-        //}
-        */
         wait 0.05;
     }
     if( isdefined( element ) )
     {
         element destroy_hud();
     }
-    
 }
 
 _someone_unlocked_something( text, text2, duration, fadetimer )
@@ -908,9 +889,9 @@ square_fx_lights()
     for( s = 0; s < squares; s++ )
     {
         playfx( level._effects[ 13 ], squares[ s ] );
-        wait 1;
-        playfx( level._effects[ 18 ], squares[ s ] );
         wait 0.5;
+        playfx( level._effects[ 18 ], squares[ s ] );
+        wait 0.1;
     }
 }
 spawn_collectables_for_bench() //works well now
@@ -972,10 +953,7 @@ spawn_collectables_for_bench() //works well now
     trig_r setHintString( "^9 ^3[{+activate}] ^8to pick up an upgrade piece for ^9Safe House ]" );
     trig_r setCursorHint( "HINT_NOICON" );
     trig_r TriggerIgnoreTeam();
-
-    //playfx( level._effect[ "lght_marker"], find_door_l.origin ); //for playtesting to find em easier
     wait 1;
-   // playfx( level._effect[ "lght_marker"], find_door_r.origin );  //for playtesting to find em easier
     trig_r thread waittill_pickup( "door_r", find_door_r );
     wait 0.05;
     trig_l thread waittill_pickup( "door_l", find_door_l );
@@ -1066,7 +1044,7 @@ spawn_workbench_to_build_main_entrance()
     wait 0.1;
     playFXOnTag( level.myfx[ 2 ], build_maind_door_table_clip_head, "tag_origin" );
     wait 0.05;
-    playfxontag( level.myfx[ 75 ], build_maind_door_table_clip, "tag_origin" );
+    //playfxontag( level.myfx[ 75 ], build_maind_door_table_clip, "tag_origin" );
     build_maind_door_table_clip_head thread spin_and_move_table_headm();
     
 }

@@ -116,22 +116,17 @@ do_dialog_about_tunnel_help()
     foreach( p in level.players ){   p thread daytime_preset();  }
     //level thread playloopsound_buried();
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "Hahaa, you've had your fun ha?", "I think we can move ahead and try finding the ^3Tranceiver^8.", 5, 1 );
+    level thread do_dialog_here( "Hahaa, you've had your fun ha?", "I think we can move ahead to try finding the ^3Tranceiver^8 .", 5, 1 );
     wait 6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "The ^3Tranceiver ^8has long been gone, but if we would be able to go back in time...", "Ah! I know a perfect thing.", 7, 1 );
+    level thread do_dialog_here( "The ^3Tranceiver ^8has long been gone, but we could try time hopping..", "We might be able to locate the device from another dimension.", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "Let me spawn a ^3Back In Time Teleporter^8 for you to the tunnels.", "It should be there in a second..", 7, 1 );
+    level thread do_dialog_here( "Let me spawn a ^9Back In Time Teleporter^8 for you in the tunnels.", "^8It should be there in a second..", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "You could try using it to go back in time..", "I believe that it's possible to find the ^3Tranceiver^8 from the time when it still existed.", 7, 1 );
+    level thread do_dialog_here( "See if you're able to pick the device up,", "once you have located it.", 7, 1 );
     wait 8;
-    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "See if you're able to pick it up,", "once you have located it.", 7, 1 );
-    wait 8;
-    level notify( "stop_mus_load_bur" );
-    
 }
 movable_locations()
 {
@@ -463,7 +458,7 @@ waittill_powers_restored()
     level thread do_dialog_here( "Wondeful!", "Power has been restored!", 5, 1 );
     wait 6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "Let's try meeting up again at ^3Pylon^8.", "I'm waiting for you there!", 7, 1 );
+    level thread do_dialog_here( "Let's try meeting up again at the ^3Pylon^8.", "^8I'll be waiting for you there!", 7, 1 );
     wait 8;
     level notify( "stop_mus_load_bur" );
 
@@ -1131,22 +1126,13 @@ do_meet_at_pylon_text()
 {
     level endon( "end_game" );
     wait 4.5;
-    //do_dialog_here
-    //level thread playloopsound_buried();
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "Fantastic! You received the ^3Tranceiver!", "Let's meet up underneath the pylon.", 8, 1 );
+    level thread do_dialog_here( "^8Fantastic! You received the ^9Tranceiver!", "^8Let's meet underneath the pylon.", 8, 1 );
     wait 10;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "We can call for help once we've applied the ^3Tranceiver ^8to the ^3Pylon^8.", "Be quick, I'll be waiting for you. No hurries tho haha!", 10, 1 );
-    level notify( "stop_mus_load_bur" );
-    wait 12;
-
+    level thread do_dialog_here( "^8We can call help once we've applied the ^9Tranceiver ^8to the ^9Pylon^8.", "^8Be quick, I'll be waiting for you. No hurries tho haha!", 10, 1 );
+    wait 11;
     level thread wait_players_at_pylon();
-    //pylon wait player
-    //press pylon
-    //power goes out ( night time )
-    // then go restore at each loc
-
 }
 
 wait_players_at_pylon()
@@ -1177,7 +1163,7 @@ wait_players_at_pylon()
             wait 0.05;
             PlaySoundAtPosition(level.my_sounds[ 3 ], sa.origin );
             sa thread rotateit();
-            level thread do_dialog_here( "Awesome!", "Seems like you were able to apply the ^3Tranceiver ^8on the transmitter.", 6, 1 );
+            level thread do_dialog_here( "Awesome!", "^9Tranceiver ^8has been added to the ^9Pylon^8.", 6, 1 );
             wait 3;
             ss sethintstring( "^9[ ^3Call for help... ^9]" );
             break;
@@ -1185,7 +1171,7 @@ wait_players_at_pylon()
         wait 0.1;
     }
     wait 3;
-    level thread do_dialog_here( "You should try calling some help!", "Feel free to use it, you've done already so much.", 7, 1 );
+    level thread do_dialog_here( "^8You should try calling some help!", "^8Feel free to use it, you've done already so much.", 7, 1 );
     wait 0.1;
     level thread do_power_out_texts();
     while( true )
@@ -1253,20 +1239,18 @@ do_power_out_texts()
     level endon( "end_game" );
     level waittill( "power_out" );
     wait 1;
-    //level thread playloopsound_buried();
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "What's happening?", "How did it come so dark suddenly?", 8, 1 );
+    do_dialog_here( "^8What's happening?", "^8How did it come so dark suddenly?", 8, 1 );
     wait 9;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Power seems to be cut out completely!", "We can't try calling help without power..", 7, 1 );
+    do_dialog_here( "^8Power seems to be cut out completely!", "^8We can't try calling help without power..", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "Let's try restoring the power at different locations.", "Once you're close to a location, I will come in and help you get there!", 7, 1 );
+    do_dialog_here( "^8Let's try restoring the power at different power surge locations.", "^8Once you're close to a location, I will come in and help you collect electricity!", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    do_dialog_here( "See you soon.", "My friend.", 5, 1 );
+    do_dialog_here( "^8See you soon.", "^8My ^9friend^8.", 5, 1 );
     wait 6;
-   // level notify( "stop_mus_load_bur" );
     level notify( "power_out_talks_completed" );
 }
 rotateit()
@@ -1363,8 +1347,6 @@ fade_back_to_regular_tranzit()
     level endon( "end_game" );
     level waittill( "bowl_picked_up" );
     wait 1.5;
-    //do_dialog_here
-
     PlaySoundAtPosition(level.jsn_snd_lst[ 40 ], level.players[ 0 ].origin );
     foreach( p in level.players )
     {

@@ -250,25 +250,25 @@ mr_s_for_final_time()
     level thread do_dialog_here( "Hmm.. I feel like you might wanna call help for yourself now..", "Understandable, you have your own things to pursue elsewhere..", 11, 1 );
     wait 13;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "Would you mind at least enjoying yourself first a bit?", "I've got some things for you...", 7, 1 );
+    level thread do_dialog_here( "Would you mind at least enjoy yourself first a bit?", "I've got some things prepared for you...", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "Let me start off by making your soda drink effects permament!", "You'll keep the effects, even when going down!", 6, 1 );
     level thread give_all_perks_and_make_permament();
-    wait 8;
+    wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "What about this next thing?..", "Lemme me spawn an ^2Acid Gat ^8 at ^3Nacht ^8for you!", 7, 1 );
     level thread spawn_all_pickable_acidgats();
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "You can go pick it up whenever you feel like so!", "I heard it's pretty neat..", 7, 1 );
+    level thread do_dialog_here( "You can go pick it up whenever you feel like so.", "I heard it kills zombies!", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "I've also reduced the cost of your ^3Bullet Upgrades^8 at ^9Safe House^8.", "Check the prices and see if they're worthy of your pennies now, ha!", 10, 1 );
     level thread reduce_bullettracer_costs();
     wait 11;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "I also suggest you doing any remaining quests or chores, if you have any left.", "Anyways my friend..", 7, 1 );
+    level thread do_dialog_here( "I also suggest you to do any remaining quests or chores, if you have any left.", "Anyways my friend..", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "If you feel like calling for help and getting yourself outta here, feel free to do so too.", "But I hope that you enjoy your treats first!", 7, 1 );

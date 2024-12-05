@@ -242,17 +242,17 @@ monitor_player_use()
                     level notify( "lockdown_enabled" );
                     level notify( "spawn_blockers_for_lockdown" );
                     level thread playlockdown_song();
-                    wait 2;
+                    wait 0.05;
                     PlaySoundAtPosition(level.jsn_snd_lst[ 33 ], loca );
                     wait 1;
                     PlaySoundAtPosition( "zmb_vox_monkey_explode", loca );
-
+                    level thread do_zombies_go_crazy();
                     //add lockdown init here
                     Earthquake( 0.18, 10, loca, 2500 );
                     wait 1;
                     PlaySoundAtPosition( "zmb_vox_monkey_scream", loca );
                     
-                    level thread do_zombies_go_crazy();
+                    
                     playsoundatposition( "vox_zmba_sam_event_magicbox_0", loca );
                     //
                 }

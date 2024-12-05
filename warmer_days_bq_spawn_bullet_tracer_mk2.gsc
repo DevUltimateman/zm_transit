@@ -159,28 +159,21 @@ weaponTracerUpgrade()
     gun.angles = (  -45, 0, 0 );
     wait .1;
     gun thread rotateGunUpgrade();
-    //playfx(level._effect[ "powerup_on"], gunOrigin + ( 0, 0, -4 ) );
-    playfxontag( level.myFx[ 26 ] , gun, "tag_origin" );
-    
     gun playLoopSound( "zmb_spawn_powerup_loop" );
-
     portal = spawn( "script_model", gunOrigin + ( 0, 0, -55 ) );
     portal setmodel("p6_zm_screecher_hole" );
     portal.angles = ( 0, 180, 0 );
     wait 0.1;
     playfx( level.myFx[ 44 ] , portal.origin );
-    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
-    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
+    playfx( level.myFx[ 26 ], gun.origin );
     playFXOnTag( level._effect[ "screecher_vortex" ], portal, "tag_origin" );
     portal playLoopSound( "zmb_screecher_portal_loop", 2 );
-
     spas = spawn( "script_model", portal.origin + ( 0, 0, -1000 ) );
     spas.angles = (0,0,0);
     spas setmodel( "tag_origin" );
     wait 0.05;
     playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
     cost1 = 30000;
-
     player.hasused = false;
 
     while ( true )

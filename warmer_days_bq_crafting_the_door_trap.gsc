@@ -115,7 +115,7 @@ initialize_everything_for_side_door()
 {
     level endon( "end_game" );
     wait 20;
-sglobal_gas_quest_trigger_spawner( level.door_base_side_trigger_location + ( 0,0, 70), "^9[ ^8Workbench requires ^9something ^8that can be collected ^9]", "^9[ ^8Side barricade built ^9]", level.myfx[ 75 ], level.myfx[ 76 ], "side_door_unlocked" );
+sglobal_gas_quest_trigger_spawner( level.door_base_side_trigger_location + ( 0,0, 70), "^9[ ^8Workbench requires ^9something ^8that can be collected ^9]", "^9[ ^8Side barricade built ^9]", "", level._effects[48], "side_door_unlocked" );
     
     
 }
@@ -136,7 +136,7 @@ spawn_collision_and_model()
 
     
     wait 0.05;
-    playfxontag( level._effect[ "lght_marker" ], mt, "tag_origin" );
+    //playfxontag( level._effect[ "lght_marker" ], mt, "tag_origin" );
     mt moveZ( -64, 1, 0.1, 0.1 );
     mt waittill( "movedone" );
     xx = mt.origin;
@@ -276,7 +276,7 @@ collectibs_origins_and_logic()
     loc_models = [];
     loc_models[ 0 ] = ( "com_file_cabinets_a_drawer" );
     loc_models[ 1 ] = ( "p_jun_storage_crate_forest2" );
-    loc_models[ 2 ] = ( "p6_monsoon_crate_01_shell" );
+    loc_models[ 2 ] = ( "p_zom_barrel_02_clean" );
     loc_models[ 3 ] = ( "p_zom_barrel_02_clean" );
     loc_models[ 4 ] = ( "com_crate01_farm" );
     loc_models[ 5 ] = ( "com_debris_engine02" );

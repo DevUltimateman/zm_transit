@@ -155,7 +155,6 @@ weapon_mark_1_spawn()
     //trigger setLowerMessage( trigger, "Custom Perks"  );
 
     paploc = ( 59872.7, 141818, 88737.5 );
-    //playfx( level._effect["lght_marker"], gunOrigin + ( 0, 0, -40 ) );
 
     gun = spawn("script_model", gunOrigin );
     gun setModel("weapon_usa_ray_gun");
@@ -171,8 +170,7 @@ weapon_mark_1_spawn()
     portal.angles = ( 0, 180, 0 );
     wait 0.1;
     playfx( level.myFx[ 44 ] , portal.origin );
-    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
-    playfxontag( level.myFx[ 26 ], gun, "tag_origin" );
+    playfx( level.myFx[ 26 ], gun.origin );
     playFXOnTag( level._effect[ "screecher_vortex" ], portal, "tag_origin" );
     portal playLoopSound( "zmb_screecher_portal_loop", 2 );
 
@@ -181,17 +179,13 @@ weapon_mark_1_spawn()
     spas setmodel( "tag_origin" );
     wait 0.05;
     playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
-    //cost1 = 20000;
     cost1 = 15000; //15000
-
     player.hasused = false;
-
     while ( true )
     {
         trigger waittill( "trigger", player ); //continue from this point tommorow. 9 hours work on this shit today, tired..
         if ( player useButtonPressed() && player.score >= cost1 && player getCurrentWeapon() )
         {
-            
             wait .1;
             if ( player usebuttonpressed() )
             {
@@ -228,7 +222,6 @@ drawGunTextAgain()
 {
     self endon ("disconnect");
     level endon("end_game");
-
     self hide();
 }
 drawGunTextAgainNEW()

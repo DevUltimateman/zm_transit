@@ -87,19 +87,19 @@ survivors_called_help()
 	wait 3;
 	PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dials( "My friend!", "What have you come done?!", 6, 1 );
+    level thread do_dials( "My friend!", "The time has come, huh.", 6, 1 );
 	wait 8;
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-	level thread do_dials( "I didn't want it to come down to this..", "You've been such a great survivor...", 6, 1 );
+	level thread do_dials( "You've been such a great survivor..", "..a true accomplisher.", 6, 1 );
 	wait 7;
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-	level thread do_dials( "I have to inform you..", "This whole thing has just been a test scenario..", 6, 1 );
+	level thread do_dials( "However, I must tell you something else too at this point.", "You're not getting out alive from here.", 6, 1 );
 	wait 7;
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-	level thread do_dials( "You're part of a ^3test scenario, and so am I.", "Higher ups have controlled this whole thing, the whole time that you and me had cooperated together!", 9, 1 );
+	level thread do_dials( "You're part of a ^9test scenario, and so am I.", "You're just a subject that ceases to exist after this experience.", 9, 1 );
 	wait 10;
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-	level thread do_dials( "I thought that it wouldn't have to come down to this, ever.", "I hoped that we would fail at some point..", 7, 1 );
+	level thread do_dials( "You will be deleted,", "once the higher ups realize that you have no will to survive..", 7, 1 );
 	wait 7;
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
 	level thread do_dials( "But don't be misinformed. ", "I was always rooting for you..", 6, 1 );

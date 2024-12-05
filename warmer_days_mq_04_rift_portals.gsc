@@ -243,8 +243,8 @@ level_tell_about_rifts()
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Did you see that???", "The rift tried to grab you!", 6, 0.25 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "It will certainly try grabbing you again in a bit..", "Think you should get ready!", 7, 0.25 );
-    wait 9;
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "It will certainly try it again in a bit..", "Think you should get ready!", 5, 0.25 );
+    wait 7;
     level notify( "do_it" );
     level notify( "stop_mus_load_bur" );
 }
@@ -1569,7 +1569,7 @@ lamps_fixed_schruder_speaks()
    // level waittill( "all_rift_lamps_repaired" );
     wait 4;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Ahh.. Good job!", "Rift lamps are powered now!", 5, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Ahh.. Good job!", "^9Rift Lamps^8 are powered now!", 5, 0.25 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Check if ^9Stalinburg's Power Station^8 is receiving any signals from the lamps.", "The computer should be located somewhere in the ^9Control Room^8.", 7, 1 );

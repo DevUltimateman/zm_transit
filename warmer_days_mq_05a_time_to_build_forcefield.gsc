@@ -1080,7 +1080,7 @@ rocks_at_town_talk()
     //level thread playloopsound_buried();
     wait 0.6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Where's the meteors going?", "^8They're supposed to head towards the pylon. ^1Find Them^8!!", 8, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Where are the meteors going?", "^8They're supposed to head towards the pylon. ^1Find Them^8!!", 8, 0.25 );
     wait 10;
     level notify( "stop_mus_load_bur" );
     level waittill( "found_first_rock" );
@@ -1096,7 +1096,7 @@ rocks_at_pylon()
     //level thread playloopsound_buried();
     wait 2;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Great, the rocks are at pylon...!", "^8Let's try to gather together underneath the pylon.", 8, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Great, the rocks are at pylon!", "^8Meet me there once you can..", 8, 0.25 );
     wait 8;
     level notify( "stop_mus_load_bur" );
     level thread monitor_players_pylon();
@@ -1105,12 +1105,12 @@ rocks_at_pylon()
     //level thread playloopsound_buried();
     wait 3;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Ahh finally!", "^8Hello there.", 5, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Ahh finally..", "^8Hello there!", 5, 0.25 );
     level thread do_everything_schruder_spawns();
     level waittill( "continue_talking" );
     wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Wait..! I have an surprise for you,", "^8Watch me tranfoooormm...!", 8, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Wait..! I have a surprise for you,", "^8Watch me tranfoooormm...!", 8, 0.25 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Fantastic, you've been such a help...", "^8Let me reward you with something..", 5, 0.25 );
@@ -1120,7 +1120,7 @@ rocks_at_pylon()
     {
         plays thread reward_give_phd();
     }
-    wait 4.5;
+    wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Haa.. I Hope you like it.", "^8Hold on a second..", 5, 0.25 );
     wait 7;
