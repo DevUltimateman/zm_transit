@@ -173,7 +173,7 @@ spawn_lockdown_enabler( origin )
 
     level waittill( "lockdown_enabled" );
     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
-    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Spirit From Hell", "^8You don't follow stragers.", "Survive.", 6, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Spirit From Hell", "^8That was a stupid choice.", "Survive.", 6, 0.25 );
     wait 0.05;
     trig delete();
     lamper delete();

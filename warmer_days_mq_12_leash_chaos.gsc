@@ -114,8 +114,9 @@ survivors_called_help()
 	wait 5;
 	level notify( "start_chaos" );
 	wait 2;
+	randomintranger = randomIntRange( 500, 1500 );
 	PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
-    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Terminating Scenario..", "^8Till I cease to exist.", "", 6, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Till I Cease To Exist", "^8Test Scenario ^3#" + randomintranger + "^8 has come to an end.", "^1Terminating Scenario^8.", 6, 0.25 );
     wait 1.5;
 
 }

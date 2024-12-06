@@ -341,7 +341,6 @@ do_search_logic( maxss )
         level notify( "stop_first_search_logic" );
     }
     else { 
-        //who playsound( "evt_player_upgrade" );
         who playsound( "zmb_perks_packa_deny" );
         self setHintString( "^3[ ^8Nothing valuable was found, try coming back later ^3]" );}
 

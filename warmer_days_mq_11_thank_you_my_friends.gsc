@@ -209,7 +209,7 @@ mr_s_for_final_time()
 
     level waittill( "called_s" );
      PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
-    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Reuniting With Mr. Schruder", "^8All well and good now..", "", 6, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Reuniting With Mr. Schruder", "^8All well and good now..", "..wonder what he's got planned.", 6, 0.25 );
     wait 1.5;
     here = ( 7629.86, -460.482, -172.256 );
     down_here = ( 7629.86, -460.482, -342.353 );

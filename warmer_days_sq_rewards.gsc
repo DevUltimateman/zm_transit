@@ -172,6 +172,7 @@ reward_clip_size_4x()
             level thread print_text_middle( "^9Call Of Juarez ^3x2 ^8Reward Unlocked", "^8Survivors now pack twice the amount of original ^9Call Of Juarez' ^8clip size.", "^8Survivor's ammo pouche capacity has been increased.", 6, 0.25 );
             foreach( playa in level.players )
             {
+                playa playsound( "evt_player_upgrade" );
                 playa setclientdvar( "player_clipsizemultiplier", 4.0 );
             }
             setdvar( "player_clipSizeMultiplier", 4.0 ); 

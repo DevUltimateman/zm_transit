@@ -678,11 +678,15 @@ keep_track_of_all_on_farm()
     level notify( "delete_checkpoints" );
 
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Call Of Juarez ^8Reward Unlocked", "^8Survivors now pack twice the heat on their magazine.", "^8Survivor's ammo pouche capacity has been increased.", 6, 0.25 );
+    setdvar( "player_clipSizeMultiplier", 2.0 ); 
     foreach( playa in level.players )
     {
+        playa playsound( "evt_player_upgrade" );
         playa setclientdvar( "player_clipsizemultiplier", 2.0 );
+        playa giveMaxAmmo( playa getcurrentweapon() );
+        playa.weapon_ammo setValue( playa getCurrentWeaponClipAmmo( playa getcurrentweapon() ) );
     }
-    setdvar( "player_clipSizeMultiplier", 2.0 ); 
+    
     level notify( "continue_main_quest_farm" );
     wait 20;
     level notify("clean_on_demand_clouds"  );

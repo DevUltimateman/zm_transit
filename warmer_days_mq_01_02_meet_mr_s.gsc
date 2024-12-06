@@ -520,8 +520,8 @@ schruder_talks_everything_part1()
     level endon( "end_game" );
     //level thread playLoopsound_buried();
     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
-    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Beginning Of The Journey", "^8Introducing Mr. Schruder", "", 6, 0.25 );
-    wait 6;
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Beginning Of The Journey", "^8Where am I..", "..and what does this guy want?", 6, 0.25 );
+    wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox01("");
     wait 6;
@@ -562,7 +562,7 @@ schruder_talks_everything_part2()
     level.not_doable_yet = false;
     wait 8;
     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
-    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Crafting The Transmitter", "^8Heard someone was in need of Bob The Builder.", "", 6, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Obey The Voices", "^8This guy want's me to build us some sort of machine.", "I should start looking for the parts..", 6, 0.25 );
     if( level.dev_time ){ iprintln( "STEP 2 TALKS COMPLETED" ); }
 }
 
@@ -577,7 +577,6 @@ meeting_vox07( background_music )
         duration = 6; //these need to be changed for longer duration
         fadetimer = 1;
         level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper,"^8" +  subtitle_lower, duration, fadetimer );
-       // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
     }
 }
 

@@ -175,6 +175,7 @@ transmitter_wait_for_navcard()
             level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Muscle Up ^8Reward Unlocked", "^8Survivors can now run indefinitely without losing stamina.", "^8Survivor's running speed has also been increased.", 6, 0.25 );
             foreach( playa in level.players )
             {
+                playa playsound( "evt_player_upgrade" );
                 playa thread player_reward_marathon();
             }
             wait 6.5;

@@ -244,7 +244,7 @@ do_first_dialog()
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8I'll let you figure out what to do after that..", "^8" + "Don't disappoint me!", 6, 1 );
     wait 3;
      PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
-    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Master Of Mixing", "^8This whole idea feels so weird.", "", 6, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Master Of Mixing", "^8This whole idea feels so weird.", "Collect soda bottles and stuff.. what?!", 6, 0.25 );
     level thread are_players_close_to_spawn_suitcase();
     wait 5;
     level waittill( "all_suitcases_collected" );

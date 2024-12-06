@@ -360,6 +360,7 @@ print_middle_when_speeds_alter()
                 wait 1;
             }
             wait 10;
+            PlaySoundAtPosition("mus_zombie_round_over", level.players[0].origin);
             level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Zombies ^8Have Advanced", "^8Some zombies are now faster than others.", "^8Faster zombies will flash twice before they pursue survivors.", 7, 0.25 );
         }
 
@@ -371,6 +372,7 @@ print_middle_when_speeds_alter()
                 wait 1;
             }
             wait 10;
+            PlaySoundAtPosition("mus_zombie_round_over", level.players[0].origin);
             level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Zombies ^8Have Advanced", "^8Most zombies are now faster than others.", "^8Faster zombies will flash twice before they pursue survivors.", 7, 0.25 );
         }
 
@@ -382,6 +384,7 @@ print_middle_when_speeds_alter()
                 wait 1;
             }
             wait 10;
+            PlaySoundAtPosition("mus_zombie_round_over", level.players[0].origin);
             level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Zombies ^8Have Advanced", "^8All zombies are now super equared to hunt you.", "^8Zombies are now able to super sprint!", 7, 0.25 );
             wait 8;
             break;
@@ -1120,6 +1123,7 @@ rocks_at_pylon()
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^6Phd Flopper ^8Reward Unlocked", "^8Survivors can now take explosive damage, without losing health.", "^8Survivor's can also now do belly dive explosions.", 6, 0.25 );
     foreach( plays in level.players )
     {
+        plays playsound( "evt_player_upgrade" );
         plays thread reward_give_phd();
     }
     wait 7;

@@ -272,7 +272,7 @@ follow_spirit()
         level.o_spirit waittill( "movedone" );
     }
     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
-    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Spirit Of Sorrow", "^8Finally met Dr. Schruder but where did he go and who's this anomaly?", "", 6, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Spirit Of Sorrow", "^8Finally met Dr. Schruder but where did he go and who's this flying thing?", "Maybe I should try to catch it.", 6, 0.25 );
     //hover till player is near the orb
     level.o_spirit thread hover_orb();
     while( player_is_away() )
