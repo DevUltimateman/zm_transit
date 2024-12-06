@@ -122,8 +122,8 @@ step3_talk()
         g playsound( "zmb_sq_navcard_success" );
         playfx( level.myFx[ 82 ], g.origin );
     }
-    wait 8;
-    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
+    wait 3;
+    
     meeting_vox13( "" );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
@@ -155,9 +155,11 @@ step3_talk()
     wait 9;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox19( "" );
-    wait 2;
+    wait 8;
     level notify( "start_fixing_rift_portals" );
-    level notify( "stop_mus_load_bur" );
+    PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Rift Lamps", "^8What again..?", "", 6, 0.25 );
+    wait 6;
 
 }
 
@@ -306,7 +308,7 @@ step1_talk()
     level endon( "end_game" );
 
     flag_wait( "initial_blackscreen_passed" );
-    wait 10;
+    wait 25;
     gets = level.players;
     foreach( g in gets )
     {
@@ -516,7 +518,10 @@ mr_s_outside_locations()
 schruder_talks_everything_part1()
 {
     level endon( "end_game" );
-    level thread playLoopsound_buried();
+    //level thread playLoopsound_buried();
+    PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Beginning Of The Journey", "^8Introducing Mr. Schruder", "", 6, 0.25 );
+    wait 6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox01("");
     wait 6;
@@ -538,11 +543,8 @@ schruder_talks_everything_part2()
 {
     level endon( "end_game" );
     level waittill( "meet_schruder_time_second" );
-    wait randomIntRange( 2, 5 );
-    //foreach( play in level.players )
-    //{
-    //    play playsound( "mus_load_zm_buried" );
-   // }
+    
+    wait 2;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox07("");
     wait 7;
@@ -559,6 +561,8 @@ schruder_talks_everything_part2()
     meeting_vox11("");
     level.not_doable_yet = false;
     wait 8;
+    PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Crafting The Transmitter", "^8Heard someone was in need of Bob The Builder.", "", 6, 0.25 );
     if( level.dev_time ){ iprintln( "STEP 2 TALKS COMPLETED" ); }
 }
 
@@ -570,7 +574,7 @@ meeting_vox07( background_music )
         //play_sound_at_pos( background_music, level.players[0].origin );
         subtitle_upper =  "Ahh.. Hey again!";
         subtitle_lower = "The power is on, great. Great success!";
-        duration = 6;
+        duration = 6; //these need to be changed for longer duration
         fadetimer = 1;
         level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper,"^8" +  subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );

@@ -208,6 +208,9 @@ mr_s_for_final_time()
     level endon( "end_game" );
 
     level waittill( "called_s" );
+     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Reuniting With Mr. Schruder", "^8All well and good now..", "", 6, 0.25 );
+    wait 1.5;
     here = ( 7629.86, -460.482, -172.256 );
     down_here = ( 7629.86, -460.482, -342.353 );
     mr_s = spawn( "script_model", down_here );
@@ -693,7 +696,12 @@ dont_return_till_this_dont_have_it( me, what_trig )
 }
 reduce_bullettracer_costs()
 {
-
+    level endon( "end_game" );
+    level.bullet_type_upgrade_cost_1 = level.bullet_type_upgrade_cost_1 / 2;
+    level.bullet_type_upgrade_cost_2 = level.bullet_type_upgrade_cost_2 / 2;
+    level.bullet_type_upgrade_cost_3 = level.bullet_type_upgrade_cost_3 / 2;
+    wait 0.05;
+    level notify( "alter_prices" );
 }
 
 playloopsound_buried()

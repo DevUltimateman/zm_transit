@@ -1080,8 +1080,10 @@ rocks_at_town_talk()
     //level thread playloopsound_buried();
     wait 0.6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Where are the meteors going?", "^8They're supposed to head towards the pylon. ^1Find Them^8!!", 8, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Where are the meteors going?", "^8They were supposed to head towards the pylon. ^1Find Them^8!!", 8, 0.25 );
     wait 10;
+    PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9False Stories", "^8He's acting like what's happening", "but on the other hand suddenly knows where the odd meteors are supposed to head towards?", 6, 0.25 );
     level notify( "stop_mus_load_bur" );
     level waittill( "found_first_rock" );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }

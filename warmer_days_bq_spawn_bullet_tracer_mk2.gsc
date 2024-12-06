@@ -173,13 +173,13 @@ weaponTracerUpgrade()
     spas setmodel( "tag_origin" );
     wait 0.05;
     playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
-    cost1 = 30000;
+    level.bullet_type_upgrade_cost_2 = 30000;
     player.hasused = false;
-
+    trigger thread waittill_price_reduce2();
     while ( true )
     {
         trigger waittill( "trigger", player ); //continue from this point tommorow. 9 hours work on this shit today, tired..
-        if ( player useButtonPressed() && player.score >= cost1 && player getCurrentWeapon() )
+        if ( player useButtonPressed() && player.score >= level.bullet_type_upgrade_cost_2 && player getCurrentWeapon() )
         {
             
             wait .1;
@@ -203,6 +203,14 @@ weaponTracerUpgrade()
 
         }
     }
+}
+
+waittill_price_reduce2()
+{
+    level endon( "end_game" );
+    level waittill( "alter_prices" );
+    new_value = level.bullet_type_upgrade_cost_2;
+    self setHintString( "^8[ ^9[{+activate}] ^8to upgrade you bullet type to ^1Galaxio Beamz ^8]\n^8Cost: ^9" + new_value );
 }
 
 drawGunInfo()

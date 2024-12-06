@@ -233,6 +233,7 @@ hover_rocks()
 spin_rocks()
 {
     level endon( "end_game" );
+    wait randomintrange( 1, 5 );
     defined_rand = randomintrange( 0, 10 );
     if( defined_rand > 5 ) { dir = ( -360 ); }
     else if ( defined_rand <= 5 ) { dir = 360; }
@@ -247,6 +248,7 @@ spin_rocks()
 roll_rocks()
 {
     level endon( "end_game" );
+    wait randomintrange( 1, 5 );
     defined_rand = randomintrange( 0, 10 );
     if( defined_rand > 5 ) { dir = ( -360 ); }
     else if ( defined_rand <= 5 ) { dir = 360; }
@@ -302,13 +304,25 @@ all_floating_objects_around_the_map()
         bumps[ s ] = spawn( "script_model", locations[ s ] );
         if( s == 15 || s == 16 || s == 17 )
         {
-            bumps[ s ] setmodel( "p6_zm_rocks_medium_05" );
+            bumps[ s ] setmodel( "veh_t6_civ_60s_coupe_dead" );//"p6_zm_rocks_medium_05" );
             bumps[ s ].angles = ( randomint( 360 ), randomint( 360 ), randomint( 25 ) );
+            bumps[ s ] thread hover_rocks();
+            bumps[ s ] thread spin_rocks();
         }
         if( s == 7 )
         {
             bumps[ s ] setmodel( "vehicle_tractor_2" );
             bumps[ s ].angles = ( randomint( 360 ), randomint( 360 ), randomint( 25 ) );
+            bumps[ s ] thread hover_rocks();
+            bumps[ s ] thread spin_rocks();
+        }
+
+        if( s == 18 || s == 9 || s == 0 || s == 12 || s == 22 || s == 8 || s == 9 || s == 14 )
+        {
+            bumps[ s ] setmodel( "zombie_bus" );
+            bumps[ s ].angles = ( randomint( 360 ), randomint( 360 ), randomint( 25 ) );
+            bumps[ s ] thread hover_rocks();
+            bumps[ s ] thread spin_rocks();
         }
         else 
         {
@@ -318,37 +332,39 @@ all_floating_objects_around_the_map()
                 case 0:
                 bumps[ s ] setmodel( "p6_zm_rocks_medium_05" );
                 bumps[ s ].angles = ( randomInt( 360 ), randomInt( 360 ), randomInt( 360 ) );
+                bumps[ s ] thread hover_rocks();
+                bumps[ s ] thread spin_rocks();
                 break;
 
                 case 1:
                 bumps[ s ] setmodel( "p6_zm_rocks_medium_05" );
                 bumps[ s ].angles = ( randomInt( 360 ), randomInt( 360 ), randomInt( 360 ) );
+                bumps[ s ] thread hover_rocks();
+                bumps[ s ] thread spin_rocks();
+                break;
 
                 case 2:
-                bumps[ s ] setmodel("p6_zm_rocks_medium_05" );
+                bumps[ s ] setmodel("zombie_bus" );
                 bumps[ s ].angles = ( randomInt( 360 ), randomInt( 360 ), randomInt( 360 ) );
-
+                bumps[ s ] thread hover_rocks();
+                bumps[ s ] thread spin_rocks();
+                break;
                 case 3:
                 bumps[ s ] setmodel( "p6_zm_rocks_medium_05" );
                 bumps[ s ].angles = ( randomInt( 360 ), randomInt( 360 ), randomInt( 360 ) );
-
+                bumps[ s ] thread hover_rocks();
+                bumps[ s ] thread spin_rocks();
+                break;
                 default:
                 bumps[ s ] setmodel("p6_zm_rocks_small_cluster_01" );
                 bumps[ s ].angles = ( randomint(360 ), randomInt( 360 ), randomInt( 360 ) );
+                bumps[ s ] thread hover_rocks();
+                bumps[ s ] thread spin_rocks();
             }
             
         }
         
         wait randomFloatRange( 0.1, 0.6 );
-        bumps[ s ] thread hover_rocks();
-        bumps[ s ] thread spin_rocks();
-        //fog glow
-        //playFXOnTag( level._effects[9], bumps[ s ], "tag_origin" );
-        //playfxontag( level._effects[7], bumps[ s ], "tag_origin" ); //orange lava smoke bowl
-        wait 0.1;
-        //below is a transformer fx
-        //playFXOnTag( level._effects[22], bumps[ s ], "tag_origin" );
-        wait 0.1;
     }
 
     for( a = 0; a < 10; a++ )

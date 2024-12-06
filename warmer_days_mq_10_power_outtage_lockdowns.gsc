@@ -126,7 +126,9 @@ do_dialog_about_tunnel_help()
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "See if you're able to pick the device up,", "once you have located it.", 7, 1 );
-    wait 8;
+    wait 3;
+     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Distant Memories", "^8Now this guy want's me to go back in time..", "..thru some sort of teleporter ring?", 6, 0.25 );
 }
 movable_locations()
 {
@@ -1208,10 +1210,15 @@ wait_players_at_pylon()
         wait 0.05;
         s thread nighttime_preset();
     }
-    PlaySoundAtPosition(level.jsn_snd_lst[ 49 ], ( 0, 0, 0 ) );
+     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Power Surge", "^8So here I was in the dark once again..", "..fuck that whining, time to clock in.", 6, 0.25 );
+    wait 4.5;
+
     level notify( "power_out" );
+    PlaySoundAtPosition(level.jsn_snd_lst[ 49 ], ( 0, 0, 0 ) );
     level thread waittill_powers_restored();
     ss sethintstring( "^9[ ^1Malfunction, requires ^2re-powering ^9]" );
+
     level waittill( "all_powered" );
     ss sethintstring( "^9[ ^8Booting.. ^9]" );
     level waittill( "can_be_ended" );

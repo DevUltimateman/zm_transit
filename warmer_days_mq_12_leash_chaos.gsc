@@ -113,10 +113,12 @@ survivors_called_help()
 	level thread do_dials( "At last,", "Goodbye my ^9friend.", 4, 1 );
 	wait 5;
 	level notify( "start_chaos" );
+	wait 2;
+	PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Terminating Scenario..", "^8Till I cease to exist.", "", 6, 0.25 );
+    wait 1.5;
 
 }
-
-
 
 chaos_begins()
 {

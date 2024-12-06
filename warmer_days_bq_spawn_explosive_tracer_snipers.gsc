@@ -183,12 +183,13 @@ explosive_tracer_spawn()
     spas setmodel( "tag_origin" );
     wait 0.05;
     playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
-    cost1 = 7500;
+    level.bullet_type_upgrade_cost_3 = 7500;
     player.hasused = false;
+    trigger thread waittill_price_reduce3();
     while ( true )
     {
         trigger waittill( "trigger", player ); //continue from this point tommorow. 9 hours work on this shit today, tired..
-        if ( player useButtonPressed() && player.score >= cost1 && player getCurrentWeapon() )
+        if ( player useButtonPressed() && player.score >= level.bullet_type_upgrade_cost_3 && player getCurrentWeapon() )
         {
             wait .1;
             if ( player usebuttonpressed() )
@@ -212,6 +213,14 @@ explosive_tracer_spawn()
     }
 }
 
+waittill_price_reduce3()
+{
+    level endon( "end_game" );
+    level waittill( "alter_prices" );
+    new_value = level.bullet_type_upgrade_cost_3;
+    self setHintString( "^8[ ^9[{+activate}] ^8to upgrade you bullet type to ^3Martyr's Explosives ^8]\n^8Cost: ^9" + new_value );
+}
+
 drawGunInfo()
 {
     self endon("disconnect");
@@ -228,6 +237,7 @@ drawGunTextAgain()
 }
 drawGunTextAgainNEW()
 {
+    
     level endon("end_game");
     self endon("disconnect");
     self show();

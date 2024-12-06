@@ -1567,7 +1567,8 @@ lamps_fixed_schruder_speaks()
     level endon( "end_game" );
     //level thread playloopsound_buried();
    // level waittill( "all_rift_lamps_repaired" );
-    wait 4;
+    wait 1;
+    
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Ahh.. Good job!", "^9Rift Lamps^8 are powered now!", 5, 0.25 );
     wait 7;
@@ -1640,7 +1641,8 @@ computer_accessed_by_player( playa, a_comp )
     level endon( "end_game" );
     a_comp_origin = a_comp.origin;
     //level thread playloopsound_buried();
-    wait randomfloatrange( 3.1, 5.2 );
+    wait randomfloatrange( 1.1, 2.2 );
+    
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Excellent stuff!", "^9" + playa + " ^8was able to restore signal recception from the computer.", 6, .25 );
     wait 7;

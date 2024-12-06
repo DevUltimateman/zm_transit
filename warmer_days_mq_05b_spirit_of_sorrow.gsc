@@ -271,6 +271,8 @@ follow_spirit()
         level thread return_spirit_textline( i );
         level.o_spirit waittill( "movedone" );
     }
+    PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Spirit Of Sorrow", "^8Finally met Dr. Schruder but where did he go and who's this anomaly?", "", 6, 0.25 );
     //hover till player is near the orb
     level.o_spirit thread hover_orb();
     while( player_is_away() )
@@ -279,7 +281,7 @@ follow_spirit()
     }
     //stop hovering
     level.o_spirit notify( "s_hover" );
-
+    
     //points to skip touch check
     to_skip = false;
     // to know when to break from for loop
@@ -684,6 +686,9 @@ monitor_players()
     cust_trig delete();
     level.spirit_of_sorrow_step_active = true;
     level notify( "players_obey" );
+
+    wait 2.5;
+    
     
 }
 

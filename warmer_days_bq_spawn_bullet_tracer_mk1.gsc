@@ -179,12 +179,13 @@ weapon_mark_1_spawn()
     spas setmodel( "tag_origin" );
     wait 0.05;
     playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
-    cost1 = 15000; //15000
+    level.bullet_type_upgrade_cost_1 = 15000; //15000
+    trigger thread waittill_price_reduce();
     player.hasused = false;
     while ( true )
     {
         trigger waittill( "trigger", player ); //continue from this point tommorow. 9 hours work on this shit today, tired..
-        if ( player useButtonPressed() && player.score >= cost1 && player getCurrentWeapon() )
+        if ( player useButtonPressed() && player.score >= level.bullet_type_upgrade_cost_1 && player getCurrentWeapon() )
         {
             wait .1;
             if ( player usebuttonpressed() )
@@ -209,6 +210,13 @@ weapon_mark_1_spawn()
     }
 }
 
+waittill_price_reduce()
+{
+    level endon( "end_game" );
+    level waittill( "alter_prices" );
+    new_value = level.bullet_type_upgrade_cost_1;
+    self setHintString( "^8[ ^9[{+activate}] ^8to upgrade you bullet type to ^2Ala-Hoopin ^8]\n^8Cost: ^9" + new_value );
+}
 drawGunInfo()
 {
     self endon("disconnect");

@@ -172,7 +172,8 @@ spawn_lockdown_enabler( origin )
     trig thread monitor_player_use();
 
     level waittill( "lockdown_enabled" );
-
+    PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Spirit From Hell", "^8You don't follow stragers.", "Survive.", 6, 0.25 );
     wait 0.05;
     trig delete();
     lamper delete();
@@ -241,7 +242,7 @@ monitor_player_use()
                     level thread _spirit_of_sorrow_sub_text_alt( "You fools!", "Time to pay for your wrong doings..!!", 7, 1 );
                     level notify( "lockdown_enabled" );
                     level notify( "spawn_blockers_for_lockdown" );
-                    level thread playlockdown_song();
+                   
                     wait 0.05;
                     PlaySoundAtPosition(level.jsn_snd_lst[ 33 ], loca );
                     wait 1;
@@ -252,7 +253,8 @@ monitor_player_use()
                     wait 1;
                     PlaySoundAtPosition( "zmb_vox_monkey_scream", loca );
                     
-                    
+                    wait 2.5;
+                     level thread playlockdown_song();
                     playsoundatposition( "vox_zmba_sam_event_magicbox_0", loca );
                     //
                 }
