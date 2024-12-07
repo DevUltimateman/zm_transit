@@ -368,6 +368,7 @@ flash_me()
 {
 	level endon( "end_game" );
 	self endon( "disconnect" );
+	self setclientdvar( "r_exposuretweak", true );
 	for( i = 0; i < 4; i++ )
 	{
 		
@@ -386,6 +387,7 @@ flash_me()
 		self setclientdvar( "r_exposurevalue", 3 );
 		wait 0.1;
 	}
+	self setclientdvar( "r_exposuretweak", false );
 }
 
 

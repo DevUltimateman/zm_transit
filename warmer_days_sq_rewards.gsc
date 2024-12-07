@@ -761,7 +761,7 @@ print_text_middle( textbig, textsmall, textsmall_lower, duration, fadefloat )
 {
     if( duration > 6 )
     {
-        duration = 6;
+        duration = 5;
     }
     level endon( "end_game" );
     if( level.hudtext.alpha != 0 )
@@ -797,7 +797,7 @@ print_text_middle( textbig, textsmall, textsmall_lower, duration, fadefloat )
     wait 0.5;
     level.mid_print_text_small_lower fadeovertime( 1 );
     level.mid_print_text_small_lower.alpha = 1;
-    wait 16;
+    wait duration;
 
     level.mid_print_text_big fadeOverTime( 1.5 );
     level.mid_print_text_big.alpha = 0;

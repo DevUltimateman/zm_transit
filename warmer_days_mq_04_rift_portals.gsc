@@ -227,7 +227,12 @@ playerss_ride()
     level waittill( "do_it" ); //enable back after debug
     
     wait 2;
-    
+    foreach( p in level.players )
+    {
+        p thread flash_me_now();
+    }
+    wait 2.1;
+    level thread wait_to_print_unlock_rift( 5 );
     for( i = 0; i < level.players.size; i++ )
     {
         level.players[ i ] thread do_rift_ride( level.rift_camera_diner, level.rift_camera_diner_angles, level.players[ i ] );
@@ -236,6 +241,38 @@ playerss_ride()
     level notify( "can_do_spirit_now" ); //enable back after debug
 }
 
+wait_to_print_unlock_rift( wait_time )
+{
+    level endon( "end_game" );
+    wait wait_time;
+    PlaySoundAtPosition( "mus_zombie_round_over", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Rift Portals ^8Unlocked", "^8Survivors can now teleport around ^9Ravenholm^8 via rift rides.", "^8Each lamp has a different landing destination assigned to it.", 6, 0.25 );
+}
+flash_me_now()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+	self setclientdvar( "r_exposuretweak", true );
+	for( i = 0; i < 4; i++ )
+	{
+		
+		self setclientdvar( "r_exposurevalue", 2.8 );
+		wait 0.08;
+		self setclientdvar( "r_exposurevalue", 1.8 );
+		wait 0.1;
+		self setclientdvar( "r_exposurevalue", 2.5 );
+		wait 0.05;
+		self setclientdvar( "r_exposurevalue", .8 );
+		wait 0.07;
+		self setclientdvar( "r_exposurevalue", 2.8 );
+		wait 0.1;
+		self setclientdvar( "r_exposurevalue", .4 );
+		wait 0.05;
+		self setclientdvar( "r_exposurevalue", 3 );
+		wait 0.1;
+	}
+	self setclientdvar( "r_exposuretweak", false );
+}
 level_tell_about_rifts()
 {
     level endon( "end_game" );
@@ -442,6 +479,7 @@ loop_hovering_sound()
 do_rift_ride( sudo, sudo_angles, real_player  )
 {
     level endon( "end_game" );
+    real_player thread flash_me_now();
     real_player playSound( "zmb_farm_portal_warp_2d" ); 
     real_player thread loop_hovering_sound();
     real_player setclientdvar( "r_poisonfx_debug_enable", true );
@@ -486,12 +524,10 @@ do_rift_ride( sudo, sudo_angles, real_player  )
         temp_orbs[ i ] = spawn( "script_model", rider.origin );
         temp_orbs[ i ] setmodel( "tag_origin" );
         temp_orbs[ i ].angles = ( 0, 0, 0 );
-        wait randomfloatrange( 0.1, 0.7 );
+        wait randomfloatrange( 0.05 );
         playfxontag( level.myfx[ 1 ], temp_orbs[ i ], "tag_origin" );
         temp_orbs[ i ] thread locate_to_goal_on_own( sudo );
     }
-    
-    wait 0.05;
     real_player CameraSetLookAt();
     real_player hide();
     real_player enableInvulnerability();

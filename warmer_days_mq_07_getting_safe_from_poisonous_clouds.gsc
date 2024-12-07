@@ -230,8 +230,8 @@ main_quest_spawn_poisonous_clouds()
     
     //level notify( "poisonous_adventure_find_case" ); //
     //level thread applyforplayer();
-    initial_poisonous_spawns();
-    if( level.dev_time ){ iprintlnbold( "HACKING TO CLOUD STEP TO SEE WHATS UP" ); }
+    //&&initial_poisonous_spawns();
+    //if( level.dev_time ){ iprintlnbold( "HACKING TO CLOUD STEP TO SEE WHATS UP" ); }
     level waittill( "lockdown_disabled"); 
     wait 5; //25
     level.moving_to_depo_active = true;

@@ -65,7 +65,8 @@ init()
     level.close_to_size = 0;
     level.rocks_at_pylon = 0;
 
-    
+    level.kills_to_move_generators = 0;
+    level.kills_to_move_generators_reach = 75;
     forest_zones(); //global zones for zombie speed up
     //for d bug
     level thread cheat_();
@@ -125,7 +126,7 @@ init()
     
 
     level thread all_rocks_done();
-    level thread track_count_and_move_underneath_pylon();
+    //level thread track_count_and_move_underneath_pylon();
     //precache_these();
      //for zombie death callbacks while level.summoninglevel true
     //register_zombie_death_event_callback( ::get_souls_for_zombas );
@@ -628,7 +629,7 @@ get_souls_for_zombas()
     lava = getentarray( "lava_damage", "targetname" );
     //might wanna do fire check instead of checking if zombie is touching lava.
     //lava areas seem to be quite inconsistent
-    while( level.rock_summoning_stage_active ) // have this check, otherwise they will drop the fxs and dont know where to go once all steps done
+    while( level.rock_summoning_active ) // have this check, otherwise they will drop the fxs and dont know where to go once all steps done
     {
         all_zombas = getAIArray( level.zombie_team );
         for( i = 0; i < all_zombas.size; i++ )
@@ -651,6 +652,7 @@ get_souls_for_zombas()
 
 wait_death()
 {
+    level endon( "end_game" );
     self waittill( "death" );
 
 
@@ -676,9 +678,9 @@ wait_death()
                     if( level.r0_kills >= level.required_rock_summoning_kills )
                     {
                         wait 4;
-                        level notify( "cabin_rock_move" );
                         level.cabin_summoning = false;
                         level.rocks_at_pylon++;
+
                     }
                     
                 }
@@ -709,7 +711,6 @@ wait_death()
                     if( level.r1_kills >= level.required_rock_summoning_kills )
                     {
                         wait 4;
-                        level notify( "diner_rock_move" );
                         level.diner_summoning = false;
                         level.rocks_at_pylon++;
                     }
@@ -740,7 +741,6 @@ wait_death()
                     if( level.r2_kills >= level.required_rock_summoning_kills )
                     {
                         wait 4;
-                        level notify( "corn_rock_move" );
                         level.corn_summoning = false;
                         level.rocks_at_pylon++;
                     }
@@ -757,12 +757,10 @@ all_rocks_done()
 {
     level endon( "end_game" );
     level endon( "end_break_check" ); 
-
-    level waittill( "start_tracking_t" );
-    while( level.rocks_at_pylon < 3 ){ wait 1; }
+    while( level.kills_to_move_generators_reach <= 75 ){ wait 1; }
     level notify( "move_rocks_underneath_pylon" );
     wait 1;
-
+    level.rock_summoning_active = false;
     if( level.dev_time ){ iprintlnbold( "ALL ROCK SOULS COLLECTED###" ); }
     wait 0.1;
     level notify( "end_break_check" );
@@ -865,6 +863,7 @@ do_zombie_souls( which_summoning, idx )
     {
         inv_mover delete();
     }
+    level.kills_to_move_generators++;
     //level.summoningkills + idx +=1;                     
 }
 
@@ -1026,7 +1025,6 @@ generators_disappear()
 
     wait 4;
     level notify( "start_killboxing" );
-    level.rock_summoning_stage_active = true;
     level.rock_summoning_active = true;
 
     level.cabin_summoning = true;
@@ -1035,12 +1033,6 @@ generators_disappear()
     level thread get_souls_for_zombas();
 }
 
-do_killboxes_for_rocks()
-{
-    level endon( "end_game" );
-    level waittill( "start_killboxing" );
-    
-}
 sound_loopers( origin )
 {
     level endon( "end_game" );
@@ -1071,9 +1063,9 @@ wait_kill()
 rocks_at_town_talk()
 {
     level endon( "end_game" );
-    level notify( "start_tracking_t" );
+    level thread all_rocks_done();
     //level thread playloopsound_buried();
-    wait 8;
+    wait 18;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "What's happening at ^9Town Center^8?", "^8Investigate it and see if you can move the meteors with something steamy..", 8, 0.25 );
     level thread wait_kill();
@@ -1081,7 +1073,7 @@ rocks_at_town_talk()
     level waittill( "gnerators_start_floating" );
     level.first_time_texter = true; 
     //level thread playloopsound_buried();
-    wait 0.6;
+    wait 3;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Where are the meteors going?", "^8They were supposed to head towards the pylon. ^1Find Them^8!!", 8, 0.25 );
     wait 10;
@@ -1089,6 +1081,7 @@ rocks_at_town_talk()
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9False Stories", "^8He's acting like what's happening", "but on the other hand suddenly knows where the odd meteors are supposed to head towards?", 6, 0.25 );
     level notify( "stop_mus_load_bur" );
     level waittill( "found_first_rock" );
+    wait 2.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Interesting, the meteors seem to collect zombie souls!", "^8Try feeding undead to them!", 8, 0.25 );
     wait 13;
@@ -1099,7 +1092,7 @@ rocks_at_pylon()
     //playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
     level waittill( "end_break_check" );
     //level thread playloopsound_buried();
-    wait 2;
+    wait 6 ;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Great, the rocks are at pylon!", "^8Meet me there once you can..", 8, 0.25 );
     wait 8;
@@ -1120,6 +1113,7 @@ rocks_at_pylon()
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Fantastic, you've been such a help...", "^8Let me reward you with something..", 5, 0.25 );
     wait 6;
+    
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^6Phd Flopper ^8Reward Unlocked", "^8Survivors can now take explosive damage, without losing health.", "^8Survivor's can also now do belly dive explosions.", 6, 0.25 );
     foreach( plays in level.players )
     {
