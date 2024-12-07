@@ -271,7 +271,7 @@ collectibs_origins_and_logic()
     all_possible_locs[ 3 ] = ( 10431.1, 6847.95, -574.742 ); //before powerstation on  right
     all_possible_locs[ 4 ] = ( 6175.08, -5265.25, -46.005 ); //farm
     all_possible_locs[ 5 ] = ( -10990.1, -349.192, 192.125 ); //tunnel spot
-    all_possible_locs[ 6 ] = ( -5044.67, -5699.19, -68.8506 ); //left side of dine ( big open area )
+    all_possible_locs[ 6 ] = ( -5590.65, -5612.45, -63.8965 ); //left side of dine ( big open area )
 
     loc_models = [];
     loc_models[ 0 ] = ( "com_file_cabinets_a_drawer" );

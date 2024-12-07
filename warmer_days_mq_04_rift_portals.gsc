@@ -240,10 +240,10 @@ level_tell_about_rifts()
 {
     level endon( "end_game" );
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Did you see that???", "The rift tried to grab you!", 6, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Did you see that???", "^8The rift tried to grab you!", 6, 0.25 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "It will certainly try it again in a bit..", "Think you should get ready!", 5, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "It will certainly try it again in a bit..", "^8Think you should get ready!", 5, 0.25 );
     wait 7;
     level notify( "do_it" );
     level notify( "stop_mus_load_bur" );
@@ -322,6 +322,8 @@ do_stuff_for_rift_grab()
     self camerasetposition( org );
     self camerasetlookat();
     self cameraactivate( 1 );
+    self disableWeapons();
+    self freezeControls(true);
     self hide();
     self.ignoreme = true;
     wait 0.05;
@@ -336,10 +338,16 @@ do_stuff_for_rift_grab()
     self playsound( level.jsn_snd_lst[ 32 ] );
     self setMoveSpeedScale( 1 );
     wait 0.05;
-    self freezeControls( false );
+    self enableWeapons();
+    self freezeControls(false);
     self setMoveSpeedScale( 1 );
     self setMoveSpeedScale( 1 );
-    wait 2;
+    for( s = 0; s < 32; s++ )
+    {
+        self enableInvulnerability();
+        self.ignoreme = true;
+        wait 0.25;
+    }
     self disableInvulnerability(); 
     self.ignoreme = false;
         
@@ -380,7 +388,7 @@ tranzit_2024_visuals()
     self setclientdvar(  "r_dof_farStart", 3000 );
     self setclientdvar(  "r_dof_farend", 7000 );
     self setclientdvar(  "r_dof_nearstart", 10 );
-    self setclientdvar(  "r_dof_nearend", 60 );
+    self setclientdvar(  "r_dof_nearend", 15 );
     self setclientdvar(  "r_sky_intensity_factor0", 2.4 );
     self setclientdvar(  "r_sky_intensity_factor1", 2.4 );
     self setclientdvar(  "r_skyColorTemp", 2000 );
@@ -446,6 +454,8 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     s = 0;
     real_player.ignoreme = true;
     real_player enableInvulnerability();
+    real_player disableWeapons();
+    real_player freezeControls(true);
     real_player.ignoreme = true;
     load_gump_from = sudo[ sudo.size ];
     real_player.origin = sudo[ sudo.size ];
@@ -560,6 +570,8 @@ do_rift_ride( sudo, sudo_angles, real_player  )
     real_player.angles =  rider.angles;
     real_player CameraSetPosition( real_player, rider.angles );
     wait 0.05;
+    real_player enableWeapons();
+    real_player freezeControls(false);
     real_player setclientdvar( "r_fog", false );
     real_player setclientdvar( "r_poisonfx_debug_enable", false );
     real_player show();
@@ -1573,7 +1585,7 @@ lamps_fixed_schruder_speaks()
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Ahh.. Good job!", "^9Rift Lamps^8 are powered now!", 5, 0.25 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Check if ^9Stalinburg's Power Station^8 is receiving any signals from the lamps.", "The computer should be located somewhere in the ^9Control Room^8.", 7, 1 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Check if ^9Stalinburg's Power Station^8 is receiving any signals from the lamps.", "^8The computer should be located somewhere in the ^9Control Room^8.", 7, 1 );
     wait 9;
     //level notify( "spawn_rift_computer" );
     level thread spawn_rift_computer();
@@ -1647,7 +1659,7 @@ computer_accessed_by_player( playa, a_comp )
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Excellent stuff!", "^9" + playa + " ^8was able to restore signal recception from the computer.", 6, .25 );
     wait 7;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Something's wrong with the computer..", "Access the control panel and restart the computer, quick!", 6, 1  );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Something's wrong with the computer..", "^8Access the control panel and restart the computer, quick!", 6, 1  );
     wait 7;
     level thread wait_for_access_panel_interact( a_comp_origin );
 

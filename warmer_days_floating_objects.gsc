@@ -56,9 +56,34 @@ init()
     level thread level_power_lines();
     level thread all_floating_objects_around_the_map();
     level thread all_floating_rocks_around_the_map();
+    level thread more_trees_to_hide_stuff();
 }
 
+more_trees_to_hide_stuff()
+{
+    locs = [];
+    locs[ locs.size ] = ( 7670, -1994, -222 ); //( "t5_foliage_bush05" );
+    locs[ locs.size ] = ( 6651, -2610, -119 );
+    locs[ locs.size ] = ( 7374, -1666.57, -256 );
+    locs[ locs.size ] = ( 8589, -1256, -210 );
+    locs[ locs.size ] = (  10404.3, -1882.64, -213.852);
+    locs[ locs.size ] = ( 10740, -491, -215 );
+    locs[ locs.size ] = (  11400, 441, -216 );
+    locs[ locs.size ] = ( -8467, -7677, 37 );
+    locs[ locs.size ] = ( -8435, -6229, 226 );
 
+    locs[ locs.size ] = ( 9145.51, 1494, 106 );
+    locs[ locs.size ] = ( 9610.8, 1444.16, 255.766 );
+    locs[ locs.size ] = ( 9874.78, 1349.28, 212.962 );
+    locs[ locs.size ] = ( 7373.72, 2339.02, 124.112 );
+
+    for( s = 0; s < locs.size; s++ )
+    {
+        spawners = spawn( "script_model", locs[ s ] );
+        spawners setmodel( "t5_foliage_tree_burnt03" );
+        spawners.angles = ( 0, randomint( 360 ), 0 );
+    }
+}
 player_spawns()
 {
     self endon( "disconnect" );
@@ -94,20 +119,27 @@ player_spawns()
 level_power_lines()
 {
     powerlines_c = [];
-    powerlines_c[ 0 ] = ( -12605.3, -3091.41, 1589.13 );
+    powerlines_c[ 0 ] = ( -5562, 8978, -71 );
     //powerlines_c[ 1 ] = ( -10600.3, -3215.07, 1582.68 );
-    powerlines_c[ 1 ] = ( -8600.37, -3187.18, 1692.09 );
+    powerlines_c[ 1 ] = ( -6534.32, -9426, 129 );
     //powerlines_c[ 3 ] = ( -6600.09, -3214.48, 1431.52 );
-    powerlines_c[ 2 ] = ( -4600.05, -3240.08, 656.348 );
+    powerlines_c[ 2 ] = ( -171, -10856, 832 );
     //powerlines_c[ 5 ] = ( -2600.65, -3252.01, 928.588 );
-    powerlines_c[ 3 ] = ( -600.027, -3249.05, 750.869 );
-    powerlines_c[ 4 ] = ( 3724.84, -3511.24, 807.127 );
+    powerlines_c[ 3 ] = ( -2202, 6234, 831 );
+    powerlines_c[ 4 ] = ( 14466.2, 1916, 57 );
     level.pr = [];
+
+    l = [];
+    l[ 0 ] = 90;
+    l[ 1 ] = 135;
+    l[ 2 ] = 45;
+    l[ 3 ] = 45;
+    l[ 4 ] = 45;
     for( i = 0; i < powerlines_c.size; i++ )
     {
         level.pr[ i ] = spawn( "script_model", powerlines_c[ i ] + ( 0, 0, -50 ) );
         level.pr[ i ] setmodel( "p_glo_powerline_tower_redwhite" );
-        level.pr[ i ].angles = ( randomintrange( -10, 10 ), 85, 0 );
+        level.pr[ i ].angles = ( 0, 85 + l[ i ], 0 );
         wait 0.1;
     }
 }
@@ -161,7 +193,7 @@ all_floating_rocks_around_the_map()
     locations[ 41 ] = ( -10858.1, -461.181, 5683.96 );
 
     level.bumps = [];
-    wait 0.1;
+    wait 0.05;
     for( s = 0; s < locations.size; s++ )
     {
         if( s % 2 == 0 )
@@ -171,11 +203,11 @@ all_floating_rocks_around_the_map()
             level.bumps[ s ] setmodel( "p6_zm_rocks_medium_05"/*"p6_zm_rocks_large_cluster_01" */);
             
             level.bumps[ s ].angles = ( 180, randomInt( 360 ), randomintrange( -30, 30 ) );
-            wait randomFloatRange( 0.1, 0.6 ); 
+            wait 0.05;
             level.bumps[ s ] thread playlighting_playembers();
             level.bumps[ s ] thread hover_rocks();
             level.bumps[ s ] thread spin_rocks();
-            wait 0.1;
+            wait 0.05;
         }
         
     }
@@ -298,13 +330,13 @@ all_floating_objects_around_the_map()
     locations[ 25 ] = ( -8046.71, 6530.09, 65.8968 ); //car
     locations[ 26 ] = ( -8759.11, 7903.17, 474.596 ); //car
     bumps = [];
-    wait 1;
+    wait 0.05;
     for( s = 0; s < locations.size; s++ )
     {
         bumps[ s ] = spawn( "script_model", locations[ s ] );
         if( s == 15 || s == 16 || s == 17 )
         {
-            bumps[ s ] setmodel( "veh_t6_civ_60s_coupe_dead" );//"p6_zm_rocks_medium_05" );
+            bumps[ s ] setmodel( "p6_zm_rocks_small_cluster_01" );//"p6_zm_rocks_medium_05" );
             bumps[ s ].angles = ( randomint( 360 ), randomint( 360 ), randomint( 25 ) );
             bumps[ s ] thread hover_rocks();
             bumps[ s ] thread spin_rocks();
@@ -319,7 +351,7 @@ all_floating_objects_around_the_map()
 
         if( s == 18 || s == 9 || s == 0 || s == 12 || s == 22 || s == 8 || s == 9 || s == 14 )
         {
-            bumps[ s ] setmodel( "zombie_bus" );
+            bumps[ s ] setmodel( "p6_zm_rocks_medium_05" );
             bumps[ s ].angles = ( randomint( 360 ), randomint( 360 ), randomint( 25 ) );
             bumps[ s ] thread hover_rocks();
             bumps[ s ] thread spin_rocks();
@@ -344,7 +376,7 @@ all_floating_objects_around_the_map()
                 break;
 
                 case 2:
-                bumps[ s ] setmodel("zombie_bus" );
+                bumps[ s ] setmodel( "p6_zm_rocks_small_cluster_01"  );
                 bumps[ s ].angles = ( randomInt( 360 ), randomInt( 360 ), randomInt( 360 ) );
                 bumps[ s ] thread hover_rocks();
                 bumps[ s ] thread spin_rocks();
@@ -364,7 +396,7 @@ all_floating_objects_around_the_map()
             
         }
         
-        wait randomFloatRange( 0.1, 0.6 );
+        wait 0.05;
     }
 
     for( a = 0; a < 10; a++ )
@@ -372,7 +404,7 @@ all_floating_objects_around_the_map()
         buster = spawn( "script_model", locations[ a ] );
         buster setmodel( "p6_zm_rocks_small_cluster_01" );
         buster.angles = ( randomint(360 ), randomInt( 360 ), randomInt( 360 ) );
-        wait 0.1;
+        wait 0.05;
         playfxontag( level._effects[17], buster, "tag_origin" );
         buster thread find_and_moveto();
         wait 1;

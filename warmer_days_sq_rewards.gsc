@@ -45,11 +45,103 @@ init()
 {
     level.e_trap_ee_kills = 0;
     level.e_trap_ee_kills_required = 30;
+    level thread intro_credit_camera();
+    precache_these_models();
+    level thread debug_placement();
     replacefunc( maps\mp\zombies\_zm_equip_electrictrap::zap_zombie, ::zap_zombies ); //make it to also increase level.e_tarp_ee_kills
     flag_wait( "initial_blackscreen_passed" );
+    level thread spawn_barret_buyables();
+    level thread spawn_smr_buyables();
+    level thread spawn_hamr_buyables();
+    level thread spawn_rpd_buyables();
     wait 15;
     level thread reward_clip_size_4x(); //at one point players get 4x multiplier clip
     level thread track_e_trap_ee_kills(); //mini ee that unlocks zombies to come avogadros
+}
+
+intro_credit_camera()
+{
+    level endon( "end_game" );
+    flag_wait( "initial_players_connected" );
+    wait 2;
+    level thread intro_camera_blackscreen();
+    init_loc = ( -6824, 4831.33, 188.543 );
+    init_ang = ( -25, 125, 0 );
+
+
+    fin_loc = (-5955.32, 4454.9, 75.1119 ); 
+    fin_ang = ( 0, 185, 0 );
+    fin_ang2 = ( 0, 115, 0 );
+
+
+    shack_lock = ( -6169.78, 4228.92, 65.0207 );
+    shack_angs = ( 0, 140, 0 );
+    dolly_cam = spawn( "script_model", init_loc );
+    dolly_cam setmodel( "tag_origin" );
+    dolly_cam.angles = init_ang;
+
+    
+
+    wait 0.1;
+    foreach( p in level.players )
+    {
+        p enableInvulnerability();
+        p disableWeapons();
+        p freezeControls(true);
+        p CameraSetPosition( dolly_cam );
+        p CameraSetLookAt();
+        p CameraActivate( true );
+        
+        //p CameraSetAngles( init_ang );
+       
+    }
+
+    level thread intro_camera_credit(); //map creadit
+    dolly_cam moveto( fin_loc, 20, 2.5, 2.5 );
+    dolly_cam rotateTo( fin_ang, 8, 1.5, 2.5 );
+    wait 8;
+    dolly_cam rotateTo(shack_angs, 8, 2.5, 2.5 );
+    wait 7;
+    level notify( "start_fading_again" );
+    wait 5.5;
+    foreach( p in level.players )
+    {
+        
+        p disableInvulnerability();
+        p enableWeapons();
+        p freezeControls(false);
+        p CameraSetPosition( p.origin, p.angles );
+        p CameraActivate( false );
+    }
+}
+
+intro_camera_blackscreen()
+{
+    level.keep_everything_off = true;
+    intro_screen = newHudElem();
+    intro_screen.x = 0;
+    intro_screen.y = 0;
+    intro_screen.vertalign = "fullscreen";
+    intro_screen.horzalign = "fullscreen";
+    intro_screen.foreground = 0;
+    intro_screen.hidewheninmenu = 0;
+    intro_screen.sort = 50;
+    intro_screen setshader( "black", 640, 480 );
+    intro_screen.alpha = 1;
+    wait 1;
+    intro_screen fadeOverTime( 1.5 );
+    intro_screen.alpha = 0;
+    level waittill( "start_fading_again" );
+    intro_screen fadeOverTime( 4.5 );
+    intro_screen.alpha = 1;
+    wait 6;
+    intro_screen fadeOverTime( 0.5 );
+    intro_screen.alpha = 0;
+    wait 1;
+    intro_screen destroy();
+    wait 0.05;
+    level notify( "can_start_normal_zombie_huds" );
+    level.keep_everything_off = false;
 }
 
 track_e_trap_ee_kills()
@@ -667,14 +759,34 @@ player_reward_marathon()
 
 print_text_middle( textbig, textsmall, textsmall_lower, duration, fadefloat )
 {
-    
+    if( duration > 6 )
+    {
+        duration = 6;
+    }
+    level endon( "end_game" );
+    if( level.hudtext.alpha != 0 )
+    {
+        wait 0.05;
+        while( level.hudtext.alpha != 0 )
+        {
+            wait 0.5;
+        }
+    }
+    if( isdefined( level.mid_print_text_big ) && level.mid_print_text_big != "" )
+    {
+        while( isdefined( level.mid_print_text_big ) && level.mid_print_text_big != "" )
+        {
+            wait 2.5;
+        }
+    }
+    wait 1;
     make_middle_print_struct();
     level.mid_print_text_big.alpha = 0;
     level.mid_print_text_small.alpha = 0;
     level.mid_print_text_small_lower.alpha = 0;
     level.mid_print_text_big settext( textbig );
-    level.mid_print_text_small settext( textsmall );
-    level.mid_print_text_small_lower settext( textsmall_lower );
+    level.mid_print_text_small settext( "^8" +textsmall );
+    level.mid_print_text_small_lower settext( "^8"+ textsmall_lower );
 
     level.mid_print_text_big fadeOverTime( 1.5 );
     level.mid_print_text_big.alpha = 1;
@@ -703,6 +815,10 @@ print_text_middle( textbig, textsmall, textsmall_lower, duration, fadefloat )
     level.mid_print_text_big destroy();
     level.mid_print_text_small destroy();
     level.mid_print_text_small_lower destroy();
+
+    level.mid_print_text_big = undefined;
+    level.mid_print_text_small = undefined;
+    level.mid_print_text_small_lower = undefined;
 }
 
 
@@ -744,3 +860,347 @@ make_middle_print_struct()
     level.mid_print_text_small_lower.vertalign = "CENTER";
     level.mid_print_text_small_lower.sort = true;
 }
+
+
+
+
+intro_camera_credit()
+{
+    level endon( "end_game" );
+
+    setdvar( "g_ai", false );
+    level.i_b_t = NewHudElem();
+	level.i_b_t.x = -210;
+	level.i_b_t.y = 275;
+	level.i_b_t SetText( "^9Tranzit ^8Revamped" );
+	level.i_b_t.fontScale = 2.05;
+	level.i_b_t.alignX = "CENTER";
+	level.i_b_t.alignY = "CENTER";
+	level.i_b_t.horzAlign = "center";
+	level.i_b_t.vertAlign = "center";
+	level.i_b_t.sort = 1;
+    level.i_b_t.alpha = 0;
+
+
+    level.i_s_t = newhudelem();
+    level.i_s_t.x = -175;
+    level.i_s_t.y = 300;
+    level.i_s_t settext( "By: Ultimateman" );
+    level.i_s_t.fontscale = 1.15;
+    level.i_s_t.alignx = "CENTER";
+    level.i_s_t.aligny = "CENTER";
+    level.i_s_t.horzalign = "CENTER";
+    level.i_s_t.vertalign = "CENTER";
+    level.i_s_t.sort = true;
+
+    level.i_s_t.color = ( 0.69, 0.78, 0.54 );
+    level.i_s_t.alpha = 0;
+
+    wait 4;
+    level.i_b_t fadeOverTime( 2 );
+    level.i_b_t.alpha = 1;
+    wait 3;
+    level.i_s_t fadeovertime( 1.5 );
+    level.i_s_t.alpha = 1;
+    wait 12;
+
+    level.i_s_t fadeovertime( 1.5 ); 
+    level.i_b_t fadeOverTime( 1.5 );
+    level.i_b_t.alpha = 0;
+    level.i_s_t.alpha = 0;
+    wait 1;
+
+    level.i_b_t destroy();
+    level.i_s_t destroy();
+    wait 4.5;
+    setdvar( "g_ai", true  );
+}
+
+
+
+precache_these_models()
+{
+    precachemodel( "t6_wpn_lmg_rpd_world" );
+    precachemodel( "t6_wpn_lmg_rpd_world" );
+    precachemodel( "t6_wpn_lmg_rpd_world" );
+    precachemodel( "t6_wpn_lmg_rpd_world" );
+
+    
+}
+
+
+debug_placement()
+{
+    level endon( "end_game" );
+    flag_wait( "initial_blackscreen_passed" );
+    mod = "t6_wpn_lmg_rpd_world";
+    s = spawn( "script_model", level.players[ 0 ].origin );
+    s setmodel( mod );
+    s.angles = ( 0, 0, 0 );
+    s thread move_with_me();
+    p = level.players[ 0 ];
+
+    x = 0;
+    y = 0;
+    z = 0;
+    max = 360;
+    min = -360;
+
+    list = [];
+    list[ 0 ] = ( "t6_wpn_lmg_rpd_world" );
+    list[ 1 ] = ( "t6_wpn_lmg_hamr_world" );
+    list[ 2 ] = ( "t6_wpn_shotty_srm1216_world" );
+    list[ 3 ] = ( "t6_wpn_sniper_m82_world" );
+    wait 1;
+    while( true )
+    {
+        if( level.players[ 0 ] attackButtonPressed() && level.players[ 0 ] ActionSlotOneButtonPressed() )
+        {
+            x++;
+            s.angles = ( x, s.angles[ 1 ], s.angles[ 2 ] );
+            wait 0.05;
+            iprintln( "WEAPON IS AT: ^1" + s.origin + "\n^7WEAPON ANG IS: ^3" + s.angles );
+            if( x >= max )
+            {
+                x = 360;
+            }
+        }
+
+        if( level.players[ 0 ] adsButtonPressed() && level.players[ 0 ] ActionSlotOneButtonPressed() )
+        {
+            x--;
+            s.angles = ( x, s.angles[ 1 ], s.angles[ 2 ] );
+            wait 0.05;
+            iprintln( "WEAPON IS AT: ^1" + s.origin + "\n^7WEAPON ANG IS: ^3" + s.angles );
+            if( x <= min )
+            {
+                x = -360;
+            }
+        }
+
+
+
+        if( level.players[ 0 ] attackButtonPressed() && level.players[ 0 ] ActionSlottwoButtonPressed() )
+        {
+            y++;
+            s.angles = ( s.angles[ 0], y, s.angles[ 2 ] );
+            wait 0.05;
+            iprintln( "WEAPON IS AT: ^1" + s.origin + "\n^7WEAPON ANG IS: ^3" + s.angles );
+            if( y >= max )
+            {
+                y = 360;
+            }
+        }
+
+        if( level.players[ 0 ] adsButtonPressed() && level.players[ 0 ] ActionSlottwoButtonPressed() )
+        {
+            y--;
+            s.angles = ( s.angles[ 0], y, s.angles[ 2 ] );
+            wait 0.05;
+            iprintln( "WEAPON IS AT: ^1" + s.origin + "\n^7WEAPON ANG IS: ^3" + s.angles );
+            if( y <= min )
+            {
+                y = -360;
+            }
+        }
+
+        if( level.players[ 0 ] attackButtonPressed() && level.players[ 0 ] ActionSlotthreeButtonPressed() )
+        {
+            z++;
+            s.angles = ( s.angles[ 0 ], s.angles[ 1 ], z );
+            wait 0.05;
+            iprintln( "WEAPON IS AT: ^1" + s.origin + "\n^7WEAPON ANG IS: ^3" + s.angles );
+            if( z >= max )
+            {
+                z = 360;
+            }
+        }
+
+        if( level.players[ 0 ] adsButtonPressed() && level.players[ 0 ] ActionSlotthreeButtonPressed() )
+        {
+            z--;
+            s.angles = ( s.angles[ 0 ], s.angles[ 1 ], z );
+            wait 0.05;
+            iprintln( "WEAPON IS AT: ^1" + s.origin + "\n^7WEAPON ANG IS: ^3" + s.angles );
+            if( z <= min )
+            {
+                z = -360;
+            }
+        }
+
+        if( level.players[ 0 ] attackButtonPressed() && level.players[ 0 ] meleeButtonPressed() )
+        {
+            ind++;
+            s setmodel(list[ ind ] );
+            wait 0.05;
+            if( ind > list.size )
+            {
+                ind = 0;
+            }
+        }
+        wait 0.05;
+    }
+}
+
+move_with_me()
+{
+    level endon( "end_game" );
+    while( isdefined( self ) )
+    {
+        self.origin = level.players[0].origin;
+        wait 0.05;
+    }
+}
+
+do_weapon_buy( weapon, weapon_loc, weapon_angs, str, cost, real_weapon )
+{
+    level endon( "end_game" );
+    mod = spawn( "script_model", weapon_loc );
+    mod setmodel( weapon );
+    mod.angles = weapon_angs;
+    wait 1;
+    playfxontag( level.myFx[ 47 ], mod, "tag_origin" ); //bar glow
+
+    trig = spawn( "trigger_radius_use", mod.origin, 0,45,45 );
+    trig setCursorHint( "HINT_NOICON" );
+    trig setHintString( str );
+    trig TriggerIgnoreTeam();
+
+    w_cost = cost;
+    while( true )
+    {
+        trig waittill( "trigger", buyer );
+        if( is_player_valid( buyer ) )
+        {
+            if( buyer.score >= w_cost )
+            {
+                if( !buyer hasWeapon( real_weapon ) )
+                {
+                    buyer.score -= w_cost;
+                    buyer playsound( "zmb_cha_ching" );
+                    //list = getweaponsli
+                    list = buyer getWeaponsListPrimaries();
+                    if( list.size > 1 )
+                    {
+                        buyer takeWeapon( buyer getCurrentWeapon() );
+                    }
+                    
+                    wait 0.05;
+                    buyer giveweapon( real_weapon );
+                    buyer givemaxammo( real_weapon );
+                    buyer switchtoweapon( real_weapon );
+                    wait 1;
+                }
+                
+            }
+        }
+        wait 1;
+    }
+}
+spawn_rpd_buyables()
+{
+    level endon( "end_game" );
+
+    locs = [];
+    angs = [];
+    
+    //cabin tree
+    locs[ 0 ] = ( 4659.38, 5971.31, -48.0945 );
+    angs[ 0 ] = ( -54, 0, -86 );
+
+    cost = 1750;
+    list[ 0 ] = ( "t6_wpn_lmg_rpd_world" );
+    list[ 1 ] = ( "t6_wpn_lmg_hamr_world" );
+    list[ 2 ] = ( "t6_wpn_shotty_srm1216_world" );
+    list[ 3 ] = ( "t6_wpn_sniper_m82_world" );
+    strings = "^8[ ^9[{+activate}] ^8To Purchase ^9RPD ^8]\n^8Cost: ^9" + cost;
+    level thread do_weapon_buy( list[ 0 ], locs[ 0 ], angs[ 0 ], strings, cost, "rpd_zm" );
+    
+
+    //locs[  ] = (  );
+    //angs[  ] = (  );
+
+    //locs[  ] = (  );
+    //angs[  ] = (  );
+}
+
+spawn_hamr_buyables()
+{
+    level endon( "end_game" );
+
+    locs = [];
+    angs = [];
+
+
+    //p station white car below jump down
+    locs[ 0 ] = ( 10408.6, 8289.28, -557.757 );
+    angs[ 0 ] = ( -57, -20, -95 );
+
+    //town bar outside
+    locs[ 1 ] = (  1953.29, -134.163, -35.5762 );
+    angs[ 1 ] = ( -109, 263, -62 );
+
+
+    cost = 2000;
+    list[ 0 ] = ( "t6_wpn_lmg_rpd_world" );
+    list[ 1 ] = ( "t6_wpn_lmg_hamr_world" );
+    list[ 2 ] = ( "t6_wpn_shotty_srm1216_world" );
+    list[ 3 ] = ( "t6_wpn_sniper_m82_world" );
+    strings = "^8[ ^9[{+activate}] ^8To Purchase ^9HAMR LMG ^8]\n^8Cost: ^9" + cost;
+    level thread do_weapon_buy( list[ 1 ], locs[ 0 ], angs[ 0 ], strings, cost, "hamr_zm" );
+    wait 1;
+    level thread do_weapon_buy( list[ 1 ], locs[ 1 ], angs[ 1 ], strings, cost, "hamr_zm" );
+}
+
+spawn_smr_buyables()
+{
+    level endon( "end_game" );
+
+    locs = [];
+    angs = [];
+
+    //nacht
+    locs[ 0 ] = ( 13537.5, -322.785, -168.664 );
+    angs[ 0 ] = ( -73, -19, 95 ); 
+
+    //church
+    locs[ 1 ] = ( 1903.66, -2668.69, -0.745096 );
+    angs[ 1 ] = ( -95, 169, -61 );
+
+    cost = 1050;
+    list[ 0 ] = ( "t6_wpn_lmg_rpd_world" );
+    list[ 1 ] = ( "t6_wpn_lmg_hamr_world" );
+    list[ 2 ] = ( "t6_wpn_shotty_srm1216_world" );
+    list[ 3 ] = ( "t6_wpn_sniper_m82_world" );
+    strings = "^8[ ^9[{+activate}] ^8To Purchase ^9SRM1216 ^8]\n^8Cost: ^9" + cost;
+    level thread do_weapon_buy( list[ 2 ], locs[ 0 ], angs[ 0 ], strings, cost, "srm1216_zm" );
+    wait 1;
+    level thread do_weapon_buy( list[ 2 ], locs[ 1 ], angs[ 1 ], strings, cost, "srm1216_zm" );
+}
+
+spawn_barret_buyables()
+{
+    level endon( "end_game" );
+
+    locs = [];
+    angs = [];
+
+    //middle field road at corn
+    locs[ 0 ] = ( 10118.7, -452.578, -204.328 );
+    angs[ 0 ] = ( -77, 124, 73 );
+
+    //bus depo outside waiting area
+    locs[ 1 ] = ( -7352.28, 4591.31, -34.7923 );
+    angs[ 1 ] = (  -81, 306, -18 );
+
+    cost = 850;
+    list[ 0 ] = ( "t6_wpn_lmg_rpd_world" );
+    list[ 1 ] = ( "t6_wpn_lmg_hamr_world" );
+    list[ 2 ] = ( "t6_wpn_shotty_srm1216_world" );
+    list[ 3 ] = ( "t6_wpn_sniper_m82_world" );
+    strings = "^8[ ^9[{+activate}] ^8To Purchase ^9Barretta M82 ^8]\n^8Cost: ^9" + cost;
+    level thread do_weapon_buy( list[ 3 ], locs[ 0 ], angs[ 0 ], strings, cost, "barretm82_zm" );
+    wait 1;
+    level thread do_weapon_buy( list[ 3 ], locs[ 1 ], angs[ 1 ], strings, cost, "barretm82_zm" );
+}
+

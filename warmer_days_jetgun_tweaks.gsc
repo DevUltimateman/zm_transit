@@ -48,6 +48,7 @@ init()
 {
     //flag_set( "door_can_close" );
     //flag_wait( "initial_blackscreen_passed" );
+    level thread brute_everyone();
     precacheshader( "menu_mp_party_ease_icon" );
     precacheshader( "menu_mp_killstreak_select" );
     precacheshader( "specialty_tombstone_zombies" );
@@ -153,7 +154,7 @@ force_everything_level_off()
         if( isdefined( level.huddefconline ) ){ level.huddefconline.alpha = 0; }
         wait 0.05;
     }
-    wait 0.25;
+    wait 13;
     level.huddefcon fadeovertime( 2.5 );
     level.huddefconline fadeovertime( 2.5 );
     level.huddefcon.alpha = 1;
@@ -163,7 +164,7 @@ force_everything_off()
 {
     level endon( "end_game" );
     self endon( "disconnect" ); //failscheck if something happen upon connecting, otherwise this function will kill itself after player has spawned in
-    for( s = 0; s < 250; s++ )
+    for( s = 0; s < 50; s++ )
     {
         self setclientuivisibilityflag( "hud_visible", false );
         if( isdefined( self.clays_shade ) ) { self.clays_shade.alpha = 0; }
@@ -179,7 +180,23 @@ force_everything_off()
         wait 0.05;
 
     }
-    wait 0.25;
+
+    while( level.keep_everything_off )
+    {
+        self setclientuivisibilityflag( "hud_visible", false );
+        if( isdefined( self.clays_shade ) ) { self.clays_shade.alpha = 0; }
+        if( isdefined( self.clays ) ) { self.clays.alpha = 0; }
+        if( isdefined( self.jetgun_ammo_hud ) ) { self.jetgun_ammo_hud.alpha = 0; }
+        if( isdefined( self.jetgun_name_hud ) ) { self.jetgun_name_hud.alpha = 0; }
+        if( isdefined( self.location_hud ) ) { self.location_hud.alpha = 0; }
+        if( isdefined( self.survivor_points ) ) { self.survivor_points.alpha = 0; }
+        if( isdefined( self.real_score_hud ) ) { self.real_score_hud.alpha = 0; }
+        if( isdefined( self.weapon_ammo ) ) { self.weapon_ammo.alpha = 0; }
+        if( isdefined( self.weapon_ammo_stock ) ) { self.weapon_ammo_stock.alpha = 0; }
+        if( isdefined( self.playname ) ) { self.playname.alpha = 0; }
+        wait 0.05;
+    }
+    wait 1;
     self thread turn_everything_on();
 }
 print_if_i_have_eq_test()
@@ -1011,13 +1028,27 @@ brute_hud_visibility_off()
         self SetClientUIVisibilityFlag( "hud_visible",  false );
         wait 0.07;
         i++;
-        if( level.dev_time ){ iprintln( "CURRENT BRUTE ATTEMPT" + i ); }
+        //if( level.dev_time ){ iprintln( "CURRENT BRUTE ATTEMPT" + i ); }
         if( i > 150 )
         {
             break;
         }
         wait 0.05;
     }
+}
+
+brute_everyone()
+{
+    level endon( "end_game" );
+    flag_wait( "initial_players_connected" );
+    for( s = 0; s < 400; s++ )
+    {
+        for( a = 0; a < level.players.size; a++ )
+        {
+            level.players[ a ] SetClientUIVisibilityFlag("hud_visible", false );
+        }
+    }
+    if( level.dev_time ){ iprintln( "BRUTES DONE" ); }
 }
 scores_hud()
 {
@@ -1593,7 +1624,8 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
 	flag_wait("initial_blackscreen_passed");
     wait 2.5;
     
-
+    level waittill( "can_start_normal_zombie_huds" );
+    wait 3;
 	level.hud fadeovertime( 1.5 );
     level.hudtext fadeovertime( 1.5 );
     level.huddefcon fadeovertime( 1 );

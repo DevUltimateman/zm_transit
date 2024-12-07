@@ -444,7 +444,7 @@ spin_drinkable_location()
 spawn_drinkable_step()
 {
     level endon( "end_game" );
-    //level waittill( "all_suitcases_collected" );
+    level waittill( "all_suitcases_collected" );
     wait 1;
     origin_lo = ( 1159.12, 1185.97, -260.295 );
     spawnable_drink = spawn( "script_model", origin_lo + ( 0, 0, 15 ) );

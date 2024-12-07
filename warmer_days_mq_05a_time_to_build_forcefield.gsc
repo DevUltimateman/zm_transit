@@ -1015,7 +1015,7 @@ generators_disappear()
     level.land_locs = [];
     level.land_locs[ 0 ] = ( 4088.93, 5662.73, -63.875 ); //cabin
     level.land_locs[ 1 ] = ( -5716.94, -6102.54, -79.3061 ); //diner back forest
-    level.land_locs[ 2 ] = ( 9851.42, 1320.01, 252.757 ); //corn next cliff rock
+    level.land_locs[ 2 ] = ( 9624.8, 1198.8, 49.1714 ); //corn next cliff rock
     for( i = 0; i < level.geness.size; i++ )
     {
         level.geness[ i ] moveto( level.land_locs[ i ] + ( 0, 0, 50), 3, 0, 1.2 );

@@ -124,6 +124,7 @@ track_transmitter_progress()
     {
         wait 1;
     }
+    
     //spawn the transmitter trigger
     level thread transmitter_wait_for_navcard();
 

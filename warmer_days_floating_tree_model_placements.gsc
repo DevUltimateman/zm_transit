@@ -55,11 +55,11 @@ spawn_all_trees()
     for( i = 0; i < level.floating_trees.size; i++ )
     {
         new_random = randomIntRange( 0, 10 );
-        if( new_random < 5 )
+        if( new_random < 3 )
         {
             tree_model = "t5_foliage_tree_burnt02";
         }
-        else if ( new_random >= 5 )
+        else if ( new_random >= 3 )
         {
             tree_model = "t5_foliage_tree_burnt03";
         }

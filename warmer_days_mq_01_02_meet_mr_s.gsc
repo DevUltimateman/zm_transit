@@ -128,7 +128,7 @@ step3_talk()
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox14( "" );
-    wait 6;
+    wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox15( "" );
 
@@ -307,8 +307,10 @@ step1_talk()
 {
     level endon( "end_game" );
 
-    flag_wait( "initial_blackscreen_passed" );
-    wait 25;
+    level waittill( "can_start_normal_zombie_huds" );
+    wait 12.5;
+    PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Beginning Of The Journey", "^8Where am I..", "^8..and what does this guy want?", 6, 0.25 );
     gets = level.players;
     foreach( g in gets )
     {
@@ -519,9 +521,8 @@ schruder_talks_everything_part1()
 {
     level endon( "end_game" );
     //level thread playLoopsound_buried();
-    PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
-    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Beginning Of The Journey", "^8Where am I..", "..and what does this guy want?", 6, 0.25 );
-    wait 1;
+    
+    wait 3;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox01("");
     wait 6;
@@ -560,7 +561,7 @@ schruder_talks_everything_part2()
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox11("");
     level.not_doable_yet = false;
-    wait 8;
+    wait 11;
     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Obey The Voices", "^8This guy want's me to build us some sort of machine.", "I should start looking for the parts..", 6, 0.25 );
     if( level.dev_time ){ iprintln( "STEP 2 TALKS COMPLETED" ); }
@@ -633,7 +634,7 @@ meeting_vox11( background_music )
         //play_sound_at_pos( background_music, level.players[0].origin );
         subtitle_upper =  "See if you can locate the parts for ^9Navcard Machine^8.";
         subtitle_lower = "Bring the parts underneath pylon and try building the machine once you have all the required pieces!";
-        duration = 7;
+        duration = 9;
         fadetimer = 1;
         level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper,"^8" +  subtitle_lower, duration, fadetimer );
        // SchruderSays( subtitle_upper, subtitle_lower, duration, fadetimer );
@@ -677,7 +678,7 @@ meeting_vox14( background_music )
         //play_sound_at_pos( background_music, level.players[0].origin );
         subtitle_upper =  "Did I say my ear? Ha, well my inner circuit board hahaa..";
         subtitle_lower = "..why is nobody laughing at my joke?! What??";
-        duration = 5;
+        duration = 7;
         fadetimer = 1;
         level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper,"^8" +  subtitle_lower, duration, fadetimer );
     }

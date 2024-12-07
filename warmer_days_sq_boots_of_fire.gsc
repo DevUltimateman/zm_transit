@@ -403,15 +403,17 @@ f_boots1() //fireboot quest step1. Find 8 different fireboots around the map ( j
 {
     level endon( "end_game" );
 
-    
+    //120 ground to roof + mayb 40 for jump dist height
+    //bus depot bus jump spot -7705.29, 4771.91, 111.526
+    //
 
-    level.fireboot_locations[ 0 ] = ( 10506.6, 8081.56, -368.851 );
-    level.fireboot_locations[ 1 ] = ( 7638.01, -450.942, -147.971 );
-    level.fireboot_locations[ 2 ] = ( 7892.54, -6079.53, 253.161 );
-    level.fireboot_locations[ 3 ] = ( 1424.37, -1478.38, 41.5605 );
-    level.fireboot_locations[ 4 ] = ( 1221.56, -658.023, 68.6946 );
-    level.fireboot_locations[ 5 ] = ( -11742.6, -827.903, 249.517 );
-    level.fireboot_locations[ 6 ] = ( -6211.82, -5684.03, -0.988062 );
+    level.fireboot_locations[ 0 ] = ( 10506.6, 8081.56, -368.851 ); // power jump
+    level.fireboot_locations[ 1 ] = ( 10395.6, -110, -35.5112 ); //corn jump towards second nacht rout
+    level.fireboot_locations[ 2 ] = ( 7941.22, -6043.94, 265.103 ); //farm balcony jump
+    level.fireboot_locations[ 3 ] = ( -8575.85, 4831.1, 100 ); //bus depot
+    level.fireboot_locations[ 4 ] = ( 1231.3, -1312, 114.477 ); //town jump from jugg to ground below
+    level.fireboot_locations[ 5 ] = ( -11742.6, -827.903, 249.517 ); //tunnel location
+    level.fireboot_locations[ 6 ] = ( -4357.61, -5948.82, -20.5901 ); //diner behind the mist outside grass area
     wait 0.1;
 
     for( s = 0; s < level.fireboot_locations.size; s++ )
