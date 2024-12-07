@@ -97,6 +97,7 @@ init()
     movable_locations();
 
     flag_wait( "initial_blackscreen_passed" );
+    level thread wait_players_at_pylon();//debugging for 7/12/2024
     wait 0.1;
     level waittill( "drunk_state_over" );
     level thread do_dialog_about_tunnel_help();
@@ -114,7 +115,6 @@ do_dialog_about_tunnel_help()
     level endon( "end_game" );
     wait 2.5;
     foreach( p in level.players ){   p thread daytime_preset();  }
-    //level thread playloopsound_buried();
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "Hahaa, you've had your fun ha?", "I think we can move ahead to try finding the ^3Tranceiver^8 .", 5, 1 );
     wait 6;
@@ -455,9 +455,8 @@ waittill_powers_restored()
     wait 5;
     level notify( "all_powered" );
     foreach( p in level.players ){   p thread daytime_preset();  }
-    //level thread playloopsound_buried();
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "Wondeful!", "Power has been restored!", 5, 1 );
+    level thread do_dialog_here( "Excellent work!", "The power has been restored.", 5, 1 );
     wait 6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "Let's try meeting up again at the ^3Pylon^8.", "^8I'll be waiting for you there!", 7, 1 );
@@ -1159,7 +1158,7 @@ wait_players_at_pylon()
         ss waittill( "trigger", who );
         if( is_player_valid( who ) )
         {
-            ss sethintstring( "^9[ ^2Tranceiver added ^9]" );
+            ss sethintstring( "^8[ ^2Tranceiver ^8was added ^8]" );
             PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], sa.origin );
             playfxontag( level.myFx[ 41 ], sa, "tag_origin" );
             wait 0.05;
@@ -1167,13 +1166,13 @@ wait_players_at_pylon()
             sa thread rotateit();
             level thread do_dialog_here( "Awesome!", "^9Tranceiver ^8has been added to the ^9Pylon^8.", 6, 1 );
             wait 3;
-            ss sethintstring( "^9[ ^3Call for help... ^9]" );
+            ss sethintstring( "^8[ ^9[{+activate}] to call for help... ^8]" );
             break;
         }
         wait 0.1;
     }
     wait 3;
-    level thread do_dialog_here( "^8You should try calling some help!", "^8Feel free to use it, you've done already so much.", 7, 1 );
+    level thread do_dialog_here( "^8You should try calling some help!", "^8I think it's our best option.", 7, 1 );
     wait 0.1;
     level thread do_power_out_texts();
     while( true )
@@ -1186,7 +1185,7 @@ wait_players_at_pylon()
         if( is_player_valid( who ) )
         {
             ss.is_valid = true;
-            ss sethintstring( "^9[ ^3^2Help called ^9]" );
+            ss sethintstring( "^8[ ^2Help ^8called ^8]" );
             playfx( level.myFx[ 87 ], sa.origin );
             PlaySoundAtPosition(level.jsn_snd_lst[ 29 ], sa.origin ); 
             wait 3;
@@ -1210,6 +1209,7 @@ wait_players_at_pylon()
         wait 0.05;
         s thread nighttime_preset();
     }
+    wait 1;
      PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Power Surge", "^8So here I was in the dark once again..", "..fuck that whining, time to clock in.", 6, 0.25 );
     wait 4.5;
@@ -1217,12 +1217,12 @@ wait_players_at_pylon()
     level notify( "power_out" );
     PlaySoundAtPosition(level.jsn_snd_lst[ 49 ], ( 0, 0, 0 ) );
     level thread waittill_powers_restored();
-    ss sethintstring( "^9[ ^1Malfunction, requires ^2re-powering ^9]" );
+    ss sethintstring( "^8[ ^1Malfunction^8, requires ^9re-powering ^8]" );
 
     level waittill( "all_powered" );
     ss sethintstring( "^9[ ^8Booting.. ^9]" );
     level waittill( "can_be_ended" );
-    ss sethintstring( "^9[ ^8Call help. ^3Requires All Survivors^8 to press ^3[{+activate}] ^^9]");
+    ss sethintstring( "^8[ ^8Call help. Requires^9 All Survivors^8 to press ^3[{+activate}]^8 at the same time. ]");
 
     wait 1;
     while( true )
@@ -1245,7 +1245,7 @@ do_power_out_texts()
 {
     level endon( "end_game" );
     level waittill( "power_out" );
-    wait 1;
+    wait 3.5;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here( "^8What's happening?", "^8How did it come so dark suddenly?", 8, 1 );
     wait 9;
@@ -1280,14 +1280,12 @@ playloopsound_buried()
 {
     level endon( "end_game" );
     level endon( "stop_mus_load_bur" );
-    while( true )
-    {
+
         for( i = 0; i < level.players.size; i++ )
         {
             level.players[ i ] playsound( "mus_load_zm_buried" );
         }
         wait 40;
-    }
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )

@@ -221,7 +221,7 @@ apply_movement_monitor()
     r1 = "super_sprint";
     r2 = "sprint";
 
-    if( level.spirit_of_sorrow_step_active ) 
+    if( level.spirit_step_active ) 
     {
         playfx( level._effects[ 77 ], self.origin );
         self set_zombie_run_cycle( "walk" );
@@ -235,7 +235,7 @@ apply_movement_monitor()
         return;
     }
 
-    if( level.rock_summoning_step_active )
+    if( level.rock_summoning_active )
     {
         playfx( level._effects[ 77 ], self.origin );
         self set_zombie_run_cycle( r2 );
@@ -1064,15 +1064,13 @@ rocks_at_town_talk()
 {
     level endon( "end_game" );
     level thread all_rocks_done();
-    //level thread playloopsound_buried();
-    wait 18;
+    wait 26;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "What's happening at ^9Town Center^8?", "^8Investigate it and see if you can move the meteors with something steamy..", 8, 0.25 );
     level thread wait_kill();
     level notify( "stop_mus_load_bur" );
     level waittill( "gnerators_start_floating" );
     level.first_time_texter = true; 
-    //level thread playloopsound_buried();
     wait 3;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Where are the meteors going?", "^8They were supposed to head towards the pylon. ^1Find Them^8!!", 8, 0.25 );
@@ -1091,8 +1089,7 @@ rocks_at_pylon()
     level endon( "end_game" );
     //playfxontag( level._effect[ "screecher_hole" ], spas, "tag_origin" );
     level waittill( "end_break_check" );
-    //level thread playloopsound_buried();
-    wait 6 ;
+    wait 8 ;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Great, the rocks are at pylon!", "^8Meet me there once you can..", 8, 0.25 );
     wait 8;
@@ -1100,7 +1097,6 @@ rocks_at_pylon()
     level thread monitor_players_pylon();
     level waittill( "spawn_schruder" );
     level.rifts_disabled_for_while = true;
-    //level thread playloopsound_buried();
     wait 3;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Ahh finally..", "^8Hello there!", 5, 0.25 );
@@ -1137,29 +1133,27 @@ playloopsound_buried()
 {
     level endon( "end_game" );
     level endon( "stop_mus_load_bur" );
-    while( true )
-    {
+
         for( i = 0; i < level.players.size; i++ )
         {
             level.players[ i ] playsound( "mus_load_zm_buried" );
         }
         wait 40;
-    }
 }
 do_everything_schruder_spawns()
 {
     level endon( "end_game" );
     Earthquake( .5, 4,  level.geness[0].origin, 1000 );
-    wait 1;
+    wait 0.05;
     PlaySoundAtPosition( level.jsn_snd_lst[ 3 ],  level.geness[0].origin );
     playfx( level.myfx[ 82 ], level.geness[ 0 ].origin );
-    wait 0.2;
+    wait 0.1;
     playfx( level.myfx[ 82 ], level.geness[ 1 ].origin );
     wait 0.05;
     playfx( level.myfx[ 82 ], level.geness[ 1 ].origin );
-    wait 1;
+    wait 0.5;
     
-    sc = spawn( "script_model", ( 7592.53, -449.193, -133.179 ) );
+    sc = spawn( "script_model", ( 7592.53, -449.193, -163.179 ) );
     sc setmodel( level.automaton.model );
     sc.angles = ( 0, 0,  0 );
     wait 0.06;

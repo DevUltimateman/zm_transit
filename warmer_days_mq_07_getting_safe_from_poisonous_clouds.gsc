@@ -901,14 +901,12 @@ playloopsound_buried()
 {
     level endon( "end_game" );
     level endon( "stop_mus_load_bur" );
-    while( true )
-    {
+
         for( i = 0; i < level.players.size; i++ )
         {
             level.players[ i ] playsound( "mus_load_zm_buried" );
         }
         wait 40;
-    }
 }
 do_guide_blockers_dialog()
 {
@@ -924,7 +922,7 @@ do_guide_blockers_dialog()
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + "You should locate the mixing container from ^9Bus Depot^8.", "^8" + "We should craft an potion after that.", 8, 1 );
 
-    wait 5;
+    wait 8;
      PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Long Way A Cross The Town", "^8Seems like it's as safe as it can be on the outside again..", "I should get going.", 6, 0.25 );
 

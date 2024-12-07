@@ -216,14 +216,13 @@ playloopsound_buried()
 {
     level endon( "end_game" );
     level endon( "stop_mus_load_bur" );
-    while( true )
-    {
+
         for( i = 0; i < level.players.size; i++ )
         {
             level.players[ i ] playsound( "mus_load_zm_buried" );
         }
         wait 40;
-    }
+
 }
 
 do_first_dialog()
@@ -232,24 +231,23 @@ do_first_dialog()
     level waittill( "someone_picked_up_poison" );
     level.moving_to_depo_active = false;
     level.rifts_disabled_for_while = false;
-    level thread playloopsound_buried();
-    wait 2.5;
+    wait 3;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Excellent!", "^8" + "You've found the mixing container^8..", 5, 1 );
     wait 6;
+    level notify( "stop_mus_load_bur" ); 
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8The container will spawn next to a soda machine once you're close to it.", "^8" + "Feel free to locate a soda machine next.", 8, 1 );
     wait 9;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8I'll let you figure out what to do after that..", "^8" + "Don't disappoint me!", 6, 1 );
-    wait 3;
+    wait 6;
      PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Master Of Mixing", "^8This whole idea feels so weird.", "Collect soda bottles and stuff.. what?!", 6, 0.25 );
     level thread are_players_close_to_spawn_suitcase();
     wait 5;
     level waittill( "all_suitcases_collected" );
     wait 0.35;
-    //level thread playloopsound_buried();
     wait 2.8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Haha, impressive!", "^8" + "You're quite a sharp shooter.", 6, 1 );
@@ -260,7 +258,6 @@ do_first_dialog()
     wait 10;
     level waittill( "crafting_serum" );
     wait 1;
-    //level thread playloopsound_buried();
     //needs a 10 second wait so we dont have overlapping text
     wait 12;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
@@ -474,7 +471,8 @@ spawn_drinkable_step()
     anim_trig TriggerIgnoreTeam();
     
     spawnable_case.angles = ( 0, 180, 90 );
-    level waittill( "all_suitcases_collected" );
+    //level waittill( "all_suitcases_collected" );
+    wait 0.1;
     foreach( playa in level.players )
     {
         playa.has_immunity = false;
@@ -541,7 +539,7 @@ spawn_drinkable_step()
                 who takeWeapon( "zombie_perk_bottle_tombstone" );
                 who playsound( "evt_bottle_dispense" );
                 foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-                level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who.name + "^8 crafted the potion.", "^8" + "The potion is ready to be consumed.", 5, 1 );
+                level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who.name + "^8 took a sip from the potion.", "^8" + "T", 5, 1 );
                 wait 0.1;
                 anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^3Potion ^9]" );
             }

@@ -708,14 +708,12 @@ playloopsound_buried()
 {
     level endon( "end_game" );
     level endon( "stop_mus_load_bur" );
-    while( true )
-    {
+
         for( i = 0; i < level.players.size; i++ )
         {
             level.players[ i ] playsound( "mus_load_zm_buried" );
         }
         wait 40;
-    }
 }
 rotate_mes()
 {

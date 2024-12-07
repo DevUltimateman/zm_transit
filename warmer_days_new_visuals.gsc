@@ -245,12 +245,15 @@ cloud_locations()
     wait 0.1;
     for( s = 0; s < s_clouds.size; s++ )
     {
-        playfx( level.myfx[ 54 ], s_clouds[ s ] + ( 0, 0, 120 ) );
+        if( s % 2 == 0 )
+        {
+            playfx( level.myfx[ 54 ], s_clouds[ s ] + ( 0, 0, 120 ) );
+        }
         wait 0.05;
     }
 
 
-
+    /*
     additionals_ = [];
     additionals_[ 0 ] = ( -6787.86, 3452.32, -63.876 );
     additionals_[ 1 ] = ( -5377.04, 6327.72, -55.4404 );
@@ -326,13 +329,18 @@ cloud_locations()
     {
         if( s % 2 == 0 )
         {
-            playfx( level.myfx[ 54 ], additionals_[ s ] + ( 0, 0, 65 ) );
+            s = randomint( 10 );
+            if( s >= 3 )
+            {
+                playfx( level.myfx[ 54 ], additionals_[ s ] + ( 0, 0, 65 ) );
+            }
+            
             wait 0.05;
         }
         
     }
-
-    for( a = 0; a < 3; a++ )
+    */
+    for( a = 0; a < 2; a++ )
     {
         spaw = spawn( "script_model", ( 2541.46, 2252.9, 69.0502 ) );
         spaw setmodel( "t5_foliage_tree_burnt03" );
@@ -438,12 +446,11 @@ ambers()
 
     for( s = 0; s < orgs.size; s++ )
     {
-        if( s % 2 == 0 )
+        if( s % 2 != 0 )
         {
             playfx( level.myFx[ 59 ], orgs[ s ] );
             wait 0.25;
         }
-        
     }
     if( level.dev_time ){ iprintlnbold( "ALL EMBERS FLOATED#"); }
     
@@ -471,34 +478,19 @@ apply_new_initials()
 
 }
 
-lighting_vis()
-{
-    //self setclientdvar( "r_sky_intensity_factor0", 0.857 );
-    //self setclientdvar( "r_skyColorTemp", 6000 );
-    self setclientdvar( "r_skyRotation", 125 );
-    self setclientdvar( "r_lightweaksunlight", 12 );
-    self setclientdvar( "r_lighttweaksundirection", "-155 63 0" );
-   // self setclientdvar( "r_lighttweaksuncolor", ( 0.6, 0.5, 0.5 ) );
-
-   //with the new greenish skybox
-   self setclientdvar( "r_sky_intensity_factor0", 2.8 );
-   self setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.52, 0.36 ) );
-   self setclientdvar( "cg_drawcrosshair", 0 );
-   self setclientdvar( "cg_cursorhints", 2 );
-   self setclientdvar( "vc_yl", "0 0 0 0" );
-   self setclientdvar( "vc_yh", "0 0 0 0" );
-   self setclientdvar( "r_sky_intensity_factor0", 2.8 );
-   self setclientdvar( "cg_fov", 90 );
-   self setclientdvar( "cg_fovscale", 1.15  );
-
-   self setclientdvar( "vc_rgbh", "0.3 0.2 0.2 0" );
-   self setclientdvar( "vc_rgbl", "0.1 0.05 0.05 0" );
-
-   //self thread sky_carousel();
-}
 
 tranzit_2024_visuals()
 {
+    self setclientdvar( "r_filmusetweaks", true );
+    self setclientdvar( "r_bloomtweaks", 1  );
+    self setclientdvar( "cg_usecolorcontrol", 1 );
+    self setclientdvar( "r_fog", 0  );
+    self setclientdvar( "sm_sunsamplesizenear", 1.4  );
+    self setclientdvar( "wind_global_vector", ( 200, 250, 50 )  );
+    self setclientdvar( "vc_fsm", "1 1 1 1" );    
+    self setclientdvar( "cg_colorscale", "1 1 1"  );
+    self setclientdvar( "r_lodbiasrigid", -1000  );
+    self setclientdvar( "r_lodbiasskinned", -1000 );
     self setclientdvar( "r_dof_bias", 0.5 );
     self setclientdvar( "r_dof_enable", true );
     self setclientdvar( "r_dof_tweak", true  );
@@ -508,33 +500,27 @@ tranzit_2024_visuals()
     self setclientdvar(  "r_dof_farStart", 3000 );
     self setclientdvar(  "r_dof_farend", 7000 );
     self setclientdvar(  "r_dof_nearstart", 10 );
-    self setclientdvar(  "r_dof_nearend", 60 );
-
-    self setclientdvar(  "r_sky_intensity_factor0", 2.8 );
-    self setclientdvar(  "r_sky_intensity_factor1", 2.8 );
+    self setclientdvar(  "r_dof_nearend", 15 );
+    self setclientdvar(  "r_sky_intensity_factor0", 2.4 );
+    self setclientdvar(  "r_sky_intensity_factor1", 2.4 );
     self setclientdvar(  "r_skyColorTemp", 2000 );
     self setclientdvar(  "r_skyRotation", 125 );
     self setclientdvar(  "r_skyTransition", true );
-
     self setclientdvar( "cg_drawcrosshair", 0 );
-   self setclientdvar( "cg_cursorhints", 2 );
-   self setclientdvar( "vc_yl", "0 0 0 0" );
-   self setclientdvar( "vc_yh", "0 0 0 0" );
-   self setclientdvar( "r_sky_intensity_factor0", 2.8 );
-   self setclientdvar( "cg_fov", 90 );
-   self setclientdvar( "cg_fovscale", 1.15  );
+    self setclientdvar( "cg_cursorhints", 2 );
+    self setclientdvar( "vc_yl", "0 0 0 0" );
+    self setclientdvar( "vc_yh", "0 0 0 0" );
+    self setclientdvar( "cg_fov", 85 );
+    self setclientdvar( "cg_fovscale", 1.15 );
+    self setclientdvar( "r_lighttweaksunlight", 12 );
+    self setclientdvar( "r_lighttweaksuncolor", ( 0.62, 0.52, 0.46) );
+    self setclientdvar( "r_lighttweaksundirection", ( -155, 63, 0 ) );
 
-
-   self setclientdvar( "r_lighttweaksunlight", 12 );
-   self setclientdvar( "r_lighttweaksuncolor", ( 0.7, 0.6, 0.6 ) );
-   self setclientdvar( "r_lighttweaksundirection", ( -155, 63, 0 ) );
-
-
-   self setclientdvar( "vc_rgbh", "0.3 0.2 0.2 0" );
+    self setclientdvar( "vc_rgbh", "0.3 0.2 0.2 0" );
    self setclientdvar( "vc_rgbl", "0.1 0.05 0.05 0" );
-
-
 }
+
+
 sky_carousel() //from original tranzit reimagined and tweaked a bit
 {
     level endon ( "game_ended" );

@@ -49,14 +49,7 @@ init()
 	//level thread waittill_ender();
 }
 
-waittill_ender()
-{
-	level endon( "end_game" );
-	level waittill( "can_be_ended" );
 
-
-
-}
 debugger()
 {
 	flag_wait( "initial_blackscreen_passed" );
@@ -84,8 +77,9 @@ survivors_called_help()
 	//but end is coming now
 	//schruder tried to keep you not from calling help by giving u nice things
 	//now game is going to become last stand fuck
-	wait 3;
 	PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
+	wait 0.05;
+	PlaySoundAtPosition("bik_zm_tomb_ee_c", level.players[0].origin );
 	foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dials( "My friend!", "The time has come, huh.", 6, 1 );
 	wait 8;
@@ -111,7 +105,7 @@ survivors_called_help()
 	wait 1;
 	level thread chaos_begins();
 	level thread do_dials( "At last,", "Goodbye my ^9friend.", 4, 1 );
-	wait 5;
+	wait 12; //perfect wait timer to start playing laughs and chaos
 	level notify( "start_chaos" );
 	wait 2;
 	randomintranger = randomIntRange( 500, 1500 );
@@ -403,14 +397,13 @@ playloopsound_buried()
 {
     level endon( "end_game" );
     level endon( "stop_mus_load_bur" );
-    while( true )
-    {
-        for( i = 0; i < level.players.size; i++ )
-        {
-            level.players[ i ] playsound( "mus_load_zm_buried" );
-        }
-        wait 40;
-    }
+
+
+	for( i = 0; i < level.players.size; i++ )
+	{
+		level.players[ i ] playsound( "mus_load_zm_buried" );
+	}
+	wait 40;
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )

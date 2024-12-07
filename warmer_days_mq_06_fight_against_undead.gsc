@@ -148,7 +148,7 @@ spawn_lockdown_enabler( origin )
     //level waittill( "obey_spirit_complete" );
     trig = spawn( "trigger_radius_use", origin, 0, 85, 85 );
     trig setCursorHint( "HINT_NOICON" );
-    trig sethintstring( "^9[ ^3[{+activate}] ^8 to call ^4Spirit Of Sorrow ^8back! ^8Requires all survivors to be present. ^9]" );
+    trig sethintstring( "^8[ ^9[{+activate}] ^8 to call ^5Spirit Of Sorrow ^8back! ^8Requires all survivors to be present. ^8]" );
     trig TriggerIgnoreTeam();
     wait 0.1;
 
@@ -347,7 +347,6 @@ spawn_lockdown_blockers()
         block[ s ] delete();
         block_upper[ s ] delete();
     }
-    //level thread playloopsound_buried();
     wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread _someone_unlocked_something( "^8Seems like ^4Spirit Of Sorrow^8 has gone rogue.", "^8Be careful out there!", 7, 1 );
@@ -362,14 +361,12 @@ playloopsound_buried()
 {
     level endon( "end_game" );
     level endon( "stop_mus_load_bur" );
-    while( true )
-    {
+
         for( i = 0; i < level.players.size; i++ )
         {
             level.players[ i ] playsound( "mus_load_zm_buried" );
         }
         wait 40;
-    }
 }
 
 _someone_unlocked_something( text, text2, duration, fadetimer )

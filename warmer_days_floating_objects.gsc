@@ -222,7 +222,7 @@ playlighting_playembers()
     {
         wait 0.05;
         playfxontag( level._effects[72], self, "tag_origin" );
-        wait randomIntRange( 10, 35 );
+        wait randomIntRange( 36, 120 );
     }
     
 }

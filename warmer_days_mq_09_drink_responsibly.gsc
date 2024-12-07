@@ -263,6 +263,7 @@ move_drinks_here_once_correct_found()
         p thread do_drunk_effect();
     }
     wait 1;
+    setdvar( "g_ai", true );
     level thread start_drunk_timer();
 }
 do_drink_animation()
@@ -339,6 +340,11 @@ mr_s_spawn()
 {
     level endon( "end_game" );
     middle_barcounter = ( 2286.58, 146.752, -55.875 );
+    foreach( s in getAIArray( level.zombie_team ) )
+    {
+        s dodamage( self.health + 555, self.origin );
+    }
+    
     mr_s = spawn( "script_model", middle_barcounter );
     mr_s setmodel( level.automaton.model );
     mr_s.angles = ( 0, 270, 0 );
@@ -348,8 +354,8 @@ mr_s_spawn()
     level thread dialogs_for_bar_step();
     playfx( level._effects[ 77 ], middle_barcounter );
     wait 0.05;
-    wait 0.05;
     foreach( s in level.players ){ s thread bleep_thread(); }
+    setdvar( "g_ai", false );
     degree_tagger = spawn( "script_model", mr_s.origin );
     degree_tagger setmodel( "tag_origin" );
     degree_tagger.angles = ( 180, 0, 0 );
@@ -368,7 +374,7 @@ mr_s_spawn()
     mr_s movez( 5, 3, 0.1, 1 );
     mr_s playLoopSound( "zmb_screecher_portal_loop", 2 );
     wait 1.85;
-    foreach( p in level.players )
+    foreach( p in level.players )setdvar( "g_ai", false );
     {
         p playSound( "mus_zombie_game_over" ); //mus_zombie_game_over
     }
@@ -568,6 +574,7 @@ dialogs_for_bar_step()
 {
     level endon( "end_game" );
     //level waittill( "player_at_bar" );
+    wait 2;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     do_dialog_here_too( "^8Well hello again my friend!", "^8Glad to see you doing fine..", 7, 1 );
     wait 8;

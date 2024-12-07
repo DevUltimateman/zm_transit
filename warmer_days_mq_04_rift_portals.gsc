@@ -232,13 +232,14 @@ playerss_ride()
         p thread flash_me_now();
     }
     wait 2.1;
-    level thread wait_to_print_unlock_rift( 5 );
+    level thread wait_to_print_unlock_rift( 8 );
     for( i = 0; i < level.players.size; i++ )
     {
         level.players[ i ] thread do_rift_ride( level.rift_camera_diner, level.rift_camera_diner_angles, level.players[ i ] );
         wait 3;
     }
     level notify( "can_do_spirit_now" ); //enable back after debug
+    level notify( "stop_mus_load_bur" );
 }
 
 wait_to_print_unlock_rift( wait_time )
@@ -524,7 +525,7 @@ do_rift_ride( sudo, sudo_angles, real_player  )
         temp_orbs[ i ] = spawn( "script_model", rider.origin );
         temp_orbs[ i ] setmodel( "tag_origin" );
         temp_orbs[ i ].angles = ( 0, 0, 0 );
-        wait randomfloatrange( 0.05 );
+        wait 0.05;
         playfxontag( level.myfx[ 1 ], temp_orbs[ i ], "tag_origin" );
         temp_orbs[ i ] thread locate_to_goal_on_own( sudo );
     }
@@ -1592,14 +1593,12 @@ playloopsound_buried()
 {
     level endon( "end_game" );
     level endon( "stop_mus_load_bur" );
-    while( true )
-    {
+    
         for( i = 0; i < level.players.size; i++ )
         {
             level.players[ i ] playsound( "mus_load_zm_buried" );
         }
-        wait 40;
-    }
+    
 }
 play_nav1_success( this_position )
 {
@@ -1613,9 +1612,8 @@ play_nav1_success( this_position )
 lamps_fixed_schruder_speaks()
 {
     level endon( "end_game" );
-    //level thread playloopsound_buried();
    // level waittill( "all_rift_lamps_repaired" );
-    wait 1;
+    wait 2.5;
     
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Ahh.. Good job!", "^9Rift Lamps^8 are powered now!", 5, 0.25 );
@@ -1688,7 +1686,6 @@ computer_accessed_by_player( playa, a_comp )
 {
     level endon( "end_game" );
     a_comp_origin = a_comp.origin;
-    //level thread playloopsound_buried();
     wait randomfloatrange( 1.1, 2.2 );
     
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
@@ -1804,10 +1801,10 @@ play_computer_attention_sfx( b_comp, a_comp )
     {
         PlaySoundAtPosition( level.jsn_snd_lst[ 20 ], b_comp );
         PlaySoundAtPosition( level.jsn_snd_lst[ 4 ] , a_comp );
-        wait randomfloat( 0.38 );
+        wait randomFloatRange( 0.3, 5 );
         PlaySoundAtPosition( level.jsn_snd_lst[ 4 ], b_comp );
         PlaySoundAtPosition( level.jsn_snd_lst[ 20 ] , a_comp );
-        wait randomfloat( 0.38 );
+        wait randomFloatRange( 1, 5 );
     }
 }
 

@@ -102,21 +102,18 @@ playloopsound_buried()
 {
     level endon( "end_game" );
     level endon( "stop_mus_load_bur" );
-    while( true )
-    {
+
         for( i = 0; i < level.players.size; i++ )
         {
             level.players[ i ] playsound( "mus_load_zm_buried" );
         }
         wait 40;
-    }
 }
 step3_talk()
 {
     level endon( "end_game" );
     level waittill( "s_talks_navcard" ); //this level waittill notify is triggered from: warmer_days_mq_03_crafting_the_transmitter once players have succefully placed down their custom navcard
     gets = level.players;
-    //level thread playloopsound_buried();
     foreach( g in gets )
     {
         g playsound( "zmb_sq_navcard_success" );
@@ -152,7 +149,7 @@ step3_talk()
     wait 9;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox18( "" );
-    wait 9;
+    wait 10;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox19( "" );
     wait 8;
@@ -520,8 +517,6 @@ mr_s_outside_locations()
 schruder_talks_everything_part1()
 {
     level endon( "end_game" );
-    //level thread playLoopsound_buried();
-    
     wait 3;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     meeting_vox01("");
@@ -775,7 +770,7 @@ meeting_vox18( background_music )
         //play_sound_at_pos( background_music, level.players[0].origin );
         subtitle_upper =  "Interesting, seems that the lamps now require some power..";
         subtitle_lower = "Try bringing a turbine or something underneath the lamp!";
-        duration = 7;
+        duration = 9;
         fadetimer = 1;
         level thread machine_says( "^9Dr. Schruder: ^8" + subtitle_upper,"^8" +  subtitle_lower, duration, fadetimer );
     }

@@ -100,9 +100,10 @@ waitflag()
 
     //step3
     level thread nacht_shooter(); //shoot array of spirits from nacht roof
-    
-    level waittill( "lockdown_disabled" ); //debug to not let this go past
     level.spirit_step_active = false;
+
+    level waittill( "lockdown_disabled" ); //debug to not let this go past
+    
     foreach( play in level.players )
     {
         play thread tranzit_2024_visuals();
@@ -684,6 +685,7 @@ monitor_players()
     if( level.dev_time ){ iprintlnbold( "PLAYER TOUCHED THE TRIGGER, CONTINUE IN QUEST" ); }
     mods delete();
     cust_trig delete();
+    level.spirit_step_active = true;
     level.spirit_of_sorrow_step_active = true;
     level notify( "players_obey" );
 
