@@ -757,7 +757,7 @@ all_rocks_done()
 {
     level endon( "end_game" );
     level endon( "end_break_check" ); 
-    while( level.kills_to_move_generators_reach <= 75 ){ wait 1; }
+    while( level.kills_to_move_generators < level.kills_to_move_generators_reach ) { wait 1; }
     level notify( "move_rocks_underneath_pylon" );
     wait 1;
     level.rock_summoning_active = false;
@@ -1010,7 +1010,7 @@ generators_disappear()
     level.geness[ 1 ] thread move_diner_rocks_to_pylon();
     level.geness[ 2 ] thread move_corn_rocks_to_pylon();
 
-    level.rock_summoning_step_active = true;
+    //level.rock_summoning_step_active = true;
     level.land_locs = [];
     level.land_locs[ 0 ] = ( 4088.93, 5662.73, -63.875 ); //cabin
     level.land_locs[ 1 ] = ( -5716.94, -6102.54, -79.3061 ); //diner back forest
