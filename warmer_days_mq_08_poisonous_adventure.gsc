@@ -190,14 +190,14 @@ moveeverything( suit_case )
 
     trigu = spawn( "trigger_radius_use", suit_case.origin, 48, 48, 48 );
     trigu setCursorHint( "HINT_NOICON" );
-    trigu setHintString( "^9[ ^3[{+activate}] ^8to pick up Poison^9]" );
+    trigu setHintString( "^9[ ^3[{+activate}] ^8to pick up Mixing Container ^9]" );
     trigu TriggerIgnoreTeam();
     wait 0.1;
     while( true )
     {
         trigu waittill( "trigger", who );
         who playsound( "zmb_sq_navcard_success" );
-        trigu sethintstring( "^5You ^8picked up ^9Poison^8!" );
+        trigu sethintstring( "^8[ You picked up ^9Mixing Container ^8]" );
         suit_case notify( "stop_spinning" );
         suit_case delete();
         wait 2.5;
@@ -503,7 +503,7 @@ spawn_drinkable_step()
         {
             anim_trig setHintString( "^9[ ^8You already have an ^9Immunity Drink^8 effect ^9]" );
             wait 2.5;
-            anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^9Immunity Drink ^9]" );
+            anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a sip of ^9Immunity Drink ^9]" );
             wait 2.5;
         }
         if( is_player_valid( who ) )
@@ -562,7 +562,7 @@ spawn_drinkable_step()
                 who maps\mp\zombies\_zm_weapons::switch_back_primary_weapon( current_w );
                 who takeWeapon( "zombie_builder_zm" );
                 if( level.dev_time ){ iprintln( "^3 PLAYER HAS IMMUNITY HEALTHA AT ^8" + who.has_immunity_health ); }
-                anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^9Immunity Drink ^9]" );
+                anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a sip of ^9Immunity Drink ^9]" );
                 
                 
             }

@@ -854,8 +854,8 @@ do_zombie_souls( which_summoning, idx )
     playfx( level.myFx[ 94 ], where_to_move );
     inv_mover delete();
     which_summoning rotateYaw( 360, 0.35, 0, 0.1 );
-    PlaySoundAtPosition(level.jsn_snd_lst[ 73 ], which_summoning.origin );
-    playsoundatposition( level.jsn_snd_lst[ 78 ], which_summoning.origin );
+    //PlaySoundAtPosition(level.jsn_snd_lst[ 73 ], which_summoning.origin );
+    //playsoundatposition( level.jsn_snd_lst[ 78 ], which_summoning.origin );
     playFX( level._effect[ "fx_zombie_powerup_wave" ], where_to_move );
     playsoundatposition( "zmb_meteor_activate", where_to_move );
     wait 0.05;
@@ -912,9 +912,9 @@ spawn_generators()
 
         col[ i ] enableLinkTo();
         col[ i ] linkTo( level.geness[ i ] );
-        playfxontag( level._effects[21], level.geness[ i ], "tag_origin"  );
+        playfxontag( level._effects[21], level.geness[ i ], "tag_origin"  ); //glow
         wait 0.1;
-        playfxontag( level._effects[19], level.geness[ i ], "tag_origin" );
+        //playfxontag( level._effects[19], level.geness[ i ], "tag_origin" );
         if( i == 1 )
         {
             //gene thread add_nadecheck();
