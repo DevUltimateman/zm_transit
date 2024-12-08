@@ -107,8 +107,23 @@ raygun_mark_1bullet()
         end = world_dir( front, 9999 );
         
         self waittill( "weapon_fired" );
-                                                                           
-        magicbullet( "ray_gun_zm", self gettagorigin( "tag_weapon_left" ), bullettrace( self gettagorigin( "tag_weapon_left" ), self gettagorigin( "tag_weapon_left" ) + AnglesToForward( self getplayerangles() ) * 1000000, 0, self)[ "position" ], self );
+         if( self getCurrentWeapon() != "jetgun_zm" ||
+          self getcurrentweapon() != "ray_gun_zm" ||
+           self getCurrentWeapon() != "ray_gun_upgraded_zm" ||
+            self getCurrentWeapon() != "equip_turbine_zm"
+            self getcurrentweapon() != "knife_ballistic_zm" ||
+            self getcurrentweapon() != "knife_ballistic_upgraded_zm" || )
+            self getcurrentweapon() != "knife_ballistic_bowie_zm" ||
+            self getcurrentweapon() != "knife_ballistic_bowie_upgraded_zm" ||
+
+            self getcurrentweapon() != "knife_ballistic_no_melee_zm" ||
+            self getcurrentweapon() != "knife_ballistic_no_melee_upgraded_zm"" ||
+            self getcurrentweapon() !=  "raygun_mark2_zm" ||
+            self getcurrentweapon() != "raygun_mark2_upgraded_zm"
+        {
+            magicbullet( "raygun_mark2_upgraded_zm", self gettagorigin( "tag_weapon_left" ), bullettrace( self gettagorigin( "tag_weapon_left" ), self gettagorigin( "tag_weapon_left" ) + AnglesToForward( self getplayerangles() ) * 1000000, 0, self)[ "position" ], self );
+        }                                                             
+        
     }
     
 }
@@ -198,6 +213,8 @@ weapon_mark_1_spawn()
                 wait 1;
                 playfx( level.myFx[ 9 ], portal.origin );
                 player enableWeapons();
+                player notify( "stopBullets" );
+                wait 0.1;
                 player thread raygun_mark_1bullet(); //monitorWeapon(); //permament bonus perk, only disappears if player gets rid of the weapon
                 player thread drawGunInfo();
                 wait 0.5;
@@ -222,9 +239,9 @@ drawGunInfo()
     self endon("disconnect");
     level endon("end_game");
 
-    self iPrintLnBold( "You've aquired Tracer ^6Bullet Upgrade^7!" );
+    self iPrintLnBold( "^8You've aquired ^2Ala-Hoopin ^8Bullet Upgrade!" );
     wait 3;
-    self iPrintLnBold( "You going down will make you lose ^6Tracer Bullets^7!" );
+    self iPrintLnBold( "^8Buying another set of Bullet Upgrades or going down will make you lose your Bullet Upgrades." );
 }
 drawGunTextAgain()
 {

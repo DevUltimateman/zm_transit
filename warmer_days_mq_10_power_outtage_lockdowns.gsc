@@ -97,7 +97,7 @@ init()
     movable_locations();
 
     flag_wait( "initial_blackscreen_passed" );
-    level thread wait_players_at_pylon();//debugging for 7/12/2024
+    //level thread wait_players_at_pylon();//debugging for 7/12/2024
     wait 0.1;
     level waittill( "drunk_state_over" );
     level thread do_dialog_about_tunnel_help();

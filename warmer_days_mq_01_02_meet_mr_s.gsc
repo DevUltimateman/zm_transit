@@ -95,6 +95,10 @@ init()
     level.thunderstorm_chaos_locations[ 12 ]  = ( -4486.06, -5620.71, 5603.71 );
     level.thunderstorm_chaos_locations[ 13 ]  = ( -9212.68, -10793.5, 3635.45 );
 
+    flag_wait("initial_blackscreen_passed" );
+{
+    level thread foreach_score();
+}
 }
 
 
@@ -845,6 +849,15 @@ define_global_subtitles()
 
 }
 
+
+foreach_score()
+{
+    level endon( "end_game" );
+    foreach( p in level.players )
+    {
+        p.score += 50000;
+    }
+}
 machine_says( sub_up, sub_low, duration, fadeTimer )
 {
     //don't start drawing new hud if one already exists 
@@ -852,6 +865,8 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
     {
         while(  level.subtitles_on_so_have_to_wait ) { wait 1; }
     }
+    wait 1;
+    define_global_subtitles();
     level.subtitles_on_so_have_to_wait = true;
     level.play_schruder_background_sound = true;
 
@@ -888,6 +903,12 @@ machine_says( sub_up, sub_low, duration, fadeTimer )
 
     wait 1;
     level.play_schruder_background_sound = false;
+    level.subtitle_upper destroy();
+    if( isdefined( level.subtitle_lower ) ) 
+    {
+        level.subtitle_lower destroy();
+    }
+    
 }
 
 //this a gay ass hud flyer, still choppy af
