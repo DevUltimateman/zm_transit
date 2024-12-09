@@ -102,7 +102,7 @@ init()
     level waittill( "drunk_state_over" );
     level thread do_dialog_about_tunnel_help();
     level thread spawn_all_distance_checkers();
-    level thread spawn_all_triggers();
+    //level thread spawn_all_triggers();
    
     level thread spawn_tunnel_stuff();
     //level thread spawn_alley_stuff();
@@ -116,10 +116,10 @@ do_dialog_about_tunnel_help()
     wait 2.5;
     foreach( p in level.players ){   p thread daytime_preset();  }
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "Hahaa, you've had your fun ha?", "I think we can move ahead to try finding the ^3Tranceiver^8 .", 5, 1 );
+    level thread do_dialog_here( "Hahaa, you've had your fun ha?", "I'm still looking for an ^3Tranceiver^8.", 5, 1 );
     wait 6;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread do_dialog_here( "The ^3Tranceiver ^8has long been gone, but we could try time hopping..", "We might be able to locate the device from another dimension.", 7, 1 );
+    level thread do_dialog_here( "The ^3Tranceiver ^8has long been gone and yours is broken..", "We might be able to locate the device from another dimension.", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "Let me spawn a ^9Back In Time Teleporter^8 for you in the tunnels.", "^8It should be there in a second..", 7, 1 );
@@ -869,9 +869,9 @@ spawn_alley_stuff_better()
 {
     level endon( "end_game" );
 
-    mod = spawn( "script_model", level.players[ 0 ].origin );
-    mod setmodel( level.mymodels[ 9 ] );
-    mod.angles = level.players[ 0 ].angles;
+    //mod = spawn( "script_model", level.players[ 0 ].origin );
+    //mod setmodel( level.mymodels[ 9 ] );
+    //mod.angles = level.players[ 0 ].angles;
     /*
     while( true )
     {
@@ -1073,7 +1073,7 @@ start_moving_strike_play()
     self endon( "end_game" );
     level endon( "end_game" );
 
-    landing_first = ( 2533.56, -1770.08, 26.1517 );
+    landing_first = ( 2533.56, -1745.08, 26.1517 );
     landing_second = ( 2536.4, -1866.77, -34.9271 );
     landing_pickup = ( 2536.4, -2022.66, -14.3599 );
 
@@ -1134,6 +1134,8 @@ do_meet_at_pylon_text()
     level thread do_dialog_here( "^8We can call help once we've applied the ^9Tranceiver ^8to the ^9Pylon^8.", "^8Be quick, I'll be waiting for you. No hurries tho haha!", 10, 1 );
     wait 11;
     level thread wait_players_at_pylon();
+
+    level thread spawn_all_triggers();
 }
 
 wait_players_at_pylon()
@@ -1152,7 +1154,9 @@ wait_players_at_pylon()
     sa.angles = ( 5, 10, 0 );
     
     wait 1;
-    sa playloopsound( "zmb_screecher_portal_loop", 2 );
+    //sa playloopsound( "zmb_screecher_portal_loop", 2 );
+
+    //go into power outtage with this
     while( true )
     {
         ss waittill( "trigger", who );
@@ -1172,35 +1176,30 @@ wait_players_at_pylon()
         wait 0.1;
     }
     wait 3;
-    level thread do_dialog_here( "^8You should try calling some help!", "^8I think it's our best option.", 7, 1 );
+    //level thread do_dialog_here( "^8You should try calling some help!", "^8I think it's our best option.", 7, 1 );
     wait 0.1;
     level thread do_power_out_texts();
     while( true )
     {
         ss waittill( "trigger", who );
-        if( isdefined( ss.is_valid ) && ss.is_valid == false )
+        
+        ss.is_valid = true;
+        ss sethintstring( "^8[ ^2Help ^8called ^8]" );
+        playfx( level.myFx[ 87 ], sa.origin );
+        PlaySoundAtPosition(level.jsn_snd_lst[ 29 ], sa.origin ); 
+        wait 3;
+        
+        self playsound( level.mysounds[ 7 ] );
+        PlaySoundAtPosition( level.mysounds[ 4 ], ss.origin );
+        wait 2.5;
+        Earthquake( .5, 4,  ss.origin, 1000 );
+        for( i = 0; i < 4; i++ )
         {
-            break;
+            playfx( level.myFx[ 82 ], ss.origin + ( randomint( 25 ), randomint( 25 ), 0 ) );
+            wait randomFloat( 1 );
         }
-        if( is_player_valid( who ) )
-        {
-            ss.is_valid = true;
-            ss sethintstring( "^8[ ^2Help ^8called ^8]" );
-            playfx( level.myFx[ 87 ], sa.origin );
-            PlaySoundAtPosition(level.jsn_snd_lst[ 29 ], sa.origin ); 
-            wait 3;
-            
-            self playsound( level.mysounds[ 7 ] );
-            PlaySoundAtPosition( level.mysounds[ 4 ], ss.origin );
-            wait 2.5;
-            Earthquake( .5, 4,  ss.origin, 1000 );
-            for( i = 0; i < 4; i++ )
-            {
-                playfx( level.myFx[ 82 ], ss.origin + ( randomint( 25 ), randomint( 25 ), 0 ) );
-                wait randomFloat( 1 );
-            }
-            break;
-        }
+        break;
+        
         wait 0.1;
     }
     foreach( s in level.players )
@@ -1220,25 +1219,59 @@ wait_players_at_pylon()
     ss sethintstring( "^8[ ^1Malfunction^8, requires ^9re-powering ^8]" );
 
     level waittill( "all_powered" );
-    ss sethintstring( "^9[ ^8Booting.. ^9]" );
-    level waittill( "can_be_ended" );
-    ss sethintstring( "^8[ ^8Call help. Requires^9 All Survivors^8 to press ^3[{+activate}]^8 at the same time. ]");
+    
+    ss setHintString( "^9[ ^3[{+activate}] ^8to call ^3Mr. Schruder ^8for one more time.. ^9]" );
+    wait 0.1;
 
-    wait 1;
+    while( true )
+    {
+        ss waittill( "trigger", presser );
+        if( !is_player_valid( presser  ) )
+        {
+            wait 0.05;
+            continue;
+        }
+
+        if( isAlive( presser ) )
+        {
+            if( is_player_valid( presser ) )
+            {
+                ss setHintString( "^9[ ^3" + presser.name + " ^8Called ^3Mr. Schruder^8 for the final time.. ^9]" );
+                wait 0.08;
+                level notify( "called_s" );
+                foreach( p in level.players ){ p playsound( level.jsn_snd_lst[ 20 ] ); }
+                wait 1;
+                break;
+            }
+        }
+    }
+    wait 2.5;
+    ss sethintstring( "" );
+    level waittill( "can_call_help" );
+    wait 2.5;
+    ss sethintstring( "^9[ ^8Call help. ^3[{+activate}] ^8to send the signal. There's no turning back after this. ^9]");
+    
     while( true )
     {
         ss waittill( "trigger", who );
-        if( is_player_valid( who ) )
+        if( !is_player_valid( who ) )
+        {
+            wait 0.05;
+            continue;
+        }
+        else if( is_player_valid( who ) )
         {
             level notify( "chaos_ensues_from_calling_help" );
             wait 0.1;
-            ss sethintstring( "^9[ ^8Help has been called.. ^9]" );
-            wait 1;
+            self sethintstring( "" );
+            
+            wait 0.1;
             break;
         }
     }
-    wait 5;
+    
     ss delete();
+    
 }
 
 do_power_out_texts()

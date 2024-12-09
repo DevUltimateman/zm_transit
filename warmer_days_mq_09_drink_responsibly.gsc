@@ -285,7 +285,7 @@ do_drink_animation()
 reduce_stamina_for_certain_time()
 {
     level endon( "end_game" );
-    iPrintLnBold( "THIS WAS NOT THE CORRECT DRINK!!!" );
+    //iPrintLnBold( "THIS WAS NOT THE CORRECT DRINK!!!" );
 }
 
 

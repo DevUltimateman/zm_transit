@@ -320,7 +320,7 @@ firegrenades_step2()
             nade notify( "please_notify" ); //force kill charge_player_nades function
             self notify( "reward_me" ); //notify global func to give player their firenades
             if( level.dev_time ){ iprintlnbold( "dev_time info: Player " + idx.name + " received ^3firenades"); }
-            iprintlnbold( "Player " + idx.name + " achieved ^3firenades" );
+            //iprintlnbold( "Player " + idx.name + " achieved ^3firenades" );
             ///a required statement? We are in while( this ) loop..
             break;
         }
@@ -528,7 +528,7 @@ firegrenade_player_wait_for_upgrade()
     
     //the real on screen subtitles for this step
     /* TEXT | LOWER TEXT | DURATION | FADEOVERTIME */
-    self _someone_unlocked_something_client( "^9Dr. Schruder: ^8What!? How did you find all the nades so quickly?", "^8Silly you, you still have things to do.. ^9Zombie ^8go boom! ", 8, 0.1 );
+    self _someone_unlocked_something_client( "^9Dr. Schruder: ^8What!? How did you find all the nades so quickly?", "^8Try using those grenades now till they are fully charged up with energy!", 8, 0.1 );
 
     //notify the waittill("its_time") to progress into firenade step 2
     self notify( "its_time" ); //custom noti / waittill

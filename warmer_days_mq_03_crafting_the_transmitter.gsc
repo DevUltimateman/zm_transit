@@ -134,6 +134,7 @@ navcomputer_waitfor_navcard_clean()
 }
 transmitter_wait_for_navcard()
 {
+    level endon( "end_game" );
     location = ( 7457.21, -431.969, -195.816 );
     navtrig = spawn( "trigger_radius_use", location, 0, 48, 48 );
     navtrig setcursorhint( "HINT_NOICON" );
@@ -141,7 +142,7 @@ transmitter_wait_for_navcard()
     navtrig triggerignoreteam();
     wait 0.1;
 
-    navtrig thread wait_for_final_meet_up();
+   // navtrig thread wait_for_final_meet_up();
     mod = spawn( "script_model", navtrig.origin );
     mod setmodel( "tag_origin" );
     mod.angles = mod.angles;
@@ -176,6 +177,8 @@ transmitter_wait_for_navcard()
             }
             wait 6.5;
             level notify( "s_talks_navcard" );
+            wait 3; 
+            navtrig delete();
            // 
             break;
         }
@@ -187,56 +190,7 @@ wait_for_final_meet_up()
     level endon( "end_game" );
     level waittill( "all_powered" );
     wait 0.1;
-    self setHintString( "^9[ ^3[{+activate}] ^8to call ^3Mr. Schruder ^8for one more time.. ^9]" );
-    wait 0.1;
-    while( true )
-    {
-        self waittill( "trigger", presser );
-        if( !is_player_valid( presser  ) )
-        {
-            wait 0.05;
-            continue;
-        }
-
-        if( isAlive( presser ) )
-        {
-            if( is_player_valid( presser ) )
-            {
-                self setHintString( "^9[ ^3" + presser.name + " ^8Called ^3Mr. Schruder^8 for the final time.. ^9]" );
-                wait 0.08;
-                level notify( "called_s" );
-                foreach( p in level.players ){ p playsound( level.jsn_snd_lst[ 20 ] ); }
-                wait 1;
-                break;
-            }
-        }
-    }
-    wait 2.5;
-    self sethintstring( "" );
-    level waittill( "can_call_help" );
-    wait 2.5;
-    self sethintstring( "^9[ ^8Call help. ^3[{+activate}] ^8to send the signal. There's no turning back after this. ^9]");
     
-    while( true )
-    {
-        self waittill( "trigger", who );
-        if( !is_player_valid( who ) )
-        {
-            wait 0.05;
-            continue;
-        }
-        else if( is_player_valid( who ) )
-        {
-            level notify( "chaos_ensues_from_calling_help" );
-            wait 0.1;
-            self sethintstring( "" );
-            
-            wait 0.1;
-            break;
-        }
-    }
-    
-    self delete();
 }
 play_nav1_success( this_position )
 {

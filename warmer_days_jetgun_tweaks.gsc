@@ -1596,7 +1596,7 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
 	//level.hudtext.color = ( 1, 1, 1 );
 
     level.hudtext settext("^9Loading Scenario: ");
-	level.hud settext( level.round_number );
+	level.hud setvalue( level.round_number );
 	level.huddefcon setText( "^9Scenario: " );
     level.huddefcon.fontscale = 1.25; 
 	level.huddefcon.alpha = 0;
@@ -1656,7 +1656,7 @@ CustomRoundNumber() //original code by ZECxR3ap3r, modified it to my liking
     level.hud.alpha = 0;
     wait 1.5;
     level.hud.color = ( 0.65, 0.65, 0.65 );
-    level.hud settext(  level.round_number );
+    level.hud setvalue(  level.round_number );
     level.hud fadeovertime( 0.5 );
     
     level.hud.alpha = 1; //Debug 0
@@ -1759,7 +1759,7 @@ flashroundnumber()
 	level.hud.alpha = 0;
 	wait 1.2; //og 1 
     level.hud.color = ( 0.45, 0, 0 );
-	level.hud settext(  level.round_number );
+	level.hud setvalue(  level.round_number );
     level.hud.fontscale = 1.92;
     level.hud.x = 0;
     level.hud.y = -80;
@@ -1783,7 +1783,7 @@ flashroundnumber()
     level.hud.alpha = 0;
     wait 1;
     level.hud.color = ( 0.65, 0.65, 0.65 );
-    level.hud settext( level.round_number );
+    level.hud setvalue( level.round_number );
     level.hud fadeovertime( 0.5 );
     level.hud.alpha = 1; //Debug 0
     wait 1;

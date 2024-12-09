@@ -272,7 +272,8 @@ follow_spirit()
         level thread return_spirit_textline( i );
         level.o_spirit waittill( "movedone" );
     }
-    PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    PlaySoundAtPosition("wpn_jetgun_effect_plr_end", level.o_spirit.origin );
+    PlaySoundAtPosition( "mus_zombie_round_start", level.o_spirit.origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Spirit Of Sorrow", "^8Finally met Dr. Schruder but where did he go and who's this flying thing?", "Maybe I should try to catch it.", 6, 0.25 );
     //hover till player is near the orb
     level.o_spirit thread hover_orb();
@@ -299,8 +300,10 @@ follow_spirit()
         {
             to_skip = true;
         }
+        PlaySoundAtPosition( "wpn_jetgun_effect_plr_start", level.o_spirit.origin );
         level.o_spirit moveto( level.spirit_locations[ s ], randomfloatrange( 1, 1.4 ), 0.2, 0.2 );
         level.o_spirit waittill( "movedone" );
+        PlaySoundAtPosition("wpn_jetgun_effect_plr_end", level.o_spirit.origin );
         if( !to_skip )
         {
             level.o_spirit thread hover_orb();
@@ -309,6 +312,7 @@ follow_spirit()
                 wait 0.1;
             }
             level.o_spirit notify( "s_hover" );
+            
         }
         to_skip = false;
         wait 0.05;
@@ -441,6 +445,7 @@ initial_spirit_visual()
 
 player_is_away()
 {
+    level endon( "end_game" );
     for( i = 0; i < level.players.size; i++ )
     {
         if( distance( level.players[ i ].origin, level.o_spirit.origin ) < 200 )
@@ -881,7 +886,7 @@ global_locations()
 spirit_says( text, text2, duration, fadetimer )
 {
     level endon( "end_game" );
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^8" + text, "^8" + text2, duration, fadetimer );
+    //level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^8" + text, "^8" + text2, duration, fadetimer );
 }
 
 machine_says( sub_up, sub_low, duration, fadeTimer )

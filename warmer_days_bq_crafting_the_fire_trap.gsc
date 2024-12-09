@@ -1092,9 +1092,32 @@ do_everything_for_gas_placedown()
     }
     level thread playloop_electricsound();
     level notify( "base_firetrap_active" );
+
+    level thread monitor_zombies();
 }
 
-
+monitor_zombies()
+{
+    level endon( "end_game" );
+    while( true )
+    {
+        som = getAIArray( level.zombie_team );
+        for( a = 0; a < level.gas_fireplaces.size; a++ )
+        {
+            for( s = 0; s < som.size; s++ )
+            {
+                if( distance( som[ s ].origin, level.gas_fireplaces[ a ] ) < 150 )
+                {
+                    wait 0.1;
+                    som[ s ] dodamage( som[ s ].health + 50, som[ s ].origin );
+                }
+            }
+            wait 0.1;
+        }
+        wait 2.5;
+        
+    }
+}
 spawn_workbench_to_build_fire_trap_entrance()
 {
     level endon( "end_game" );

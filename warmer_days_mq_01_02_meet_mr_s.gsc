@@ -772,7 +772,7 @@ meeting_vox18( background_music )
     if( background_music == "" )
     {
         //play_sound_at_pos( background_music, level.players[0].origin );
-        subtitle_upper =  "Interesting, seems that the lamps now require some power..";
+        subtitle_upper =  "The lamps now require some power..";
         subtitle_lower = "Try bringing a turbine or something underneath the lamp!";
         duration = 9;
         fadetimer = 1;
@@ -855,7 +855,7 @@ foreach_score()
     level endon( "end_game" );
     foreach( p in level.players )
     {
-        p.score += 50000;
+        //p.score += 50000;
     }
 }
 machine_says( sub_up, sub_low, duration, fadeTimer )

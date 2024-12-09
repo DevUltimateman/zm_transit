@@ -914,10 +914,7 @@ do_guide_blockers_dialog()
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + "Are you guys able to hear me?", "^8" + "What was that?!", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + "^6And what's up with ^5Spirit Of Sorrow^8?", "^8" + "I believe someone else is controlling her..", 7, 1 );
-    wait 8;
-    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + "Those toxic clouds seem to be gone for now.", "^8" + "Seems that there's only minor mist still present.", 7, 1  );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + "Those toxic clouds seem to be gone for now.", "^8" + "There's only minor mist still present.", 7, 1  );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says(  "^9Dr. Schruder: ^8" + "You should locate the mixing container from ^9Bus Depot^8.", "^8" + "We should craft an potion after that.", 8, 1 );

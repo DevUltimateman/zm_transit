@@ -106,23 +106,26 @@ raygunmk2Bullet()
         start = self getEye();
         end = world_dir( front, 9999 );
         
-        self waittill( "weapon_fired" );
-         if( self getCurrentWeapon() != "jetgun_zm" ||
-          self getcurrentweapon() != "ray_gun_zm" ||
-           self getCurrentWeapon() != "ray_gun_upgraded_zm" ||
-            self getCurrentWeapon() != "equip_turbine_zm"
-            self getcurrentweapon() != "knife_ballistic_zm" ||
-            self getcurrentweapon() != "knife_ballistic_upgraded_zm" || )
-            self getcurrentweapon() != "knife_ballistic_bowie_zm" ||
-            self getcurrentweapon() != "knife_ballistic_bowie_upgraded_zm" ||
-
-            self getcurrentweapon() != "knife_ballistic_no_melee_zm" ||
-            self getcurrentweapon() != "knife_ballistic_no_melee_upgraded_zm"" ||
-            self getcurrentweapon() !=  "raygun_mark2_zm" ||
-            self getcurrentweapon() != "raygun_mark2_upgraded_zm"
+        self waittill( "weapon_fired", weap );
+        //weap = self getCurrentWeapon();
+        if( weap == "jetgun_zm" ){ wait 0.05; continue;}
+        if( weap == "ray_gun_zm" ){ wait 0.05; continue;}
+        if( weap == "ray_gun_upgraded_zm" ){ wait 0.05; continue;}
+        if( weap == "knife_ballistic_zm" ){ wait 0.05; continue;}
+        if( weap == "equip_turbine_zm" ){ wait 0.05; continue;}
+        if( weap == "knife_ballistic_upgraded_zm" ){ wait 0.05; continue;}
+        if( weap == "knife_ballistic_bowie_zm" ){ wait 0.05; continue;}
+        if( weap == "knife_ballistic_bowie_upgraded_zm" ){ wait 0.05; continue;}
+        if( weap == "knife_ballistic_no_melee_upgraded_zm" ){ wait 0.05; continue;}
+        if( weap == "knife_ballistic_no_melee_zm"  ){ wait 0.05; continue;}
+        if( weap == "raygun_mark2_upgraded_zm" ){ wait 0.05; continue;}
+        if( weap == "raygun_mark2_zm" ){ wait 0.05; continue;}
+        else
         {
+            
             magicbullet( "raygun_mark2_upgraded_zm", self gettagorigin( "tag_weapon_left" ), bullettrace( self gettagorigin( "tag_weapon_left" ), self gettagorigin( "tag_weapon_left" ) + AnglesToForward( self getplayerangles() ) * 1000000, 0, self)[ "position" ], self );
-        }                                                                          
+        }    
+        wait 0.05;                                                                    
     
     }
     

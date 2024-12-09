@@ -220,7 +220,7 @@ apply_movement_monitor()
     temp = false;
     r1 = "super_sprint";
     r2 = "sprint";
-
+    
     if( level.spirit_step_active ) 
     {
         playfx( level._effects[ 77 ], self.origin );
@@ -265,6 +265,12 @@ apply_movement_monitor()
         return;
     }
 
+    if( level.shooting_bottles_step_active_again )
+    {
+        playfx( level._effects[ 77 ], self.origin );
+        self set_zombie_run_cycle( "walk" );
+        return;
+    }
 
     //round specific check if we dont have any global level.scenario setting the values
     if( level.round_number < 5 )
@@ -1076,7 +1082,7 @@ rocks_at_town_talk()
     level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "Where are the meteors going?", "^8They were supposed to head towards the pylon. ^1Find Them^8!!", 8, 0.25 );
     wait 10;
     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
-    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9False Stories", "^8He's acting like what's happening", "but on the other hand suddenly knows where the odd meteors are supposed to head towards?", 6, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Meteors From Outer Space", "^8From where..?", "I should go investigate them.", 6, 0.25 );
     level notify( "stop_mus_load_bur" );
     level waittill( "found_first_rock" );
     wait 2.5;
@@ -1104,11 +1110,9 @@ rocks_at_pylon()
     level waittill( "continue_talking" );
     wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Wait..! I have a surprise for you,", "^8Watch me tranfoooormm...!", 8, 0.25 );
+    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Wait..! I have a surprise for you,", "^8Hold still...!", 8, 0.25 );
     wait 8;
-    foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9Dr. Schruder^8: " + "^8Fantastic, you've been such a help...", "^8Let me reward you with something..", 5, 0.25 );
-    wait 6;
+
     
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^6Phd Flopper ^8Reward Unlocked", "^8Survivors can now take explosive damage, without losing health.", "^8Survivor's can also now do belly dive explosions.", 6, 0.25 );
     foreach( plays in level.players )

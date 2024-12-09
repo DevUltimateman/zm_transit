@@ -148,7 +148,7 @@ spawn_lockdown_enabler( origin )
     //level waittill( "obey_spirit_complete" );
     trig = spawn( "trigger_radius_use", origin, 0, 85, 85 );
     trig setCursorHint( "HINT_NOICON" );
-    trig sethintstring( "^8[ ^9[{+activate}] ^8 to call ^5Spirit Of Sorrow ^8back! ^8Requires all survivors to be present. ^8]" );
+    trig sethintstring( "^8[ ^9[{+activate}] ^8 to release ^9Spirit Of Sorrow^8. ^8Requires all survivors to be present. ^8]" );
     trig TriggerIgnoreTeam();
     wait 0.1;
 
@@ -172,7 +172,8 @@ spawn_lockdown_enabler( origin )
     trig thread monitor_player_use();
 
     level waittill( "lockdown_enabled" );
-    PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    PlaySoundAtPosition("mus_zombie_splash_screen", level.players[ 0 ].origin );
+    //PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Spirit From Hell", "^8That was a stupid choice.", "Survive.", 6, 0.25 );
     wait 0.05;
     trig delete();
@@ -349,10 +350,10 @@ spawn_lockdown_blockers()
     }
     wait 1;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread _someone_unlocked_something( "^8Seems like ^4Spirit Of Sorrow^8 has gone rogue.", "^8Be careful out there!", 7, 1 );
+    level thread _someone_unlocked_something( "^8Let's regroup at ^9Safe House", "^8Some sorta toxic cloud is forming around the map.", 7, 1 );
     wait 8;
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-    level thread _someone_unlocked_something( "^8Watch out for the poisonous gas!!!", "^8Get to your ^5Safe House^8 immediately!", 8, 1 );
+    level thread _someone_unlocked_something( "^8Watch out for the poisonous gas!!!", "^8Get to your ^9Safe House^8 immediately!", 8, 1 );
     level notify( "stop_mus_load_bur" );
     
 }

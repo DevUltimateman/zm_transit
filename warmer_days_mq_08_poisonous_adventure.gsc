@@ -65,6 +65,7 @@ disable_triggers_custom()
 
 levelBusLi()
 {
+    
     //flag_wait( "initial_blackscreen_passed" );
     wait 6;
    // level.the_bus.frontLight 	= SpawnAndLinkFXToOffset( level._effect[ "fx_busInsideLight" ], self, ( 130, 0, 130), ( -90, 0, 0 ) );
@@ -105,6 +106,7 @@ busFuelTankSetup()
 
 init()
 {
+    level.shooting_bottles_step_active_again = false;
     all_suitcase_ground_position();
     level thread rise_suitcase();
     //need to have these initialized here for debugging purposes coz we dont pick up the original suitcase now while testiing
@@ -320,17 +322,18 @@ spin_me_around_mq()
 
 all_suitcase_ground_position()
 {
+    
     level.suitcase_ground_positions = [];
     //quick
     level.suitcase_ground_positions[ 0 ] = ( -6704.51, 5039.83, -45.875 );
     //speed
-    level.suitcase_ground_positions[ 1 ] = ( -5530.7, -7865.11, 0.125 );
+    level.suitcase_ground_positions[ 1 ] = ( -5530.7, -7865.11, 25.125 );
     //dtap
-    level.suitcase_ground_positions[ 2 ] = ( 8038.52, -4657.54, 264.125 );
+    level.suitcase_ground_positions[ 2 ] = ( 8038.52, -4657.54, 284.125 );
     //toomb
     //level.suitcase_ground_positions[ 3 ] = ( 10863, 8290.47, -407.875 );
     //jugg
-    level.suitcase_ground_positions[ 3 ] = ( 1038.92, -1490.15, 128.125 );
+    level.suitcase_ground_positions[ 3 ] = ( 1038.92, -1490.15, 148.125 );
 
 
 }
@@ -539,7 +542,7 @@ spawn_drinkable_step()
                 who takeWeapon( "zombie_perk_bottle_tombstone" );
                 who playsound( "evt_bottle_dispense" );
                 foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
-                level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who.name + "^8 took a sip from the potion.", "^8" + "T", 5, 1 );
+                level thread scripts\zm\zm_transit\warmer_days_mq_01_02_meet_mr_s::machine_says( "^9" + who.name + "^8 took a sip from the potion.", "^8" + "", 5, 1 );
                 wait 0.1;
                 anim_trig sethintstring( "^9[ ^3[{+activate}] ^8to take a zip of ^3Potion ^9]" );
             }
@@ -694,10 +697,10 @@ spin_all_over_pitch()
 spawn_rogue_bottle( location )
 {
     level endon( "end_game" );
-
+    level.shooting_bottles_step_active_again = true;
     mq_shooting_bottle = spawn( "script_model", location );
     mq_shooting_bottle setmodel( "t6_wpn_zmb_perk_bottle_tombstone_world" );
-    mq_shooting_bottle.angles = mq_shooting_bottle.angles;
+    mq_shooting_bottle.angles = ( randomintrange( 35, 90 ), randomint( 180 ), 0 );
     wait 0.05;
     mq_shooting_bottle playLoopSound(  level.jsn_snd_lst[ 26 ] );
     mq_shooting_bottle thread playsoundlooper();
@@ -726,9 +729,9 @@ spawn_rogue_bottle( location )
     PlaySoundAtPosition( level.jsn_snd_lst[ 70 ], mq_trigger_shot.origin );
     playsoundatposition( level.jsn_snd_lst[ 91 ], mq_shooting_bottle.origin );
     suitcase_locs[ 0 ] = ( -6704.51, 5039.83, -45.875 ); //quick
-    suitcase_locs[ 1 ] = ( -5530.7, -7865.11, 0.125 ); //speed
-    suitcase_locs[ 2 ] = (  8038.52, -4657.54, 264.125 ); //dtap
-    suitcase_locs[ 3 ] = ( 1038.92, -1490.15, 128.125 ); //jugg
+    suitcase_locs[ 1 ] = ( -5530.7, -7865.11, 25.125 ); //speed
+    suitcase_locs[ 2 ] = (  8038.52, -4657.54, 284.125 ); //dtap
+    suitcase_locs[ 3 ] = ( 1038.92, -1490.15, 148.125 ); //jugg
     
     //bus depo / revive
     if( location == suitcase_locs[ 0 ] )
@@ -839,14 +842,15 @@ spawn_rogue_bottle( location )
         mq_trigger_shot waittill( "damage", amount, attacker );
         if( isplayer( attacker ) )
         {
-            playfx( level.myFx[ 92 ], mq_shooting_bottle.origin );
+            playfx( level.myFx[ 87 ], mq_shooting_bottle.origin );
+            //playfx( level.myFx[ 92 ], mq_shooting_bottle.origin );
             if( level.dev_time )
             { 
                 iprintlnbold( "MOVING BOTTLE AGAIN" );
             }
             level thread add_spark_fx_then_delete( mq_shooting_bottle );
             PlaySoundAtPosition(level.jsn_snd_lst[ 43 ] , mq_trigger_shot.origin );
-            playfxontag( level.myFx[ 94 ], mq_shooting_bottle, "tag_origin");
+            //playfxontag( level.myFx[ 94 ], mq_shooting_bottle, "tag_origin");
            // playfx( level.myFx[ 96 ], mq_shooting_bottle.origin );
             playFXOnTag( level.myFx[ 33 ], mq_shooting_bottle, "tag_origin" );
             mq_shooting_bottle notify( "stop_hovers" );
@@ -862,7 +866,7 @@ spawn_rogue_bottle( location )
     mq_shooting_bottle moveto( location + ( 0, 0, 90 ), 2, 0.4, 0.5 );
     mq_shooting_bottle waittill( "movedone" );  
     level thread fxsfxs( location + ( 0, 0, 90 ) );
-    iprintlnbold( "DAMAGE GIVEN NADE" );    
+    //iprintlnbold( "DAMAGE GIVEN NADE" );    
     level notify( "bottle_has_been_returned" );
     wait 1;
     playfxontag( level._effect[ "avogadro_ascend_aerial" ], mq_shooting_bottle, "tag_origin" );
@@ -880,6 +884,7 @@ spawn_rogue_bottle( location )
         playfx( level.myFx[ 90 ], mq_shooting_bottle.origin );
         mq_shooting_bottle delete();
     }
+    level.shooting_bottles_step_active_again = false;
     wait 2;
     if( level.suitcases_collected == 4 )
     {
@@ -1196,25 +1201,7 @@ initial_mover_quickrevive( who )
 
 }
 */
-which_is_closest()
-{
-    level endon( "end_game" );
 
-    level.suitcase_ground_positions = [];
-    //quick
-    level.suitcase_ground_positions[ 0 ] = ( -6704.51, 5039.83, -45.875 );
-    //speed
-    level.suitcase_ground_positions[ 1 ] = ( -5530.7, -7865.11, 0.125 );
-    //dtap
-    level.suitcase_ground_positions[ 2 ] = ( 8038.52, -4657.54, 264.125 );
-    //toomb
-    //level.suitcase_ground_positions[ 3 ] = ( 10863, 8290.47, -407.875 );
-    //jugg
-    level.suitcase_ground_positions[ 3 ] = ( 1038.92, -1490.15, 128.125 );
-
-
-
-}
 
 animate()
 {

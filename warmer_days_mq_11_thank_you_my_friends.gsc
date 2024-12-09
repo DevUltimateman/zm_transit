@@ -529,8 +529,6 @@ spawn_all_pickable_acidgats()
     all_acid_locations = [];
     all_acid_locations[ 0 ] = ( 13621.5, -1367.02, -188.875 );
     all_acid_locations[ 1 ] = ( 13667.4, -1569.79, -188.875 );
-    all_acid_locations[ 2 ] = ( 13948.4, -1464.84, -189.639 );
-    all_acid_locations[ 3 ] = ( 13849.5, -1594.37, -171.202 );
 
     wait 0.05;
     

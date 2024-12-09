@@ -47,7 +47,7 @@ init()
     level.e_trap_ee_kills_required = 30;
     level thread intro_credit_camera();
     precache_these_models();
-    level thread debug_placement();
+    //level thread debug_placement();
     replacefunc( maps\mp\zombies\_zm_equip_electrictrap::zap_zombie, ::zap_zombies ); //make it to also increase level.e_tarp_ee_kills
     flag_wait( "initial_blackscreen_passed" );
     level thread spawn_barret_buyables();
