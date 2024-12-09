@@ -1,3 +1,2 @@
-# tranzit_reimagined_v2
-# An upcoming mega update to Tranzit Reimagined V2.
-# Release: Somewhere in 2024 ////2023////, no eta hehe.
+#Tranzit Revamped 2024 Source Codes by Ultimateman
+#Feel free to thank via small donation: https://www.paypal.com/donate/?hosted_button_id=WM4SLXZWT99Y4
