@@ -1102,20 +1102,16 @@ monitor_zombies()
     while( true )
     {
         som = getAIArray( level.zombie_team );
-        for( a = 0; a < level.gas_fireplaces.size; a++ )
+        target_to_check = level.gas_fireplaces[ 1 ];
+        for( s = 0; s < som.size; s++ )
         {
-            for( s = 0; s < som.size; s++ )
+            if( distance( som[ s ].origin, target_to_check ) < 150 )
             {
-                if( distance( som[ s ].origin, level.gas_fireplaces[ a ] ) < 150 )
-                {
-                    wait 0.1;
-                    som[ s ] dodamage( som[ s ].health + 50, som[ s ].origin );
-                }
+                wait 0.1;
+                som[ s ] dodamage( som[ s ].health + 50, som[ s ].origin );
             }
-            wait 0.1;
         }
-        wait 2.5;
-        
+        wait .5;   
     }
 }
 spawn_workbench_to_build_fire_trap_entrance()

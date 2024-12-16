@@ -44,6 +44,11 @@
 
 init()
 {
+    //this purpose is to play fake fire nade if one is already targeting zombies
+    //otherwise we g_spawn error due to too many models in the map simultaneously
+    level.fake_handle_required = false;
+
+
     precachemodel( "c_zom_farmgirl_viewhands" );
     precachemodel( "c_zom_oldman_viewhands" );
     precachemodel( "c_zom_engineer_viewhands" );
@@ -285,7 +290,7 @@ firegrenades_step2()
     //the least amount of uses we can have / start with
     self.nades_used = 0;
     //this many times math zombie - nade origin < 870 / randomint( 0, 6 ) has to happen before goal == reached
-    to_use = 4; //12 = release value or 6 in total...
+    to_use = 2; //12 = release value or 6 in total...
     
     //idx will be the player entity eventually
     idx = undefined;
@@ -566,7 +571,19 @@ firegrenades_throw_logic()
         self waittill( "grenade_fire", g, weapname );
         while( self fragButtonPressed()) { wait 0.05; } 
         //l
+        if(  g || weapname == "jetgun_zm" )             { wait 0.05; continue;}
+        if(  g || weapname == "turbine_zm" )            { wait 0.05; continue;}
+        if(  g || weapname == "equip_turbine_zm" )      { wait 0.05; continue;}
+        if(  g || weapname == "equip_electrictrap_zm" ) { wait 0.05; continue;}
+        if(  g || weapname == "electrictrap_zm" )       { wait 0.05; continue;}
+        if(  g || weapname == "turbine" )               { wait 0.05; continue;}
+        if(  g || weapname == "electrictrap" )          { wait 0.05; continue;}
+        if(  g || weapname == "blundersplat_zm" )       { wait 0.05; continue;}
+        if(  g || weapname == "blundergat_zm" )         { wait 0.05; continue;}
+
+        //if none of the above, then do this sexy grenade shit
         self thread firegrenade_funny_time( xpl_fx, orb_fx, g, self ); //self on the parameter for "thrower"
+        wait 0.1;
     }
 }
 
@@ -683,14 +700,7 @@ firegrenade_go_poke( grenade_model, who_id )
             //usually happens when multiple nades are waiting to get launched
             temporarily_targeted_zombies[ x ] = zombies[ i ];
             x++;
-            //use this mark for level ignore find flesh global
             temporarily_targeted_zombies[ x ].marked_to_summon = true;
-            //if( isAlive( temporarily_targeted_zombies[ x ]  ) )
-            //{
-                //temporarily_targeted_zombies[ x ].a.nodeath = true; //all zombies[ i ] inside of isAlive() has been previously coded as self.
-                //temporarily_targeted_zombies[ x ]  notify( "killanimscript" );
-            //}
-            
         }
     }
 
@@ -709,7 +719,19 @@ firegrenade_go_poke( grenade_model, who_id )
     //earthquake(<scale>, <duration>, <source>, <radius>)
     grenade_that_flies_to_sky movez( randomintrange( 750, 1200), randomfloatrange( 1, 1.4 ), 0.31, 0 );
     grenade_that_flies_to_sky waittill( "movedone" );
-
+    if( level.fake_handle_required )
+    {
+        wait 0.5;
+        grenade_that_flies_to_sky delete();
+        array_delete( temporarily_targeted_zombies );
+        if( isdefined( grenade_model ) ) { grenade_model delete(); }
+        wait 0.1;
+        return;
+    }
+    wait 0.05;
+    //if we get this far, enable this so that other players grenades can fly to sky but not target zombies
+    //when this global is active.
+    level.fake_handle_required = true; 
     for( s = 0; s < temporarily_targeted_zombies.size; s++ )
     {
         trail_from_sky_to_ground = spawn( "script_model", grenade_that_flies_to_sky.origin );
@@ -727,6 +749,10 @@ firegrenade_go_poke( grenade_model, who_id )
     array_delete( temporarily_targeted_zombies );
     //we seem to leave a trail fx hanging on the sky sometimes meaning that said fx's entity does not get removed from the world from previous logic for some reason
     if( isdefined( grenade_model ) ) { grenade_model delete(); }
+    wait 3;
+    //let other players fire grenades target zombies again
+    level.fake_handle_required = false;
+
 }
 
 //this function has been fixed now. no more orbs staying stuck on the sky in some cases, force deletes the entity if that happens

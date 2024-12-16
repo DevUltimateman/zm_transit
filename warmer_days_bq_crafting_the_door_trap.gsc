@@ -321,8 +321,10 @@ continue_search_logic( original_value )
     level endon( "end_game" );
     level waittill( "change_search_hintstring" );
     wait 0.25;
-    self setHintString( "^9[ ^8Something valuable was found. This location might reward you later once more.. ^9]" );
-    level waittill( "continue_search_logic_for_old_triggers" );
+    self setHintString( "^9[ ^8Something valuable was found. ^9]" );
+    wait 2.5;
+    self setHintString( "^9[ ^8Something valuable has already been found. ^9]" );
+    level waittill( "continue_search_logic_for_old_triggers" ); //forever waittill
 
 }
 
@@ -342,7 +344,7 @@ do_search_logic( maxss )
     }
     else { 
         who playsound( "zmb_perks_packa_deny" );
-        self setHintString( "^3[ ^8Nothing valuable was found, try coming back later ^3]" );}
+        self setHintString( "^9[ ^8Nothing valuable was found. ^9]" );}
 
 }
 precache_this()

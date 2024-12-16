@@ -1091,6 +1091,14 @@ do_weapon_buy( weapon, weapon_loc, weapon_angs, str, cost, real_weapon )
                     buyer switchtoweapon( real_weapon );
                     wait 1;
                 }
+
+                else if( buyer hasweapon( real_weapon ) )
+                {
+                    buyer.score -= w_cost / 2;
+                    buyer playsound( "zmb_cha_ching" );
+                    buyer givemaxammo( real_weapon );
+                    wait 1;
+                }
                 
             }
         }

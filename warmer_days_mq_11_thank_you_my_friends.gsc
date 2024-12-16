@@ -691,6 +691,8 @@ dont_return_till_this_dont_have_it( me, what_trig )
             break;
         }
     }
+    what_trig.is_activateable = true;
+
 }
 reduce_bullettracer_costs()
 {
