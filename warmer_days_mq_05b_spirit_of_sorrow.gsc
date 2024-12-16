@@ -131,7 +131,7 @@ waitflag()
 {
     level endon( "end_game" );
     flag_wait( "initial_blackscreen_passed" );
-    level.players[ 0 ].score += 100000;
+
     //step 1
     level waittill( "move_into_spirit_of_sorrow" );
     level.rock_summoning_step_active = false;
