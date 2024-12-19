@@ -1282,7 +1282,9 @@ update_ammo_stock_set_text()
             || weapon != "tazer_knuckles_zm"
             || weapon != "cymbal_monkey_zm" 
             || weapon != "sticky_grenade_zm" 
-            || weapon !=  "bowie_knife_zm" )
+            || weapon !=  "bowie_knife_zm"
+            || weapon !=  "none"
+            || weapon !=  "zombie_knuckle_crack"  )
             {
                 self.weapon_ammo_stock setvalue( self.stock_to_compare  );
                 while( self.stock_to_compare == self getweaponammostock( self getcurrentweapon() ) )
@@ -1308,7 +1310,9 @@ update_ammo_stock_set_text()
         || weapon != "tazer_knuckles_zm"
         || weapon != "cymbal_monkey_zm" 
         || weapon != "sticky_grenade_zm" 
-        || weapon !=  "bowie_knife_zm" )
+        || weapon !=  "bowie_knife_zm"
+        || weapon !=  "zombie_knuckle_crack"
+        || weapon !=  "none"  )
         {
             self.stock_to_compare = self getweaponammostock( self getcurrentweapon() );
             self.weapon_ammo_stock setvalue( self.stock_to_compare );
@@ -1362,6 +1366,8 @@ update_ammo_hud()
             || weapon == "cymbal_monkey_zm" 
             || weapon == "sticky_grenade_zm" 
             || weapon ==  "bowie_knife_zm"
+            || weapon ==  "zombie_knuckle_crack"
+            || weapon ==  "none" 
              )
             {
                 skip = true;
@@ -1435,10 +1441,12 @@ update_ammo_hud()
             || weapon == "equip_riotshield_zm"
             || weapon == "equip_electrictrap_zm" 
             || weapon == "tazer_knuckles_zm"
+            || weapon ==  "zombie_knuckle_crack"
             || weapon == "cymbal_monkey_zm" 
             || weapon == "sticky_grenade_zm" 
             || weapon == "frag_grenade_zm" 
-            || weapon ==  "bowie_knife_zm" )
+            || weapon ==  "bowie_knife_zm" 
+            || weapon ==  "none" )
             {
                 skip = true;
                 self.weapon_ammo fadeovertime( 0.05 );
@@ -1513,11 +1521,13 @@ also_monitor_weapon_change_for_fading()
             || weapon != "equip_turret_zm" 
             || weapon != "equip_riotshield_zm"
             || weapon != "equip_electrictrap_zm" 
+            || weapon !=  "zombie_knuckle_crack"
             || weapon != "tazer_knuckles_zm"
             || weapon != "cymbal_monkey_zm" 
             || weapon != "sticky_grenade_zm" 
             || weapon != "frag_grenade_zm" 
-            || weapon !=  "bowie_knife_zm" )
+            || weapon !=  "bowie_knife_zm" 
+            || weapon !=  "none" )
         {
             self thread ammo_fade_fast();
         }

@@ -107,34 +107,24 @@ explosive_tracer_bullet()
         end = world_dir( front, 9999 );
         
         self waittill( "weapon_fired", weap );
-        //weap = self getCurrentWeapon();
-        if( weap == "jetgun_zm" ){ wait 0.05; continue;}
-        if( weap == "turbine_zm" ){ wait 0.05; continue;}
-        if( weap == "equip_turbine_zm" ){ wait 0.05; continue;}
-        if( weap == "equip_electrictrap_zm" ){ wait 0.05; continue;}
-        if( weap == "electrictrap_zm" ){ wait 0.05; continue;}
-        if( weap == "turbine" ){ wait 0.05; continue;}
-        if( weap == "electrictrap" ){ wait 0.05; continue;}
-
-
-
-        if( weap == "ray_gun_zm" ){ wait 0.05; continue;}
-        if( weap == "ray_gun_upgraded_zm" ){ wait 0.05; continue;}
-        if( weap == "knife_ballistic_zm" ){ wait 0.05; continue;}
-        if( weap == "equip_turbine_zm" ){ wait 0.05; continue;}
-        if( weap == "knife_ballistic_upgraded_zm" ){ wait 0.05; continue;}
-        if( weap == "knife_ballistic_bowie_zm" ){ wait 0.05; continue;}
-        if( weap == "knife_ballistic_bowie_upgraded_zm" ){ wait 0.05; continue;}
-        if( weap == "knife_ballistic_no_melee_upgraded_zm" ){ wait 0.05; continue;}
-        if( weap == "knife_ballistic_no_melee_zm"  ){ wait 0.05; continue;}
-        if( weap == "raygun_mark2_upgraded_zm" ){ wait 0.05; continue;}
-        if( weap == "raygun_mark2_zm" ){ wait 0.05; continue;}
-        else if( weap == "barretm82_zm" || weap == "barretm82_upgraded_zm" || weap == "dsr50_zm" ||weap == "dsr50_upgraded_zm" )
+            //refactor and now taking into consideration the upgraded weapon name as well
+        if( weap == "barretm82_zm"
+         || weap == "barretm82_upgraded_zm"
+          || weap == "dsr50_zm"
+           ||weap == "dsr50_upgraded_zm"
+           || weap == "barretm82_upgraded_zm+vzoom"
+           || weap == "dsr50_upgraded_zm+vzoom"
+           || weap == "dsr50_upgraded_zm+silencer"
+           || weap == "dsr50_upgraded_zm+is" )
+           {
+                magicbullet( "m1911_upgraded_zm", self gettagorigin( "tag_weapon_left" ), bullettrace( self gettagorigin( "tag_weapon_left" ), self gettagorigin( "tag_weapon_left" ) + AnglesToForward( self getplayerangles() ) * 1000000, 0, self)[ "position" ], self );
+                wait 0.05;
+           }
+        else
         {
-            
-            magicbullet( "m1911_upgraded_zm", self gettagorigin( "tag_weapon_left" ), bullettrace( self gettagorigin( "tag_weapon_left" ), self gettagorigin( "tag_weapon_left" ) + AnglesToForward( self getplayerangles() ) * 1000000, 0, self)[ "position" ], self );
+                wait 0.05;  
         }    
-        wait 0.05;                                       
+                                             
     }
     
 }

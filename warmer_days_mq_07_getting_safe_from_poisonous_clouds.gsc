@@ -676,7 +676,7 @@ keep_track_of_all_on_farm()
     if( level.dev_time ){ iprintln( "SOMEONE AT BASE!!! ^2######################" );}
     level notify( "everyone_at_base" );
     level notify( "delete_checkpoints" );
-
+    PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Call Of Juarez ^8Reward Unlocked", "^8Survivors now pack twice the heat on their magazine.", "^8Survivor's ammo pouche capacity has been increased.", 6, 0.25 );
     setdvar( "player_clipSizeMultiplier", 2.0 ); 
     foreach( playa in level.players )

@@ -127,6 +127,7 @@ do_dialog_about_tunnel_help()
     foreach( g in level.players ) { for( i = 0; i < 4; i++ ) { g playSound( level.jsn_snd_lst[ 20 ] );} }
     level thread do_dialog_here( "See if you're able to pick the device up,", "once you have located it.", 7, 1 );
     wait 3;
+    PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
      PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Distant Memories", "^8Now this guy want's me to go back in time..", "..thru some sort of teleporter ring?", 6, 0.25 );
 }
@@ -367,6 +368,7 @@ restore_power_on_press( n )
             {
                 if( self.origin == level.power_outtage_trigger_diner )
                 {
+                    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::reward_mini_quest_avogadro_zombies();
                     self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
                     level thread do_power_restoring_lockdown( level.power_outtage_blocker_diner );
                     level thread power_store_visuals();
@@ -385,6 +387,7 @@ restore_power_on_press( n )
                 else if( self.origin == level.power_outtage_trigger_farm )
                 {
                     self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
+                    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::reward_mini_quest_avogadro_zombies();
                     level thread do_power_restoring_lockdown( level.power_outtage_blocker_farm );
                     level thread power_store_visuals();
                     level.sc_flying_in_progress = true;
@@ -402,6 +405,7 @@ restore_power_on_press( n )
                 else if( self.origin == level.power_outtage_trigger_power )
                 {
                     self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
+                    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::reward_mini_quest_avogadro_zombies();
                     level thread do_power_restoring_lockdown( level.power_outtage_blocker_power );
                     level thread power_store_visuals();
                     level.sc_flying_in_progress = true;
@@ -419,6 +423,7 @@ restore_power_on_press( n )
                 else if( self.origin == level.power_outtage_trigger_bank )
                 {
                     self setHintString( "^8[ ^2Power Restoring Started... ^8]" );
+                    level thread scripts\zm\zm_transit\warmer_days_sq_rewards::reward_mini_quest_avogadro_zombies();
                     level thread do_power_restoring_lockdown( level.power_outtage_blocker_bank );
                     level thread power_store_visuals();
                     level.sc_flying_in_progress = true;
@@ -510,6 +515,7 @@ do_power_restoring_lockdown( which_spot )
         blocker2 delete();
         level.sc_doing_loop = false;
         level.sc_flying_in_progress = false;
+        level notify( "stop_avogadro_shit" );
     }
     
     else if( which_spot == level.power_outtage_blocker_diner )
@@ -529,6 +535,7 @@ do_power_restoring_lockdown( which_spot )
         blocker0 delete();
         level.sc_doing_loop = false;
         level.sc_flying_in_progress = false;
+        level notify( "stop_avogadro_shit" );
     }
 
     else if( which_spot == level.power_outtage_blocker_power )
@@ -576,6 +583,7 @@ do_power_restoring_lockdown( which_spot )
         blocker3 delete();
         level.sc_doing_loop = false;
         level.sc_flying_in_progress = false;
+        level notify( "stop_avogadro_shit" );
     }
 
 
@@ -604,6 +612,7 @@ do_power_restoring_lockdown( which_spot )
         blocker1 delete();
         level.sc_doing_loop = false;
         level.sc_flying_in_progress = false;
+        level notify( "stop_avogadro_shit" );
     }
 
     

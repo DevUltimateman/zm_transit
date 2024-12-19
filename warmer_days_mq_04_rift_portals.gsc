@@ -246,6 +246,7 @@ wait_to_print_unlock_rift( wait_time )
 {
     level endon( "end_game" );
     wait wait_time;
+    PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
     PlaySoundAtPosition( "mus_zombie_round_over", level.players[ 0 ].origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Rift Portals ^8Unlocked", "^8Survivors can now teleport around ^9Ravenholm^8 via rift rides.", "^8Each lamp has a different landing destination assigned to it.", 6, 0.25 );
 }
@@ -386,6 +387,7 @@ do_stuff_for_rift_grab()
         self.ignoreme = true;
         wait 0.25;
     }
+    wait 2.5;
     self disableInvulnerability(); 
     self.ignoreme = false;
         
@@ -393,6 +395,7 @@ do_stuff_for_rift_grab()
 
 level_bring_back_normal_visuals_and_stuff()
 {
+    level notify( "stop_avogadro_shit" );
     level.zombie_total = undefined;
     for( i = 0; i < level.players.size; i++ )
     {
@@ -1771,6 +1774,7 @@ wait_for_access_panel_interact( a_comp_origin )
             }
             wait 0.05;
             level.zombie_total = 9999;
+            level thread scripts\zm\zm_transit\warmer_days_sq_rewards::reward_mini_quest_avogadro_zombies();
             level thread do_malfunction_visuals();
             PlaySoundAtPosition( level.jsn_snd_lst[ 3 ], trig_panel.origin );
             wait 1;
@@ -1859,6 +1863,11 @@ spawn_initial_rift_portal_on_core()
         wait randomFloatRange( 0.1, 1.2 );
     }
     wait 5.7;
+    foreach( zom in level.zombie_team )
+    {
+        zom dodamage( zom.health + 50, zom.origin );
+    }
+    level notify( "stop_avogadro_shit" );
     level thread level_bring_back_normal_visuals_and_stuff();
 
 

@@ -208,9 +208,15 @@ mr_s_for_final_time()
     level endon( "end_game" );
 
     level waittill( "called_s" );
+    PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
      PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Reuniting With Mr. Schruder", "^8All well and good now..", "..wonder what he's got planned.", 6, 0.25 );
     wait 1.5;
+    foreach( zom in level.zombie_team )
+    {
+        zom dodamage( zom.health + 500, zom.origin );
+    }
+    setdvar( "g_ai", 0 );
     here = ( 7629.86, -460.482, -172.256 );
     down_here = ( 7629.86, -460.482, -342.353 );
     mr_s = spawn( "script_model", down_here );
@@ -284,6 +290,7 @@ mr_s_for_final_time()
     mr_s movez( 10000, 1, 0, 0 );
     mr_s waittill( "movedone" );
     mr_s delete();
+    setdvar( "g_ai", 1 );
     degree_tagger delete();
     level notify( "stop_mus_load_bur" );
     level notify( "can_call_help" );
@@ -474,7 +481,7 @@ set_remaining_perks()
 		wait 1;//"specialty_marathon_zombies"
 	}
    // "specialty_longersprint_upgrade"
-	if ( !self hasperk( "specialty_armorvest_upgrade") )
+	if ( !self hasperk( "specialty_armorvest") )
 	{
 		self playlocalsound( "cac_cmn_beep" );
 		self give_perk( "specialty_armorvest_upgrade", 0 );
@@ -483,7 +490,7 @@ set_remaining_perks()
 		wait 1;
 	}
 
-	if ( !self hasperk( "specialty_rof_upgrade" ) )
+	if ( !self hasperk( "specialty_rof" ) )
 	{
 		self playlocalsound( "cac_cmn_beep" );
 		self give_perk( "specialty_rof_upgrade", 0 );
@@ -501,7 +508,7 @@ set_remaining_perks()
 		wait 1;
     }
 
-    if( !self hasperk( "specialty_longersprint_upgrade" ) )
+    if( !self hasperk( "specialty_longersprint" ) )
     {
         self playlocalsound( "cac_cmn_beep" );
 		self give_perk( "specialty_longersprint_upgrade", 0 );

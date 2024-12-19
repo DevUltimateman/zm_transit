@@ -310,7 +310,9 @@ step1_talk()
 
     level waittill( "can_start_normal_zombie_huds" );
     wait 12.5;
+    PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
+    
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Beginning Of The Journey", "^8Where am I..", "^8..and what does this guy want?", 6, 0.25 );
     gets = level.players;
     foreach( g in gets )
@@ -561,6 +563,7 @@ schruder_talks_everything_part2()
     meeting_vox11("");
     level.not_doable_yet = false;
     wait 11;
+    PlaySoundAtPosition(level.jsn_snd_lst[ 30 ], level.players[ 0 ].origin );
     PlaySoundAtPosition( "mus_zombie_round_start", level.players[ 0 ].origin );
     level thread scripts\zm\zm_transit\warmer_days_sq_rewards::print_text_middle( "^9Obey The Voices", "^8This guy want's me to build us some sort of machine.", "I should start looking for the parts..", 6, 0.25 );
     if( level.dev_time ){ iprintln( "STEP 2 TALKS COMPLETED" ); }
